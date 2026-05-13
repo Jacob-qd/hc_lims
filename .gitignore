@@ -3,3 +3,12 @@
 .dolt/
 *.db
 .beads-credential-key
+
+# Local runtime and notes
+.runtime/
+CLAUDE.local.md
+
+# Build artifacts
+node_modules/
+dist/
+*.log

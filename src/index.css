@@ -1,0 +1,83 @@
+:root {
+  /* Brand Colors */
+  --color-primary: #1677ff;
+  --color-primary-hover: #4096ff;
+  --color-primary-active: #0958d9;
+  --color-primary-light: #e6f4ff;
+
+  /* Layout */
+  --layout-header-height: 64px;
+  --layout-sider-width: 240px;
+  --layout-sider-collapsed-width: 80px;
+
+  /* Background */
+  --bg-body: #f0f2f5;
+  --bg-card: #ffffff;
+  --bg-header: #ffffff;
+  --bg-sider: #ffffff;
+
+  /* Text */
+  --text-primary: rgba(0, 0, 0, 0.88);
+  --text-secondary: rgba(0, 0, 0, 0.65);
+  --text-muted: rgba(0, 0, 0, 0.45);
+
+  /* Border */
+  --border-color: #f0f0f0;
+
+  /* Shadow */
+  --shadow-card: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+}
+
+[data-theme='dark'] {
+  --bg-body: #141414;
+  --bg-card: #1f1f1f;
+  --bg-header: #1f1f1f;
+  --bg-sider: #1f1f1f;
+
+  --text-primary: rgba(255, 255, 255, 0.85);
+  --text-secondary: rgba(255, 255, 255, 0.65);
+  --text-muted: rgba(255, 255, 255, 0.45);
+
+  --border-color: #424242;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--bg-body);
+  color: var(--text-primary);
+}
+
+a {
+  text-decoration: none;
+  color: var(--color-primary);
+}
+
+/* Ant Design overrides */
+.ant-layout {
+  background: var(--bg-body);
+}
+
+.ant-layout-header {
+  background: var(--bg-header);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 24px;
+}
+
+.ant-layout-sider {
+  background: var(--bg-sider);
+  border-right: 1px solid var(--border-color);
+}
+
+.ant-card {
+  background: var(--bg-card);
+  box-shadow: var(--shadow-card);
+}
