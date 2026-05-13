@@ -1,0 +1,15 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = true
+	ignorecase = true
+	precomposeunicode = true
+[remote "origin"]
+	url = https://github.com/Jacob-qd/hc_lims.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[beads]
+	issue-prefix = hc
+	role = contributor
+[branch "recovery/hc-2hd-stranded-86e440c"]
+	remote = origin
+	merge = refs/heads/recovery/hc-2hd-stranded-86e440c
