@@ -15,3 +15,8 @@ dist/
 
 # Pi agent runtime
 .pi/
+
+# Test artifacts
+e2e/
+playwright-report/
+test-results/
