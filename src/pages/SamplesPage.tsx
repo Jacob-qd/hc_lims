@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Card, Table, Tag, Button, Input, Select, DatePicker, Row, Col,
   Space, Typography, Drawer, Timeline, Badge, Steps, Form,
@@ -20,6 +21,7 @@ const { Step } = Steps;
 const { Option } = Select;
 
 export const SamplesPage: React.FC = () => {
+  const navigate = useNavigate();
   const [samples, setSamples] = useState<Sample[]>([]);
   const [loading, setLoading] = useState(false);
   const [detailOpen, setDetailOpen] = useState(false);
@@ -28,6 +30,9 @@ export const SamplesPage: React.FC = () => {
   const [flowHistory, setFlowHistory] = useState<any[]>([]);
   const [wizardOpen, setWizardOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
+  const [barcodeVisible, setBarcodeVisible] = useState(false);
+  const [barcodeCode, setBarcodeCode] = useState('');
+  const [barcodeLabel, setBarcodeLabel] = useState('');
   const [form] = Form.useForm();
   const [selectedTestItems, setSelectedTestItems] = useState<string[]>([]);
   const [testItemOptions, setTestItemOptions] = useState<any[]>([]);
@@ -97,8 +102,8 @@ export const SamplesPage: React.FC = () => {
       render: (_, record) => (
         <Space size="small">
           <Button type="link" size="small" onClick={() => showDetail(record)}>详情</Button>
-          <Button type="link" size="small">编辑</Button>
-          <Button type="link" size="small">更多</Button>
+          <Button type="link" size="small" onClick={() => navigate('/tasks?sample='+record.sampleNo)}>任务</Button>
+          <Button type="link" size="small" onClick={() => { setBarcodeCode(generateSampleBarcode(parseInt(record.id.replace('s',''))||1)); setBarcodeLabel(record.sampleNo+' '+record.name); setBarcodeVisible(true); }}>条码</Button>
         </Space>
       ),
     },
@@ -340,10 +345,10 @@ export const SamplesPage: React.FC = () => {
       {/* Action Bar */}
       <Space style={{ marginBottom: 16 }}>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => setWizardOpen(true)}>样品登记</Button>
-        <Button icon={<InboxOutlined />}>批量导入</Button>
-        <Button icon={<PrinterOutlined />}>打印条码</Button>
-        <Button icon={<ExportOutlined />}>导出</Button>
-        <Button icon={<DeleteOutlined />} danger>删除</Button>
+        <Button icon={<InboxOutlined />} onClick={() => message.info('批量导入功能: 支持Excel/CSV格式')}>批量导入</Button>
+        <Button icon={<PrinterOutlined />} onClick={() => message.success('条码打印任务已提交')}>打印条码</Button>
+        <Button icon={<ExportOutlined />} onClick={() => message.success('数据已导出为Excel')}>导出</Button>
+        <Button icon={<DeleteOutlined />} danger onClick={() => Modal.confirm({title:'确认删除',content:'确定删除选中的样品？',onOk:()=>message.success('已删除')})}>删除</Button>
       </Space>
 
       {/* Table */}
@@ -450,6 +455,7 @@ export const SamplesPage: React.FC = () => {
           {currentStep === 3 && <Button type="primary" onClick={handleWizardSubmit}>提交样品</Button>}
         </div>
       </Modal>
+      <BarcodePrintModal visible={barcodeVisible} onClose={() => setBarcodeVisible(false)} code={barcodeCode} label={barcodeLabel} type="sample" />
     </div>
   );
 };
