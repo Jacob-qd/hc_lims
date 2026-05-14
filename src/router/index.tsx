@@ -17,6 +17,28 @@ const InstrumentsPage = lazy(() => import('../pages/InstrumentsPage').then(m => 
 const StatisticsPage = lazy(() => import('../pages/StatisticsPage').then(m => ({ default: m.StatisticsPage })));
 const QueryPage = lazy(() => import('../pages/QueryPage').then(m => ({ default: m.QueryPage })));
 const SettingsPage = lazy(() => import('../pages/SettingsPage').then(m => ({ default: m.SettingsPage })));
+const SampleDetailPage = lazy(() => import('../pages/SampleDetailPage').then(m => ({ default: m.SampleDetailPage })));
+const TaskResultEntry = lazy(() => import('../pages/TaskResultEntry').then(m => ({ default: m.TaskResultEntry })));
+const ResearchGroupPage = lazy(() => import('../pages/ResearchGroupPage').then(m => ({ default: m.ResearchGroupPage })));
+const ResearchProjectPage = lazy(() => import('../pages/ResearchProjectPage').then(m => ({ default: m.ResearchProjectPage })));
+const ELNPage = lazy(() => import('../pages/ELNPage').then(m => ({ default: m.ELNPage })));
+const ReservationPage = lazy(() => import('../pages/ReservationPage').then(m => ({ default: m.ReservationPage })));
+const InventoryPage = lazy(() => import('../pages/InventoryPage').then(m => ({ default: m.InventoryPage })));
+const MethodsPage = lazy(() => import('../pages/MethodsPage').then(m => ({ default: m.MethodsPage })));
+const PersonnelPage = lazy(() => import('../pages/PersonnelPage').then(m => ({ default: m.PersonnelPage })));
+const TeachingPage = lazy(() => import('../pages/TeachingPage').then(m => ({ default: m.TeachingPage })));
+const SafetyPage = lazy(() => import('../pages/SafetyPage').then(m => ({ default: m.SafetyPage })));
+const AchievementPage = lazy(() => import('../pages/AchievementPage').then(m => ({ default: m.AchievementPage })));
+const CustomerPortalPage = lazy(() => import('../pages/CustomerPortalPage').then(m => ({ default: m.CustomerPortalPage })));
+const AuditLogPage = lazy(() => import('../pages/AuditLogPage').then(m => ({ default: m.AuditLogPage })));
+const NotificationPage = lazy(() => import('../pages/NotificationPage').then(m => ({ default: m.NotificationPage })));
+const HelpPage = lazy(() => import('../pages/HelpPage').then(m => ({ default: m.HelpPage })));
+const DictPage = lazy(() => import('../pages/DictPage').then(m => ({ default: m.DictPage })));
+const ProfilePage = lazy(() => import('../pages/ProfilePage').then(m => ({ default: m.ProfilePage })));
+const COCPage = lazy(() => import('../pages/COCPage').then(m => ({ default: m.COCPage })));
+const BackupPage = lazy(() => import('../pages/BackupPage').then(m => ({ default: m.BackupPage })));
+const WorkflowPage = lazy(() => import('../pages/WorkflowPage').then(m => ({ default: m.WorkflowPage })));
+const ReportEnginePage = lazy(() => import('../pages/ReportEnginePage').then(m => ({ default: m.ReportEnginePage })));
 
 export const router = createBrowserRouter([
   {
@@ -48,6 +70,28 @@ export const router = createBrowserRouter([
       { path: 'statistics', element: <StatisticsPage /> },
       { path: 'query', element: <QueryPage /> },
       { path: 'settings', element: <SettingsPage /> },
+      { path: 'samples/:id', element: <SampleDetailPage /> },
+      { path: 'tasks/:id/result', element: <TaskResultEntry /> },
+      { path: 'research/groups', element: <ResearchGroupPage /> },
+      { path: 'research/projects', element: <ResearchProjectPage /> },
+      { path: 'research/eln', element: <ELNPage /> },
+      { path: 'research/reservations', element: <ReservationPage /> },
+      { path: 'inventory', element: <InventoryPage /> },
+      { path: 'methods', element: <MethodsPage /> },
+      { path: 'personnel', element: <PersonnelPage /> },
+      { path: 'teaching', element: <TeachingPage /> },
+      { path: 'safety', element: <SafetyPage /> },
+      { path: 'achievements', element: <AchievementPage /> },
+      { path: 'portal', element: <CustomerPortalPage /> },
+      { path: 'audit-logs', element: <AuditLogPage /> },
+      { path: 'notifications', element: <NotificationPage /> },
+      { path: 'help', element: <HelpPage /> },
+      { path: 'dict', element: <DictPage /> },
+      { path: 'profile', element: <ProfilePage /> },
+      { path: 'coc', element: <COCPage /> },
+      { path: 'backup', element: <BackupPage /> },
+      { path: 'workflow', element: <WorkflowPage /> },
+      { path: 'reports/engine', element: <ReportEnginePage /> },
       { path: '*', element: <Navigate to="/dashboard" replace /> },
     ],
   },

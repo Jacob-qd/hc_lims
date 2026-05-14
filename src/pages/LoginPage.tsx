@@ -62,7 +62,7 @@ export const LoginPage: React.FC = () => {
     >
       <Card
         style={{ width: 420, borderRadius: 16, boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}
-        bodyStyle={{ padding: '40px 32px' }}
+        styles={{ body: { padding: '40px 32px' } }}
       >
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
           <div style={{ textAlign: 'center' }}>
@@ -84,7 +84,7 @@ export const LoginPage: React.FC = () => {
               HC
             </div>
             <Title level={3} style={{ margin: 0 }}>
-              华测 LIMS
+              红创 LIMS
             </Title>
             <Text type="secondary">实验室信息管理系统</Text>
           </div>

@@ -82,7 +82,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onOpenDrawer }) => {
           HC
         </div>
         <Text strong style={{ fontSize: 18, color: 'var(--text-primary)' }}>
-          华测 LIMS
+          红创 LIMS
         </Text>
       </div>
 
@@ -101,7 +101,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onOpenDrawer }) => {
         </Badge>
         <Dropdown menu={{ items }} placement="bottomRight">
           <Space style={{ cursor: 'pointer' }}>
-            <Avatar src={user?.avatar} icon={!user?.avatar && <UserOutlined />} size="small" />
+            <Avatar src={user?.avatar || undefined} icon={!user?.avatar && <UserOutlined />} size="small" />
             <Text style={{ color: 'var(--text-primary)' }}>{user?.realName || '未登录'}</Text>
           </Space>
         </Dropdown>

@@ -3,6 +3,7 @@ import {
   mockUsers,
   mockDashboardStats,
   mockDashboardTaskQueue,
+  mockTasks,
   mockDashboardInstruments,
   mockDashboardAlerts,
   mockTurnaroundTrend,
@@ -14,6 +15,33 @@ import {
   mockReports,
   mockReportStats,
   mockReportFlowHistory,
+  mockSamplesExpanded,
+  mockTasksExpanded,
+  mockResearchGroupsExpanded,
+  mockInstruments,
+  mockInstrumentsExpanded,
+  mockQualityDataExpanded,
+  mockDeviationsExpanded,
+  mockControlChartDataExpanded,
+  mockELNExpanded,
+  mockReservationExpanded,
+  mockChemicals,
+  mockChemicalExpanded,
+  mockCourses,
+  mockAnalysts,
+  mockQCResults,
+  mockDeviations,
+  mockControlChartData,
+  mockPublications,
+  mockResearchProjects,
+  mockELNEntries,
+  mockReservations,
+  mockInventory,
+  mockPurchaseRequests,
+  mockMethods,
+  mockPersonnel,
+  mockTrainingRecords,
+  mockCertificates,
 } from './data';
 
 const apiUrl = (path: string) => `/api/v1${path}`;
@@ -179,15 +207,48 @@ export const handlers = [
   }),
 
   // Tasks
-  http.get(apiUrl('/tasks'), () => {
-    return HttpResponse.json({
-      code: 200,
-      message: 'success',
-      data: {
-        list: [],
-        total: 0,
-      },
-    });
+  http.get(apiUrl('/tasks'), ({ request }) => {
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get('status');
+    const keyword = searchParams.get('keyword');
+    let filtered = [...mockTasks];
+    if (status && status !== 'all') filtered = filtered.filter(t => t.status === status);
+    if (keyword) filtered = filtered.filter(t => t.sampleName.includes(keyword) || t.taskNo.includes(keyword) || t.testItem.includes(keyword));
+    return HttpResponse.json({ code: 200, data: { list: filtered, total: filtered.length } });
+  }),
+
+  http.get(apiUrl('/tasks/stats'), () => {
+    return HttpResponse.json({ code: 200, data: { ...mockDashboardTaskQueue } });
+  }),
+
+  http.post(apiUrl('/tasks'), async ({ request }) => {
+    const body = await request.json();
+    const task: any = { id: 'tk' + Date.now(), taskNo: 'TK-2025-' + String(mockTasks.length + 1).padStart(3, '0'), ...body, createdAt: new Date().toISOString().slice(0, 10), updatedAt: new Date().toISOString().slice(0, 10) };
+    mockTasks.push(task);
+    return HttpResponse.json({ code: 200, data: task, message: '创建成功' });
+  }),
+
+  http.post(apiUrl('/tasks/:id/assign'), async ({ params, request }) => {
+    const body = await request.json();
+    const task = mockTasks.find(t => t.id === params.id);
+    if (task) { task.analystId = body.analystId; task.analystName = body.analystName; task.instrumentId = body.instrumentId; task.instrumentName = body.instrumentName; task.plannedStart = body.plannedStart; task.plannedEnd = body.plannedEnd; task.status = 'pending'; task.statusLabel = '待检测'; }
+    return HttpResponse.json({ code: 200, message: '分配成功' });
+  }),
+
+  http.post(apiUrl('/tasks/:id/start'), ({ params }) => {
+    const task = mockTasks.find(t => t.id === params.id);
+    if (task) { task.status = 'testing'; task.statusLabel = '检测中'; task.actualStart = new Date().toISOString().slice(0, 10); }
+    return HttpResponse.json({ code: 200, message: '开始检测' });
+  }),
+
+  http.post(apiUrl('/tasks/:id/complete'), ({ params }) => {
+    const task = mockTasks.find(t => t.id === params.id);
+    if (task) { task.status = 'pending_review'; task.statusLabel = '待审核'; task.progress = 100; task.actualEnd = new Date().toISOString().slice(0, 10); }
+    return HttpResponse.json({ code: 200, message: '提交复核' });
+  }),
+
+  http.get(apiUrl('/tasks/schedule'), () => {
+    return HttpResponse.json({ code: 200, data: { list: mockTasks.map(t => ({ ...t, title: t.testItem, start: t.plannedStart, end: t.plannedEnd })) } });
   }),
 
   // Reports
@@ -286,7 +347,7 @@ export const handlers = [
         list: [
           { id: 'c1', name: '绿源环保科技有限公司' },
           { id: 'c2', name: '市政水务集团' },
-          { id: 'c3', name: '华测检测认证集团' },
+          { id: 'c3', name: '红创检测认证集团' },
           { id: 'c4', name: '清源化工有限公司' },
           { id: 'c5', name: '蓝天环境监测站' },
         ],
@@ -304,7 +365,7 @@ export const handlers = [
         list: [
           { id: 'p1', name: '地表水监测项目' },
           { id: 'p2', name: '市政供水检测' },
-          { id: 'p3', name: '华测检测项目' },
+          { id: 'p3', name: '红创检测项目' },
           { id: 'p4', name: '清源化工项目' },
           { id: 'p5', name: '蓝天环境监测' },
         ],
@@ -331,4 +392,116 @@ export const handlers = [
       },
     });
   }),
+
+  // ===== Instruments =====
+  http.get(apiUrl('/instruments'), ({ request }) => {
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get('status');
+    const keyword = searchParams.get('keyword');
+    let filtered = [...mockInstruments];
+    if (status && status !== 'all') {
+      filtered = filtered.filter(i => i.status === status);
+    }
+    if (keyword) {
+      const kw = keyword.toLowerCase();
+      filtered = filtered.filter(i => i.name.toLowerCase().includes(kw) || i.model.toLowerCase().includes(kw) || i.serialNo.toLowerCase().includes(kw));
+    }
+    return HttpResponse.json({ code: 200, data: { list: filtered, total: filtered.length } });
+  }),
+
+  http.get(apiUrl('/instruments/:id'), ({ params }) => {
+    const instrument = mockInstruments.find(i => i.id === params.id);
+    if (!instrument) return HttpResponse.json({ code: 404, message: '仪器不存在' });
+    const calibrations = mockCalibrationRecords.filter(c => c.instrumentId === params.id);
+    const maintenances = mockMaintenanceRecords.filter(m => m.instrumentId === params.id);
+    return HttpResponse.json({ code: 200, data: { ...instrument, calibrations, maintenances } });
+  }),
+
+  http.post(apiUrl('/instruments'), async ({ request }) => {
+    const body = await request.json();
+    const newInstrument = { id: `i${mockInstruments.length + 1}`, ...body, connectionStatus: 'online', utilization: 0 };
+    mockInstruments.push(newInstrument);
+    return HttpResponse.json({ code: 200, data: newInstrument, message: '创建成功' });
+  }),
+
+  http.get(apiUrl('/instruments/:id/calibrations'), ({ params }) => {
+    return HttpResponse.json({ code: 200, data: { list: mockCalibrationRecords.filter(c => c.instrumentId === params.id) } });
+  }),
+
+  http.get(apiUrl('/instruments/:id/maintenances'), ({ params }) => {
+    return HttpResponse.json({ code: 200, data: { list: mockMaintenanceRecords.filter(m => m.instrumentId === params.id) } });
+  }),
+
+  // ===== Quality Control =====
+  http.get(apiUrl('/quality/control-chart'), () => {
+    return HttpResponse.json({ code: 200, data: mockControlChartData });
+  }),
+
+  http.get(apiUrl('/quality/qc-results'), () => {
+    return HttpResponse.json({ code: 200, data: { list: mockQCResults } });
+  }),
+
+  http.get(apiUrl('/quality/deviations'), () => {
+    return HttpResponse.json({ code: 200, data: { list: mockDeviations } });
+  }),
+
+  // ===== Research Module Handlers =====
+  http.get(apiUrl('/research/projects'), () => HttpResponse.json({ code: 200, data: { list: mockResearchProjects } })),
+  http.post(apiUrl('/research/projects'), async ({ request }) => {
+    const body = await request.json();
+    const item = { id: 'rp' + Date.now(), ...body };
+    mockResearchProjects.push(item);
+    return HttpResponse.json({ code: 200, data: item, message: '创建成功' });
+  }),
+
+  http.get(apiUrl('/research/eln-entries'), () => HttpResponse.json({ code: 200, data: { list: mockELNEntries } })),
+  http.post(apiUrl('/research/eln-entries'), async ({ request }) => {
+    const body = await request.json();
+    const item = { id: 'eln' + Date.now(), no: 'ELN' + new Date().toISOString().slice(0,10).replace(/-/g,''), status: 'draft', tags: [], ...body };
+    mockELNEntries.push(item);
+    return HttpResponse.json({ code: 200, data: item, message: '创建成功' });
+  }),
+  http.post(apiUrl('/research/eln-entries/:id/sign'), ({ params }) => {
+    const entry = mockELNEntries.find(e => e.id === params.id);
+    if (entry) { entry.status = entry.status === 'draft' ? 'signed' : 'locked'; }
+    return HttpResponse.json({ code: 200, message: '签名成功' });
+  }),
+
+  http.get(apiUrl('/research/reservations'), () => HttpResponse.json({ code: 200, data: { list: mockReservations } })),
+  http.post(apiUrl('/research/reservations'), async ({ request }) => {
+    const body = await request.json();
+    const item = { id: 'res' + Date.now(), status: 'pending', fee: 0, ...body };
+    mockReservations.push(item);
+    return HttpResponse.json({ code: 200, data: item, message: '预约成功' });
+  }),
+
+  http.get(apiUrl('/research/chemicals'), () => HttpResponse.json({ code: 200, data: { list: [...mockChemicals, ...mockChemicalExpanded] } })),
+  http.get(apiUrl('/research/publications'), () => HttpResponse.json({ code: 200, data: { list: mockPublications } })),
+
+  // ===== Expanded Data Handlers =====
+  http.get(apiUrl('/samples/expanded'), () => HttpResponse.json({ code: 200, data: { list: mockSamplesExpanded, total: mockSamplesExpanded.length } })),
+  http.get(apiUrl('/tasks/expanded'), () => HttpResponse.json({ code: 200, data: { list: mockTasksExpanded, total: mockTasksExpanded.length } })),
+  http.get(apiUrl('/instruments/expanded'), () => HttpResponse.json({ code: 200, data: { list: mockInstrumentsExpanded, total: mockInstrumentsExpanded.length } })),
+  http.get(apiUrl('/research/groups/expanded'), () => HttpResponse.json({ code: 200, data: { list: mockResearchGroupsExpanded, total: mockResearchGroupsExpanded.length } })),
+  http.get(apiUrl('/quality/expanded'), () => HttpResponse.json({ code: 200, data: { list: [...mockQualityDataExpanded], chart: mockControlChartDataExpanded } })),
+  http.get(apiUrl('/quality/deviations/expanded'), () => HttpResponse.json({ code: 200, data: { list: [...mockDeviations, ...mockDeviationsExpanded] } })),
+  http.get(apiUrl('/research/eln/expanded'), () => HttpResponse.json({ code: 200, data: { list: [...mockELNEntries, ...mockELNExpanded], total: mockELNEntries.length + mockELNExpanded.length } })),
+  http.get(apiUrl('/research/reservations/expanded'), () => HttpResponse.json({ code: 200, data: { list: [...mockReservations, ...mockReservationExpanded], total: mockReservations.length + mockReservationExpanded.length } })),
+  http.get(apiUrl('/analysts'), () => HttpResponse.json({ code: 200, data: { list: mockAnalysts } })),
+  http.get(apiUrl('/dashboard/trend'), () => HttpResponse.json({ code: 200, data: { list: mockTurnaroundTrendReal } })),
+
+  // ===== Inventory =====
+  http.get(apiUrl('/inventory'), () => HttpResponse.json({ code: 200, data: { list: mockInventory } })),
+  http.get(apiUrl('/inventory/purchase-requests'), () => HttpResponse.json({ code: 200, data: { list: mockPurchaseRequests } })),
+
+  // ===== Methods =====
+  http.get(apiUrl('/methods'), () => HttpResponse.json({ code: 200, data: { list: mockMethods } })),
+
+  // ===== Personnel =====
+  http.get(apiUrl('/personnel'), () => HttpResponse.json({ code: 200, data: { list: mockPersonnel } })),
+  http.get(apiUrl('/personnel/training'), () => HttpResponse.json({ code: 200, data: { list: mockTrainingRecords } })),
+  http.get(apiUrl('/personnel/certificates'), () => HttpResponse.json({ code: 200, data: { list: mockCertificates } })),
+
+  // ===== Teaching =====
+  http.get(apiUrl('/teaching/courses'), () => HttpResponse.json({ code: 200, data: { list: mockCourses } })),
 ];

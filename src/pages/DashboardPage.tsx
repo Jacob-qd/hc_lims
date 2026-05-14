@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Row, Col, Card, Statistic, Table, Tag, List, Button,
-  Space, Typography, Badge, Divider, Tooltip
+  Space, Typography, Badge, Divider, Tooltip, Switch
 } from 'antd';
+import { CustomWorkspace } from '../components/CustomWorkspace';
 import {
   InboxOutlined, ExperimentOutlined, FileTextOutlined,
   WarningOutlined, CheckCircleOutlined, ClockCircleOutlined,
   ArrowUpOutlined, ArrowDownOutlined, PlusOutlined,
-  EyeOutlined, BellOutlined, SettingOutlined,
+  EyeOutlined, BellOutlined, SettingOutlined, AppstoreOutlined,
 } from '@ant-design/icons';
 import { Line, Pie } from '@ant-design/plots';
 import type { Sample } from '../mocks/data';
@@ -52,6 +53,10 @@ interface Alert {
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [workspaceOpen, setWorkspaceOpen] = useState(false);
+  const [visibleWidgets, setVisibleWidgets] = useState<string[]>(
+    () => JSON.parse(localStorage.getItem('dashboard_widgets') || 'null') || ['kpi','recent_samples','task_queue','instruments','alerts','chart_trend','chart_dist','quick_actions']
+  );
   const [taskQueue, setTaskQueue] = useState<TaskQueue | null>(null);
   const [instruments, setInstruments] = useState<Instrument[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
@@ -149,7 +154,18 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <div style={{ padding: 24 }}>
-      <Title level={4} style={{ marginBottom: 24 }}>上午好，张伟 欢迎使用红创LIMS实验室信息管理系统</Title>
+      <Row justify="space-between" style={{ marginBottom: 8 }}>
+        <Col><Title level={4} style={{ margin: 0 }}>首页 Dashboard</Title></Col>
+        <Col><Button icon={<AppstoreOutlined />} onClick={() => setWorkspaceOpen(true)}>自定义工作台</Button></Col>
+      </Row>
+      <Row justify="space-between" style={{marginBottom:16}}>
+        <Col><Text>上午好，张伟 | 欢迎使用红创LIMS实验室信息管理系统</Text></Col>
+        <Col><Select defaultValue="center" size="small" style={{width:150}} onChange={v => message.info('已切换到: '+ (v==='center'?'中心实验室':'理化实验室'))}>
+          <Select.Option value="center">🏢 中心实验室</Select.Option>
+          <Select.Option value="physics">🔬 理化实验室</Select.Option>
+          <Select.Option value="instrument">⚙️ 仪器分析室</Select.Option>
+        </Select></Col>
+      </Row>
 
       {/* KPI Cards */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
@@ -284,7 +300,7 @@ export const DashboardPage: React.FC = () => {
                     hoverable
                     onClick={() => navigate(action.path)}
                     style={{ textAlign: 'center', cursor: 'pointer' }}
-                    bodyStyle={{ padding: 16 }}
+                    styles={{ body: { padding: 16 } }}
                   >
                     <div style={{ fontSize: 28, color: action.color, marginBottom: 8 }}>{action.icon}</div>
                     <div style={{ fontWeight: 500 }}>{action.label}</div>
@@ -296,6 +312,12 @@ export const DashboardPage: React.FC = () => {
           </Card>
         </Col>
       </Row>
+      <CustomWorkspace
+        open={workspaceOpen}
+        onClose={() => setWorkspaceOpen(false)}
+        onSave={(v) => { setVisibleWidgets(v); localStorage.setItem('dashboard_widgets', JSON.stringify(v)); }}
+        initialVisible={visibleWidgets}
+      />
     </div>
   );
 };
