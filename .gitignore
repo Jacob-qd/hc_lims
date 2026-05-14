@@ -12,3 +12,6 @@ CLAUDE.local.md
 node_modules/
 dist/
 *.log
+
+# Pi agent runtime
+.pi/

@@ -11,6 +11,9 @@ import {
   mockSampleFlowHistory,
   mockSampleDetail,
   mockTestItemOptions,
+  mockReports,
+  mockReportStats,
+  mockReportFlowHistory,
 } from './data';
 
 const apiUrl = (path: string) => `/api/v1${path}`;
@@ -188,15 +191,90 @@ export const handlers = [
   }),
 
   // Reports
+  http.get(apiUrl('/reports/stats'), () => {
+    return HttpResponse.json({ code: 200, message: 'success', data: mockReportStats });
+  }),
+
   http.get(apiUrl('/reports'), () => {
     return HttpResponse.json({
       code: 200,
       message: 'success',
       data: {
-        list: [],
-        total: 0,
+        list: mockReports,
+        total: mockReports.length,
       },
     });
+  }),
+
+  http.get(apiUrl('/reports/:id'), ({ params }) => {
+    const report = mockReports.find((r) => r.id === params.id);
+    if (!report) {
+      return HttpResponse.json({ code: 404, message: '报告不存在', data: null }, { status: 404 });
+    }
+    return HttpResponse.json({ code: 200, message: 'success', data: report });
+  }),
+
+  http.put(apiUrl('/reports/:id'), async ({ request, params }) => {
+    const body = (await request.json()) as Record<string, unknown>;
+    const idx = mockReports.findIndex((r) => r.id === params.id);
+    if (idx === -1) {
+      return HttpResponse.json({ code: 404, message: '报告不存在', data: null }, { status: 404 });
+    }
+    const updated = { ...mockReports[idx], ...body, updatedAt: new Date().toISOString().replace('T', ' ').slice(0, 19) };
+    mockReports[idx] = updated as any;
+    return HttpResponse.json({ code: 200, message: 'success', data: updated });
+  }),
+
+  http.get(apiUrl('/reports/:id/flow-history'), ({ params }) => {
+    const history = mockReportFlowHistory[params.id as string] || [];
+    return HttpResponse.json({ code: 200, message: 'success', data: history });
+  }),
+
+  http.post(apiUrl('/reports/:id/review'), async ({ request, params }) => {
+    const body = (await request.json()) as Record<string, unknown>;
+    const report = mockReports.find((r) => r.id === params.id);
+    if (!report) {
+      return HttpResponse.json({ code: 404, message: '报告不存在', data: null }, { status: 404 });
+    }
+    const newReview = {
+      id: `rv-${Date.now()}`,
+      ...body,
+      reviewedAt: new Date().toISOString().replace('T', ' ').slice(0, 19),
+    };
+    report.reviews.push(newReview as any);
+    return HttpResponse.json({ code: 200, message: 'success', data: newReview });
+  }),
+
+  http.post(apiUrl('/reports/:id/sign'), async ({ request, params }) => {
+    const body = (await request.json()) as Record<string, unknown>;
+    const report = mockReports.find((r) => r.id === params.id);
+    if (!report) {
+      return HttpResponse.json({ code: 404, message: '报告不存在', data: null }, { status: 404 });
+    }
+    const newSig = {
+      id: `sig-${Date.now()}`,
+      ...body,
+      signedAt: new Date().toISOString().replace('T', ' ').slice(0, 19),
+    };
+    report.signatures.push(newSig as any);
+    return HttpResponse.json({ code: 200, message: 'success', data: newSig });
+  }),
+
+  http.post(apiUrl('/reports/:id/annotations'), async ({ request, params }) => {
+    const body = (await request.json()) as Record<string, unknown>;
+    const report = mockReports.find((r) => r.id === params.id);
+    if (!report) {
+      return HttpResponse.json({ code: 404, message: '报告不存在', data: null }, { status: 404 });
+    }
+    const newAnn = {
+      id: `ann-${Date.now()}`,
+      ...body,
+      createdAt: new Date().toISOString().replace('T', ' ').slice(0, 19),
+      status: 'open',
+      replies: [],
+    };
+    report.annotations.push(newAnn as any);
+    return HttpResponse.json({ code: 200, message: 'success', data: newAnn });
   }),
 
   // Customers

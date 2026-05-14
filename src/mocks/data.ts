@@ -224,3 +224,438 @@ export const mockTestItemOptions = [
   { id: 't7', name: '悬浮物(SS)', method: 'GB 11901-1989', plannedDate: '2024-05-25', labId: 'l2', labName: '理化实验室', priority: 'normal' },
   { id: 't8', name: '石油类', method: 'HJ 970-2018', plannedDate: '2024-05-26', labId: 'l1', labName: '环境实验室', priority: 'normal' },
 ];
+
+// ============================================
+// Report Management Mock Data
+// ============================================
+
+export interface Report {
+  id: string;
+  reportNo: string;
+  title: string;
+  sampleIds: string[];
+  sampleNos: string[];
+  customerId: string;
+  customerName: string;
+  projectId: string;
+  projectName: string;
+  sampleType: string;
+  sampleTypeLabel: string;
+  samplingLocation: string;
+  samplingDate: string;
+  status: string;
+  statusLabel: string;
+  creatorId: string;
+  creatorName: string;
+  createdAt: string;
+  updatedAt: string;
+  issuedAt: string;
+  cover: ReportCover;
+  testResults: ReportTestResult[];
+  signatures: ReportSignature[];
+  reviews: ReportReview[];
+  changeHistory: ReportChangeEntry[];
+  attachments: ReportAttachment[];
+  annotations: ReportAnnotation[];
+}
+
+export interface ReportCover {
+  companyName: string;
+  reportTitle: string;
+  reportNo: string;
+  entrustUnit: string;
+  projectName: string;
+  sampleType: string;
+  samplingLocation: string;
+  samplingDate: string;
+  testDate: string;
+  issueDate: string;
+  pageCount: number;
+  qrCode?: string;
+}
+
+export interface ReportTestResult {
+  id: string;
+  seq: number;
+  itemName: string;
+  unit: string;
+  result: string;
+  detectionLimit: string;
+  limitValue: string;
+  method: string;
+  methodRef: string;
+  judgment: '合格' | '不合格' | '-';
+  remark: string;
+}
+
+export interface ReportSignature {
+  id: string;
+  role: 'compiler' | 'reviewer' | 'approver';
+  roleLabel: string;
+  userId: string;
+  userName: string;
+  signedAt: string;
+  ipAddress: string;
+  stampType: 'electronic' | 'handwritten' | '';
+  reason: string;
+  passwordVerified: boolean;
+}
+
+export interface ReportReview {
+  id: string;
+  conclusion: 'pass' | 'fail';
+  opinion: string;
+  reviewerId: string;
+  reviewerName: string;
+  reviewedAt: string;
+  checklist: ReviewChecklistItem[];
+}
+
+export interface ReviewChecklistItem {
+  key: string;
+  label: string;
+  passed: boolean;
+}
+
+export interface ReportChangeEntry {
+  id: string;
+  changedAt: string;
+  operator: string;
+  field: string;
+  oldValue: string;
+  newValue: string;
+}
+
+export interface ReportAttachment {
+  id: string;
+  name: string;
+  type: string;
+  size: string;
+  uploadedAt: string;
+  uploader: string;
+  url: string;
+}
+
+export interface ReportAnnotation {
+  id: string;
+  content: string;
+  authorId: string;
+  authorName: string;
+  createdAt: string;
+  resolvedAt: string;
+  resolvedBy: string;
+  status: 'open' | 'resolved';
+  mentions: string[];
+  replies: ReportAnnotationReply[];
+}
+
+export interface ReportAnnotationReply {
+  id: string;
+  content: string;
+  authorId: string;
+  authorName: string;
+  createdAt: string;
+}
+
+export const reportStatuses = [
+  { value: 'draft', label: '待撰写', color: 'default' },
+  { value: 'pending_tech_review', label: '待技术审核', color: 'blue' },
+  { value: 'tech_review', label: '技术审核中', color: 'processing' },
+  { value: 'pending_approval', label: '待批准签发', color: 'purple' },
+  { value: 'approval', label: '批准签发中', color: 'processing' },
+  { value: 'issued', label: '已签发', color: 'success' },
+  { value: 'archived', label: '已归档', color: 'default' },
+];
+
+export const reviewChecklistDef: ReviewChecklistItem[] = [
+  { key: 'c1', label: '报告编号与委托书一致', passed: false },
+  { key: 'c2', label: '检测结果数据完整、无遗漏', passed: false },
+  { key: 'c3', label: '检测方法标准引用正确', passed: false },
+  { key: 'c4', label: '判定结论依据充分', passed: false },
+  { key: 'c5', label: '计量单位与有效数字规范', passed: false },
+  { key: 'c6', label: '原始记录可追溯', passed: false },
+];
+
+function makeTestResults(count: number, baseItemName: string): ReportTestResult[] {
+  const methods = [
+    { name: 'pH值', method: 'HJ 1147-2020', ref: 'GB/T 6920-1986', unit: '无量纲', limit: '6.5-8.5', dl: '0.01' },
+    { name: '化学需氧量(COD)', method: 'HJ 828-2017', ref: 'GB/T 11914-1989', unit: 'mg/L', limit: '≤100', dl: '4' },
+    { name: '氨氮(NH₃-N)', method: 'HJ 535-2009', ref: 'GB/T 7479-1987', unit: 'mg/L', limit: '≤15', dl: '0.025' },
+    { name: '总磷(TP)', method: 'GB/T 11893-1989', ref: 'GB/T 11893-1989', unit: 'mg/L', limit: '≤0.5', dl: '0.01' },
+    { name: '总氮(TN)', method: 'HJ 636-2012', ref: 'HJ 636-2012', unit: 'mg/L', limit: '≤1.0', dl: '0.05' },
+    { name: '溶解氧(DO)', method: 'HJ 506-2009', ref: 'HJ 506-2009', unit: 'mg/L', limit: '≥2.0', dl: '0.1' },
+    { name: '悬浮物(SS)', method: 'GB 11901-1989', ref: 'GB 11901-1989', unit: 'mg/L', limit: '≤70', dl: '4' },
+    { name: '石油类', method: 'HJ 970-2018', ref: 'HJ 970-2018', unit: 'mg/L', limit: '≤5.0', dl: '0.01' },
+    { name: '砷(As)', method: 'HJ 694-2014', ref: 'GB/T 7485-1987', unit: 'mg/L', limit: '≤0.05', dl: '0.0003' },
+    { name: '汞(Hg)', method: 'HJ 694-2014', ref: 'GB/T 7468-1987', unit: 'mg/L', limit: '≤0.001', dl: '0.00005' },
+  ];
+  const results: ReportTestResult[] = [];
+  const sliced = methods.slice(0, count);
+  sliced.forEach((m, i) => {
+    const val = (Math.random() * 5 + 0.1).toFixed(3);
+    const limitNum = parseFloat(m.limit.replace(/[^0-9.]/g, ''));
+    const pass = parseFloat(val) <= limitNum || m.limit.startsWith('6.5');
+    results.push({
+      id: `${baseItemName}-tr-${i + 1}`,
+      seq: i + 1,
+      itemName: m.name,
+      unit: m.unit,
+      result: val,
+      detectionLimit: m.dl,
+      limitValue: m.limit,
+      method: m.name,
+      methodRef: m.ref,
+      judgment: pass ? '合格' : '不合格',
+      remark: '',
+    });
+  });
+  return results;
+}
+
+export const mockReports: Report[] = [
+  {
+    id: 'rpt1',
+    reportNo: 'RPT20240521001',
+    title: '地表水水质检测报告',
+    sampleIds: ['s1'],
+    sampleNos: ['SMP20240521001'],
+    customerId: 'c1',
+    customerName: '绿源环保科技有限公司',
+    projectId: 'p1',
+    projectName: '地表水监测项目',
+    sampleType: 'surface_water',
+    sampleTypeLabel: '地表水',
+    samplingLocation: '滨湖公园东侧',
+    samplingDate: '2024-05-21',
+    status: 'draft',
+    statusLabel: '待撰写',
+    creatorId: '3',
+    creatorName: '李思',
+    createdAt: '2024-05-22 09:00',
+    updatedAt: '2024-05-22 09:00',
+    issuedAt: '',
+    cover: {
+      companyName: '红创检测认证有限公司',
+      reportTitle: '检测报告',
+      reportNo: 'RPT20240521001',
+      entrustUnit: '绿源环保科技有限公司',
+      projectName: '地表水监测项目',
+      sampleType: '地表水',
+      samplingLocation: '滨湖公园东侧',
+      samplingDate: '2024-05-21',
+      testDate: '2024-05-22 ~ 2024-05-25',
+      issueDate: '',
+      pageCount: 12,
+    },
+    testResults: makeTestResults(5, 'rpt1'),
+    signatures: [],
+    reviews: [],
+    changeHistory: [],
+    attachments: [],
+    annotations: [],
+  },
+  {
+    id: 'rpt2',
+    reportNo: 'RPT20240521002',
+    title: '地下水水质检测报告',
+    sampleIds: ['s2'],
+    sampleNos: ['SMP20240521002'],
+    customerId: 'c2',
+    customerName: '市政水务集团',
+    projectId: 'p2',
+    projectName: '市政供水检测',
+    sampleType: 'groundwater',
+    sampleTypeLabel: '地下水',
+    samplingLocation: '经开区监测井A1',
+    samplingDate: '2024-05-21',
+    status: 'pending_tech_review',
+    statusLabel: '待技术审核',
+    creatorId: '3',
+    creatorName: '李思',
+    createdAt: '2024-05-21 14:30',
+    updatedAt: '2024-05-22 10:15',
+    issuedAt: '',
+    cover: {
+      companyName: '红创检测认证有限公司',
+      reportTitle: '检测报告',
+      reportNo: 'RPT20240521002',
+      entrustUnit: '市政水务集团',
+      projectName: '市政供水检测',
+      sampleType: '地下水',
+      samplingLocation: '经开区监测井A1',
+      samplingDate: '2024-05-21',
+      testDate: '2024-05-21 ~ 2024-05-24',
+      issueDate: '',
+      pageCount: 10,
+    },
+    testResults: makeTestResults(8, 'rpt2'),
+    signatures: [
+      { id: 'sig-1', role: 'compiler', roleLabel: '编制', userId: '3', userName: '李思', signedAt: '2024-05-22 10:10', ipAddress: '192.168.1.100', stampType: 'electronic', reason: '报告编制完成，提交审核', passwordVerified: true },
+    ],
+    reviews: [],
+    changeHistory: [
+      { id: 'ch1', changedAt: '2024-05-22 09:00', operator: '李思', field: '报告', oldValue: '新建', newValue: '草稿状态' },
+      { id: 'ch2', changedAt: '2024-05-22 10:10', operator: '李思', field: '状态', oldValue: '草稿', newValue: '待技术审核' },
+    ],
+    attachments: [],
+    annotations: [
+      {
+        id: 'ann1', content: '@王强 请确认COD检测限是否满足标准要求？', authorId: '3', authorName: '李思',
+        createdAt: '2024-05-22 10:00', resolvedAt: '', resolvedBy: '', status: 'open',
+        mentions: ['4'],
+        replies: [{ id: 'a1r1', content: '已确认，满足要求', authorId: '4', authorName: '王强', createdAt: '2024-05-22 10:05' }],
+      },
+    ],
+  },
+  {
+    id: 'rpt3',
+    reportNo: 'RPT20240520001',
+    title: '土壤污染检测报告',
+    sampleIds: ['s3'],
+    sampleNos: ['SMP20240520045'],
+    customerId: 'c3',
+    customerName: '华测检测认证集团',
+    projectId: 'p3',
+    projectName: '华测检测项目',
+    sampleType: 'soil',
+    sampleTypeLabel: '土壤',
+    samplingLocation: '经开区监测井A1',
+    samplingDate: '2024-05-20',
+    status: 'pending_approval',
+    statusLabel: '待批准签发',
+    creatorId: '3',
+    creatorName: '李思',
+    createdAt: '2024-05-20 17:00',
+    updatedAt: '2024-05-22 14:00',
+    issuedAt: '',
+    cover: {
+      companyName: '红创检测认证有限公司',
+      reportTitle: '检测报告',
+      reportNo: 'RPT20240520001',
+      entrustUnit: '华测检测认证集团',
+      projectName: '华测检测项目',
+      sampleType: '土壤',
+      samplingLocation: '经开区监测井A1',
+      samplingDate: '2024-05-20',
+      testDate: '2024-05-20 ~ 2024-05-23',
+      issueDate: '',
+      pageCount: 8,
+    },
+    testResults: makeTestResults(5, 'rpt3'),
+    signatures: [
+      { id: 'sig-2', role: 'compiler', roleLabel: '编制', userId: '3', userName: '李思', signedAt: '2024-05-22 11:00', ipAddress: '192.168.1.100', stampType: 'electronic', reason: '报告编制完成', passwordVerified: true },
+      { id: 'sig-3', role: 'reviewer', roleLabel: '技术审核', userId: '2', userName: '张伟', signedAt: '2024-05-22 14:00', ipAddress: '192.168.1.101', stampType: 'electronic', reason: '审核通过', passwordVerified: true },
+    ],
+    reviews: [
+      {
+        id: 'rv1', conclusion: 'pass', opinion: '数据完整，方法正确，同意签发。',
+        reviewerId: '2', reviewerName: '张伟', reviewedAt: '2024-05-22 14:00',
+        checklist: reviewChecklistDef.map(c => ({ ...c, passed: true })),
+      },
+    ],
+    changeHistory: [
+      { id: 'ch3', changedAt: '2024-05-20 17:00', operator: '李思', field: '报告', oldValue: '新建', newValue: '草稿状态' },
+      { id: 'ch4', changedAt: '2024-05-22 11:00', operator: '李思', field: '状态', oldValue: '草稿', newValue: '待技术审核' },
+      { id: 'ch5', changedAt: '2024-05-22 14:00', operator: '张伟', field: '状态', oldValue: '待技术审核', newValue: '待批准签发' },
+    ],
+    attachments: [
+      { id: 'att1', name: '原始记录-COD.pdf', type: 'pdf', size: '2.3 MB', uploadedAt: '2024-05-22 13:30', uploader: '李思', url: '#' },
+      { id: 'att2', name: '采样记录单.pdf', type: 'pdf', size: '1.1 MB', uploadedAt: '2024-05-22 13:31', uploader: '李思', url: '#' },
+    ],
+    annotations: [],
+  },
+  {
+    id: 'rpt4',
+    reportNo: 'RPT20240519001',
+    title: '废水污染检测报告',
+    sampleIds: ['s4'],
+    sampleNos: ['SMP20240520044'],
+    customerId: 'c4',
+    customerName: '清源化工有限公司',
+    projectId: 'p4',
+    projectName: '清源化工项目',
+    sampleType: 'wastewater',
+    sampleTypeLabel: '废水',
+    samplingLocation: '清源污水处理厂',
+    samplingDate: '2024-05-20',
+    status: 'issued',
+    statusLabel: '已签发',
+    creatorId: '3',
+    creatorName: '李思',
+    createdAt: '2024-05-19 16:00',
+    updatedAt: '2024-05-22 16:30',
+    issuedAt: '2024-05-22 16:30',
+    cover: {
+      companyName: '红创检测认证有限公司',
+      reportTitle: '检测报告',
+      reportNo: 'RPT20240519001',
+      entrustUnit: '清源化工有限公司',
+      projectName: '清源化工项目',
+      sampleType: '废水',
+      samplingLocation: '清源污水处理厂',
+      samplingDate: '2024-05-20',
+      testDate: '2024-05-20 ~ 2024-05-23',
+      issueDate: '2024-05-22',
+      pageCount: 15,
+    },
+    testResults: makeTestResults(10, 'rpt4'),
+    signatures: [
+      { id: 'sig-4', role: 'compiler', roleLabel: '编制', userId: '3', userName: '李思', signedAt: '2024-05-22 14:00', ipAddress: '192.168.1.100', stampType: 'electronic', reason: '编制完成', passwordVerified: true },
+      { id: 'sig-5', role: 'reviewer', roleLabel: '技术审核', userId: '2', userName: '张伟', signedAt: '2024-05-22 15:00', ipAddress: '192.168.1.101', stampType: 'electronic', reason: '技术审核通过', passwordVerified: true },
+      { id: 'sig-6', role: 'approver', roleLabel: '批准签发', userId: '4', userName: '王强', signedAt: '2024-05-22 16:30', ipAddress: '192.168.1.102', stampType: 'electronic', reason: '批准签发', passwordVerified: true },
+    ],
+    reviews: [
+      {
+        id: 'rv2', conclusion: 'pass', opinion: '技术审核通过，数据完整。',
+        reviewerId: '2', reviewerName: '张伟', reviewedAt: '2024-05-22 15:00',
+        checklist: reviewChecklistDef.map(c => ({ ...c, passed: true })),
+      },
+      {
+        id: 'rv3', conclusion: 'pass', opinion: '批准签发。',
+        reviewerId: '4', reviewerName: '王强', reviewedAt: '2024-05-22 16:30',
+        checklist: reviewChecklistDef.map(c => ({ ...c, passed: true })),
+      },
+    ],
+    changeHistory: [
+      { id: 'ch6', changedAt: '2024-05-19 16:00', operator: '李思', field: '报告', oldValue: '新建', newValue: '草稿状态' },
+      { id: 'ch7', changedAt: '2024-05-22 14:00', operator: '李思', field: '状态', oldValue: '草稿', newValue: '待技术审核' },
+      { id: 'ch8', changedAt: '2024-05-22 15:00', operator: '张伟', field: '状态', oldValue: '待技术审核', newValue: '待批准签发' },
+      { id: 'ch9', changedAt: '2024-05-22 16:30', operator: '王强', field: '状态', oldValue: '待批准签发', newValue: '已签发' },
+    ],
+    attachments: [
+      { id: 'att3', name: '原始记录.pdf', type: 'pdf', size: '3.2 MB', uploadedAt: '2024-05-22 14:30', uploader: '李思', url: '#' },
+    ],
+    annotations: [],
+  },
+];
+
+export const mockReportStats = {
+  draft: 12,
+  pendingTechReview: 8,
+  pendingApproval: 5,
+  issued: 36,
+  total: 61,
+};
+
+export const mockReportFlowHistory: Record<string, Array<{ time: string; action: string; user: string; desc: string }>> = {
+  rpt1: [
+    { time: '2024-05-22 09:00', action: '创建报告', user: '李思', desc: '报告编号 RPT20240521001 已创建' },
+    { time: '2024-05-22 09:05', action: '录入结果', user: '李思', desc: '检测结果已录入' },
+  ],
+  rpt2: [
+    { time: '2024-05-21 14:30', action: '创建报告', user: '李思', desc: '报告已创建' },
+    { time: '2024-05-22 09:30', action: '录入结果', user: '李思', desc: '检测结果已录入' },
+    { time: '2024-05-22 10:10', action: '提交审核', user: '李思', desc: '电子签名：李思' },
+  ],
+  rpt3: [
+    { time: '2024-05-20 17:00', action: '创建报告', user: '李思', desc: '报告已创建' },
+    { time: '2024-05-22 11:00', action: '提交审核', user: '李思', desc: '电子签名：李思' },
+    { time: '2024-05-22 14:00', action: '技术审核通过', user: '张伟', desc: '电子签名：张伟' },
+  ],
+  rpt4: [
+    { time: '2024-05-19 16:00', action: '创建报告', user: '李思', desc: '报告已创建' },
+    { time: '2024-05-22 14:00', action: '提交审核', user: '李思', desc: '报告已提交，待技术审核' },
+    { time: '2024-05-22 15:00', action: '技术审核通过', user: '张伟', desc: '审核通过' },
+    { time: '2024-05-22 16:30', action: '批准签发', user: '王强', desc: '报告已签发' },
+  ],
+};
