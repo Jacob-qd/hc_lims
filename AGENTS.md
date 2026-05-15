@@ -111,6 +111,9 @@ bash scripts/smoke.sh          # 必须全部通过
 npx vitest run                 # 250 tests ✅
 npx tsc --noEmit               # 无类型错误
 
+# Playwright 导航冒烟（所有页面打开/刷新/前进后退）
+npx playwright test e2e/navigation.spec.ts --reporter=list --workers=1
+
 git commit -m "feat: 功能名 (hc-xxx)"
 git push origin HEAD
 bd close hc-xxx --reason="功能描述"

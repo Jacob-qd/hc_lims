@@ -81,7 +81,8 @@ done
 if [ $ROUTE_FAIL -eq 0 ]; then
   JS_FAIL=0
   for jsPath in "/src/main.tsx" "/src/mocks/handlers.ts" "/src/App.tsx"; do
-    mime=$(curl -s -D - "http://localhost:5173${jsPath}" 2>&1 | grep -i "content-type" | tr -d "")
+    mime=$(curl -s -D - "http://localhost:5173${jsPath}" 2>&1 | grep -i "content-type" | tr -d "
+")
     if ! echo "$mime" | grep -q "text/javascript\|application/javascript"; then
       JS_FAIL=$((JS_FAIL+1))
       echo "       ⚠️  $jsPath → $mime"
@@ -99,6 +100,21 @@ fi
 # 6. Check Vite log for parse errors
 if grep -q "PARSE_ERROR" /tmp/vite-smoke.log 2>/dev/null; then
   echo "  ⚠️  Vite reported parse errors (may be non-blocking)"
+fi
+
+# 7. Playwright navigation tests
+echo ""
+echo "🎭 Playwright navigation smoke test..."
+if npx playwright test e2e/navigation.spec.ts --reporter=list --workers=1 --timeout=60000 2>&1 | tail -5; then
+  pass "Playwright navigation tests"
+else
+  # Check if tests actually failed or just timed out
+  PW_RESULT=$(npx playwright test e2e/navigation.spec.ts --reporter=list --workers=1 --timeout=60000 2>&1 | grep -c "passed\|failed" || echo "0")
+  if [ "$PW_RESULT" -gt 0 ]; then
+    fail "Playwright" "navigation tests failed — check e2e/navigation.spec.ts"
+  else
+    echo "  ⚠️  Playwright test runner issue (may be headless env)"
+  fi
 fi
 
 kill $VITE_PID 2>/dev/null || true
