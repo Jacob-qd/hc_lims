@@ -10,7 +10,7 @@ import {
   DownloadOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { mockCertificates } from '../mocks/data';
+import { mockSm2Certificates } from '../mocks/data';
 import type { Sm2Certificate } from '../mocks/data';
 
 const { Title, Text } = Typography;
@@ -50,10 +50,10 @@ export const CertificatePage: React.FC = () => {
         setCertificates(res.data.list);
       } else {
         // Fallback to mock data
-        setCertificates(mockCertificates as Sm2Certificate[]);
+        setCertificates(mockSm2Certificates as Sm2Certificate[]);
       }
     } catch {
-      setCertificates(mockCertificates as Sm2Certificate[]);
+      setCertificates(mockSm2Certificates as Sm2Certificate[]);
     }
     setLoading(false);
   };

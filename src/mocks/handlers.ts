@@ -45,6 +45,7 @@ import {
   mockFieldConfigs,
   mockFieldTemplates,
   mockCOCChains,
+  mockSm2Certificates,
   mockDigitalSignatures,
   mockSignatureAuditLog,
   computeDocumentHash,
@@ -665,7 +666,7 @@ export const handlers = [
 
     // Find user certificate
     const currentUserId = '3';
-    const cert = mockCertificates.find((c: any) => c.userId === currentUserId && c.status === 'active');
+    const cert = mockSm2Certificates.find((c: any) => c.userId === currentUserId && c.status === 'active');
 
     // Build signature payload
     const sigContent = `${documentHash}|${currentUserId}|${meaning}|${new Date().toISOString()}`;
@@ -777,7 +778,7 @@ export const handlers = [
     const allValidSigs = sigs.filter((s: any) => s.status === 'valid');
     const documentIntact = allValidSigs.length === 0 || allValidSigs.some((s: any) => s.documentHash === currentHash);
     const allCertsValid = allValidSigs.every((s: any) => {
-      const cert = mockCertificates.find((c: any) => c.id === s.signerCertId);
+      const cert = mockSm2Certificates.find((c: any) => c.id === s.signerCertId);
       return cert && cert.status === 'active';
     });
 
@@ -789,7 +790,7 @@ export const handlers = [
       timestampValid: true,
       signatures: allValidSigs.map((s: any) => {
         const meaningDef = signatureMeanings.find((m: any) => m.value === s.meaning);
-        const cert = mockCertificates.find((c: any) => c.id === s.signerCertId);
+        const cert = mockSm2Certificates.find((c: any) => c.id === s.signerCertId);
         return {
           signerName: s.signerName,
           meaning: s.meaning,
@@ -858,7 +859,7 @@ export const handlers = [
   http.post(apiUrl('/certificates'), async ({ request }) => {
     const body = (await request.json()) as Record<string, any>;
     const newCert: any = {
-      id: 'cert-sm2-' + String(mockCertificates.length + 1).padStart(3, '0'),
+      id: 'cert-sm2-' + String(mockSm2Certificates.length + 1).padStart(3, '0'),
       userId: body.userId || '3',
       userName: body.userName || '新用户',
       certSubject: body.certSubject || 'CN=新用户, OU=实验室, O=红创检测认证有限公司',
@@ -871,18 +872,18 @@ export const handlers = [
       status: 'active',
       createdAt: new Date().toISOString().replace('T', ' ').slice(0, 19),
     };
-    mockCertificates.push(newCert);
+    mockSm2Certificates.push(newCert);
     return HttpResponse.json({ code: 200, message: '证书导入成功', data: newCert });
   }),
 
   // GET /api/v1/certificates - List certificates
   http.get(apiUrl('/certificates'), () => {
-    return HttpResponse.json({ code: 200, message: 'success', data: { list: mockCertificates, total: mockCertificates.length } });
+    return HttpResponse.json({ code: 200, message: 'success', data: { list: mockSm2Certificates, total: mockSm2Certificates.length } });
   }),
 
   // GET /api/v1/certificates/:id - Certificate details
   http.get(apiUrl('/certificates/:id'), ({ params }) => {
-    const cert = mockCertificates.find((c: any) => c.id === params.id);
+    const cert = mockSm2Certificates.find((c: any) => c.id === params.id);
     if (!cert) {
       return HttpResponse.json({ code: 404, message: '证书不存在', data: null }, { status: 404 });
     }
@@ -891,7 +892,7 @@ export const handlers = [
 
   // POST /api/v1/certificates/:id/revoke - Revoke certificate
   http.post(apiUrl('/certificates/:id/revoke'), ({ params }) => {
-    const cert = mockCertificates.find((c: any) => c.id === params.id);
+    const cert = mockSm2Certificates.find((c: any) => c.id === params.id);
     if (!cert) {
       return HttpResponse.json({ code: 404, message: '证书不存在', data: null }, { status: 404 });
     }
