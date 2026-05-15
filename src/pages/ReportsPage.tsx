@@ -796,6 +796,38 @@ export const ReportsPage: React.FC = () => {
     });
   };
 
+  const handleMergeReports = () => {
+    const count = selectedRowKeys.length;
+    if (count < 2) { message.warning('请至少选择2份报告进行合并'); return; }
+    Modal.confirm({
+      title: `合并 ${count} 份报告`,
+      content: `将选中的 ${count} 份报告合并为一份包含多样品结果的综合报告。\n合并后原报告保留，新增一份合并报告。`,
+      onOk: () => {
+        const selected = reports.filter(r => selectedRowKeys.includes(r.id));
+        const merged = {
+          id: 'merged-' + Date.now(),
+          status: 'draft',
+          type: '综合报告',
+          cover: {
+            reportNo: 'RPT-M-' + Date.now().toString(36).toUpperCase(),
+            reportTitle: `综合检测报告 (${count}个样品)`,
+            sampleCount: count,
+            companyName: selected[0]?.cover?.companyName || '红创检测认证有限公司',
+            entrustUnit: selected[0]?.cover?.entrustUnit || '-',
+            issueDate: new Date().toISOString().split('T')[0],
+          },
+          samples: selected.map(s => ({ id: s.id, name: s.cover?.reportTitle || s.id })),
+          signatures: [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        setReports(prev => [{ ...merged, cover: merged.cover } as any, ...prev]);
+        setSelectedRowKeys([]);
+        message.success(`已创建合并报告，包含 ${count} 个样品`);
+      },
+    });
+  };
+
   const handleBatchDelete = () => {
     const count = selectedRowKeys.length;
     Modal.confirm({
@@ -1011,6 +1043,8 @@ export const ReportsPage: React.FC = () => {
           <Button icon={<CheckCircleOutlined />} style={{ color: '#52c41a', borderColor: '#52c41a' }} onClick={handleBatchSign}>
             批量签发 ({selectedRowKeys.length})
           </Button>
+          <Button icon={<FileTextOutlined />} onClick={handleMergeReports}>
+            合并 ({selectedRowKeys.length})
         )}
         {selectedRowKeys.length > 0 && (
           <Button icon={<DeleteOutlined />} danger onClick={handleBatchDelete}>
