@@ -1040,11 +1040,14 @@ export const ReportsPage: React.FC = () => {
         <Button icon={<ExportOutlined />}>导出</Button>
         <Button icon={<PrinterOutlined />}>打印</Button>
         {selectedRowKeys.length > 0 && (
-          <Button icon={<CheckCircleOutlined />} style={{ color: '#52c41a', borderColor: '#52c41a' }} onClick={handleBatchSign}>
-            批量签发 ({selectedRowKeys.length})
-          </Button>
-          <Button icon={<FileTextOutlined />} onClick={handleMergeReports}>
-            合并 ({selectedRowKeys.length})
+          <Space>
+            <Button icon={<CheckCircleOutlined />} style={{ color: '#52c41a', borderColor: '#52c41a' }} onClick={handleBatchSign}>
+              批量签发 ({selectedRowKeys.length})
+            </Button>
+            <Button icon={<FileTextOutlined />} onClick={handleMergeReports}>
+              合并 ({selectedRowKeys.length})
+            </Button>
+          </Space>
         )}
         {selectedRowKeys.length > 0 && (
           <Button icon={<DeleteOutlined />} danger onClick={handleBatchDelete}>
