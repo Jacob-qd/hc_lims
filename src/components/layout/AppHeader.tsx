@@ -1,14 +1,16 @@
 import React from 'react';
-import { Layout, Space, Avatar, Dropdown, Switch, Typography, Badge } from 'antd';
+import { Layout, Space, Avatar, Dropdown, Switch, Typography, Badge, Select } from 'antd';
 import {
   BellOutlined,
   MoonOutlined,
   SunOutlined,
   UserOutlined,
+  GlobalOutlined,
   LogoutOutlined,
   SettingOutlined,
 } from '@ant-design/icons';
 import { useAuthStore } from '../../stores/authStore';
+import { useI18nStore } from '../../stores/i18nStore';
 import { useThemeStore } from '../../stores/themeStore';
 import { useNavigate } from 'react-router-dom';
 
@@ -87,6 +89,17 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onOpenDrawer }) => {
       </div>
 
       <Space size={20}>
+        <Select
+          value={useI18nStore.getState().locale}
+          onChange={(v: string) => useI18nStore.getState().setLocale(v)}
+          size="small"
+          style={{ width: 78 }}
+          variant="borderless"
+          options={[
+            { value: 'zh', label: '🇨🇳 中文' },
+            { value: 'en', label: '🇬🇧 EN' },
+          ]}
+        />
         <Switch
           checkedChildren={<MoonOutlined />}
           unCheckedChildren={<SunOutlined />}
