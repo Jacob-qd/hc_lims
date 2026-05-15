@@ -44,6 +44,7 @@ import {
   mockCertificates,
   mockFieldConfigs,
   mockFieldTemplates,
+  mockCOCChains,
 } from './data';
 
 const apiUrl = (path: string) => `/api/v1${path}`;
@@ -577,6 +578,49 @@ export const handlers = [
     mockFieldTemplates.push(snapshot);
     return HttpResponse.json({ code: 200, data: snapshot, message: '快照创建成功' });
   }),
+  // ===== COC =====
+  http.get(apiUrl('/coc/chains'), () => HttpResponse.json({ code: 200, data: { list: mockCOCChains } })),
+  http.get(apiUrl('/coc/chains/:id'), ({ params }) => {
+    const chain = mockCOCChains.find(c => c.id === params.id);
+    return chain
+      ? HttpResponse.json({ code: 200, data: chain })
+      : HttpResponse.json({ code: 404, message: '链不存在' }, { status: 404 });
+  }),
+  http.post(apiUrl('/coc/chains/:id/events'), async ({ params, request }) => {
+    const body = await request.json() as any;
+    const chain = mockCOCChains.find(c => c.id === params.id);
+    if (!chain) return HttpResponse.json({ code: 404, message: '链不存在' }, { status: 404 });
+    const events = chain.events || [];
+    const prevId = events.length > 0 ? events[events.length - 1].id : null;
+    const evt = {
+      id: 'evt' + Date.now(), chainId: params.id, eventType: body.eventType,
+      operatorName: body.operatorName || '当前用户',
+      occurredAt: body.occurredAt || new Date().toISOString(),
+      location: body.location || '实验室', notes: body.notes,
+      metadata: {}, prevEventId: prevId,
+    };
+    events.push(evt);
+    return HttpResponse.json({ code: 200, data: evt, message: '事件添加成功' });
+  }),
+  http.post(apiUrl('/coc/transfer'), async ({ request }) => {
+    const body = await request.json() as any;
+    const chain = mockCOCChains.find(c => c.id === body.chainId);
+    if (!chain) return HttpResponse.json({ code: 404 }, { status: 404 });
+    const events = chain.events || [];
+    const prevId = events.length > 0 ? events[events.length - 1].id : null;
+    events.push({
+      id: 'evt' + Date.now(), chainId: body.chainId,
+      eventType: body.fromParty && body.toParty ? 'SUBMISSION' : 'RECEIPT',
+      operatorName: body.fromParty || '当前用户',
+      occurredAt: new Date().toISOString(), location: '交接台',
+      notes: `从 ${body.fromParty || '?'} 到 ${body.toParty || '?'}`,
+      metadata: { fromParty: body.fromParty, toParty: body.toParty, sampleCount: body.sampleCount,
+        transportMode: body.transportMode, temperature: body.temperature },
+      prevEventId: prevId,
+    });
+    return HttpResponse.json({ code: 200, data: {}, message: '交接记录创建成功' });
+  }),
+
   http.get(apiUrl('/dynamic-render/:module/:templateId'), ({ params }) => {
     const { module, templateId } = params;
     const tmpl = mockFieldTemplates.find((t: any) => t.id === templateId);

@@ -1036,6 +1036,54 @@ export const mockFieldTemplates = [
   },
 ];
 
+// ===== COC Chain of Custody =====
+const now = new Date();
+const d = (days: number, h: number) => new Date(now.getTime() - days * 86400000 + h * 3600000).toISOString();
+
+const makeEvent = (id: string, chainId: string, type: any, op: string, offsetDays: number, offsetHour: number, prev: string | null, loc: string, note?: string): any => ({
+  id, chainId, eventType: type, operatorName: op, occurredAt: d(offsetDays, offsetHour),
+  location: loc, notes: note, prevEventId: prev, metadata: {},
+});
+
+const cocEvents1 = [
+  makeEvent('evt1', 'coc1', 'SAMPLING', '采样员 刘强', 2, 8, null, '东湖水库', '采集3个点位'),
+  makeEvent('evt2', 'coc1', 'SUBMISSION', '采样员 刘强', 2, 10, 'evt1', '现场', '冷链专送'),
+  makeEvent('evt3', 'coc1', 'RECEIPT', '张伟', 2, 11, 'evt2', '收样室', '样品完好,温度4°C'),
+  makeEvent('evt4', 'coc1', 'REGISTRATION', '张伟', 2, 12, 'evt3', '实验室', '编号SMP001'),
+  makeEvent('evt5', 'coc1', 'SUB_SAMPLING', '李四', 2, 14, 'evt4', '分样室', '分出3个子样'),
+  makeEvent('evt6', 'coc1', 'TESTING', '李四', 3, 9, 'evt5', '理化室', 'COD检测完成'),
+];
+
+const cocEvents2 = [
+  makeEvent('evt7', 'coc2', 'SAMPLING', '客户 张经理', 1, 9, null, '工厂大门'),
+  makeEvent('evt8', 'coc2', 'SUBMISSION', '客户 张经理', 1, 11, 'evt7', '工厂'),
+  makeEvent('evt9', 'coc2', 'RECEIPT', '王五', 1, 14, 'evt8', '收样室', '样品外观完好'),
+  makeEvent('evt10', 'coc2', 'REGISTRATION', '王五', 1, 15, 'evt9', '实验室', '编号SMP002'),
+];
+
+const cocEvents3 = [
+  makeEvent('evt11', 'coc3', 'SAMPLING', '采样员 王明', 3, 7, null, '河流B断面'),
+  // 缺少 SUBMISSION 和 RECEIPT — 测试链断裂
+  makeEvent('evt12', 'coc3', 'REGISTRATION', '赵六', 2, 10, null, '实验室', '异常:直接登记'),
+  makeEvent('evt13', 'coc3', 'EXCEPTION', '质量主管', 2, 11, 'evt12', '办公室', '链完整性异常,缺少送样和收样环节'),
+];
+
+export const mockCOCChains = [
+  {
+    id: 'coc1', cocNumber: 'COC-260514-0001', sampleId: 'SMP001', sampleName: '地表水样品-水质监测',
+    status: 'active', integrity: true, events: cocEvents1, createdAt: d(2, 8), completedAt: undefined,
+  },
+  {
+    id: 'coc2', cocNumber: 'COC-260514-0002', sampleId: 'SMP002', sampleName: '废气样品-工厂排放',
+    status: 'active', integrity: true, events: cocEvents2, createdAt: d(1, 9), completedAt: undefined,
+  },
+  {
+    id: 'coc3', cocNumber: 'COC-260513-0001', sampleId: 'SMP003', sampleName: '河流水质样品',
+    status: 'broken', integrity: false, integrityMsg: '缺少送样和收样环节',
+    events: cocEvents3, createdAt: d(3, 7), completedAt: undefined,
+  },
+];
+
 // ===== Teaching Management =====
 export const mockCourses = [
   { id: 'course1', name: '分析化学实验', teacher: '张明', dept: '化学与分子工程学院', semester: '2024春季', students: 45, experiments: 8, status: 'active' },
