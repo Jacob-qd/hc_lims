@@ -1084,6 +1084,15 @@ export const mockCOCChains = [
   },
 ];
 
+// ===== Backup =====
+export const mockBackupList = [
+  { id: 'b1', name: 'hc_lims_full_20260514_120000.sql', size: '256MB', type: '自动', date: '2026-05-14 12:00', status: 'completed' },
+  { id: 'b2', name: 'hc_lims_full_20260513_120000.sql', size: '248MB', type: '自动', date: '2026-05-13 12:00', status: 'completed' },
+  { id: 'b3', name: 'hc_lims_data_20260512_180000.json', size: '45MB', type: '手动', date: '2026-05-12 18:00', status: 'completed' },
+  { id: 'b4', name: 'hc_lims_full_20260511_120000.sql', size: '235MB', type: '自动', date: '2026-05-11 12:00', status: 'completed' },
+  { id: 'b5', name: 'hc_lims_full_20260510_120000.sql', size: '230MB', type: '自动', date: '2026-05-10 12:00', status: 'completed' },
+];
+
 // ===== Teaching Management =====
 export const mockCourses = [
   { id: 'course1', name: '分析化学实验', teacher: '张明', dept: '化学与分子工程学院', semester: '2024春季', students: 45, experiments: 8, status: 'active' },
