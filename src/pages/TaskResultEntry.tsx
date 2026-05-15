@@ -75,8 +75,25 @@ export const TaskResultEntry: React.FC = () => {
             <Button type="dashed" icon={<PlusOutlined />} style={{ width: '100%', marginTop: 8 }} onClick={() => message.success('添加新检测指标')}>添加指标</Button>
           </Card>
 
-          <Card title="原始记录" size="small" style={{ marginBottom: 16 }}>
-            <TextArea rows={3} placeholder="描述检测过程..." />
+          <Card title="原始记录" size="small" style={{ marginBottom: 16 }} extra={
+            <Select defaultValue="" style={{width:160}} size="small" onChange={(v) => v && message.info('已加载模板: ' + v)}>
+              <Option value="">选择模板...</Option>
+              <Option value="spectrophotometry">分光光度法模板</Option>
+              <Option value="chromatography">色谱法模板</Option>
+              <Option value="titration">滴定法模板</Option>
+              <Option value="gravimetric">重量法模板</Option>
+            </Select>
+          }>
+            <Form layout="vertical">
+              <Row gutter={16}>
+                <Col span={12}><Form.Item label="检测标准"><Input defaultValue="HJ 828-2017" /></Form.Item></Col>
+                <Col span={6}><Form.Item label="环境温度(°C)"><Input defaultValue="25" /></Form.Item></Col>
+                <Col span={6}><Form.Item label="湿度(%)"><Input defaultValue="60" /></Form.Item></Col>
+              </Row>
+              <Form.Item label="样品前处理过程"><TextArea rows={2} placeholder="描述样品前处理步骤..." defaultValue="取 50mL 水样, 加入 10mL 重铬酸钾溶液" /></Form.Item>
+              <Form.Item label="检测过程记录"><TextArea rows={3} placeholder="记录检测过程中的关键参数和观察..." defaultValue="消解温度 165°C, 时间 15min" /></Form.Item>
+              <Form.Item label="备注"><TextArea rows={1} placeholder="异常情况或其他说明..." /></Form.Item>
+            </Form>
           </Card>
 
           <Card title="仪器读数" size="small" style={{ marginBottom: 16 }}>
