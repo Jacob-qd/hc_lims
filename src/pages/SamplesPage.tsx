@@ -41,6 +41,9 @@ export const SamplesPage: React.FC = () => {
   const [stats, setStats] = useState({ todayReceive: 42, pendingReceive: 18, inStock: 1248, urgent: 7 });
   const [dynamicConfigs, setDynamicConfigs] = useState<FieldConfig[]>([]);
   const [dynamicValues, setDynamicValues] = useState<Record<string, unknown>>({});
+  const [importOpen, setImportOpen] = useState(false);
+  const [importFile, setImportFile] = useState<File | null>(null);
+  const [importPreview, setImportPreview] = useState<any[] | null>(null);
 
   const loadDynamicConfigs = async (module: string) => {
     try {
@@ -368,7 +371,7 @@ export const SamplesPage: React.FC = () => {
       {/* Action Bar */}
       <Space style={{ marginBottom: 16 }}>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => setWizardOpen(true)}>样品登记</Button>
-        <Button icon={<InboxOutlined />} onClick={() => message.info('批量导入功能: 支持Excel/CSV格式')}>批量导入</Button>
+        <Button icon={<InboxOutlined />} onClick={() => setImportOpen(true)}>批量导入</Button>
         <Button icon={<PrinterOutlined />} onClick={() => message.success('条码打印任务已提交')}>打印条码</Button>
         <Button icon={<ExportOutlined />} onClick={() => message.success('数据已导出为Excel')}>导出</Button>
         <Button icon={<DeleteOutlined />} danger onClick={() => Modal.confirm({title:'确认删除',content:'确定删除选中的样品？',onOk:()=>message.success('已删除')})}>删除</Button>
@@ -479,6 +482,57 @@ export const SamplesPage: React.FC = () => {
         </div>
       </Modal>
       <BarcodePrintModal visible={barcodeVisible} onClose={() => setBarcodeVisible(false)} code={barcodeCode} label={barcodeLabel} type="sample" />
+
+      {/* 批量导入弹窗 */}
+      <Modal title="批量导入样品" open={importOpen} onCancel={() => { setImportOpen(false); setImportFile(null); setImportPreview(null); }} footer={null} width={600}>
+        {!importPreview ? (
+          <div style={{ textAlign: 'center', padding: 32 }}>
+            <Upload.Dragger
+              accept=".xlsx,.xls,.csv"
+              showUploadList={false}
+              beforeUpload={(file) => { setImportFile(file); return false; }}
+            >
+              <p className="ant-upload-drag-icon"><InboxOutlined /></p>
+              <p className="ant-upload-text">点击或拖拽文件到此区域上传</p>
+              <p className="ant-upload-hint">支持 .xlsx, .xls, .csv 格式，请先下载模板填写数据</p>
+            </Upload.Dragger>
+            <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center', gap: 8 }}>
+              <Button onClick={() => message.info('模板下载中...')}>下载导入模板</Button>
+              {importFile && <Button type="primary" onClick={() => {
+                setImportPreview([
+                  { row: 1, sampleNo: 'SMP-AUTO-001', name: '地表水样-1', type: '水质', location: '东湖', samplingDate: '2026-05-15', status: '校验通过' },
+                  { row: 2, sampleNo: 'SMP-AUTO-002', name: '地表水样-2', type: '水质', location: '西湖', samplingDate: '2026-05-15', status: '校验通过' },
+                  { row: 3, sampleNo: 'SMP-AUTO-003', name: '土壤样-1', type: '土壤', location: '厂区北门', samplingDate: '2026-05-14', status: '校验通过' },
+                  { row: 4, name: '(空)', type: '水质', location: '南湖', samplingDate: '2026-05-15', status: '❌ 样品名称为空', _error: true },
+                  { row: 5, sampleNo: 'SMP-AUTO-005', name: '空气样-1', type: '空气', location: '三楼平台', samplingDate: '2026-05-15', status: '校验通过' },
+                ]);
+              }}>解析文件</Button>}
+            </div>
+          </div>
+        ) : (
+          <div>
+            <Alert message={`解析完成: ${importPreview.filter(i => !i._error).length} 条通过, ${importPreview.filter(i => i._error).length} 条有误`} type={importPreview.some(i => i._error) ? 'warning' : 'success'} showIcon style={{ marginBottom: 16 }} />
+            <Table dataSource={importPreview} rowKey="row" pagination={false} size="small" columns={[
+              { title: '行号', dataIndex: 'row', width: 50 },
+              { title: '样品编号', dataIndex: 'sampleNo', width: 130 },
+              { title: '名称', dataIndex: 'name', width: 120 },
+              { title: '类型', dataIndex: 'type', width: 80 },
+              { title: '采样地点', dataIndex: 'location', width: 100 },
+              { title: '采样日期', dataIndex: 'samplingDate', width: 100 },
+              { title: '校验结果', dataIndex: 'status', width: 150, render: (s: string, r: any) => <Text style={{ color: r._error ? '#ff4d4f' : '#52c41a' }}>{s}</Text> },
+            ]} />
+            <div style={{ marginTop: 16, textAlign: 'right' }}>
+              <Button onClick={() => { setImportPreview(null); setImportFile(null); }}>返回修改</Button>
+              <Button type="primary" style={{ marginLeft: 8 }} onClick={async () => {
+                const valid = importPreview.filter(i => !i._error);
+                message.success(`已导入 ${valid.length} 条样品`);
+                setImportOpen(false); setImportPreview(null); setImportFile(null);
+                loadSamples();
+              }}>确认导入 ({importPreview.filter(i => !i._error).length}条)</Button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card, Descriptions, Tag, Tabs, Timeline, Table, Button, Row, Col, Typography, Steps } from 'antd';
-import { ArrowLeftOutlined } from '@ant-design/icons';
+import { Card, Descriptions, Tag, Tabs, Timeline, Table, Button, Row, Col, Typography, Steps, Modal, message } from 'antd';
+import { ArrowLeftOutlined, PlusOutlined } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
@@ -80,6 +80,28 @@ export const SampleDetailPage: React.FC = () => {
         )},
         { key: 'flow', label: '流转记录', children: (
           <Timeline items={flowRecords.map(r => ({ color: 'green', children: <><Text strong>{r.action}</Text><br /><Text>{r.user}</Text><br /><Text type="secondary">{r.time} {r.desc}</Text></> }))} />
+        )},
+        { key: 'subsamples', label: '子样品', children: (
+          <div>
+            <Button size="small" type="primary" icon={<PlusOutlined />} style={{ marginBottom: 12 }} onClick={() => {
+              Modal.confirm({
+                title: '创建子样品',
+                content: '从当前样品中分出部分样品量，创建独立子样品？',
+                onOk: () => message.success('子样品 S-SUB-001 创建成功'),
+              });
+            }}>新建子样品</Button>
+            <Table dataSource={[
+              { id: 'sub1', name: '子样品-1', amount: '200mL', status: '检测中', createdDate: '2026-05-15' },
+              { id: 'sub2', name: '子样品-2', amount: '150mL', status: '待检测', createdDate: '2026-05-15' },
+            ]} rowKey="id" pagination={false} size="small" columns={[
+              { title: '子样品编号', dataIndex: 'id' },
+              { title: '名称', dataIndex: 'name' },
+              { title: '分样量', dataIndex: 'amount' },
+              { title: '状态', dataIndex: 'status', render: (s: string) => <Tag>{s}</Tag> },
+              { title: '创建时间', dataIndex: 'createdDate' },
+              { title: '操作', render: () => <Button type="link" size="small">查看</Button> },
+            ]} />
+          </div>
         )},
         { key: 'attachments', label: '附件', children: <Text type="secondary">暂无附件</Text> },
       ]} />
