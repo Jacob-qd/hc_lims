@@ -41,6 +41,8 @@ const WorkflowPage = lazy(() => import('../pages/WorkflowPage').then(m => ({ def
 const ReportEnginePage = lazy(() => import('../pages/ReportEnginePage').then(m => ({ default: m.ReportEnginePage })));
 const FieldConfigEditor = lazy(() => import('../pages/FieldConfigEditor').then(m => ({ default: m.FieldConfigEditor })));
 const CompliancePage = lazy(() => import('../pages/CompliancePage').then(m => ({ default: m.CompliancePage })));
+const MonitorPage = lazy(() => import('../pages/MonitorPage').then(m => ({ default: m.MonitorPage })));
+const BatchSchedulerPage = lazy(() => import('../pages/BatchSchedulerPage').then(m => ({ default: m.BatchSchedulerPage })));
 const CertificatePage = lazy(() => import('../pages/CertificatePage').then(m => ({ default: m.CertificatePage })));
 
 export const router = createBrowserRouter([
@@ -97,6 +99,8 @@ export const router = createBrowserRouter([
       { path: 'reports/engine', element: <ReportEnginePage /> },
       { path: 'settings/field-configs', element: <FieldConfigEditor /> },
       { path: 'compliance', element: <CompliancePage /> },
+      { path: 'monitor', element: <MonitorPage /> },
+      { path: 'scheduler', element: <BatchSchedulerPage /> },
       { path: 'certificates', element: <CertificatePage /> },
       { path: '*', element: <Navigate to="/dashboard" replace /> },
     ],
