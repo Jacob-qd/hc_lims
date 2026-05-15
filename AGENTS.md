@@ -105,7 +105,12 @@ bd show <hc-xxx>           # 查看 issue 详情（开发目标+验收标准）
 ### 4. 提交流程
 
 ```bash
+# 每次提交前运行冒烟测试
 git add -A
+bash scripts/smoke.sh          # 必须全部通过
+npx vitest run                 # 250 tests ✅
+npx tsc --noEmit               # 无类型错误
+
 git commit -m "feat: 功能名 (hc-xxx)"
 git push origin HEAD
 bd close hc-xxx --reason="功能描述"
