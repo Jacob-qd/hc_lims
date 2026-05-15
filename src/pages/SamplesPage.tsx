@@ -17,6 +17,7 @@ import { sampleTypes, sampleStatuses, customers, projects, labs } from '../mocks
 import type { Dayjs } from 'dayjs';
 import { DynamicFieldRenderer } from '../components/DynamicFieldRenderer';
 import type { FieldConfig } from '../types/dynamicForm';
+import { BarcodePrintModal, generateSampleBarcode, BatchBarcodePrint } from '../components/BarcodeLabel';
 
 const { Title, Text } = Typography;
 const { Step } = Steps;
@@ -35,6 +36,8 @@ export const SamplesPage: React.FC = () => {
   const [barcodeVisible, setBarcodeVisible] = useState(false);
   const [barcodeCode, setBarcodeCode] = useState('');
   const [barcodeLabel, setBarcodeLabel] = useState('');
+  const [batchBarcodeVisible, setBatchBarcodeVisible] = useState(false);
+  const [batchBarcodeCodes, setBatchBarcodeCodes] = useState<{code:string;label:string}[]>([]);
   const [form] = Form.useForm();
   const [selectedTestItems, setSelectedTestItems] = useState<string[]>([]);
   const [testItemOptions, setTestItemOptions] = useState<any[]>([]);
@@ -372,7 +375,14 @@ export const SamplesPage: React.FC = () => {
       <Space style={{ marginBottom: 16 }}>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => setWizardOpen(true)}>样品登记</Button>
         <Button icon={<InboxOutlined />} onClick={() => setImportOpen(true)}>批量导入</Button>
-        <Button icon={<PrinterOutlined />} onClick={() => message.success('条码打印任务已提交')}>打印条码</Button>
+        <Button icon={<PrinterOutlined />} onClick={() => {
+          const codes = samples.slice(0, 20).map(s => ({
+            code: generateSampleBarcode(parseInt(s.id.replace('s','')) || 1),
+            label: s.sampleNo + ' ' + s.name,
+          }));
+          setBatchBarcodeCodes(codes);
+          setBatchBarcodeVisible(true);
+        }}>打印条码</Button>
         <Button icon={<ExportOutlined />} onClick={() => message.success('数据已导出为Excel')}>导出</Button>
         <Button icon={<DeleteOutlined />} danger onClick={() => Modal.confirm({title:'确认删除',content:'确定删除选中的样品？',onOk:()=>message.success('已删除')})}>删除</Button>
       </Space>
@@ -482,6 +492,7 @@ export const SamplesPage: React.FC = () => {
         </div>
       </Modal>
       <BarcodePrintModal visible={barcodeVisible} onClose={() => setBarcodeVisible(false)} code={barcodeCode} label={barcodeLabel} type="sample" />
+      <BatchBarcodePrint visible={batchBarcodeVisible} onClose={() => setBatchBarcodeVisible(false)} codes={batchBarcodeCodes} />
 
       {/* 批量导入弹窗 */}
       <Modal title="批量导入样品" open={importOpen} onCancel={() => { setImportOpen(false); setImportFile(null); setImportPreview(null); }} footer={null} width={600}>
