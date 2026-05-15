@@ -974,6 +974,68 @@ export const mockCertificates = [
   { id: 'cert4', no: 'NTC-2022-102', holder: '王明', type: '上岗证', issuer: '中国环境监测总站', expiryDate: '2024-05-01', status: 'expired' },
 ];
 
+// ===== Dynamic Form Field Configs =====
+export const fieldTypes = [
+  { value: 'text', label: '文本', icon: 'Aa' },
+  { value: 'textarea', label: '多行文本', icon: '¶' },
+  { value: 'number', label: '数字', icon: '#' },
+  { value: 'date', label: '日期', icon: '📅' },
+  { value: 'datetime', label: '日期时间', icon: '🕐' },
+  { value: 'select', label: '下拉选择', icon: '▼' },
+  { value: 'multiSelect', label: '多选', icon: '☑' },
+  { value: 'radio', label: '单选', icon: '○' },
+  { value: 'switch', label: '开关', icon: '⚡' },
+  { value: 'upload', label: '文件上传', icon: '📎' },
+  { value: 'signature', label: '签名', icon: '✍' },
+  { value: 'reference', label: '关联查询', icon: '🔗' },
+];
+
+export const mockFieldConfigs: Record<string, any[]> = {
+  sample: [
+    { id: 'fc1', module: 'sample', fieldKey: 'sampleName', label: '样品名称', fieldType: 'text', required: true, sortOrder: 1, groupName: '基本信息', active: true },
+    { id: 'fc2', module: 'sample', fieldKey: 'sampleType', label: '样品类型', fieldType: 'select', required: true, sortOrder: 2, groupName: '基本信息', options: [{ label: '水质', value: 'water' }, { label: '土壤', value: 'soil' }, { label: '食品', value: 'food' }, { label: '空气', value: 'air' }, { label: '其他', value: 'other' }], active: true },
+    { id: 'fc3', module: 'sample', fieldKey: 'samplingLocation', label: '采样地点', fieldType: 'text', required: true, sortOrder: 3, groupName: '采样信息', active: true },
+    { id: 'fc4', module: 'sample', fieldKey: 'samplingDate', label: '采样日期', fieldType: 'date', required: true, sortOrder: 4, groupName: '采样信息', active: true },
+    { id: 'fc5', module: 'sample', fieldKey: 'client', label: '委托人', fieldType: 'text', required: false, sortOrder: 5, groupName: '委托信息', active: true },
+    { id: 'fc6', module: 'sample', fieldKey: 'samplingDepth', label: '采样深度(米)', fieldType: 'number', required: false, sortOrder: 10, groupName: '扩展信息', conditionRules: [{ field: 'sampleType', operator: 'eq', value: 'water' }], active: true },
+    { id: 'fc7', module: 'sample', fieldKey: 'container', label: '采样容器', fieldType: 'select', required: false, sortOrder: 11, groupName: '扩展信息', options: [{ label: '玻璃瓶', value: 'glass' }, { label: '塑料瓶', value: 'plastic' }, { label: '不锈钢瓶', value: 'steel' }], conditionRules: [{ field: 'sampleType', operator: 'eq', value: 'water' }], active: true },
+    { id: 'fc8', module: 'sample', fieldKey: 'preservation', label: '保存方式', fieldType: 'select', required: false, sortOrder: 12, groupName: '扩展信息', options: [{ label: '冷藏(4°C)', value: 'refrigerated' }, { label: '冷冻(-20°C)', value: 'frozen' }, { label: '常温', value: 'ambient' }, { label: '加酸', value: 'acidified' }], conditionRules: [{ field: 'sampleType', operator: 'in', value: ['water', 'food'] }], active: true },
+    { id: 'fc9', module: 'sample', fieldKey: 'fieldPh', label: '现场pH', fieldType: 'number', required: false, sortOrder: 13, groupName: '扩展信息', validation: { min: 0, max: 14 }, conditionRules: [{ field: 'sampleType', operator: 'eq', value: 'water' }], active: true },
+    { id: 'fc10', module: 'sample', fieldKey: 'transportTemp', label: '运输温度(°C)', fieldType: 'number', required: false, sortOrder: 14, groupName: '扩展信息', conditionRules: [{ field: 'sampleType', operator: 'eq', value: 'food' }], active: true },
+    { id: 'fc11', module: 'sample', fieldKey: 'soilDepth', label: '采样深度(cm)', fieldType: 'number', required: true, sortOrder: 15, groupName: '土壤参数', conditionRules: [{ field: 'sampleType', operator: 'eq', value: 'soil' }], active: true },
+    { id: 'fc12', module: 'sample', fieldKey: 'soilTexture', label: '土壤质地', fieldType: 'select', required: true, sortOrder: 16, groupName: '土壤参数', options: [{ label: '砂土', value: 'sand' }, { label: '壤土', value: 'loam' }, { label: '粘土', value: 'clay' }], conditionRules: [{ field: 'sampleType', operator: 'eq', value: 'soil' }], active: true },
+    { id: 'fc13', module: 'sample', fieldKey: 'airVolume', label: '采样体积(L)', fieldType: 'number', required: true, sortOrder: 17, groupName: '空气参数', conditionRules: [{ field: 'sampleType', operator: 'eq', value: 'air' }], active: true },
+    { id: 'fc14', module: 'sample', fieldKey: 'flowRate', label: '采样流量(L/min)', fieldType: 'number', required: true, sortOrder: 18, groupName: '空气参数', conditionRules: [{ field: 'sampleType', operator: 'eq', value: 'air' }], active: true },
+  ],
+  test: [
+    { id: 'ft1', module: 'test', fieldKey: 'dilutionFactor', label: '稀释倍数', fieldType: 'number', required: false, sortOrder: 1, groupName: '前处理', validation: { min: 1, max: 1000 }, active: true },
+    { id: 'ft2', module: 'test', fieldKey: 'pretreatment', label: '前处理方法', fieldType: 'select', required: false, sortOrder: 2, groupName: '前处理', options: [{ label: '消解', value: 'digestion' }, { label: '萃取', value: 'extraction' }, { label: '稀释', value: 'dilution' }, { label: '过滤', value: 'filtration' }], active: true },
+  ],
+  report: [
+    { id: 'fr1', module: 'report', fieldKey: 'reportTitle', label: '报告标题', fieldType: 'text', required: true, sortOrder: 1, groupName: '基本信息', active: true },
+    { id: 'fr2', module: 'report', fieldKey: 'conclusion', label: '检测结论', fieldType: 'select', required: true, sortOrder: 2, groupName: '基本信息', options: [{ label: '合格', value: 'pass' }, { label: '不合格', value: 'fail' }, { label: '仅对来样负责', value: 'sampleOnly' }], active: true },
+  ],
+};
+
+export const mockFieldTemplates = [
+  {
+    id: 'tmpl1', name: '水质检测模板', module: 'sample', description: '水质样品字段配置', version: 1,
+    appliesTo: { sampleType: ['water'] }, isSnapshot: false,
+    fieldConfigs: mockFieldConfigs.sample.filter(f =>
+      !f.conditionRules || f.conditionRules.some(c => c.field === 'sampleType' && c.value === 'water')
+    ),
+    createdBy: '管理员', createdAt: '2026-05-01',
+  },
+  {
+    id: 'tmpl2', name: '土壤检测模板', module: 'sample', description: '土壤样品字段配置', version: 1,
+    appliesTo: { sampleType: ['soil'] }, isSnapshot: false,
+    fieldConfigs: mockFieldConfigs.sample.filter(f =>
+      !f.conditionRules || f.conditionRules.some(c => ['soil', 'water'].includes(c.value as string))
+    ),
+    createdBy: '管理员', createdAt: '2026-05-01',
+  },
+];
+
 // ===== Teaching Management =====
 export const mockCourses = [
   { id: 'course1', name: '分析化学实验', teacher: '张明', dept: '化学与分子工程学院', semester: '2024春季', students: 45, experiments: 8, status: 'active' },

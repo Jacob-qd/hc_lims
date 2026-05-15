@@ -39,6 +39,7 @@ const COCPage = lazy(() => import('../pages/COCPage').then(m => ({ default: m.CO
 const BackupPage = lazy(() => import('../pages/BackupPage').then(m => ({ default: m.BackupPage })));
 const WorkflowPage = lazy(() => import('../pages/WorkflowPage').then(m => ({ default: m.WorkflowPage })));
 const ReportEnginePage = lazy(() => import('../pages/ReportEnginePage').then(m => ({ default: m.ReportEnginePage })));
+const FieldConfigEditor = lazy(() => import('../pages/FieldConfigEditor').then(m => ({ default: m.FieldConfigEditor })));
 
 export const router = createBrowserRouter([
   {
@@ -92,6 +93,7 @@ export const router = createBrowserRouter([
       { path: 'backup', element: <BackupPage /> },
       { path: 'workflow', element: <WorkflowPage /> },
       { path: 'reports/engine', element: <ReportEnginePage /> },
+      { path: 'settings/field-configs', element: <FieldConfigEditor /> },
       { path: '*', element: <Navigate to="/dashboard" replace /> },
     ],
   },
