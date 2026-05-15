@@ -216,6 +216,81 @@ export const InstrumentsPage: React.FC = () => {
         </Col>
       </Row>
 
+      {/* Phase 2: Advanced Instrument Features */}
+      <Card title="仪器管理 Phase 2 — 高级功能" style={{ marginTop: 16 }}>
+        <Tabs items={[
+          { key: 'realtime', label: '实时监控', children: <Row gutter={[16,16]}>
+            {instruments.slice(0, 4).map(inst => (
+              <Col span={6} key={inst.id}>
+                <Card size="small" hoverable title={<Space><Badge status={inst.connectionStatus === 'online' ? 'success' : 'error'} /><Text>{inst.name}</Text></Space>} extra={<Tag color={statusColorMap[inst.status]}>{inst.statusLabel}</Tag>}>
+                  <Statistic title="利用率" value={inst.utilization} suffix="%" valueStyle={{ fontSize: 20 }} />
+                  <div style={{ marginTop: 8 }}>
+                    <Text type="secondary" style={{ fontSize: 11 }}>状态: {inst.status === 'running' ? '运行中' : inst.status === 'idle' ? '空闲' : inst.statusLabel}</Text>
+                    <br /><Text type="secondary" style={{ fontSize: 11 }}>连接: {inst.connectionStatus === 'online' ? '在线' : '离线'}</Text>
+                  </div>
+                </Card>
+              </Col>
+            ))}
+          </Row>},
+          { key: 'iqoqpq', label: 'IQ/OQ/PQ认证', children: <Table dataSource={[
+            { id: 'iq1', instrument: 'HPLC-安捷伦1260', type: 'IQ', date: '2023-06-15', status: 'completed', validUntil: '2027-06-15', certNo: 'IQ-20230615-001' },
+            { id: 'oq1', instrument: 'HPLC-安捷伦1260', type: 'OQ', date: '2023-06-20', status: 'completed', validUntil: '2026-06-20', certNo: 'OQ-20230620-001' },
+            { id: 'pq1', instrument: 'HPLC-安捷伦1260', type: 'PQ', date: '2023-06-25', status: 'completed', validUntil: '2025-06-25', certNo: 'PQ-20230625-001' },
+            { id: 'iq2', instrument: 'GC-MS-岛津QP2020', type: 'IQ', date: '2023-08-01', status: 'completed', validUntil: '2027-08-01', certNo: 'IQ-20230801-002' },
+            { id: 'oq2', instrument: 'GC-MS-岛津QP2020', type: 'OQ', date: '2023-08-05', status: 'completed', validUntil: '2026-08-05', certNo: 'OQ-20230805-002' },
+          ]} rowKey="id" pagination={false} size="small" columns={[
+            { title: '仪器', dataIndex: 'instrument' },
+            { title: '认证类型', dataIndex: 'type', render: (t: string) => <Tag color={t === 'IQ' ? 'blue' : t === 'OQ' ? 'green' : 'orange'}>{t}</Tag> },
+            { title: '认证日期', dataIndex: 'date' },
+            { title: '有效期至', dataIndex: 'validUntil' },
+            { title: '证书编号', dataIndex: 'certNo', render: (c: string) => <code>{c}</code> },
+            { title: '状态', dataIndex: 'status', render: () => <Badge status="success" text="有效" /> },
+            { title: '操作', render: () => <Space><Button type="link" size="small">查看</Button><Button type="link" size="small">下载证书</Button></Space> },
+          ]} />},
+          { key: 'comparison', label: '仪器比对', children: <Card>
+            <Descriptions bordered size="small" column={2} style={{ marginBottom: 16 }}>
+              <Descriptions.Item label="比对项目">水中铅(Pb)含量</Descriptions.Item>
+              <Descriptions.Item label="比对日期">2024-05-15</Descriptions.Item>
+              <Descriptions.Item label="标准值">0.050 mg/L</Descriptions.Item>
+              <Descriptions.Item label="允许偏差">≤ 5%</Descriptions.Item>
+            </Descriptions>
+            <Table dataSource={[
+              { instrument: 'HPLC-安捷伦1260', result: '0.051', deviation: '2.0%', cv: '1.8%', status: 'pass' },
+              { instrument: 'ICP-MS-Agilent 7800', result: '0.049', deviation: '-2.0%', cv: '1.5%', status: 'pass' },
+              { instrument: 'UV-Vis-岛津UV2600', result: '0.052', deviation: '4.0%', cv: '2.1%', status: 'pass' },
+            ]} rowKey="instrument" pagination={false} size="small" columns={[
+              { title: '仪器', dataIndex: 'instrument' },
+              { title: '检测结果', dataIndex: 'result' },
+              { title: '偏差', dataIndex: 'deviation' },
+              { title: 'CV%', dataIndex: 'cv' },
+              { title: '判定', dataIndex: 'status', render: (s: string) => <Tag color={s === 'pass' ? 'green' : 'red'}>{s === 'pass' ? '通过' : '不通过'}</Tag> },
+            ]} />
+            <Button type="primary" size="small" style={{ marginTop: 12 }} onClick={() => message.success('比对报告已生成')}>生成比对报告</Button>
+          </Card>},
+          { key: 'utilization', label: '利用率分析', children: <Card>
+            <Row gutter={16}>
+              <Col span={12}>
+                <Text strong>各仪器利用率 (本月)</Text>
+                {instruments.slice(0, 5).map(i => (
+                  <div key={i.id} style={{ margin: '8px 0' }}>
+                    <Text style={{ fontSize: 12 }}>{i.name}</Text>
+                    <Progress percent={i.utilization} size="small" format={p => `${p}%`} />
+                  </div>
+                ))}
+              </Col>
+              <Col span={12}>
+                <Descriptions bordered size="small" column={1}>
+                  <Descriptions.Item label="平均利用率">72.5%</Descriptions.Item>
+                  <Descriptions.Item label="空闲时段"><Tag color="orange">周末 15:00-18:00</Tag></Descriptions.Item>
+                  <Descriptions.Item label="峰值时段"><Tag color="blue">工作日 9:00-11:00</Tag></Descriptions.Item>
+                  <Descriptions.Item label="优化建议">考虑在空闲时段安排批量检测</Descriptions.Item>
+                </Descriptions>
+              </Col>
+            </Row>
+          </Card>},
+        ]} />
+      </Card>
+
       {/* Detail Drawer */}
       <InstrumentDetail instrument={selectedInstrument} visible={drawerVisible} onClose={() => { setDrawerVisible(false); setSelectedInstrument(null); }} />
 
