@@ -141,6 +141,31 @@ export const QualityPage: React.FC = () => {
             </Col>
           </Row>
         )},
+        { key: 'qcsamples', label: '质控样品', children: (
+          <Card title="质控样品管理" extra={<Button type="primary" size="small" onClick={() => {
+            Modal.confirm({ title: '新增质控样品', content: (
+              <Form layout="vertical">
+                <Form.Item label="样品名称"><Input placeholder="如: COD质控样-1" /></Form.Item>
+                <Form.Item label="批号"><Input placeholder="如: QC-BATCH-001" /></Form.Item>
+                <Form.Item label="标准值"><Input placeholder="目标浓度" /></Form.Item>
+                <Form.Item label="有效期"><Input type="date" /></Form.Item>
+                <Form.Item label="基体"><Select style={{width:'100%'}}><Option value="water">水质</Option><Option value="soil">土壤</Option></Select></Form.Item>
+              </Form>
+            ), onOk: () => message.success('质控样品已创建'), });
+          }}>新增质控样</Button>}>
+            <Table dataSource={[
+              { id:'qc1', name:'COD质控样-高浓度', batch:'QC-2026-001', target:'100.0', unit:'mg/L', expiry:'2026-12-31', matrix:'水质', tests:45 },
+              { id:'qc2', name:'COD质控样-低浓度', batch:'QC-2026-002', target:'20.0', unit:'mg/L', expiry:'2026-12-31', matrix:'水质', tests:38 },
+              { id:'qc3', name:'pH质控样', batch:'QC-2026-003', target:'7.00', unit:'pH', expiry:'2026-09-30', matrix:'水质', tests:52 },
+              { id:'qc4', name:'重金属混标', batch:'QC-2026-004', target:'1.00', unit:'mg/L', expiry:'2026-08-15', matrix:'水质', tests:12 },
+            ]} rowKey="id" pagination={false} columns={[
+              { title:'名称', dataIndex:'name' }, { title:'批号', dataIndex:'batch' },
+              { title:'标准值', dataIndex:'target' }, { title:'单位', dataIndex:'unit' },
+              { title:'有效期', dataIndex:'expiry', render:(v:string) => <Text type={new Date(v) < new Date() ? 'danger':undefined}>{v}</Text> },
+              { title:'基体', dataIndex:'matrix' }, { title:'测试次数', dataIndex:'tests' },
+            ]} size="small" />
+          </Card>
+        )},
         { key: 'deviations', label: '偏差与CAPA', children: (
           <Card title="偏差列表">
             <Table columns={devColumns} dataSource={deviations} rowKey="id" loading={loading} pagination={{ pageSize: 5 }} />
