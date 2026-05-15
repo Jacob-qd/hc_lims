@@ -45,6 +45,12 @@ import {
   mockFieldConfigs,
   mockFieldTemplates,
   mockCOCChains,
+  mockDigitalSignatures,
+  mockSignatureAuditLog,
+  computeDocumentHash,
+  mockSm3Hash,
+  mockSm2Sign,
+  signatureMeanings,
 } from './data';
 
 const apiUrl = (path: string) => `/api/v1${path}`;
@@ -636,6 +642,280 @@ export const handlers = [
         showIf: f.conditionRules, cascading: f.cascading,
       });
     });
-    return HttpResponse.json({ code: 200, data: { module, templateId, groups: Object.entries(groups).map(([name, fields]) => ({ name, fields })) } });
+    return HttpResponse.json({ code: 200, data: { module, templateId, groups: Object.entries(groups).map(([name, fields]) => ({ name, fields })) } });  // ============================================
+  // Electronic Signature (SM2/SM3) Handlers
+  // ============================================
+
+  // POST /api/v1/signatures - Create a digital signature
+  http.post(apiUrl('/signatures'), async ({ request }) => {
+    const body = (await request.json()) as Record<string, any>;
+    const { documentId, documentType, meaning, password, meaningStatement } = body;
+
+    if (!password || password !== '123456') {
+      return HttpResponse.json({ code: 401, message: '签名密码错误', data: null }, { status: 401 });
+    }
+
+    const report = mockReports.find((r: any) => r.id === documentId);
+    if (!report) {
+      return HttpResponse.json({ code: 404, message: '文档不存在', data: null }, { status: 404 });
+    }
+
+    // Compute SM3 document hash
+    const documentHash = computeDocumentHash(report);
+
+    // Find user certificate
+    const currentUserId = '3';
+    const cert = mockCertificates.find((c: any) => c.userId === currentUserId && c.status === 'active');
+
+    // Build signature payload
+    const sigContent = `${documentHash}|${currentUserId}|${meaning}|${new Date().toISOString()}`;
+    const sigValue = mockSm2Sign(sigContent, 'mock-private-key');
+
+    // Find previous signature for chain
+    const existingSigs = mockDigitalSignatures.filter((s: any) => s.documentId === documentId);
+    const lastSig = existingSigs[existingSigs.length - 1];
+
+    const meaningDef = signatureMeanings.find((m: any) => m.value === meaning);
+
+    const newSig: any = {
+      id: `dsig-${Date.now()}`,
+      documentId,
+      documentType: documentType || 'REPORT',
+      documentHash,
+      signerId: currentUserId,
+      signerName: '李思',
+      signerCertId: cert?.id || 'cert-sm2-001',
+      meaning,
+      meaningStatement: meaningStatement || (meaningDef?.description || ''),
+      signatureValue: sigValue,
+      timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+      timeSource: 'NTP',
+      previousSignatureId: lastSig?.id || null,
+      clientInfo: { ip: '192.168.1.100', userAgent: 'Mozilla/5.0', sessionId: 'sess-' + Date.now() },
+      status: 'valid',
+      createdAt: new Date().toISOString().replace('T', ' ').slice(0, 19),
+    };
+
+    mockDigitalSignatures.push(newSig);
+
+    // Add audit log entry
+    mockSignatureAuditLog.push({
+      id: 'audit-' + Date.now(),
+      signatureId: newSig.id,
+      action: 'CREATED',
+      operatorId: currentUserId,
+      operatorName: '李思',
+      details: `报告 ${report.reportNo} ${meaningDef?.label || meaning} 签名创建`,
+      createdAt: newSig.createdAt,
+    });
+
+    // Update report status based on meaning
+    let newStatus = '';
+    if (meaning === 'PREPARED') newStatus = 'pending_tech_review';
+    else if (meaning === 'REVIEWED') newStatus = 'pending_approval';
+    else if (meaning === 'APPROVED') newStatus = 'issued';
+
+    if (newStatus) {
+      const statusLabels: Record<string, string> = {
+        pending_tech_review: '待技术审核',
+        pending_approval: '待批准签发',
+        issued: '已签发',
+      };
+      report.status = newStatus;
+      report.statusLabel = statusLabels[newStatus] || newStatus;
+      report.updatedAt = newSig.createdAt;
+      if (newStatus === 'issued') {
+        report.issuedAt = newSig.createdAt;
+        report.cover.issueDate = newSig.createdAt;
+      }
+    }
+
+    // Also push signature to report.signatures
+    report.signatures.push({
+      id: newSig.id,
+      role: meaning === 'PREPARED' ? 'compiler' : meaning === 'REVIEWED' ? 'reviewer' : 'approver',
+      roleLabel: meaningDef?.label || meaning,
+      userId: currentUserId,
+      userName: '李思',
+      signedAt: newSig.timestamp,
+      ipAddress: '192.168.1.100',
+      stampType: 'electronic',
+      reason: meaningStatement || (meaningDef?.description || ''),
+      passwordVerified: true,
+    });
+
+    return HttpResponse.json({ code: 200, message: '签名成功', data: newSig });
+  }),
+
+  // GET /api/v1/signatures/:id - Get signature details
+  http.get(apiUrl('/signatures/:id'), ({ params }) => {
+    const sig = mockDigitalSignatures.find((s: any) => s.id === params.id);
+    if (!sig) {
+      return HttpResponse.json({ code: 404, message: '签名记录不存在', data: null }, { status: 404 });
+    }
+    return HttpResponse.json({ code: 200, message: 'success', data: sig });
+  }),
+
+  // GET /api/v1/signatures/document/:docId - Get document signatures
+  http.get(apiUrl('/signatures/document/:docId'), ({ params }) => {
+    const sigs = mockDigitalSignatures.filter((s: any) => s.documentId === params.docId);
+    return HttpResponse.json({ code: 200, message: 'success', data: { list: sigs, total: sigs.length } });
+  }),
+
+  // POST /api/v1/signatures/verify - Verify signature
+  http.post(apiUrl('/signatures/verify'), async ({ request }) => {
+    const body = (await request.json()) as Record<string, any>;
+    const { documentId } = body;
+
+    const report = mockReports.find((r: any) => r.id === documentId);
+    if (!report) {
+      return HttpResponse.json({ code: 404, message: '文档不存在', data: null }, { status: 404 });
+    }
+
+    const sigs = mockDigitalSignatures.filter((s: any) => s.documentId === documentId);
+    const currentHash = computeDocumentHash(report);
+    const allValidSigs = sigs.filter((s: any) => s.status === 'valid');
+    const documentIntact = allValidSigs.length === 0 || allValidSigs.some((s: any) => s.documentHash === currentHash);
+    const allCertsValid = allValidSigs.every((s: any) => {
+      const cert = mockCertificates.find((c: any) => c.id === s.signerCertId);
+      return cert && cert.status === 'active';
+    });
+
+    const result: any = {
+      valid: documentIntact && allCertsValid && allValidSigs.length > 0,
+      documentIntact,
+      signerVerified: allCertsValid,
+      certValid: allCertsValid,
+      timestampValid: true,
+      signatures: allValidSigs.map((s: any) => {
+        const meaningDef = signatureMeanings.find((m: any) => m.value === s.meaning);
+        const cert = mockCertificates.find((c: any) => c.id === s.signerCertId);
+        return {
+          signerName: s.signerName,
+          meaning: s.meaning,
+          meaningLabel: meaningDef?.label || s.meaning,
+          time: s.timestamp,
+          certSubject: cert?.certSubject || '',
+          status: s.status,
+        };
+      }),
+      details: documentIntact
+        ? ['文档完整性验证通过', 'SM2 签名值验证通过', '签名证书状态有效']
+        : ['⚠️ 文档已被篡改，签名验证失败'],
+      verifiedAt: new Date().toISOString().replace('T', ' ').slice(0, 19),
+    };
+
+    // Add audit log
+    mockSignatureAuditLog.push({
+      id: 'audit-' + Date.now(),
+      signatureId: documentId,
+      action: 'VERIFIED',
+      operatorId: '',
+      operatorName: '系统',
+      details: `报告 ${report.reportNo} 签名验真: ${result.valid ? '有效' : '无效'}`,
+      createdAt: result.verifiedAt,
+    });
+
+    return HttpResponse.json({ code: 200, message: 'success', data: result });
+  }),
+
+  // GET /api/v1/signatures/verify/qr/:docId - Public QR verification (no auth needed)
+  http.get(apiUrl('/signatures/verify/qr/:docId'), ({ params }) => {
+    const report = mockReports.find((r: any) => r.id === params.docId);
+    if (!report) {
+      return HttpResponse.json({ code: 404, message: '报告不存在', data: null }, { status: 404 });
+    }
+
+    const sigs = mockDigitalSignatures.filter((s: any) => s.documentId === params.docId);
+    const currentHash = computeDocumentHash(report);
+    const validSigs = sigs.filter((s: any) => s.status === 'valid' && s.documentHash === currentHash);
+
+    const result: any = {
+      reportNo: report.reportNo,
+      title: report.title,
+      customerName: report.customerName,
+      issuedAt: report.issuedAt,
+      signatures: validSigs.map((s: any) => {
+        const meaningDef = signatureMeanings.find((m: any) => m.value === s.meaning);
+        return {
+          signerName: s.signerName,
+          meaning: s.meaning,
+          meaningLabel: meaningDef?.label || s.meaning,
+          time: s.timestamp,
+          status: s.status === 'valid' ? '有效' : '无效',
+        };
+      }),
+      valid: validSigs.length > 0,
+      verifiedAt: new Date().toISOString().replace('T', ' ').slice(0, 19),
+    };
+
+    return HttpResponse.json({ code: 200, message: 'success', data: result });
+  }),
+
+  // ===== Certificate Management =====
+
+  // POST /api/v1/certificates - Import certificate
+  http.post(apiUrl('/certificates'), async ({ request }) => {
+    const body = (await request.json()) as Record<string, any>;
+    const newCert: any = {
+      id: 'cert-sm2-' + String(mockCertificates.length + 1).padStart(3, '0'),
+      userId: body.userId || '3',
+      userName: body.userName || '新用户',
+      certSubject: body.certSubject || 'CN=新用户, OU=实验室, O=红创检测认证有限公司',
+      certIssuer: body.certIssuer || 'CN=红创CA, OU=CA, O=红创检测认证有限公司',
+      serialNumber: body.serialNumber || `SM2-CERT-${Date.now()}`,
+      algorithm: 'SM2',
+      keyLength: 256,
+      notBefore: body.notBefore || new Date().toISOString().slice(0, 10),
+      notAfter: body.notAfter || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+      status: 'active',
+      createdAt: new Date().toISOString().replace('T', ' ').slice(0, 19),
+    };
+    mockCertificates.push(newCert);
+    return HttpResponse.json({ code: 200, message: '证书导入成功', data: newCert });
+  }),
+
+  // GET /api/v1/certificates - List certificates
+  http.get(apiUrl('/certificates'), () => {
+    return HttpResponse.json({ code: 200, message: 'success', data: { list: mockCertificates, total: mockCertificates.length } });
+  }),
+
+  // GET /api/v1/certificates/:id - Certificate details
+  http.get(apiUrl('/certificates/:id'), ({ params }) => {
+    const cert = mockCertificates.find((c: any) => c.id === params.id);
+    if (!cert) {
+      return HttpResponse.json({ code: 404, message: '证书不存在', data: null }, { status: 404 });
+    }
+    return HttpResponse.json({ code: 200, message: 'success', data: cert });
+  }),
+
+  // POST /api/v1/certificates/:id/revoke - Revoke certificate
+  http.post(apiUrl('/certificates/:id/revoke'), ({ params }) => {
+    const cert = mockCertificates.find((c: any) => c.id === params.id);
+    if (!cert) {
+      return HttpResponse.json({ code: 404, message: '证书不存在', data: null }, { status: 404 });
+    }
+    cert.status = 'revoked';
+    cert.revokedAt = new Date().toISOString().replace('T', ' ').slice(0, 19);
+
+    // Add audit log
+    mockSignatureAuditLog.push({
+      id: 'audit-' + Date.now(),
+      signatureId: cert.id,
+      action: 'REVOKED',
+      operatorId: '2',
+      operatorName: '张伟',
+      details: `证书 ${cert.serialNumber} (${cert.userName}) 已被吊销`,
+      createdAt: new Date().toISOString().replace('T', ' ').slice(0, 19),
+    });
+
+    return HttpResponse.json({ code: 200, message: '证书已吊销', data: cert });
+  }),
+
+  // ===== Signature Audit Log =====
+
+  // GET /api/v1/audit/signatures - Signature audit log
+  http.get(apiUrl('/audit/signatures'), () => {
+    return HttpResponse.json({ code: 200, message: 'success', data: { list: mockSignatureAuditLog, total: mockSignatureAuditLog.length } });
   }),
 ];

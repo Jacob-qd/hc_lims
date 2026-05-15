@@ -40,6 +40,7 @@ const BackupPage = lazy(() => import('../pages/BackupPage').then(m => ({ default
 const WorkflowPage = lazy(() => import('../pages/WorkflowPage').then(m => ({ default: m.WorkflowPage })));
 const ReportEnginePage = lazy(() => import('../pages/ReportEnginePage').then(m => ({ default: m.ReportEnginePage })));
 const FieldConfigEditor = lazy(() => import('../pages/FieldConfigEditor').then(m => ({ default: m.FieldConfigEditor })));
+const CertificatePage = lazy(() => import('../pages/CertificatePage').then(m => ({ default: m.CertificatePage })));
 
 export const router = createBrowserRouter([
   {
@@ -94,6 +95,7 @@ export const router = createBrowserRouter([
       { path: 'workflow', element: <WorkflowPage /> },
       { path: 'reports/engine', element: <ReportEnginePage /> },
       { path: 'settings/field-configs', element: <FieldConfigEditor /> },
+      { path: 'certificates', element: <CertificatePage /> },
       { path: '*', element: <Navigate to="/dashboard" replace /> },
     ],
   },

@@ -22,6 +22,7 @@ const menuItems = [
     { key: '/samples', icon: <InboxOutlined />, label: '样品管理' },
     { key: '/tasks', icon: <ExperimentOutlined />, label: '检测管理' },
     { key: '/reports', icon: <FileTextOutlined />, label: '报告管理' },
+    { key: '/certificates', icon: <SafetyCertificateOutlined />, label: '签名证书' },
     { key: '/quality', icon: <SafetyCertificateOutlined />, label: '质量控制' },
     { key: '/instruments', icon: <ToolOutlined />, label: '仪器管理' },
     { key: '/inventory', icon: <ShopOutlined />, label: '库存管理' },
