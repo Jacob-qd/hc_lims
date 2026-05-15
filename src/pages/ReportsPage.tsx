@@ -27,6 +27,7 @@ import {
   customers, projects, sampleTypes,
 } from '../mocks/data';
 import type { Dayjs } from 'dayjs';
+import { computeDocumentHash, mockSm3Hash, signatureMeanings } from '../mocks/data';
 
 const { Title, Text, Paragraph } = Typography;
 const { Step } = Steps;
@@ -65,62 +66,122 @@ const flowStepStatus = (report: Report): Record<string, 'process' | 'finish' | '
 // Sub-Components
 // ================================================
 
-/** Digital Signature Modal */
+/** Enhanced Digital Signature Modal with SM2/SM3 */
 const SignatureModal: React.FC<{
   open: boolean;
   onClose: () => void;
-  onSign: (data: { password: string; reason: string; role: string }) => void;
+  onSign: (data: { password: string; reason: string; role: string; meaning: string; meaningStatement: string }) => void;
   role: 'compiler' | 'reviewer' | 'approver';
   roleLabel: string;
-}> = ({ open, onClose, onSign, role, roleLabel }) => {
+  reportId?: string;
+}> = ({ open, onClose, onSign, role, roleLabel, reportId }) => {
   const [password, setPassword] = useState('');
   const [reason, setReason] = useState('');
+  const [confirmed, setConfirmed] = useState(false);
+  const [sm3Hash, setSm3Hash] = useState('');
+
+  // Map role to meaning
+  const roleToMeaning: Record<string, string> = {
+    compiler: 'PREPARED',
+    reviewer: 'REVIEWED',
+    approver: 'APPROVED',
+  };
+  const currentMeaning = roleToMeaning[role] || 'PREPARED';
+  const meaningDef = signatureMeanings.find(m => m.value === currentMeaning);
+
+  useEffect(() => {
+    if (open && reportId) {
+      // Generate a mock SM3 hash for the document
+      const docForHash = { id: reportId, reportNo: 'RPT...', title: '检测报告', customerName: '', testResults: [] };
+      const hash = computeDocumentHash(docForHash);
+      setSm3Hash(hash);
+      setPassword('');
+      setReason('');
+      setConfirmed(false);
+    }
+  }, [open, reportId]);
 
   const handleSubmit = () => {
     if (!password) { message.warning('请输入签名密码'); return; }
     if (!reason) { message.warning('请输入签名理由'); return; }
+    if (!confirmed) { message.warning('请确认签名内容真实有效'); return; }
     if (password !== '123456') { message.error('密码错误'); return; }
-    onSign({ password, reason, role });
+    onSign({ password, reason, role, meaning: currentMeaning, meaningStatement: reason });
     setPassword('');
     setReason('');
-    onClose();
+    setConfirmed(false);
   };
 
   return (
     <Modal
-      title={<span><SignatureOutlined /> 电子签名确认</span>}
+      title={<span><SignatureOutlined style={{ color: '#1677ff' }} /> 电子签名确认</span>}
       open={open}
       onCancel={onClose}
       onOk={handleSubmit}
       okText="确认签名"
-      okButtonProps={{ icon: <CheckCircleOutlined /> }}
+      okButtonProps={{ icon: <CheckCircleOutlined />, disabled: !confirmed || !password || !reason }}
+      width={560}
     >
       <Alert
-        message={`即将以「${roleLabel}」身份进行电子签名`}
+        message={{
+          PREPARED: '报告编制完成，将以「编制」身份进行电子签名',
+          REVIEWED: '技术审核通过，将以「审核」身份进行电子签名',
+          APPROVED: '报告批准签发，将以「批准」身份进行电子签名',
+        }[currentMeaning] || `即将以「${roleLabel}」身份进行电子签名`}
         type="info"
         showIcon
         style={{ marginBottom: 16 }}
       />
+
+      <Card size="small" style={{ marginBottom: 16, background: '#f6f8fa' }}>
+        <Descriptions column={1} size="small">
+          <Descriptions.Item label="签名含义">
+            <Tag color={role === 'compiler' ? 'blue' : role === 'reviewer' ? 'orange' : 'green'}>
+              {meaningDef?.label || roleLabel}
+            </Tag>
+            <Text type="secondary" style={{ fontSize: 12, marginLeft: 8 }}>{meaningDef?.description}</Text>
+          </Descriptions.Item>
+          <Descriptions.Item label="签名算法">
+            <Tag color="geekblue">SM2</Tag> 椭圆曲线公钥密码算法 (GB/T 32918)
+          </Descriptions.Item>
+          <Descriptions.Item label="摘要算法">
+            <Tag color="geekblue">SM3</Tag> 密码杂凑算法 (GB/T 32905)
+          </Descriptions.Item>
+          <Descriptions.Item label="文档摘要 (SM3)">
+            <Text copyable style={{ fontFamily: 'monospace', fontSize: 11, wordBreak: 'break-all' }}>
+              {sm3Hash}
+            </Text>
+          </Descriptions.Item>
+        </Descriptions>
+      </Card>
+
       <Form layout="vertical">
         <Form.Item label="签名密码" required>
           <Input.Password
-            placeholder="请输入签名密码（测试用：123456）"
+            placeholder="请输入签名密码（测试密码：123456）"
             value={password}
             onChange={e => setPassword(e.target.value)}
             prefix={<SafetyCertificateOutlined />}
           />
         </Form.Item>
-        <Form.Item label="签名理由" required>
+        <Form.Item label="签名含义声明" required>
           <TextArea
-            placeholder="请说明签名理由（必填）"
+            placeholder={meaningDef?.description || '请说明签名理由...'}
             rows={3}
             value={reason}
             onChange={e => setReason(e.target.value)}
           />
         </Form.Item>
+        <Form.Item>
+          <Checkbox checked={confirmed} onChange={e => setConfirmed(e.target.checked)}>
+            <Text strong>我确认以上内容真实有效，并承担相应法律责任</Text>
+          </Checkbox>
+        </Form.Item>
       </Form>
-      <div style={{ fontSize: 12, color: '#999', padding: '8px 0' }}>
-        <ClockCircleOutlined /> 签名后将记录时间戳和IP地址
+
+      <div style={{ fontSize: 12, color: '#999', padding: '8px 0', borderTop: '1px solid #f0f0f0' }}>
+        <ClockCircleOutlined style={{ marginRight: 4 }} />
+        签名后将记录时间戳 (NTP)、IP 地址、会话ID，形成不可篡改的签名审计链
       </div>
     </Modal>
   );
@@ -365,6 +426,57 @@ const ChangeHistoryPanel: React.FC<{ history: ReportChangeEntry[] }> = ({ histor
   );
 };
 
+/** Simple QR Code Display (mock) */
+const QRCodeDisplay: React.FC<{ value: string; size?: number }> = ({ value, size = 150 }) => {
+  // Generate a deterministic pattern from the value
+  const cells = 19; // QR code grid
+  const cellSize = Math.floor(size / cells);
+  const actualSize = cellSize * cells;
+
+  // Deterministic pseudo-random based on value
+  let seed = 0;
+  for (let i = 0; i < value.length; i++) {
+    seed = ((seed << 5) - seed) + value.charCodeAt(i);
+    seed |= 0;
+  }
+
+  const getBit = (x: number, y: number): boolean => {
+    const idx = (x * 7 + y * 13 + seed) % 100;
+    const hash = (seed * (idx + 1) * 31) % 100;
+    // Fixed patterns for QR corner markers
+    if ((x < 7 && y < 7) || (x >= cells - 7 && y < 7) || (x < 7 && y >= cells - 7)) {
+      const cx = x < 7 ? x : (x >= cells - 7 ? x - (cells - 7) : x);
+      const cy = y < 7 ? y : (y >= cells - 7 ? y - (cells - 7) : y);
+      if ((cx === 0 || cx === 6) && (cy >= 0 && cy <= 6)) return true;
+      if ((cy === 0 || cy === 6) && (cx >= 0 && cx <= 6)) return true;
+      if (cx >= 2 && cx <= 4 && cy >= 2 && cy <= 4) return true;
+      return false;
+    }
+    return hash > 45;
+  };
+
+  return (
+    <div style={{ display: 'inline-block', padding: 12, background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+      <svg width={actualSize} height={actualSize}>
+        {Array.from({ length: cells }).map((_, y) =>
+          Array.from({ length: cells }).map((_, x) =>
+            getBit(x, y) ? (
+              <rect
+                key={`${x}-${y}`}
+                x={x * cellSize}
+                y={y * cellSize}
+                width={cellSize}
+                height={cellSize}
+                fill="#000"
+              />
+            ) : null
+          )
+        )}
+      </svg>
+    </div>
+  );
+};
+
 /** Flow Step Indicator */
 const FlowStepIndicator: React.FC<{ report: Report }> = ({ report }) => {
   const steps = [
@@ -507,6 +619,11 @@ export const ReportsPage: React.FC = () => {
   const [signRole, setSignRole] = useState<'compiler' | 'reviewer' | 'approver'>('compiler');
   const [signRoleLabel, setSignRoleLabel] = useState('编制');
 
+  // Signature Verification
+  const [verifyResult, setVerifyResult] = useState<any>(null);
+  const [verifyLoading, setVerifyLoading] = useState(false);
+  const [verifyOpen, setVerifyOpen] = useState(false);
+
   // Selection
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
@@ -571,40 +688,54 @@ export const ReportsPage: React.FC = () => {
     setSignModalOpen(true);
   };
 
-  const handleSign = async (data: { password: string; reason: string; role: string }) => {
+  // ============ Signature Verification ============
+
+  const handleVerifySignature = async (reportId: string) => {
+    setVerifyLoading(true);
+    setVerifyOpen(true);
+    try {
+      const res = await fetch('/api/v1/signatures/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ documentId: reportId }),
+      }).then(r => r.json());
+      if (res.code === 200) {
+        setVerifyResult(res.data);
+      } else {
+        setVerifyResult({ valid: false, details: ['验真服务不可用'] });
+      }
+    } catch {
+      setVerifyResult({ valid: false, details: ['验真请求失败'] });
+    }
+    setVerifyLoading(false);
+  };
+
+  const handleSign = async (data: { password: string; reason: string; role: string; meaning: string; meaningStatement: string }) => {
     if (!selectedReport) return;
+
+    // Use new SM2/SM3 signature API
     const sigPayload = {
-      role: data.role,
-      roleLabel: signRoleLabel,
-      userId: '3',
-      userName: '李思',
-      ipAddress: '192.168.1.100',
-      stampType: 'electronic',
-      reason: data.reason,
-      passwordVerified: true,
+      documentId: selectedReport.id,
+      documentType: 'REPORT',
+      meaning: data.meaning,
+      password: data.password,
+      meaningStatement: data.meaningStatement,
     };
-    const sigRes = await fetch(`/api/v1/reports/${selectedReport.id}/sign`, {
+
+    const sigRes = await fetch(`/api/v1/signatures`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(sigPayload),
     }).then(r => r.json());
 
     if (sigRes.code === 200) {
-      // Update status
-      let newStatus = '';
-      if (data.role === 'compiler') newStatus = 'pending_tech_review';
-      else if (data.role === 'reviewer') newStatus = 'pending_approval';
-      else if (data.role === 'approver') newStatus = 'issued';
-
-      await fetch(`/api/v1/reports/${selectedReport.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus, statusLabel: reportStatuses.find(s => s.value === newStatus)?.label }),
-      });
-
-      message.success('签名成功');
+      message.success(`签名成功 (SM2/SM3)`);
       loadReports();
       showDetail(selectedReport);
+    } else if (sigRes.code === 401) {
+      message.error('签名密码错误');
+    } else {
+      message.error('签名失败: ' + (sigRes.message || '未知错误'));
     }
   };
 
@@ -769,6 +900,11 @@ export const ReportsPage: React.FC = () => {
           {record.status === 'pending_approval' && (
             <Button type="link" size="small" onClick={() => { setSelectedReport(record); setSignRole('approver'); setSignRoleLabel('批准签发'); setSignModalOpen(true); }}>
               <SignatureOutlined /> 签发
+            </Button>
+          )}
+          {record.status === 'issued' && (
+            <Button type="link" size="small" onClick={() => { showDetail(record); setTimeout(() => setDetailTab('verify'), 300); }}>
+              <SafetyCertificateOutlined /> 验真
             </Button>
           )}
         </Space>
@@ -1061,7 +1197,18 @@ export const ReportsPage: React.FC = () => {
                         </Button>
                       )}
                       {selectedReport.status === 'issued' && (
-                        <Alert message="报告已签发" type="success" showIcon />
+                        <div>
+                          <Alert message="报告已签发" type="success" showIcon style={{ marginBottom: 16 }} />
+                          <Button
+                            type="primary"
+                            icon={<SafetyCertificateOutlined />}
+                            onClick={() => { setDetailTab('verify'); handleVerifySignature(selectedReport.id); }}
+                            loading={verifyLoading}
+                            block
+                          >
+                            签名验真
+                          </Button>
+                        </div>
                       )}
                     </Card>
                   </>
@@ -1089,6 +1236,117 @@ export const ReportsPage: React.FC = () => {
                 key: 'history',
                 label: <span><HistoryOutlined /> 变更历史</span>,
                 children: <ChangeHistoryPanel history={selectedReport.changeHistory} />,
+              },
+              {
+                key: 'verify',
+                label: <span><SafetyCertificateOutlined /> 签名验真</span>,
+                children: (
+                  <div>
+                    {selectedReport.status !== 'issued' && selectedReport.signatures.length === 0 ? (
+                      <Empty description="报告尚未签名，无法验真" />
+                    ) : (
+                      <>
+                        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+                          <QRCodeDisplay
+                            value={`hc-lims://verify/${selectedReport.id}`}
+                            size={160}
+                          />
+                          <div style={{ marginTop: 8 }}>
+                            <Text type="secondary" style={{ fontSize: 12 }}>扫一扫验真</Text>
+                          </div>
+                        </div>
+
+                        <Card size="small" style={{ marginBottom: 16 }}>
+                          <Descriptions column={1} size="small">
+                            <Descriptions.Item label="报告编号">{selectedReport.reportNo}</Descriptions.Item>
+                            <Descriptions.Item label="报告名称">{selectedReport.title}</Descriptions.Item>
+                            <Descriptions.Item label="签发日期">{selectedReport.issuedAt || '-'}</Descriptions.Item>
+                          </Descriptions>
+                        </Card>
+
+                        <Button
+                          type="primary"
+                          icon={<SafetyCertificateOutlined />}
+                          loading={verifyLoading}
+                          onClick={() => handleVerifySignature(selectedReport.id)}
+                          style={{ width: '100%', marginBottom: 16 }}
+                        >
+                          立即验真
+                        </Button>
+
+                        {verifyResult && (
+                          <Card
+                            size="small"
+                            title={
+                              <Space>
+                                {verifyResult.valid ? (
+                                  <><CheckCircleOutlined style={{ color: '#52c41a' }} /><Text strong style={{ color: '#52c41a' }}>签名有效</Text></>
+                                ) : (
+                                  <><CloseCircleOutlined style={{ color: '#f5222d' }} /><Text strong style={{ color: '#f5222d' }}>签名无效</Text></>
+                                )}
+                              </Space>
+                            }
+                          >
+                            {verifyResult.signatures && verifyResult.signatures.length > 0 && (
+                              <Timeline
+                                items={verifyResult.signatures.map((sig: any) => ({
+                                  color: sig.status === 'valid' ? 'green' : 'red',
+                                  children: (
+                                    <div>
+                                      <Space>
+                                        <Tag color={sig.meaning === 'PREPARED' ? 'blue' : sig.meaning === 'REVIEWED' ? 'orange' : 'green'}>
+                                          {sig.meaningLabel}
+                                        </Tag>
+                                        <Text strong>{sig.signerName}</Text>
+                                      </Space>
+                                      <div style={{ fontSize: 12, color: '#999' }}>{sig.time}</div>
+                                      <div style={{ fontSize: 12, color: '#666' }}>{sig.certSubject}</div>
+                                    </div>
+                                  ),
+                                }))}
+                              />
+                            )}
+                            <Divider />
+                            {verifyResult.details && verifyResult.details.map((d: string, i: number) => (
+                              <div key={i} style={{ fontSize: 12, marginBottom: 4 }}>
+                                {d.startsWith('⚠️') ? (
+                                  <><CloseCircleOutlined style={{ color: '#f5222d', marginRight: 4 }} /><Text type="danger">{d}</Text></>
+                                ) : (
+                                  <><CheckCircleOutlined style={{ color: '#52c41a', marginRight: 4 }} /><Text type="secondary">{d}</Text></>
+                                )}
+                              </div>
+                            ))}
+                            <div style={{ fontSize: 11, color: '#bbb', marginTop: 8 }}>
+                              验真时间: {verifyResult.verifiedAt}
+                            </div>
+                          </Card>
+                        )}
+
+                        {!verifyResult && (
+                          <Card size="small">
+                            <Descriptions column={1} size="small">
+                              <Descriptions.Item label="编制人">
+                                {selectedReport.signatures.find(s => s.role === 'compiler')?.userName || '-'}
+                                {' · '}
+                                {selectedReport.signatures.find(s => s.role === 'compiler')?.signedAt || '-'}
+                              </Descriptions.Item>
+                              <Descriptions.Item label="审核人">
+                                {selectedReport.signatures.find(s => s.role === 'reviewer')?.userName || '-'}
+                                {' · '}
+                                {selectedReport.signatures.find(s => s.role === 'reviewer')?.signedAt || '-'}
+                              </Descriptions.Item>
+                              <Descriptions.Item label="批准人">
+                                {selectedReport.signatures.find(s => s.role === 'approver')?.userName || '-'}
+                                {' · '}
+                                {selectedReport.signatures.find(s => s.role === 'approver')?.signedAt || '-'}
+                              </Descriptions.Item>
+                            </Descriptions>
+                          </Card>
+                        )}
+                      </>
+                    )}
+                  </div>
+                ),
               },
             ]}
           />
@@ -1405,6 +1663,7 @@ export const ReportsPage: React.FC = () => {
         }}
         role={signRole}
         roleLabel={signRoleLabel}
+        reportId={selectedReport?.id}
       />
     </div>
   );

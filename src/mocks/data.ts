@@ -1090,3 +1090,334 @@ export const mockCourses = [
   { id: 'course2', name: '环境监测实验', teacher: '李华', dept: '环境科学与工程学院', semester: '2024春季', students: 32, experiments: 6, status: 'active' },
   { id: 'course3', name: '仪器分析实验', teacher: '王强', dept: '化学与分子工程学院', semester: '2024春季', students: 28, experiments: 10, status: 'active' },
 ];
+
+// ============================================
+// Electronic Signature (SM2/SM3) Mock Data
+// ============================================
+
+export type SignatureMeaning = 'PREPARED' | 'REVIEWED' | 'APPROVED' | 'VERIFIED';
+
+export const signatureMeanings: { value: SignatureMeaning; label: string; description: string }[] = [
+  { value: 'PREPARED', label: '编制', description: '报告编制完成，确认数据录入准确无误' },
+  { value: 'REVIEWED', label: '审核', description: '已审核报告内容，技术数据完整、方法标准引用正确' },
+  { value: 'APPROVED', label: '批准', description: '批准签发，报告符合质量管理要求，同意对外发出' },
+  { value: 'VERIFIED', label: '复核', description: '复核确认检测结果可追溯' },
+];
+
+export interface SignRequest {
+  documentId: string;
+  documentType: 'REPORT' | 'CERTIFICATE' | 'RECORD';
+  meaning: SignatureMeaning;
+  password: string;
+  meaningStatement?: string;
+}
+
+export interface SignatureInfo {
+  signerName: string;
+  meaning: SignatureMeaning;
+  meaningLabel: string;
+  time: string;
+  certSubject: string;
+  status: 'valid' | 'invalid' | 'revoked';
+}
+
+export interface VerificationResult {
+  valid: boolean;
+  documentIntact: boolean;
+  signerVerified: boolean;
+  certValid: boolean;
+  timestampValid: boolean;
+  signatures: SignatureInfo[];
+  details: string[];
+  verifiedAt: string;
+}
+
+export interface Sm2Certificate {
+  id: string;
+  userId: string;
+  userName: string;
+  certSubject: string;
+  certIssuer: string;
+  serialNumber: string;
+  algorithm: string;
+  keyLength: number;
+  notBefore: string;
+  notAfter: string;
+  status: 'active' | 'revoked' | 'expired';
+  revokedAt?: string;
+  createdAt: string;
+}
+
+export interface SignatureAuditEntry {
+  id: string;
+  signatureId: string;
+  action: 'CREATED' | 'VERIFIED' | 'REVOKED';
+  operatorId: string;
+  operatorName: string;
+  details: string;
+  createdAt: string;
+}
+
+export interface DigitalSignatureRecord {
+  id: string;
+  documentId: string;
+  documentType: 'REPORT' | 'CERTIFICATE' | 'RECORD';
+  documentHash: string;
+  signerId: string;
+  signerName: string;
+  signerCertId: string;
+  meaning: SignatureMeaning;
+  meaningStatement: string;
+  signatureValue: string;
+  timestamp: string;
+  timeSource: string;
+  previousSignatureId?: string;
+  clientInfo: {
+    ip: string;
+    userAgent: string;
+    sessionId: string;
+  };
+  status: 'valid' | 'revoked' | 'expired';
+  createdAt: string;
+}
+
+// SM3 hash simulation (mock crypto, produces deterministic 64-char hex)
+export function mockSm3Hash(input: string): string {
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) {
+    const char = input.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash |= 0;
+  }
+  const seed = Math.abs(hash).toString(16).padStart(8, '0');
+  // Produce a deterministic 64-char hex string (simulating SM3 256-bit output)
+  const chars = '0123456789abcdef';
+  let result = seed;
+  for (let i = result.length; i < 64; i++) {
+    const idx = (Math.abs(hash) * (i + 1) * 7) % 16;
+    result += chars[idx];
+  }
+  return result;
+}
+
+// SM2 signature simulation (mock)
+export function mockSm2Sign(data: string, _privateKey: string): string {
+  const hash = mockSm3Hash(data);
+  // Deterministic prefix based on input
+  const prefix = hash.slice(0, 8);
+  const mid = hash.slice(8, 16);
+  return `SM2-${prefix}${mid}-${hash.slice(16, 32)}-${hash.slice(32, 48)}-${hash.slice(48, 64)}`;
+}
+
+// Mock SM2 Certificates
+export const mockSm2Certificates: Sm2Certificate[] = [
+  {
+    id: 'cert-sm2-001',
+    userId: '3',
+    userName: '李思',
+    certSubject: 'CN=李思, OU=检测一部, O=红创检测认证有限公司',
+    certIssuer: 'CN=红创CA, OU=CA, O=红创检测认证有限公司',
+    serialNumber: 'SM2-CERT-2024-001',
+    algorithm: 'SM2',
+    keyLength: 256,
+    notBefore: '2024-01-01',
+    notAfter: '2026-12-31',
+    status: 'active',
+    createdAt: '2024-01-01',
+  },
+  {
+    id: 'cert-sm2-002',
+    userId: '2',
+    userName: '张伟',
+    certSubject: 'CN=张伟, OU=质量管理部, O=红创检测认证有限公司',
+    certIssuer: 'CN=红创CA, OU=CA, O=红创检测认证有限公司',
+    serialNumber: 'SM2-CERT-2024-002',
+    algorithm: 'SM2',
+    keyLength: 256,
+    notBefore: '2024-01-01',
+    notAfter: '2026-12-31',
+    status: 'active',
+    createdAt: '2024-01-01',
+  },
+  {
+    id: 'cert-sm2-003',
+    userId: '4',
+    userName: '王强',
+    certSubject: 'CN=王强, OU=质量管理部, O=红创检测认证有限公司',
+    certIssuer: 'CN=红创CA, OU=CA, O=红创检测认证有限公司',
+    serialNumber: 'SM2-CERT-2024-003',
+    algorithm: 'SM2',
+    keyLength: 256,
+    notBefore: '2024-03-01',
+    notAfter: '2027-02-28',
+    status: 'active',
+    createdAt: '2024-03-01',
+  },
+  {
+    id: 'cert-sm2-004',
+    userId: '1',
+    userName: '管理员',
+    certSubject: 'CN=管理员, OU=管理部, O=红创检测认证有限公司',
+    certIssuer: 'CN=红创CA, OU=CA, O=红创检测认证有限公司',
+    serialNumber: 'SM2-CERT-2024-004',
+    algorithm: 'SM2',
+    keyLength: 256,
+    notBefore: '2023-06-01',
+    notAfter: '2024-05-01',
+    status: 'expired',
+    createdAt: '2023-06-01',
+  },
+  {
+    id: 'cert-sm2-005',
+    userId: '5',
+    userName: '李明',
+    certSubject: 'CN=李明, OU=仪器管理部, O=红创检测认证有限公司',
+    certIssuer: 'CN=红创CA, OU=CA, O=红创检测认证有限公司',
+    serialNumber: 'SM2-CERT-2023-005',
+    algorithm: 'SM2',
+    keyLength: 256,
+    notBefore: '2023-01-01',
+    notAfter: '2025-12-31',
+    status: 'revoked',
+    revokedAt: '2024-06-01',
+    createdAt: '2023-01-01',
+  },
+];
+
+// Mock digital signature records
+export const mockDigitalSignatures: DigitalSignatureRecord[] = [
+  {
+    id: 'dsig-001',
+    documentId: 'rpt2',
+    documentType: 'REPORT',
+    documentHash: 'a3f8b2c1d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0',
+    signerId: '3',
+    signerName: '李思',
+    signerCertId: 'cert-sm2-001',
+    meaning: 'PREPARED',
+    meaningStatement: '报告编制完成，提交审核',
+    signatureValue: 'SM2-a3f8b2c1d4e5-3045022100f2a3b4c5d6e7f8a9-022010b1c2d3e4f5a6b7-3045022100f2a3b4c5d6e7',
+    timestamp: '2024-05-22T10:10:00+08:00',
+    timeSource: 'NTP',
+    clientInfo: { ip: '192.168.1.100', userAgent: 'Mozilla/5.0', sessionId: 'sess-001' },
+    status: 'valid',
+    createdAt: '2024-05-22 10:10',
+  },
+  {
+    id: 'dsig-002',
+    documentId: 'rpt3',
+    documentType: 'REPORT',
+    documentHash: 'b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0',
+    signerId: '3',
+    signerName: '李思',
+    signerCertId: 'cert-sm2-001',
+    meaning: 'PREPARED',
+    meaningStatement: '报告编制完成',
+    signatureValue: 'SM2-b0c1d2e3f4a5-3046022100b1c2d3e4f5a6b7c8-022100d9e0f1a2b3c4d5e6-3046022100b1c2d3e4f5a6',
+    timestamp: '2024-05-22T11:00:00+08:00',
+    timeSource: 'NTP',
+    previousSignatureId: undefined,
+    clientInfo: { ip: '192.168.1.100', userAgent: 'Mozilla/5.0', sessionId: 'sess-001' },
+    status: 'valid',
+    createdAt: '2024-05-22 11:00',
+  },
+  {
+    id: 'dsig-003',
+    documentId: 'rpt3',
+    documentType: 'REPORT',
+    documentHash: 'b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0',
+    signerId: '2',
+    signerName: '张伟',
+    signerCertId: 'cert-sm2-002',
+    meaning: 'REVIEWED',
+    meaningStatement: '技术审核通过',
+    signatureValue: 'SM2-c1d2e3f4a5b6-3045022100d2e3f4a5b6c7d8e9-022010f0a1b2c3d4e5f6-3045022100d2e3f4a5b6c7',
+    timestamp: '2024-05-22T14:00:00+08:00',
+    timeSource: 'NTP',
+    previousSignatureId: 'dsig-002',
+    clientInfo: { ip: '192.168.1.101', userAgent: 'Mozilla/5.0', sessionId: 'sess-002' },
+    status: 'valid',
+    createdAt: '2024-05-22 14:00',
+  },
+  {
+    id: 'dsig-004',
+    documentId: 'rpt4',
+    documentType: 'REPORT',
+    documentHash: 'e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6',
+    signerId: '3',
+    signerName: '李思',
+    signerCertId: 'cert-sm2-001',
+    meaning: 'PREPARED',
+    meaningStatement: '编制完成',
+    signatureValue: 'SM2-e5f6a7b8c9d0-3045022100f6a7b8c9d0e1f2a3-022010b4c5d6e7f8a9b0-3045022100f6a7b8c9d0e1',
+    timestamp: '2024-05-22T14:00:00+08:00',
+    timeSource: 'NTP',
+    clientInfo: { ip: '192.168.1.100', userAgent: 'Mozilla/5.0', sessionId: 'sess-003' },
+    status: 'valid',
+    createdAt: '2024-05-22 14:00',
+  },
+  {
+    id: 'dsig-005',
+    documentId: 'rpt4',
+    documentType: 'REPORT',
+    documentHash: 'e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6',
+    signerId: '2',
+    signerName: '张伟',
+    signerCertId: 'cert-sm2-002',
+    meaning: 'REVIEWED',
+    meaningStatement: '技术审核通过',
+    signatureValue: 'SM2-f6a7b8c9d0e1-3046022100a7b8c9d0e1f2a3b4-022100c5d6e7f8a9b0c1d2-3046022100a7b8c9d0e1f2',
+    timestamp: '2024-05-22T15:00:00+08:00',
+    timeSource: 'NTP',
+    previousSignatureId: 'dsig-004',
+    clientInfo: { ip: '192.168.1.101', userAgent: 'Mozilla/5.0', sessionId: 'sess-004' },
+    status: 'valid',
+    createdAt: '2024-05-22 15:00',
+  },
+  {
+    id: 'dsig-006',
+    documentId: 'rpt4',
+    documentType: 'REPORT',
+    documentHash: 'e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6',
+    signerId: '4',
+    signerName: '王强',
+    signerCertId: 'cert-sm2-003',
+    meaning: 'APPROVED',
+    meaningStatement: '批准签发',
+    signatureValue: 'SM2-a7b8c9d0e1f2-3045022100b8c9d0e1f2a3b4c5-022010d6e7f8a9b0c1d2-3045022100b8c9d0e1f2a3',
+    timestamp: '2024-05-22T16:30:00+08:00',
+    timeSource: 'NTP',
+    previousSignatureId: 'dsig-005',
+    clientInfo: { ip: '192.168.1.102', userAgent: 'Mozilla/5.0', sessionId: 'sess-005' },
+    status: 'valid',
+    createdAt: '2024-05-22 16:30',
+  },
+];
+
+// Mock signature audit log
+export const mockSignatureAuditLog: SignatureAuditEntry[] = [
+  { id: 'audit-001', signatureId: 'dsig-001', action: 'CREATED', operatorId: '3', operatorName: '李思', details: '报告 RPT20240521002 编制签名创建', createdAt: '2024-05-22 10:10' },
+  { id: 'audit-002', signatureId: 'dsig-002', action: 'CREATED', operatorId: '3', operatorName: '李思', details: '报告 RPT20240520001 编制签名创建', createdAt: '2024-05-22 11:00' },
+  { id: 'audit-003', signatureId: 'dsig-003', action: 'CREATED', operatorId: '2', operatorName: '张伟', details: '报告 RPT20240520001 审核签名创建', createdAt: '2024-05-22 14:00' },
+  { id: 'audit-004', signatureId: 'dsig-004', action: 'CREATED', operatorId: '3', operatorName: '李思', details: '报告 RPT20240519001 编制签名创建', createdAt: '2024-05-22 14:00' },
+  { id: 'audit-005', signatureId: 'dsig-005', action: 'CREATED', operatorId: '2', operatorName: '张伟', details: '报告 RPT20240519001 审核签名创建', createdAt: '2024-05-22 15:00' },
+  { id: 'audit-006', signatureId: 'dsig-006', action: 'CREATED', operatorId: '4', operatorName: '王强', details: '报告 RPT20240519001 批准签名创建', createdAt: '2024-05-22 16:30' },
+];
+
+// Helper to compute SM3 document hash
+export function computeDocumentHash(document: { id: string; reportNo: string; title: string; customerName: string; testResults: any[] }): string {
+  const normalized = JSON.stringify({
+    id: document.id,
+    reportNo: document.reportNo,
+    title: document.title,
+    customerName: document.customerName,
+    testResultCount: document.testResults.length,
+    sortedResults: document.testResults.map((r: any) => ({
+      itemName: r.itemName,
+      result: r.result,
+      unit: r.unit,
+      judgment: r.judgment,
+    })),
+  });
+  return mockSm3Hash(normalized);
+}
