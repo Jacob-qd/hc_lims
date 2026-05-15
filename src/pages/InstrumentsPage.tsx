@@ -75,6 +75,41 @@ const InstrumentDetail: React.FC<{ instrument: Instrument | null; visible: boole
             {title:'负责人',dataIndex:'person'},{title:'状态',dataIndex:'status',render:(s:string) => <Tag color={s==='completed'?'green':'orange'}>{s==='completed'?'已完成':'进行中'}</Tag>},
           ]} />
         )},
+        { key: 'verification', label: '期间核查', children: (
+          <div>
+            <Space style={{ marginBottom: 12 }}>
+              <Button size="small" type="primary" onClick={() => {
+                Modal.confirm({ title: '新增期间核查', content: (
+                  <Form layout="vertical">
+                    <Form.Item label="核查项目"><Select defaultValue="wavelength" style={{width:300}}>
+                      <Option value="wavelength">波长准确度</Option>
+                      <Option value="repeatability">重复性</Option>
+                      <Option value="sensitivity">灵敏度</Option>
+                      <Option value="resolution">分辨率</Option>
+                    </Select></Form.Item>
+                    <Form.Item label="核查结果"><Select defaultValue="pass" style={{width:300}}>
+                      <Option value="pass">合格</Option>
+                      <Option value="fail">不合格</Option>
+                    </Select></Form.Item>
+                    <Form.Item label="备注"><Input.TextArea rows={2} /></Form.Item>
+                  </Form>
+                ), onOk: () => message.success('期间核查记录已保存'), });
+              }}>新增核查</Button>
+              <Button size="small" onClick={() => message.info('核查计划: 每季度一次, 下次核查: 2026-08-15')}>核查计划</Button>
+            </Space>
+            <Table dataSource={[
+              { date:'2026-05-15', item:'波长准确度', result:'合格', operator:'张伟', nextDate:'2026-08-15' },
+              { date:'2026-02-15', item:'重复性', result:'合格', operator:'张伟', nextDate:'2026-05-15' },
+              { date:'2025-11-15', item:'灵敏度', result:'合格', operator:'张伟', nextDate:'2026-02-15' },
+            ]} rowKey="date" pagination={false} size="small" columns={[
+              { title:'核查日期', dataIndex:'date' },
+              { title:'核查项目', dataIndex:'item' },
+              { title:'结果', dataIndex:'result', render:(r:string) => <Tag color={r==='合格'?'green':'red'}>{r}</Tag> },
+              { title:'核查人', dataIndex:'operator' },
+              { title:'下次核查', dataIndex:'nextDate' },
+            ]} />
+          </div>
+        )},
         { key: 'usage', label: '使用记录', children: <Card size="small"><Text strong>利用率趋势 (近30天)</Text><svg viewBox="0 0 400 180" style={{width:'100%',height:200,marginTop:8}}>
               <rect x={40} y={10} width={340} height={140} fill="#fafafa" rx={4} />
               {[50,95,140].map(y => <line key={y} x1={40} y1={y} x2={380} y2={y} stroke="#f0f0f0" />)}
