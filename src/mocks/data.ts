@@ -1421,3 +1421,87 @@ export function computeDocumentHash(document: { id: string; reportNo: string; ti
   });
   return mockSm3Hash(normalized);
 }
+
+// ===== Proficiency Testing =====
+export const mockPTPlans = [
+  { id: 'pt1', name: '2025年度水中重金属能力验证', organizer: '中国合格评定国家认可委员会(CNAS)', project: '重金属', startDate: '2025-03-01', endDate: '2025-06-30', status: 'in_progress', participants: 45 },
+  { id: 'pt2', name: '2025食品微生物检测能力验证', organizer: '中国检验检疫科学研究院', project: '微生物', startDate: '2025-04-01', endDate: '2025-08-31', status: 'pending', participants: 0 },
+  { id: 'pt3', name: '2024水质有机污染物能力验证', organizer: '环境保护部标准样品研究所', project: '有机物', startDate: '2024-10-01', endDate: '2024-12-31', status: 'completed', participants: 38, zScore: '|z|\u22642' },
+  { id: 'pt4', name: '2024药品含量测定能力验证', organizer: '中国食品药品检定研究院', project: '药品', startDate: '2024-07-01', endDate: '2024-09-30', status: 'completed', participants: 52, zScore: '|z|\u22642' },
+];
+
+export const mockPTResults = [
+  { id: 'r1', planId: 'pt1', testItem: '铅(Pb)', ourResult: '0.052 mg/L', assignedValue: '0.051 mg/L', zScore: 0.38, evaluation: '满意' },
+  { id: 'r2', planId: 'pt1', testItem: '镉(Cd)', ourResult: '0.018 mg/L', assignedValue: '0.020 mg/L', zScore: -0.95, evaluation: '满意' },
+  { id: 'r3', planId: 'pt1', testItem: '汞(Hg)', ourResult: '0.008 mg/L', assignedValue: '0.006 mg/L', zScore: 1.82, evaluation: '满意' },
+  { id: 'r4', planId: 'pt3', testItem: '苯', ourResult: '0.45 \u03bcg/L', assignedValue: '0.48 \u03bcg/L', zScore: -0.67, evaluation: '满意' },
+  { id: 'r5', planId: 'pt3', testItem: '甲苯', ourResult: '0.82 \u03bcg/L', assignedValue: '0.80 \u03bcg/L', zScore: 0.25, evaluation: '满意' },
+  { id: 'r6', planId: 'pt4', testItem: '含量测定', ourResult: '99.2%', assignedValue: '99.5%', zScore: -1.42, evaluation: '满意' },
+];
+
+// ===== Instrument Data Connection =====
+export const mockInstrumentConnections = [
+  { id: 'ins1', name: 'HPLC-安捷伦1260', type: '液相色谱', connection: 'TCP/IP', ip: '192.168.1.101', port: 8001, status: 'connected', lastData: '2024-05-15 14:28', driver: 'agilent-hplc' },
+  { id: 'ins2', name: 'GC-MS-岛津QP2020', type: '气相色谱质谱', connection: 'RS232', ip: 'COM3', port: 9600, status: 'disconnected', lastData: '2024-05-15 10:00', driver: 'shimadzu-gcms' },
+  { id: 'ins3', name: 'ICP-MS-Agilent 7800', type: '电感耦合', connection: 'TCP/IP', ip: '192.168.1.103', port: 8002, status: 'connected', lastData: '2024-05-15 14:30', driver: 'agilent-icpms' },
+  { id: 'ins4', name: 'UV-Vis-岛津UV2600', type: '紫外分光', connection: 'RS232', ip: 'COM5', port: 9600, status: 'connected', lastData: '2024-05-15 14:15', driver: 'shimadzu-uv' },
+  { id: 'ins5', name: 'HPLC-Waters e2695', type: '液相色谱', connection: '文件监听', ip: '/data/instruments/waters', port: 0, status: 'connected', lastData: '2024-05-15 14:20', driver: 'waters-hplc' },
+];
+
+export const mockInstrumentDrivers = [
+  { driver: 'agilent-hplc', vendor: '安捷伦', models: '1260/1290 Infinity II', protocol: 'TCP/IP + ASTM', status: 'active', instruments: 2 },
+  { driver: 'shimadzu-gcms', vendor: '岛津', models: 'QP2020/2030', protocol: 'RS232', status: 'active', instruments: 1 },
+  { driver: 'agilent-icpms', vendor: '安捷伦', models: '7800/7900', protocol: 'TCP/IP', status: 'active', instruments: 1 },
+  { driver: 'shimadzu-uv', vendor: '岛津', models: 'UV2600/2700', protocol: 'RS232', status: 'active', instruments: 1 },
+  { driver: 'waters-hplc', vendor: 'Waters', models: 'e2695/ACQUITY', protocol: '文件监听', status: 'active', instruments: 1 },
+  { driver: 'thermo-icp', vendor: 'Thermo Fisher', models: 'iCAP Q/RQ', protocol: 'TCP/IP', status: 'inactive', instruments: 0 },
+];
+
+// ===== Workflow =====
+export const mockWorkflowDefinitions = [
+  { id: 'wf1', name: '样品检测流程', version: 'v3.2', nodes: 6, type: '检测', status: 'active', used: 128 },
+  { id: 'wf2', name: '报告审核签发流程', version: 'v2.1', nodes: 4, type: '报告', status: 'active', used: 95 },
+  { id: 'wf3', name: '采购审批流程', version: 'v1.5', nodes: 5, type: '采购', status: 'active', used: 32 },
+  { id: 'wf4', name: '偏差/OOS处理流程', version: 'v1.0', nodes: 6, type: '质量', status: 'draft', used: 0 },
+  { id: 'wf5', name: '仪器校准流程', version: 'v2.0', nodes: 4, type: '设备', status: 'active', used: 18 },
+];
+
+export const mockWorkflowInstances = [
+  { id: 'i1', workflow: '样品检测流程', businessId: 'SMP20240521001', currentNode: '检测中', assignee: '张伟', startTime: '2024-05-21 09:00', deadline: '2024-05-25 18:00', status: 'running' },
+  { id: 'i2', workflow: '报告审核签发流程', businessId: 'RPT20240521001', currentNode: '技术审核', assignee: '王强', startTime: '2024-05-21 10:00', deadline: '2024-05-23 18:00', status: 'running' },
+  { id: 'i3', workflow: '采购审批流程', businessId: 'PR-2025-001', currentNode: '部门审批', assignee: '李明', startTime: '2024-05-20', deadline: '2024-05-27', status: 'running' },
+  { id: 'i4', workflow: '报告审核签发流程', businessId: 'RPT20240520005', currentNode: '已签发', assignee: '-', startTime: '2024-05-20 14:00', completedAt: '2024-05-21 16:00', status: 'completed' },
+];
+
+// ===== Backups =====
+export const mockBackups = [
+  { id: 'b1', name: 'hc_lims_full_20260514_120000.sql', size: '256MB', type: '自动全量', date: '2024-05-14 12:00', status: 'completed', duration: '3min 24s' },
+  { id: 'b2', name: 'hc_lims_inc_20260514_060000.sql', size: '12MB', type: '自动增量', date: '2024-05-14 06:00', status: 'completed', duration: '28s' },
+  { id: 'b3', name: 'hc_lims_full_20260513_120000.sql', size: '248MB', type: '自动全量', date: '2024-05-13 12:00', status: 'completed', duration: '3min 10s' },
+  { id: 'b4', name: 'hc_lims_data_20260512_180000.json', size: '45MB', type: '手动导出', date: '2024-05-12 18:00', status: 'completed', duration: '8s' },
+];
+
+// ===== System Monitoring =====
+export const mockSystemMetrics = {
+  cpu: { usage: 34.5, cores: 8, temp: 52 },
+  memory: { total: 32, used: 18.2, percentage: 57 },
+  disk: { total: 500, used: 178, percentage: 36 },
+  db: { connections: 12, maxConnections: 200, latency: 2.3, status: 'healthy' },
+  network: { in: '12.5 MB/s', out: '3.2 MB/s', connections: 45 },
+  uptime: '14天 6小时 23分钟',
+};
+
+export const mockSystemAlerts = [
+  { id: 'a1', level: 'warning', message: '磁盘使用率超过70%阈值', time: '2024-05-15 14:23', source: 'disk-watcher', acknowledged: false },
+  { id: 'a2', level: 'error', message: '数据库连接池接近上限 (85%)', time: '2024-05-15 12:45', source: 'db-monitor', acknowledged: false },
+  { id: 'a3', level: 'info', message: '自动备份完成: hc_lims_full_20260515_120000.sql (256MB)', time: '2024-05-15 12:00', source: 'backup-service', acknowledged: true },
+];
+
+// ===== Enterprise Integration =====
+export const mockIntegrations = [
+  { id: 'int1', name: '企业微信', type: '即时通讯', status: 'connected', lastSync: '2024-05-15 14:30', direction: '双向', description: '消息推送、审批通知、待办提醒' },
+  { id: 'int2', name: '用友 U8+', type: 'ERP', status: 'connected', lastSync: '2024-05-15 12:00', direction: '单向(出)', description: '检测费用同步、客户信息同步' },
+  { id: 'int3', name: '金蝶 K/3', type: 'ERP', status: 'disconnected', lastSync: '2024-05-10 08:00', direction: '双向', description: '库存物料同步、采购订单同步' },
+  { id: 'int4', name: '钉钉', type: 'OA', status: 'connected', lastSync: '2024-05-15 14:00', direction: '双向', description: '审批流程、考勤数据、公告同步' },
+  { id: 'int5', name: 'LIMSConnect MQ', type: '消息队列', status: 'connected', lastSync: '实时', direction: '双向', description: '企业服务总线(ESB)核心消息路由' },
+];

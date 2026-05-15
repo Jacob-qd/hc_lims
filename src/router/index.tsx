@@ -41,6 +41,11 @@ const WorkflowPage = lazy(() => import('../pages/WorkflowPage').then(m => ({ def
 const ReportEnginePage = lazy(() => import('../pages/ReportEnginePage').then(m => ({ default: m.ReportEnginePage })));
 const FieldConfigEditor = lazy(() => import('../pages/FieldConfigEditor').then(m => ({ default: m.FieldConfigEditor })));
 const CertificatePage = lazy(() => import('../pages/CertificatePage').then(m => ({ default: m.CertificatePage })));
+const ProficiencyTestingPage = lazy(() => import('../pages/ProficiencyTestingPage').then(m => ({ default: m.ProficiencyTestingPage })));
+const SystemMonitorPage = lazy(() => import('../pages/SystemMonitorPage').then(m => ({ default: m.SystemMonitorPage })));
+const InstrumentDataPage = lazy(() => import('../pages/InstrumentDataPage').then(m => ({ default: m.InstrumentDataPage })));
+const AIAssistantPage = lazy(() => import('../pages/AIAssistantPage').then(m => ({ default: m.AIAssistantPage })));
+const EnterpriseIntegrationPage = lazy(() => import('../pages/EnterpriseIntegrationPage').then(m => ({ default: m.EnterpriseIntegrationPage })));
 
 export const router = createBrowserRouter([
   {
@@ -96,6 +101,11 @@ export const router = createBrowserRouter([
       { path: 'reports/engine', element: <ReportEnginePage /> },
       { path: 'settings/field-configs', element: <FieldConfigEditor /> },
       { path: 'certificates', element: <CertificatePage /> },
+      { path: 'proficiency-testing', element: <ProficiencyTestingPage /> },
+      { path: 'system-monitor', element: <SystemMonitorPage /> },
+      { path: 'instruments/data', element: <InstrumentDataPage /> },
+      { path: 'ai-assistant', element: <AIAssistantPage /> },
+      { path: 'settings/integration', element: <EnterpriseIntegrationPage /> },
       { path: '*', element: <Navigate to="/dashboard" replace /> },
     ],
   },

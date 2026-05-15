@@ -89,7 +89,7 @@ export const ProficiencyTestingPage: React.FC = () => {
                 <Descriptions.Item label="|z|≤2 (满意)">6项</Descriptions.Item>
                 <Descriptions.Item label="2<|z|<3 (可疑)">0项</Descriptions.Item>
                 <Descriptions.Item label="|z|≥3 (不满意)">0项</Descriptions.Item>
-                <Descriptions.Item label="En值"><Tag color="green">全部<1</Tag></Descriptions.Item>
+                <Descriptions.Item label="En值"><Tag color="green">{'全部<1'}</Tag></Descriptions.Item>
               </Descriptions></Col>
             </Row>
           </Card>

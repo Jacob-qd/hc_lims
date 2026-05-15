@@ -10,6 +10,8 @@ import {
   HistoryOutlined, UserOutlined, BookOutlined, WarningOutlined,
   TrophyOutlined, ShopOutlined, ProfileOutlined, ApartmentOutlined,
   FundOutlined, CalendarOutlined, SafetyOutlined,
+  CloudServerOutlined, ApiOutlined, RobotOutlined, LinkOutlined,
+  DatabaseOutlined, AuditOutlined, BellOutlined, QuestionCircleOutlined,
 } from '@ant-design/icons';
 
 const { Sider } = Layout;
@@ -38,6 +40,18 @@ const menuItems = [
     { key: '/query', icon: <FileSearchOutlined />, label: '综合查询' },
     { key: '/statistics', icon: <BarChartOutlined />, label: '数据分析' },
     { key: '/settings', icon: <SettingOutlined />, label: '系统管理' },
+  ]},
+  { key: 'tools', icon: <ToolOutlined />, label: '系统工具', children: [
+    { key: '/workflow', icon: <ApartmentOutlined />, label: '工作流引擎' },
+    { key: '/reports/engine', icon: <BarChartOutlined />, label: '报表引擎' },
+    { key: '/coc', icon: <HistoryOutlined />, label: 'COC监管链' },
+    { key: '/backup', icon: <DatabaseOutlined />, label: '数据备份' },
+    { key: '/system-monitor', icon: <CloudServerOutlined />, label: '系统监控' },
+    { key: '/instruments/data', icon: <ApiOutlined />, label: '仪器数据直连' },
+    { key: '/proficiency-testing', icon: <TrophyOutlined />, label: '能力验证' },
+    { key: '/ai-assistant', icon: <RobotOutlined />, label: 'AI助手' },
+    { key: '/settings/integration', icon: <LinkOutlined />, label: '企业集成' },
+    { key: '/settings/field-configs', icon: <SettingOutlined />, label: '字段配置' },
   ]},
   { key: 'divider2', type: 'divider' as const },
   { key: 'research', icon: <ApartmentOutlined />, label: '🔬 高校科研版', children: [

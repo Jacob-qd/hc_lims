@@ -922,4 +922,152 @@ export const handlers = [
   http.get(apiUrl('/audit/signatures'), () => {
     return HttpResponse.json({ code: 200, message: 'success', data: { list: mockSignatureAuditLog, total: mockSignatureAuditLog.length } });
   }),
+
+  // ============================================
+  // Proficiency Testing Handlers
+  // ============================================
+  http.get(apiUrl('/pt/plans'), () => {
+    return HttpResponse.json({ code: 200, data: mockPTPlans });
+  }),
+  http.post(apiUrl('/pt/plans'), async ({ request }) => {
+    const body = await request.json() as any;
+    const plan = { id: 'pt-' + Date.now(), ...body, status: 'pending', participants: 0 };
+    mockPTPlans.push(plan as any);
+    return HttpResponse.json({ code: 200, message: '计划创建成功', data: plan });
+  }),
+  http.get(apiUrl('/pt/plans/:id'), ({ params }) => {
+    const plan = mockPTPlans.find((p: any) => p.id === params.id);
+    return plan ? HttpResponse.json({ code: 200, data: plan }) : HttpResponse.json({ code: 404, message: '未找到' }, { status: 404 });
+  }),
+  http.get(apiUrl('/pt/results'), () => {
+    return HttpResponse.json({ code: 200, data: mockPTResults });
+  }),
+  http.post(apiUrl('/pt/results'), async ({ request }) => {
+    const body = await request.json() as any;
+    const result = { id: 'r-' + Date.now(), ...body };
+    mockPTResults.push(result as any);
+    return HttpResponse.json({ code: 200, message: '结果录入成功', data: result });
+  }),
+
+  // ============================================
+  // Instrument Data Connection Handlers
+  // ============================================
+  http.get(apiUrl('/instruments/connections'), () => {
+    return HttpResponse.json({ code: 200, data: mockInstrumentConnections });
+  }),
+  http.post(apiUrl('/instruments/connections'), async ({ request }) => {
+    const body = await request.json() as any;
+    const conn = { id: 'ins-' + Date.now(), ...body };
+    mockInstrumentConnections.push(conn as any);
+    return HttpResponse.json({ code: 200, message: '仪器连接已添加', data: conn });
+  }),
+  http.post(apiUrl('/instruments/connections/:id/test'), ({ params }) => {
+    return HttpResponse.json({ code: 200, message: `连接测试成功: ${params.id}` });
+  }),
+  http.get(apiUrl('/instruments/drivers'), () => {
+    return HttpResponse.json({ code: 200, data: mockInstrumentDrivers });
+  }),
+  http.post(apiUrl('/instruments/data/import'), async () => {
+    return HttpResponse.json({ code: 200, message: '数据导入成功', data: { recordsImported: 24 } });
+  }),
+
+  // ============================================
+  // Workflow Engine Handlers
+  // ============================================
+  http.get(apiUrl('/workflows/definitions'), () => {
+    return HttpResponse.json({ code: 200, data: mockWorkflowDefinitions });
+  }),
+  http.post(apiUrl('/workflows/definitions'), async ({ request }) => {
+    const body = await request.json() as any;
+    const wf = { id: 'wf-' + Date.now(), ...body, status: 'draft', used: 0 };
+    mockWorkflowDefinitions.push(wf as any);
+    return HttpResponse.json({ code: 200, message: '流程模板创建成功', data: wf });
+  }),
+  http.put(apiUrl('/workflows/definitions/:id'), async ({ params, request }) => {
+    const body = await request.json() as any;
+    const idx = mockWorkflowDefinitions.findIndex((w: any) => w.id === params.id);
+    if (idx >= 0) Object.assign(mockWorkflowDefinitions[idx], body);
+    return HttpResponse.json({ code: 200, message: '保存成功' });
+  }),
+  http.get(apiUrl('/workflows/instances'), () => {
+    return HttpResponse.json({ code: 200, data: mockWorkflowInstances });
+  }),
+  http.post(apiUrl('/workflows/instances/:id/approve'), ({ params }) => {
+    const inst = mockWorkflowInstances.find((i: any) => i.id === params.id);
+    if (inst) inst.status = 'completed';
+    return HttpResponse.json({ code: 200, message: '审批通过' });
+  }),
+  http.post(apiUrl('/workflows/instances/:id/reject'), async ({ params, request }) => {
+    const body = await request.json() as any;
+    return HttpResponse.json({ code: 200, message: `已驳回: ${body.reason || ''}` });
+  }),
+  http.post(apiUrl('/workflows/instances/:id/transfer'), async ({ params, request }) => {
+    const body = await request.json() as any;
+    return HttpResponse.json({ code: 200, message: `已转办给: ${body.toUser || ''}` });
+  }),
+
+  // ============================================
+  // Backup Handlers
+  // ============================================
+  http.get(apiUrl('/backups'), () => {
+    return HttpResponse.json({ code: 200, data: mockBackups });
+  }),
+  http.post(apiUrl('/backups'), async () => {
+    return HttpResponse.json({ code: 200, message: '手动备份已启动' });
+  }),
+  http.post(apiUrl('/backups/restore'), async ({ request }) => {
+    const body = await request.json() as any;
+    return HttpResponse.json({ code: 200, message: `已从 ${body.backupId} 恢复数据` });
+  }),
+  http.post(apiUrl('/backups/export'), async ({ request }) => {
+    const body = await request.json() as any;
+    return HttpResponse.json({ code: 200, message: '数据导出成功', data: { format: body.format, records: 1245 } });
+  }),
+
+  // ============================================
+  // System Monitoring Handlers
+  // ============================================
+  http.get(apiUrl('/monitor/metrics'), () => {
+    return HttpResponse.json({ code: 200, data: mockSystemMetrics });
+  }),
+  http.get(apiUrl('/monitor/alerts'), () => {
+    return HttpResponse.json({ code: 200, data: mockSystemAlerts });
+  }),
+  http.post(apiUrl('/monitor/alerts/:id/acknowledge'), ({ params }) => {
+    const alert = mockSystemAlerts.find((a: any) => a.id === params.id);
+    if (alert) alert.acknowledged = true;
+    return HttpResponse.json({ code: 200, message: '已确认' });
+  }),
+
+  // ============================================
+  // Enterprise Integration Handlers
+  // ============================================
+  http.get(apiUrl('/integrations'), () => {
+    return HttpResponse.json({ code: 200, data: mockIntegrations });
+  }),
+  http.post(apiUrl('/integrations'), async ({ request }) => {
+    const body = await request.json() as any;
+    const integration = { id: 'int-' + Date.now(), ...body };
+    mockIntegrations.push(integration as any);
+    return HttpResponse.json({ code: 200, message: '集成添加成功', data: integration });
+  }),
+  http.post(apiUrl('/integrations/:id/sync'), ({ params }) => {
+    return HttpResponse.json({ code: 200, message: `同步成功: ${params.id}` });
+  }),
+
+  // ============================================
+  // AI Assistant Handler
+  // ============================================
+  http.post(apiUrl('/ai/chat'), async ({ request }) => {
+    const body = await request.json() as any;
+    const response = `基于您的提问「${body.message}」，AI正在分析数据...\n\n建议查看相关质控图表和趋势数据。`;
+    return HttpResponse.json({ code: 200, data: { reply: response, suggestions: ['查看质控图', '导出分析报告'] } });
+  }),
+
+  // ============================================
+  // Additional Mock Handlers (expanded pages)
+  // ============================================
+  http.get(apiUrl('/inventory/purchase-requests/expanded'), () => {
+    return HttpResponse.json({ code: 200, data: mockPurchaseRequests });
+  }),
 ];
