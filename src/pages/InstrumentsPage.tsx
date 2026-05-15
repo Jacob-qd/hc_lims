@@ -144,6 +144,36 @@ const InstrumentDetail: React.FC<{ instrument: Instrument | null; visible: boole
               <text x={200} y={165} textAnchor="middle" fontSize={10} fill="#999">05-15</text>
               <text x={350} y={165} textAnchor="middle" fontSize="10" fill="#999">05-30</text>
             </svg></Card> },
+        { key: 'methods', label: '关联方法', children: (
+          <Table dataSource={[
+            {method:'COD测定法',standard:'HJ 828-2017',type:'化学法',version:'V2.1',status:'已批准'},
+            {method:'BOD5测定法',standard:'HJ 505-2009',type:'化学法',version:'V1.3',status:'已批准'},
+          ]} rowKey="method" pagination={false} size="small" columns={[
+            {title:'方法名称',dataIndex:'method'},{title:'标准编号',dataIndex:'standard'},
+            {title:'方法类型',dataIndex:'type'},{title:'版本',dataIndex:'version'},
+            {title:'状态',dataIndex:'status',render:(s:string)=><Tag color={s==='已批准'?'green':'orange'}>{s}</Tag>},
+          ]} />
+        )},
+        { key: 'certification', label: '仪器认证', children: (
+          <div>
+            <Space style={{marginBottom:12}}>
+              <Button size="small" type="primary" onClick={()=>message.success('IQ确认流程已启动')}>IQ 安装确认</Button>
+              <Button size="small" onClick={()=>message.success('OQ确认流程已启动')}>OQ 运行确认</Button>
+              <Button size="small" onClick={()=>message.success('PQ确认流程已启动')}>PQ 性能确认</Button>
+            </Space>
+            <Table dataSource={[
+              {stage:'IQ',date:'2024-01-15',result:'通过',certNo:'IQ-2024-001',agency:'厂家工程师'},
+              {stage:'OQ',date:'2024-01-20',result:'通过',certNo:'OQ-2024-001',agency:'厂家工程师'},
+              {stage:'PQ',date:'2024-02-01',result:'通过',certNo:'PQ-2024-001',agency:'质量部'},
+            ]} rowKey="certNo" pagination={false} size="small" columns={[
+              {title:'阶段',dataIndex:'stage',render:(s:string)=>{
+                const m:{[k:string]:{c:string;l:string}}={IQ:{c:'blue',l:'安装确认'},OQ:{c:'orange',l:'运行确认'},PQ:{c:'green',l:'性能确认'}};
+                return <Tag color={m[s]?.c}>{m[s]?.l||s}</Tag>;
+              }},{title:'日期',dataIndex:'date'},{title:'结果',dataIndex:'result',render:(r:string)=><Tag color={r==='通过'?'green':'red'}>{r}</Tag>},
+              {title:'证书编号',dataIndex:'certNo'},{title:'执行方',dataIndex:'agency'},
+            ]} />
+          </div>
+        )},
       ]} />
     </Drawer>
   );
