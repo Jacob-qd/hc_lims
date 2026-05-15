@@ -79,7 +79,19 @@ for path in "/" "/dashboard" "/samples" "/tasks" "/reports" "/quality" "/instrum
   if [ "$code" != "200" ]; then ROUTE_FAIL=$((ROUTE_FAIL+1)); fi
 done
 if [ $ROUTE_FAIL -eq 0 ]; then
-  pass "All routes (12/12)"
+  JS_FAIL=0
+  for jsPath in "/src/main.tsx" "/src/mocks/handlers.ts" "/src/App.tsx"; do
+    mime=$(curl -s -D - "http://localhost:5173${jsPath}" 2>&1 | grep -i "content-type" | tr -d "")
+    if ! echo "$mime" | grep -q "text/javascript\|application/javascript"; then
+      JS_FAIL=$((JS_FAIL+1))
+      echo "       ⚠️  $jsPath → $mime"
+    fi
+  done
+  if [ $JS_FAIL -gt 0 ]; then
+    fail "JS module" "$JS_FAIL JS module(s) returned HTML instead of JS"
+  else
+    pass "All routes (12/12) + JS modules compile"
+  fi
 else
   fail "Routes" "$ROUTE_FAIL route(s) failed"
 fi
