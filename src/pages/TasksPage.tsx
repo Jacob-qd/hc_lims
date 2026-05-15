@@ -211,6 +211,36 @@ export const TasksPage: React.FC = () => {
               { color: ['pending_review', 'completed'].includes(selectedTask.status) ? 'green' : selectedTask.status === 'pending_review' ? 'blue' : 'gray', children: '数据审核' },
               { color: selectedTask.status === 'completed' ? 'green' : 'gray', children: '报告生成' },
             ]} />
+            <Divider />
+            <Space>
+              {selectedTask?.status === 'completed' && (
+                <>
+                  <Button icon={<ReloadOutlined />} onClick={() => Modal.confirm({
+                    title: '发起复测',
+                    content: (
+                      <div>
+                        <p>将为当前检测任务创建复测记录</p>
+                        <Form layout="vertical" onFinish={() => {}}>
+                          <Form.Item label="复测原因"><Select defaultValue="超标" style={{width:'100%'}}>
+                            <Option value="超标">检测结果超标</Option>
+                            <Option value="异常">数据异常</Option>
+                            <Option value="争议">客户争议</Option>
+                            <Option value="质控">质控要求</Option>
+                          </Select></Form.Item>
+                          <Form.Item label="稀释倍数"><InputNumber min={1} max={1000} defaultValue={1} style={{width:'100%'}} /></Form.Item>
+                        </Form>
+                      </div>
+                    ),
+                    onOk: () => message.success('复测任务已创建，将重新进入检测流程'),
+                  })}>发起复测</Button>
+                  <Button icon={<ExperimentOutlined />} onClick={() => Modal.confirm({
+                    title: '平行样/加标回收',
+                    content: '系统将自动创建平行样或加标回收记录。平行样相对偏差(RPD)和加标回收率将在结果录入后自动计算。',
+                    onOk: () => message.success('平行样/加标回收记录已创建'),
+                  })}>平行样验证</Button>
+                </>
+              )}
+            </Space>
           </>
         )}
       </Drawer>
