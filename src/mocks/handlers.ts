@@ -628,6 +628,16 @@ export const handlers = [
     return HttpResponse.json({ code: 200, data: {}, message: '交接记录创建成功' });
   }),
 
+  // ===== Backup =====
+  http.get(apiUrl('/backups'), () => HttpResponse.json({ code: 200, data: { list: mockBackupList } })),
+  http.post(apiUrl('/backups'), async () => {
+    const newBak = { id: 'b' + Date.now(), name: `hc_lims_full_${new Date().toISOString().slice(0,10).replace(/-/g,'')}_120000.sql`, size: '256MB', type: '手动', date: new Date().toISOString().replace('T',' ').slice(0,16), status: 'completed' };
+    mockBackupList.unshift(newBak);
+    return HttpResponse.json({ code: 200, data: newBak, message: '备份创建成功' });
+  }),
+  http.post(apiUrl('/backups/:id/restore'), () => HttpResponse.json({ code: 200, message: '数据恢复成功' })),
+  http.post(apiUrl('/backups/:id/verify'), () => HttpResponse.json({ code: 200, data: { valid: true }, message: '校验通过' })),
+
   http.get(apiUrl('/dynamic-render/:module/:templateId'), ({ params }) => {
     const { module, templateId } = params;
     const tmpl = mockFieldTemplates.find((t: any) => t.id === templateId);
