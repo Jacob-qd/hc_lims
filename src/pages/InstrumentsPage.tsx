@@ -110,6 +110,32 @@ const InstrumentDetail: React.FC<{ instrument: Instrument | null; visible: boole
             ]} />
           </div>
         )},
+        { key: 'monitoring', label: '实时监控', children: (
+          <div>
+            <Row gutter={[8,8]} style={{ marginBottom: 12 }}>
+              <Col span={8}><Card size="small"><Statistic title="流速" value="1.2" suffix="mL/min" valueStyle={{fontSize:20}} /></Card></Col>
+              <Col span={8}><Card size="small"><Statistic title="柱温" value="35" suffix="°C" valueStyle={{fontSize:20}} /></Card></Col>
+              <Col span={8}><Card size="small"><Statistic title="压力" value="8.5" suffix="MPa" valueStyle={{fontSize:20,color:'#1677ff'}} /></Card></Col>
+            </Row>
+            <Row gutter={[8,8]}>
+              <Col span={8}><Card size="small"><Statistic title="波长" value="254" suffix="nm" valueStyle={{fontSize:20}} /></Card></Col>
+              <Col span={8}><Card size="small"><Statistic title="运行时长" value="2h15m" valueStyle={{fontSize:20}} /></Card></Col>
+              <Col span={8}><Card size="small"><Statistic title="当前样品" value="S-001" valueStyle={{fontSize:20}} /></Card></Col>
+            </Row>
+            <div style={{marginTop:12,padding:8,background:'#fafafa',borderRadius:4}}>
+              <Text strong>压力趋势</Text>
+              <svg viewBox="0 0 300 100" style={{width:'100%',height:100,marginTop:4}}>
+                <rect x={0} y={0} width={300} height={100} fill="#f5f5f5" rx={4} />
+                <path d={Array.from({length:30},(_,i)=>`${i===0?'M':'L'}${i*10},${80-Math.sin(i*0.5)*15-Math.random()*5}`).join('')} stroke="#1677ff" strokeWidth={2} fill="none" />
+                <text x={0} y={95} fontSize={10} fill="#999">0</text>
+                <text x={290} y={95} fontSize={10} fill="#999" textAnchor="end">30min</text>
+                <line x1={0} y1={30} x2={300} y2={30} stroke="#ff4d4f" strokeWidth={1} strokeDasharray="4,2" />
+                <text x={300} y={28} fontSize={9} fill="#ff4d4f" textAnchor="end">上限 10MPa</text>
+              </svg>
+              <Text type="secondary" style={{fontSize:11}}>数据模拟 · 每30秒更新一次</Text>
+            </div>
+          </div>
+        )},
         { key: 'usage', label: '使用记录', children: <Card size="small"><Text strong>利用率趋势 (近30天)</Text><svg viewBox="0 0 400 180" style={{width:'100%',height:200,marginTop:8}}>
               <rect x={40} y={10} width={340} height={140} fill="#fafafa" rx={4} />
               {[50,95,140].map(y => <line key={y} x1={40} y1={y} x2={380} y2={y} stroke="#f0f0f0" />)}
