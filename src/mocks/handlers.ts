@@ -42,6 +42,8 @@ import {
   mockPersonnel,
   mockTrainingRecords,
   mockCertificates,
+  mockFieldConfigs,
+  mockFieldTemplates,
 } from './data';
 
 const apiUrl = (path: string) => `/api/v1${path}`;
@@ -504,4 +506,92 @@ export const handlers = [
 
   // ===== Teaching =====
   http.get(apiUrl('/teaching/courses'), () => HttpResponse.json({ code: 200, data: { list: mockCourses } })),
+
+  // ===== Dynamic Form =====
+  http.get(apiUrl('/field-configs'), ({ request }) => {
+    const url = new URL(request.url);
+    const module = url.searchParams.get('module') || 'sample';
+    const data = (mockFieldConfigs as any)[module] || [];
+    return HttpResponse.json({ code: 200, data: { list: data } });
+  }),
+  http.post(apiUrl('/field-configs'), async ({ request }) => {
+    const body = await request.json() as any;
+    const module = body.module || 'sample';
+    if (!(mockFieldConfigs as any)[module]) (mockFieldConfigs as any)[module] = [];
+    const item = { id: 'fc' + Date.now(), sortOrder: ((mockFieldConfigs as any)[module]?.length || 0) + 1, active: true, ...body };
+    (mockFieldConfigs as any)[module].push(item);
+    return HttpResponse.json({ code: 200, data: item, message: '字段创建成功' });
+  }),
+  http.put(apiUrl('/field-configs/:id'), async ({ params, request }) => {
+    const body = await request.json() as any;
+    for (const mod of Object.keys(mockFieldConfigs)) {
+      const idx = (mockFieldConfigs as any)[mod].findIndex((f: any) => f.id === params.id);
+      if (idx >= 0) { (mockFieldConfigs as any)[mod][idx] = { ...(mockFieldConfigs as any)[mod][idx], ...body }; break; }
+    }
+    return HttpResponse.json({ code: 200, message: '字段更新成功' });
+  }),
+  http.delete(apiUrl('/field-configs/:id'), ({ params }) => {
+    for (const mod of Object.keys(mockFieldConfigs)) {
+      const idx = (mockFieldConfigs as any)[mod].findIndex((f: any) => f.id === params.id);
+      if (idx >= 0) { (mockFieldConfigs as any)[mod].splice(idx, 1); break; }
+    }
+    return HttpResponse.json({ code: 200, message: '字段删除成功' });
+  }),
+  http.put(apiUrl('/field-configs/reorder'), async ({ request }) => {
+    const { module, orderedIds } = await request.json() as any;
+    const configs = (mockFieldConfigs as any)[module] || [];
+    orderedIds.forEach((id: string, index: number) => {
+      const f = configs.find((c: any) => c.id === id);
+      if (f) f.sortOrder = index + 1;
+    });
+    return HttpResponse.json({ code: 200, message: '排序更新成功' });
+  }),
+  http.get(apiUrl('/field-templates'), ({ request }) => {
+    const url = new URL(request.url);
+    const module = url.searchParams.get('module') || 'sample';
+    return HttpResponse.json({ code: 200, data: { list: mockFieldTemplates.filter((t: any) => t.module === module) } });
+  }),
+  http.post(apiUrl('/field-templates'), async ({ request }) => {
+    const body = await request.json() as any;
+    const item = { id: 'tmpl' + Date.now(), version: 1, isSnapshot: false, createdAt: new Date().toISOString(), ...body };
+    mockFieldTemplates.push(item);
+    return HttpResponse.json({ code: 200, data: item, message: '模板创建成功' });
+  }),
+  http.put(apiUrl('/field-templates/:id'), async ({ params, request }) => {
+    const body = await request.json() as any;
+    const idx = mockFieldTemplates.findIndex((t: any) => t.id === params.id);
+    if (idx >= 0) mockFieldTemplates[idx] = { ...mockFieldTemplates[idx], ...body, version: mockFieldTemplates[idx].version + 1 };
+    return HttpResponse.json({ code: 200, message: '模板更新成功' });
+  }),
+  http.post(apiUrl('/field-templates/:id/clone'), ({ params }) => {
+    const src = mockFieldTemplates.find((t: any) => t.id === params.id);
+    if (!src) return HttpResponse.json({ code: 404, message: '模板不存在' }, { status: 404 });
+    const clone = { ...src, id: 'tmpl' + Date.now(), name: src.name + '(副本)', version: 1, isSnapshot: false, parentId: src.id, createdAt: new Date().toISOString() };
+    mockFieldTemplates.push(clone);
+    return HttpResponse.json({ code: 200, data: clone, message: '模板克隆成功' });
+  }),
+  http.post(apiUrl('/field-templates/:id/snapshot'), ({ params }) => {
+    const src = mockFieldTemplates.find((t: any) => t.id === params.id);
+    if (!src) return HttpResponse.json({ code: 404, message: '模板不存在' }, { status: 404 });
+    const snapshot = { ...src, id: 'snap' + Date.now(), name: src.name + '(v' + src.version + ' 快照)', version: src.version, isSnapshot: true, createdAt: new Date().toISOString() };
+    mockFieldTemplates.push(snapshot);
+    return HttpResponse.json({ code: 200, data: snapshot, message: '快照创建成功' });
+  }),
+  http.get(apiUrl('/dynamic-render/:module/:templateId'), ({ params }) => {
+    const { module, templateId } = params;
+    const tmpl = mockFieldTemplates.find((t: any) => t.id === templateId);
+    const configs = tmpl?.fieldConfigs || (mockFieldConfigs as any)[module] || [];
+    const groups: Record<string, any[]> = {};
+    configs.filter((f: any) => f.active !== false).sort((a: any, b: any) => a.sortOrder - b.sortOrder).forEach((f: any) => {
+      const g = f.groupName || '默认分组';
+      if (!groups[g]) groups[g] = [];
+      groups[g].push({
+        key: f.fieldKey, label: f.label, type: f.fieldType, required: f.required,
+        defaultValue: f.defaultValue, placeholder: f.placeholder,
+        validation: f.validation, options: f.options,
+        showIf: f.conditionRules, cascading: f.cascading,
+      });
+    });
+    return HttpResponse.json({ code: 200, data: { module, templateId, groups: Object.entries(groups).map(([name, fields]) => ({ name, fields })) } });
+  }),
 ];

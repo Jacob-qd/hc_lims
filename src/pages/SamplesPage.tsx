@@ -15,6 +15,8 @@ import type { ColumnsType } from 'antd/es/table';
 import type { Sample } from '../mocks/data';
 import { sampleTypes, sampleStatuses, customers, projects, labs } from '../mocks/data';
 import type { Dayjs } from 'dayjs';
+import { DynamicFieldRenderer } from '../components/DynamicFieldRenderer';
+import type { FieldConfig } from '../types/dynamicForm';
 
 const { Title, Text } = Typography;
 const { Step } = Steps;
@@ -37,6 +39,20 @@ export const SamplesPage: React.FC = () => {
   const [selectedTestItems, setSelectedTestItems] = useState<string[]>([]);
   const [testItemOptions, setTestItemOptions] = useState<any[]>([]);
   const [stats, setStats] = useState({ todayReceive: 42, pendingReceive: 18, inStock: 1248, urgent: 7 });
+  const [dynamicConfigs, setDynamicConfigs] = useState<FieldConfig[]>([]);
+  const [dynamicValues, setDynamicValues] = useState<Record<string, unknown>>({});
+
+  const loadDynamicConfigs = async (module: string) => {
+    try {
+      const res = await fetch('/api/v1/field-configs?module=' + module);
+      const json = await res.json();
+      setDynamicConfigs(json.data?.list?.filter((f: FieldConfig) => f.active !== false) || []);
+    } catch { setDynamicConfigs([]); }
+  };
+
+  useEffect(() => {
+    if (wizardOpen) loadDynamicConfigs('sample');
+  }, [wizardOpen]);
 
   useEffect(() => {
     loadSamples();
@@ -198,6 +214,13 @@ export const SamplesPage: React.FC = () => {
               </Form.Item>
             </Col>
           </Row>
+          {/* 动态表单: 根据样品类型显示自定义字段 */}
+          <Divider>扩展信息</Divider>
+          <DynamicFieldRenderer
+            configs={dynamicConfigs}
+            values={dynamicValues}
+            onChange={setDynamicValues}
+          />
         </>
       );
       case 1: return (
