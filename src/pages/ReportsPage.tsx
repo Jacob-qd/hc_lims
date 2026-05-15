@@ -416,11 +416,32 @@ const FlowStepIndicator: React.FC<{ report: Report }> = ({ report }) => {
   );
 };
 
+/** 报告水印 */
+const WatermarkOverlay: React.FC<{ text: string }> = ({ text }) => (
+  <div style={{
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    pointerEvents: 'none', overflow: 'hidden',
+  }}>
+    <div style={{
+      fontSize: 48, fontWeight: 'bold', color: 'rgba(0,0,0,0.06)',
+      transform: 'rotate(-30deg)', whiteSpace: 'nowrap',
+      userSelect: 'none',
+    }}>
+      {text}
+    </div>
+  </div>
+);
+
 /** PDF Preview (Simplified) */
 const PdfPreviewPanel: React.FC<{ report: Report }> = ({ report }) => {
   const { cover } = report;
+  const issued = report.status === 'issued';
+  const issuedDate = report.signatures.find(s => s.role === 'approver')?.signedAt;
+  const watermarkText = issued ? `已签发 ${issuedDate ? new Date(issuedDate).toLocaleDateString() : ''}` : '';
   return (
-    <div style={{ background: '#f5f5f5', borderRadius: 8, padding: 24, minHeight: 400 }}>
+    <div style={{ background: '#f5f5f5', borderRadius: 8, padding: 24, minHeight: 400, position: 'relative' }}>
+      {issued && <WatermarkOverlay text={watermarkText} />}
       <div
         style={{
           background: '#fff',
@@ -429,6 +450,8 @@ const PdfPreviewPanel: React.FC<{ report: Report }> = ({ report }) => {
           padding: 32,
           boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
           borderRadius: 4,
+          position: 'relative',
+          zIndex: 1,
         }}
       >
         <div style={{ textAlign: 'center', marginBottom: 24 }}>
@@ -615,6 +638,29 @@ export const ReportsPage: React.FC = () => {
       onOk: () => {
         setReports(prev => prev.filter(r => r.id !== report.id));
         message.success('删除成功');
+      },
+    });
+  };
+
+  const handleBatchSign = () => {
+    const count = selectedRowKeys.length;
+    const toSign = reports.filter(r => selectedRowKeys.includes(r.id) && r.status === 'tech_reviewed');
+    if (toSign.length === 0) {
+      message.warning('选中的报告中没有待批准签发的报告');
+      return;
+    }
+    Modal.confirm({
+      title: `批量签发 ${toSign.length} 份报告`,
+      content: `将以批准人身份签发选中的 ${toSign.length} 份报告。
+操作不可撤销，确定继续吗？`,
+      onOk: () => {
+        setReports(prev => prev.map(r =>
+          selectedRowKeys.includes(r.id) && r.status === 'tech_reviewed'
+            ? { ...r, status: 'issued', signatures: [...r.signatures, { role: 'approver', name: '当前用户', signedAt: new Date().toISOString() }] }
+            : r
+        ));
+        setSelectedRowKeys([]);
+        message.success(`已签发 ${toSign.length} 份报告`);
       },
     });
   };
@@ -825,6 +871,11 @@ export const ReportsPage: React.FC = () => {
         </Button>
         <Button icon={<ExportOutlined />}>导出</Button>
         <Button icon={<PrinterOutlined />}>打印</Button>
+        {selectedRowKeys.length > 0 && (
+          <Button icon={<CheckCircleOutlined />} style={{ color: '#52c41a', borderColor: '#52c41a' }} onClick={handleBatchSign}>
+            批量签发 ({selectedRowKeys.length})
+          </Button>
+        )}
         {selectedRowKeys.length > 0 && (
           <Button icon={<DeleteOutlined />} danger onClick={handleBatchDelete}>
             删除 ({selectedRowKeys.length})
