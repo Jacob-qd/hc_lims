@@ -13,8 +13,8 @@ async function enableMocking() {
   return Promise.resolve();
 }
 
-// PWA service worker registration
-if ('serviceWorker' in navigator) {
+// PWA service worker registration (production only)
+if (!import.meta.env.DEV && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').catch(() => {});
   });
