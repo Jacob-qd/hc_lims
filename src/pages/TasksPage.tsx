@@ -158,7 +158,26 @@ export const TasksPage: React.FC = () => {
                 ]} />
               </Card>
               <Card size="small" title="任务分配" style={{marginTop:16}}>
-                <Button type="primary" size="small">+ 分配任务</Button>
+                <Space>
+                  <Button type="primary" size="small" onClick={() => message.success('已根据规则自动分配所有待分配任务')}>自动分配</Button>
+                  <Button size="small" onClick={() => {
+                    Modal.confirm({ title: '分配规则配置', content: (
+                      <Form layout="vertical">
+                        <Form.Item label="分配策略"><Select defaultValue="round-robin" style={{width:'100%'}}>
+                          <Option value="round-robin">轮询分配(负载均衡)</Option>
+                          <Option value="sample-type">按样品类型分配</Option>
+                          <Option value="priority">按优先级分配</Option>
+                          <Option value="manual">手动分配(默认)</Option>
+                        </Select></Form.Item>
+                        <Form.Item label="按样品类型分配时"><Select mode="multiple" style={{width:'100%'}} placeholder="选择检测人">
+                          <Option value="person1">张伟(水质)</Option>
+                          <Option value="person2">李四(土壤)</Option>
+                          <Option value="person3">王五(空气)</Option>
+                        </Select></Form.Item>
+                      </Form>
+                    ), onOk: () => message.success('分配规则已保存'), });
+                  }}>规则配置</Button>
+                </Space>
               </Card>
             </Col>
           </Row>

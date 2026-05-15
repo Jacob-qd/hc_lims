@@ -103,6 +103,30 @@ export const SampleDetailPage: React.FC = () => {
             ]} />
           </div>
         )},
+        { key: 'retention', label: '留样管理', children: (
+          <div>
+            <Button size="small" type="primary" icon={<InboxOutlined />} style={{ marginBottom: 12 }} onClick={() => Modal.confirm({
+              title: '登记留样', content: (
+                <Form layout="vertical">
+                  <Form.Item label="留样量"><Input placeholder="如 200mL" /></Form.Item>
+                  <Form.Item label="保存条件"><Select style={{width:'100%'}}><Option value="4C">4°C冷藏</Option><Option value="-20C">-20°C冷冻</Option><Option value="ambient">常温</Option></Select></Form.Item>
+                  <Form.Item label="保留期限(天)"><InputNumber min={1} max={365} defaultValue={30} style={{width:'100%'}} /></Form.Item>
+                </Form>
+              ), onOk: () => message.success('留样登记成功'),
+            })}>登记留样</Button>
+            <Table dataSource={[
+              { batch:'RY-2026-001', amount:'200mL', condition:'4°C冷藏', expiry:'2026-06-15', daysLeft:31, status:'正常' },
+              { batch:'RY-2026-002', amount:'150mL', condition:'-20°C冷冻', expiry:'2026-05-20', daysLeft:5, status:'即将到期' },
+            ]} rowKey="batch" pagination={false} size="small" columns={[
+              {title:'留样批号',dataIndex:'batch'},{title:'留样量',dataIndex:'amount'},{title:'保存条件',dataIndex:'condition'},
+              {title:'到期日期',dataIndex:'expiry'},{title:'剩余天数',dataIndex:'daysLeft',render:(v:number)=>{
+                const c = v <= 7 ? '#ff4d4f' : v <= 14 ? '#faad14' : '#52c41a';
+                return <span style={{color:c,fontWeight:600}}>{v}天</span>;
+              }},{title:'状态',dataIndex:'status',render:(s:string)=><Tag color={s==='正常'?'green':'orange'}>{s}</Tag>},
+              {title:'操作',render:()=><Button size="small" onClick={()=>message.success('留样已处置')}>处置</Button>},
+            ]} />
+          </div>
+        )},
         { key: 'attachments', label: '附件', children: <Text type="secondary">暂无附件</Text> },
       ]} />
     </div>

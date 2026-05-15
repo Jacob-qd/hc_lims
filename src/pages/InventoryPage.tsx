@@ -118,6 +118,20 @@ export const InventoryPage: React.FC = () => {
             </Card></Col>
           </Row>
         )},
+        { key: 'suppliers', label: '供应商管理', children: (
+          <Card extra={<Button type="primary" size="small" onClick={() => message.success('新增供应商')}>新增供应商</Button>}>
+            <Table dataSource={[
+              {id:'s1',name:'国药集团化学试剂',contact:'张经理',phone:'021-12345678',email:'sales@sinopharm.com',rating:'A',status:'active'},
+              {id:'s2',name:'默克化工',contact:'李经理',phone:'021-87654321',email:'info@merck.cn',rating:'A',status:'active'},
+              {id:'s3',name:'赛默飞世尔',contact:'王经理',phone:'010-12345678',email:'info@thermofisher.cn',rating:'B',status:'active'},
+              {id:'s4',name:'阿拉丁试剂',contact:'赵经理',phone:'021-11223344',email:'sales@aladdin.cn',rating:'B',status:'inactive'},
+            ]} rowKey="id" pagination={false} size="small" columns={[
+              {title:'供应商名称',dataIndex:'name'},{title:'联系人',dataIndex:'contact'},{title:'电话',dataIndex:'phone'},
+              {title:'邮箱',dataIndex:'email'},{title:'评级',dataIndex:'rating',render:(r:string)=><Tag color={r==='A'?'green':'blue'}>{r}</Tag>},
+              {title:'状态',dataIndex:'status',render:(s:string)=><Tag color={s==='active'?'green':'default'}>{s==='active'?'合作中':'暂停'}</Tag>},
+            ]} />
+          </Card>
+        )},
         { key: 'purchase', label: '采购申请', children: (
           <Card><Table dataSource={prs} rowKey="id" columns={[
             { title: '申请单号', dataIndex: 'no', render: (n: string) => <Text code>{n}</Text> },
