@@ -13,3 +13,6 @@
 [branch "recovery/hc-2hd-stranded-86e440c"]
 	remote = origin
 	merge = refs/heads/recovery/hc-2hd-stranded-86e440c
+[branch "polecat/rust/hc-57b@mp69bvno"]
+	remote = origin
+	merge = refs/heads/main
