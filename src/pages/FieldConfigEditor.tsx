@@ -209,7 +209,7 @@ export const FieldConfigEditor: React.FC = () => {
                 loading={loading}
                 pagination={false}
                 size="small"
-                locale={{ emptyText: <Empty description="暂无字段配置，点击"添加字段"开始" /> }}
+                locale={{ emptyText: <Empty description={'暂无字段配置，点击"添加字段"开始'} /> }}
               />
             </Card>
           ),

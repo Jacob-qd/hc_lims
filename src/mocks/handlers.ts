@@ -643,7 +643,10 @@ export const handlers = [
         showIf: f.conditionRules, cascading: f.cascading,
       });
     });
-    return HttpResponse.json({ code: 200, data: { module, templateId, groups: Object.entries(groups).map(([name, fields]) => ({ name, fields })) } });  // ============================================
+    return HttpResponse.json({ code: 200, data: { module, templateId, groups: Object.entries(groups).map(([name, fields]) => ({ name, fields })) } });
+  }),
+
+  // ============================================
   // Electronic Signature (SM2/SM3) Handlers
   // ============================================
 
