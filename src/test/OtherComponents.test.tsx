@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BatchActions, RowSelectionPreset } from '../components/BatchActions';
 import { BarcodePreview, generateSampleBarcode, BarcodePrintModal, BatchBarcodePrint } from '../components/BarcodeLabel';

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import { ConfigProvider } from 'antd';
 import { MemoryRouter } from 'react-router-dom';
@@ -10,7 +10,7 @@ import { WorkflowPage } from '../pages/WorkflowPage';
 import { ReportEnginePage } from '../pages/ReportEnginePage';
 import { SamplesPage } from '../pages/SamplesPage';
 import { TasksPage } from '../pages/TasksPage';
-import { InstrumentsPage } from '../pages/InstrumentsPage';
+// import { InstrumentsPage } from '../pages/InstrumentsPage';
 import { InventoryPage } from '../pages/InventoryPage';
 import { QualityPage } from '../pages/QualityPage';
 import { DictPage } from '../pages/DictPage';

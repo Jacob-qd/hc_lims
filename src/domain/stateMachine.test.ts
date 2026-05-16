@@ -7,10 +7,8 @@ import {
   transitionReport,
   runFullWorkflow,
   sampleTransitions,
-  taskTransitions,
-  reportTransitions,
 } from './stateMachine';
-import type { SampleStatus, TaskStatus, ReportStatus } from './stateMachine';
+import type { SampleStatus } from './stateMachine';
 
 describe('样品状态机', () => {
   it('待接收 → 已接收: 合法', () => {
