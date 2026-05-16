@@ -110,11 +110,11 @@ export const WorkflowPage: React.FC = () => {
     if (task.type === '待办') {
       return (
         <Space size="small">
-          <Button size="small" type="primary" onClick={() => message.success('已通过')}>通过</Button>
+          <Button size="small" type="primary" onClick={() => { const inst = mockWorkflowInstances.find((i:any)=>i.id===t.instanceId); if(inst){inst.status='completed';inst.currentNode='已通过';} message.success('已通过'); }}>通过</Button>
           <Button size="small" danger onClick={() => {
             Modal.confirm({ title: '驳回', content: <Input.TextArea placeholder="驳回理由" />, onOk: () => message.success('已驳回') });
           }}>驳回</Button>
-          <Button size="small" onClick={() => message.success('已转办')}>转办</Button>
+          <Button size="small" onClick={() => { const inst = mockWorkflowInstances.find((i:any)=>i.id===t.instanceId); if(inst){inst.currentNode='已转办';} message.success('已转办'); }}>转办</Button>
         </Space>
       );
     }
@@ -183,7 +183,7 @@ export const WorkflowPage: React.FC = () => {
               { title: '截止时间', dataIndex: 'deadline', render: (d: string) => d || '-' },
               { title: '状态', dataIndex: 'status', render: (s: string) => <Badge status={s === 'running' ? 'processing' : 'success'} text={s === 'running' ? '运行中' : '已完成'} /> },
               { title: '操作', render: (_: any, r: any) => r.status === 'running' ? (
-                <Space size="small"><Button type="link" size="small">查看</Button><Button type="link" size="small" danger onClick={() => message.warning('已终止')}>终止</Button></Space>
+                <Space size="small"><Button type="link" size="small">查看</Button><Button type="link" size="small" danger onClick={() => { const idx = mockWorkflowInstances.findIndex((i:any)=>i.id===r.id); if(idx>=0){mockWorkflowInstances[idx].status='terminated';mockWorkflowInstances[idx].currentNode='已终止';} message.warning('已终止'); }}>终止</Button></Space>
               ) : <Button type="link" size="small">查看详情</Button> },
             ]} pagination={false} size="middle" />
           </Card>

@@ -74,7 +74,7 @@ export const BackupPage: React.FC = () => {
               { title: '状态', dataIndex: 'status', width: 80, render: () => <Tag color="green">完成</Tag> },
               { title: '操作', width: 160, render: (_: any, r: any) => <Space size="small">
                 <Button type="link" size="small" onClick={() => { setRestoreVisible(true); }}>恢复</Button>
-                <Button type="link" size="small" onClick={() => message.success(`${r.name} 已开始下载`)}>下载</Button>
+                <Button type="link" size="small" onClick={() => { const content = `备份文件: ${r.name}\n大小: ${r.size}\n日期: ${r.date}`; const blob = new Blob([content], {type:'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = r.name; a.click(); message.success(`${r.name} 已下载`); }}>下载</Button>
                 <Button type="link" size="small" danger onClick={() => Modal.confirm({ title: '删除备份', content: `确认删除 ${r.name}？`, onOk: () => message.success('已删除') })}>删除</Button>
               </Space> },
             ]} size="middle" />

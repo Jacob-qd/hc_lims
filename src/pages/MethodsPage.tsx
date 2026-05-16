@@ -24,7 +24,7 @@ const SopView: React.FC<{method: any}> = ({method}) => <div>
     { title: '章节', dataIndex: 'section', width: 160 },
     { title: '内容摘要', dataIndex: 'desc' },
   ]} />
-  <Button type="primary" size="small" style={{ marginTop: 8 }} onClick={() => message.success('SOP文档已下载')}>下载完整SOP (PDF)</Button>
+  <Button type="primary" size="small" style={{ marginTop: 8 }} onClick={() => { const sop = `SOP文档: ${method?.code}\n方法: ${method?.name}\n版本: v2.0\n---\n1. 适用范围\n2. 方法原理\n3. 试剂与材料\n4. 操作步骤\n5. 质量控制`; const blob = new Blob([sop],{type:'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `SOP-${method?.code}.txt`; a.click(); }}>下载完整SOP</Button>
 </div>;
 
 export const MethodsPage: React.FC = () => {
@@ -89,7 +89,7 @@ export const MethodsPage: React.FC = () => {
         ]} size="middle" />
       </Card>
 
-      <Drawer title={`${selected?.code} ${selected?.name}`} open={drawer} onClose={() => { setDrawer(false); setSelected(null); }} width={520} extra={<Space><Button icon={<EditOutlined />} onClick={() => { setEditingMethod(selected); form.setFieldsValue(selected); setEditModal(true); }}>编辑</Button><Button icon={<PrinterOutlined />} onClick={() => message.success('方法已导出PDF')}>导出PDF</Button></Space>}>
+      <Drawer title={`${selected?.code} ${selected?.name}`} open={drawer} onClose={() => { setDrawer(false); setSelected(null); }} width={520} extra={<Space><Button icon={<EditOutlined />} onClick={() => { setEditingMethod(selected); form.setFieldsValue(selected); setEditModal(true); }}>编辑</Button><Button icon={<PrinterOutlined />} onClick={() => { const content = `方法: ${selected?.code} ${selected?.name}\n分析项目: ${selected?.analyte}\n版本: ${selected?.version}\n适用仪器: ${selected?.instrument}\n检出限: ${selected?.detectionLimit}`; const blob = new Blob([content],{type:'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${selected?.code}.txt`; a.click(); }}>导出PDF</Button></Space>}>
         {selected && (<>
           <Descriptions column={2} bordered size="small">
             <Descriptions.Item label="方法编号" span={2}>{selected.code}</Descriptions.Item>

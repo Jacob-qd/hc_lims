@@ -68,7 +68,7 @@ export const ResearchProjectPage: React.FC = () => {
         ]} size="middle" />
       </Card>
 
-      <Drawer title={selected?.name} open={drawerVisible} onClose={() => { setDrawerVisible(false); setSelected(null); }} width={520} extra={<Space><Button icon={<EditOutlined />} onClick={() => message.success('编辑项目')}>编辑</Button><Button icon={<PrinterOutlined />} onClick={() => message.success('项目报告已导出')}>导出报告</Button></Space>}>
+      <Drawer title={selected?.name} open={drawerVisible} onClose={() => { setDrawerVisible(false); setSelected(null); }} width={520} extra={<Space><Button icon={<EditOutlined />} onClick={() => { setDrawerVisible(false); setSelected(null); }}>编辑</Button><Button icon={<PrinterOutlined />} onClick={() => { const rpt = `项目: ${selected?.name}\n编号: ${selected?.code}\n负责人: ${selected?.pi}\n经费: ${selected?.funding}`; const blob = new Blob([rpt],{type:'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${selected?.code}.txt`; a.click(); }}>导出报告</Button></Space>}>
         {selected && (<>
           <Row gutter={16} style={{ marginBottom: 16 }}>
             <Col span={8}><Card size="small"><Statistic title="经费总额" value={`¥${(selected.budget/10000).toFixed(1)}万`} /></Card></Col>

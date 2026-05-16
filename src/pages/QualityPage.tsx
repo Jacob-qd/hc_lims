@@ -163,7 +163,7 @@ export const QualityPage: React.FC = () => {
         )},
       ]} />
 
-      <Drawer title={selectedDev?.no + ' ' + selectedDev?.desc?.substring(0,30)} open={devDrawer} onClose={() => { setDevDrawer(false); setSelectedDev(null); }} width={560} extra={<Space><Button icon={<PrinterOutlined />} onClick={() => message.success('偏差报告已导出')}>导出报告</Button><Button type="primary" onClick={() => message.success('CAPA任务已创建')}>创建CAPA</Button></Space>}>
+      <Drawer title={selectedDev?.no + ' ' + selectedDev?.desc?.substring(0,30)} open={devDrawer} onClose={() => { setDevDrawer(false); setSelectedDev(null); }} width={560} extra={<Space><Button icon={<PrinterOutlined />} onClick={() => { const rpt = `偏差报告\n编号: ${selectedDev?.no}\n描述: ${selectedDev?.desc}\n类型: ${selectedDev?.type}`; const blob = new Blob([rpt],{type:'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `deviation-${selectedDev?.no}.txt`; a.click(); }}>导出报告</Button><Button type="primary" onClick={() => { message.success('CAPA任务已创建'); setDevDrawer(false); }}>创建CAPA</Button></Space>}>
         {selectedDev && (
           <>
             <Row gutter={16} style={{marginBottom:16}}>

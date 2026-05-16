@@ -155,7 +155,7 @@ export const CertificatePage: React.FC = () => {
             </Button>
           )}
           <Tooltip title="导出证书文件">
-            <Button type="link" size="small" icon={<DownloadOutlined />} onClick={() => message.success('证书已导出')} />
+            <Button type="link" size="small" icon={<DownloadOutlined />} onClick={() => { const cert = JSON.stringify(record, null, 2); const blob = new Blob([cert], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `cert-${record.id}.json`; a.click(); }} />
           </Tooltip>
         </Space>
       ),

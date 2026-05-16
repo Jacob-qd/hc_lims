@@ -43,7 +43,7 @@ const roleColors: Record<string, string> = { PI: '#ff4d4f', 博士后: '#1677ff'
 const GroupDetail: React.FC<{ group: ResearchGroup | null; visible: boolean; onClose: () => void }> = ({ group, visible, onClose }) => {
   if (!group) return null;
   return (
-    <Drawer title={`${group.name} - 详情`} open={visible} onClose={onClose} width={640} extra={<Space><Button icon={<EditOutlined />} onClick={() => message.success('编辑课题组')}>编辑</Button><Button icon={<PrinterOutlined />} onClick={() => message.success('课题组信息已打印')}>打印</Button></Space>}>
+    <Drawer title={`${group.name} - 详情`} open={visible} onClose={onClose} width={640} extra={<Space><Button icon={<EditOutlined />} onClick={() => message.success('编辑课题组')}>编辑</Button><Button icon={<PrinterOutlined />} onClick={() => { const w=window.open('','_blank');if(w&&group){w.document.write(`<pre>课题组: ${group.name}\n院系: ${group.dept}\nPI: ${group.pi}\n成员: ${group.members}人\n经费: ${group.funding}</pre>`);w.print();} }}>打印</Button></Space>}>
       <Row gutter={16} style={{ marginBottom: 16 }}>
         <Col span={6}><Card size="small"><Statistic title="经费余额" value={group.detail.balance} valueStyle={{ fontSize: 14 }} /></Card></Col>
         <Col span={6}><Card size="small"><Statistic title="在研项目" value={group.detail.activeProjects} /></Card></Col>

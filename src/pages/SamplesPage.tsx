@@ -36,6 +36,7 @@ export const SamplesPage: React.FC = () => {
   const [barcodeVisible, setBarcodeVisible] = useState(false);
   const [barcodeCode, setBarcodeCode] = useState('');
   const [barcodeLabel, setBarcodeLabel] = useState('');
+  const [batchBarcodeOpen, setBatchBarcodeOpen] = useState(false);
   const [form] = Form.useForm();
   const [selectedTestItems, setSelectedTestItems] = useState<string[]>([]);
   const [testItemOptions, setTestItemOptions] = useState<any[]>([]);
@@ -393,13 +394,14 @@ export const SamplesPage: React.FC = () => {
         width={480}
         open={detailOpen}
         onClose={() => setDetailOpen(false)}
+        extra={<Space><Button icon={<EditOutlined />} onClick={() => { setDetailOpen(false); navigate('/samples'); }}>编辑</Button><Button icon={<PrinterOutlined />} onClick={() => { const w=window.open('','_blank');if(w&&selectedSample){w.document.write(`<pre>样品: ${selectedSample.sampleNo} ${selectedSample.name}\n类型: ${selectedSample.typeLabel}\n客户: ${selectedSample.customerName}\n接收: ${selectedSample.receivingTime}\n接收人: ${selectedSample.receiverName}</pre>`);w.print();} }}>打印标签</Button><Button icon={<ExportOutlined />} onClick={() => { const data = JSON.stringify(selectedSample, null, 2); const blob = new Blob([data],{type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${selectedSample?.sampleNo}.json`; a.click(); }}>导出</Button></Space>}
       >
         {selectedSample && (
           <>
             <div style={{ marginBottom: 24 }}>
               <Title level={5}>{selectedSample.sampleNo}</Title>
               <Tag color={getStatusColor(selectedSample.statusLabel)}>{selectedSample.statusLabel}</Tag>
-              <Button type="link" style={{ float: 'right' }}>查看全部</Button>
+              <Button type="link" style={{ float: 'right' }} onClick={() => { setDetailOpen(false); navigate(`/samples/${selectedSample.id}`); }}>查看全部</Button>
             </div>
 
             <Card title="基本信息" size="small" style={{ marginBottom: 16 }}>
@@ -480,6 +482,7 @@ export const SamplesPage: React.FC = () => {
         </div>
       </Modal>
       <BarcodePrintModal visible={barcodeVisible} onClose={() => setBarcodeVisible(false)} code={barcodeCode} label={barcodeLabel} type="sample" />
+      <BatchBarcodePrint visible={batchBarcodeOpen} onClose={() => setBatchBarcodeOpen(false)} codes={samples.slice(0, 20).map((s:any,i:number) => ({ code: generateSampleBarcode(i+1), label: s.sampleNo+' '+s.name }))} />
     </div>
   );
 };

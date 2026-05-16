@@ -53,9 +53,9 @@ export const InventoryPage: React.FC = () => {
             <Select placeholder="状态" style={{ width: 120 }} allowClear>{Object.entries(statusColors).map(([k,v]) => <Select.Option key={k} value={k}><Tag color={v}>{k==='normal'?'正常':k==='low'?'低库存':k==='expiring'?'即将过期':'缺货'}</Tag></Select.Option>)}</Select>
           </Space>
           <div style={{marginBottom:8}}><Space>
-            <Button size="small" onClick={() => message.info('入库操作')}>入库</Button>
-            <Button size="small" onClick={() => message.info('出库操作')}>出库</Button>
-            <Button size="small" onClick={() => message.info('盘点操作')}>盘点</Button>
+            <Button size="small" icon={<InboxOutlined />} onClick={() => { stockForm.resetFields(); setInModal(true); }}>入库</Button>
+            <Button size="small" icon={<StockOutlined />} onClick={() => { outForm.resetFields(); setOutModal(true); }}>出库</Button>
+            <Button size="small" icon={<BarcodeOutlined />} onClick={() => { checkForm.resetFields(); setCheckModal(true); }}>盘点</Button>
           </Space></div>
           <Table dataSource={filtered} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} columns={[
             { title: '编码', dataIndex: 'code', render: (c: string) => <Text code>{c}</Text> },
@@ -156,7 +156,7 @@ export const InventoryPage: React.FC = () => {
         )},
       ]} />
 
-      <Drawer title={selected?.name} open={drawer} onClose={() => { setDrawer(false); setSelected(null); }} width={420} extra={<Space><Button icon={<EditOutlined />} onClick={() => message.success('编辑物料')}>编辑</Button><Button icon={<PrinterOutlined />} onClick={() => message.success('物料标签已打印')}>打印标签</Button></Space>}>
+      <Drawer title={selected?.name} open={drawer} onClose={() => { setDrawer(false); setSelected(null); }} width={420} extra={<Space><Button icon={<EditOutlined />} onClick={() => { setSelected(selected); setInModal(true); }}>编辑</Button><Button icon={<PrinterOutlined />} onClick={() => { const w=window.open('','_blank');if(w&&selected){w.document.write(`<pre>物料: ${selected.name}\n编号: ${selected.code}\n库存: ${selected.stock}${selected.unit}\n位置: ${selected.location}</pre>`);w.print();} }}>打印标签</Button></Space>}>
         {selected && <Descriptions column={1} bordered size="small">
           <Descriptions.Item label="名称">{selected.name}</Descriptions.Item>
           <Descriptions.Item label="编码">{selected.code}</Descriptions.Item>

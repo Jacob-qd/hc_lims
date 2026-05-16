@@ -66,7 +66,7 @@ export const ClientsPage: React.FC = () => {
       </Card>
 
       <Drawer title={selected?.name} open={drawerVisible} onClose={() => { setDrawerVisible(false); setSelected(null); }} width={400}
-        extra={<Space><Button icon={<EditOutlined />} onClick={() => { setEditingClient(selected); form.setFieldsValue(selected); setModalVisible(true); }}>编辑</Button><Button icon={<PrinterOutlined />} onClick={() => message.success('客户信息已打印')}>打印</Button><Button danger icon={<DeleteOutlined />} onClick={() => Modal.confirm({title:'删除客户',content:`确认删除 ${selected?.name}？`,onOk:()=>{const idx=clients.findIndex(c=>c.id===selected.id);if(idx>=0)clients.splice(idx,1);setDrawerVisible(false);message.success('已删除');}})}>删除</Button></Space>}>
+        extra={<Space><Button icon={<EditOutlined />} onClick={() => { setEditingClient(selected); form.setFieldsValue(selected); setModalVisible(true); }}>编辑</Button><Button icon={<PrinterOutlined />} onClick={() => { const win = window.open('','_blank'); if(win){win.document.write(`<pre>${JSON.stringify(selected,null,2)}</pre>`);win.print();} }}>打印</Button><Button danger icon={<DeleteOutlined />} onClick={() => Modal.confirm({title:'删除客户',content:`确认删除 ${selected?.name}？`,onOk:()=>{const idx=clients.findIndex(c=>c.id===selected.id);if(idx>=0)clients.splice(idx,1);setDrawerVisible(false);message.success('已删除');}})}>删除</Button></Space>}>
         {selected && (
           <>
           <Descriptions column={1} bordered size="small">

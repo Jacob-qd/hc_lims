@@ -104,7 +104,7 @@ export const PersonnelPage: React.FC = () => {
         )},
       ]} />
 
-      <Drawer title={selected?.name} open={drawer} onClose={() => { setDrawer(false); setSelected(null); }} width={480} extra={<Space><Button icon={<EditOutlined />} onClick={() => message.success('编辑人员信息')}>编辑</Button><Button icon={<PrinterOutlined />} onClick={() => message.success('人员档案已打印')}>打印档案</Button></Space>}>
+      <Drawer title={selected?.name} open={drawer} onClose={() => { setDrawer(false); setSelected(null); }} width={480} extra={<Space><Button icon={<EditOutlined />} onClick={() => { setPersonnelModal(true); }}>编辑</Button><Button icon={<PrinterOutlined />} onClick={() => { const w=window.open('','_blank');if(w&&selected){w.document.write(`<pre>姓名: ${selected.name}\n工号: ${selected.empNo}\n部门: ${selected.dept}\n岗位: ${selected.position}\n角色: ${selected.role}</pre>`);w.print();} }}>打印档案</Button></Space>}>
         {selected && (<>
           <Descriptions column={2} bordered size="small">
             <Descriptions.Item label="姓名">{selected.name}</Descriptions.Item>

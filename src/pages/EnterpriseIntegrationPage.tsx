@@ -54,7 +54,7 @@ export const EnterpriseIntegrationPage: React.FC = () => {
             { title: '最近同步', dataIndex: 'lastSync' },
             { title: '说明', dataIndex: 'description', ellipsis: true },
             { title: '操作', render: (_: any, r: any) => <Space size="small">
-              <Button type="link" size="small" onClick={() => message.success(`同步 ${r.name} 成功`)}>同步</Button>
+              <Button type="link" size="small" onClick={() => { const idx = mockIntegrations.findIndex((i:any) => i.id === r.id); if(idx >= 0) { mockIntegrations[idx].lastSync = new Date().toISOString().replace('T',' ').slice(0,16); message.success(`同步 ${r.name} 成功`); } }}>同步</Button>
               <Button type="link" size="small">配置</Button>
               <Button type="link" size="small" danger={r.status === 'connected'}>{r.status === 'connected' ? '断开' : '连接'}</Button>
             </Space> },

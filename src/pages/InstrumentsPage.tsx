@@ -34,7 +34,7 @@ const InstrumentDetail: React.FC<{ instrument: Instrument | null; visible: boole
   if (!instrument) return null;
   return (
     <Drawer title={`${instrument.name} - 详情`} open={visible} onClose={onClose} width={560}
-      extra={<Space><Button icon={<EditOutlined />} onClick={() => message.success('编辑仪器功能')}>编辑</Button><Button icon={<PrinterOutlined />} onClick={() => message.success('仪器档案已打印')}>打印</Button><Button danger icon={<DeleteOutlined />} onClick={() => Modal.confirm({title:'删除仪器',content:`确认删除 ${instrument.name}？`,onOk:()=>{onClose();message.success('已删除')}})}>删除</Button></Space>}>
+      extra={<Space><Button icon={<EditOutlined />} onClick={() => { message.success('编辑仪器功能'); Modal.confirm({title:'编辑仪器',content:`编辑 ${instrument.name} 的信息`}); }}>编辑</Button><Button icon={<PrinterOutlined />} onClick={() => { const win=window.open('','_blank');if(win){win.document.write(`<pre>仪器: ${instrument.name}\n型号: ${instrument.model}\n位置: ${instrument.location}\n负责人: ${instrument.responsiblePerson}</pre>`);win.print();} }}>打印</Button><Button danger icon={<DeleteOutlined />} onClick={() => Modal.confirm({title:'删除仪器',content:`确认删除 ${instrument.name}？`,onOk:()=>{onClose();message.success('已删除')}})}>删除</Button></Space>}>
       <Descriptions column={2} size="small" bordered>
         <Descriptions.Item label="仪器名称" span={2}>{instrument.name}</Descriptions.Item>
         <Descriptions.Item label="型号">{instrument.model}</Descriptions.Item>
@@ -266,7 +266,7 @@ export const InstrumentsPage: React.FC = () => {
               { title: 'CV%', dataIndex: 'cv' },
               { title: '判定', dataIndex: 'status', render: (s: string) => <Tag color={s === 'pass' ? 'green' : 'red'}>{s === 'pass' ? '通过' : '不通过'}</Tag> },
             ]} />
-            <Button type="primary" size="small" style={{ marginTop: 12 }} onClick={() => message.success('比对报告已生成')}>生成比对报告</Button>
+            <Button type="primary" size="small" style={{ marginTop: 12 }} onClick={() => { const report = '仪器比对报告\n日期: '+new Date().toISOString().slice(0,10)+'\n项目: 水中铅(Pb)\n结果: 全部通过\n'; const blob = new Blob([report],{type:'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = '比对报告.txt'; a.click(); message.success('比对报告已生成'); }}>生成比对报告</Button>
           </Card>},
           { key: 'utilization', label: '利用率分析', children: <Card>
             <Row gutter={16}>
