@@ -1,0 +1,181 @@
+# P0-1 委托管理模块 — 竞品调研与功能设计
+
+## 1. 竞品调研
+
+### 1.1 金现代 (JXD LIMS)
+
+金现代委托管理核心能力：
+- 委托创建支持**在线下单 + 批量导入**，自动带出客户信息、历史项目
+- **紧急程度分级**（普通/加急/紧急），影响排程优先级
+- **SLA/TAT 自动计算**：根据检测项目组合预估完成时间
+- **变更记录**：修改委托自动留痕，触发审批
+- 支持委托单与**合同号绑定**，对接 ERP 财务
+
+> 来源：金现代官网 + 达能/食品行业方案
+
+### 1.2 Thermo Fisher SampleManager
+
+SampleManager 委托特点：
+- **Project-based 委托模型**：委托 = Project > Samples > Tests 三级结构
+- 支持 **Standing Order**（长期合同定期送样）和 **Ad-hoc Order**（单次委托）
+- 内置 **报价引擎**：根据检测项目组合自动计算费用
+- 委托审核工作流：业务员提交 → 技术确认 → 客户确认
+
+### 1.3 LabWare LIMS
+
+LabWare 委托特点：
+- **高度可配置的委托类型**：不同实验室可自定义字段和流程
+- **批次委托**：支持同一批次多样品一次登记
+- 委托与 **样品生命周期强绑定**：从委托可钻取到每个样品的当前状态
+
+### 1.4 三维天地 (SW-LIMS)
+
+三维天地在国内检测机构的特点：
+- **符合 CMA/CNAS 评审要求的委托单**：自动生成标准格式
+- **客户自助委托门户**：客户在线填写委托、上传附件、查看进度
+- **委托变更控制**：已派工委托变更需技术负责人审批
+
+### 1.5 最佳实践总结
+
+| 能力 | 推荐方案 | 来源 |
+|------|---------|------|
+| 委托模型 | Project > Order > Samples 三级 | SampleManager + JXD |
+| 下单方式 | 在线下单 + 批量 Excel 导入 + 客户自助 | JXD + 三维天地 |
+| 紧急程度 | 三级（普通/加急/紧急），联动排程 | JXD |
+| SLA 预估 | 基于检测项目组合 + 设备负载自动计算 | JXD + LabWare |
+| 变更控制 | 已派工委托变更需审批留痕 | 三维天地 + JXD |
+| 委托归档 | 关联合同号 + 财务对账 | JXD + SampleManager |
+
+---
+
+## 2. 用户故事
+
+### US1 — 业务员创建委托
+> 作为**业务员**，我需要在系统中快速创建委托单，选择客户、检测项目，系统自动生成委托编号和预估完成时间。
+
+### US2 — 批量导入委托
+> 作为**业务员**，我需要通过 Excel 模板批量导入委托（如 50 个样品、12 个检测项的报价单）。
+
+### US3 — 委托变更
+> 作为**业务员**，当客户要求增加检测项目时，我需要在已创建的委托上追加项目，系统记录变更历史。
+
+### US4 — 委托进度追踪
+> 作为**客户**，我需要通过委托单号查询当前进度（样品是否签收、检测是否开始、报告是否签发）。
+
+### US5 — 委托统计
+> 作为**实验室主管**，我需要查看本周/本月委托量、委托类型分布、紧急委托占比。
+
+---
+
+## 3. 功能设计
+
+### 3.1 委托创建流程
+
+```
+业务员登录 → 选择客户 → 填写委托信息
+    ├── 检测项目选择（多选，带方法+限值+单价）
+    ├── 样品信息（支持多样品一次委托）
+    ├── 紧急程度（普通/加急/紧急）
+    ├── 期望完成日期
+    └── 附件上传（合同/技术要求）
+
+提交 → 系统计算 SLA → 生成委托编号 → 通知收样
+```
+
+### 3.2 页面设计
+
+**委托列表页** (OrdersPage)：
+```
+┌─────────────────────────────────────────────────────┐
+│  ← 委托管理           [+ 新建委托] [批量导入] [导出]  │
+├─────────────────────────────────────────────────────┤
+│  [搜索委托号/客户] [状态▾] [类型▾] [日期范围]        │
+├──────────┬──────────┬──────┬──────┬──────┬──────────┤
+│ 委托编号  │ 客户      │ 项目  │ 样品  │ 状态  │ 操作     │
+│ ORD-001  │ 绿源环保   │ 水质  │ 12   │ 执行中│ 查看/变更 │
+│ ORD-002  │ 博克水务   │ 饮用水│ 8    │ 待收样│ 查看     │
+├──────────┴──────────┴──────┴──────┴──────┴──────────┤
+│  共 2 条  ·  本月统计: 128 委托 · 1520 样品          │
+└─────────────────────────────────────────────────────┘
+```
+
+**委托详情 Drawer**：
+- 委托基本信息（编号/客户/合同/紧急程度/SLA）
+- 检测项目清单（项目名称/方法/限值/单价/状态）
+- 样品清单（样品编号/名称/状态/流转步骤）
+- 变更记录（时间/操作人/变更内容/原因）
+- 费用概览（总金额/已结/未结）
+
+### 3.3 数据模型
+
+```typescript
+interface Order {
+  id: string;
+  orderNo: string;              // ORD-20260516-001
+  customerId: string;
+  customerName: string;
+  contractNo?: string;           // 关联合同号
+  projectName: string;           // 项目/计划名称
+  urgency: 'normal' | 'rush' | 'urgent';
+  status: OrderStatus;           // draft/submitted/received/testing/review/completed/archived
+  estimatedTAT: number;          // 预估周转天数
+  dueDate?: string;              // 期望完成日期
+  sampleCount: number;           // 样品总数
+  testItemIds: string[];         // 检测项目
+  totalAmount?: number;          // 总金额
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+  samples: OrderSample[];        // 关联样品
+  changes: OrderChange[];        // 变更记录
+}
+
+type OrderStatus = 'draft' | 'submitted' | 'received' | 'in_progress' | 'review' | 'completed' | 'archived';
+
+interface OrderSample {
+  id: string;
+  orderId: string;
+  sampleId?: string;             // 收样后关联
+  sampleName: string;
+  sampleType: string;
+  testItems: string[];
+  containerInfo: string;
+  storageCondition: string;
+  status: 'pending' | 'received' | 'testing' | 'completed';
+}
+
+interface OrderChange {
+  id: string;
+  orderId: string;
+  changeType: 'add_item' | 'remove_item' | 'update_info' | 'cancel';
+  beforeValue: string;
+  afterValue: string;
+  reason: string;
+  operatorId: string;
+  operatorName: string;
+  changedAt: string;
+}
+```
+
+### 3.4 API 设计
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/api/v1/orders` | 委托列表（分页/搜索/筛选） |
+| POST | `/api/v1/orders` | 创建委托 |
+| GET | `/api/v1/orders/:id` | 委托详情 |
+| PATCH | `/api/v1/orders/:id` | 变更委托（自动留痕） |
+| POST | `/api/v1/orders/:id/submit` | 提交委托（流转到收样） |
+| POST | `/api/v1/orders/:id/cancel` | 取消委托 |
+| POST | `/api/v1/orders/batch-import` | Excel 批量导入 |
+| GET | `/api/v1/orders/stats` | 委托统计 |
+
+---
+
+## 4. MVP 实现计划 (3天)
+
+| 天 | 内容 |
+|:--:|------|
+| D1 | 委托列表页 (OrdersPage) + 创建 Modal + 数据模型 |
+| D2 | 委托详情 Drawer + 变更记录 + Mock 数据 |
+| D3 | 批量导入 + 统计卡片 + 路由注册 + 测试 |
