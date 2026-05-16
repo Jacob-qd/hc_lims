@@ -23,23 +23,23 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">72.22% </span>
+                <span class="strong">88.88% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>13/18</span>
+                <span class='fraction'>16/18</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">62.5% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>5/8</span>
+                <span class='fraction'>6/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">60% </span>
+                <span class="strong">80% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>6/10</span>
+                <span class='fraction'>8/10</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -137,11 +137,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -150,25 +148,27 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">8x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -181,11 +181,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">24x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">24x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -226,7 +226,7 @@ export const NotificationPage: React.FC = () =&gt; {
   const [notifs, setNotifs] = useState(mockNotifications);
   const unread = notifs.filter(n =&gt; !n.read).length;
 &nbsp;
-  const <span class="fstat-no" title="function not covered" >markAllRead = () =&gt; {</span> <span class="cstat-no" title="statement not covered" >setNotifs(notifs.<span class="fstat-no" title="function not covered" >map(n</span> =&gt; (<span class="cstat-no" title="statement not covered" >{ ...n, read: true })))</span>; <span class="cstat-no" title="statement not covered" >m</span>essage.success('全部标为已读'); };</span>
+  const markAllRead = () =&gt; { setNotifs(notifs.map(n =&gt; ({ ...n, read: true }))); message.success('全部标为已读'); };
 &nbsp;
   return (
     &lt;div&gt;
@@ -251,7 +251,7 @@ export const NotificationPage: React.FC = () =&gt; {
               &lt;/Row&gt;
             &lt;/Card&gt;
           ))}
-          {notifs.filter(n =&gt; !n.read).length === 0 &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >&lt;Text type="secondary"&gt;暂无未读消息&lt;/Text&gt;}</span>
+          {notifs.filter(n =&gt; !n.read).length === 0 &amp;&amp; &lt;Text type="secondary"&gt;暂无未读消息&lt;/Text&gt;}
         &lt;/div&gt;},
         { key: 'all', label: '全部', children: &lt;div&gt;
           {notifs.map(n =&gt; (
@@ -280,7 +280,7 @@ export const NotificationPage: React.FC = () =&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-05-16T17:14:20.038Z
+                at 2026-05-16T17:26:11.968Z
             </div>
         <script src="../prettify.js"></script>
         <script>
