@@ -6,7 +6,7 @@ import {
 } from 'antd';
 import {
   PlusOutlined, SearchOutlined, EditOutlined, EyeOutlined,
-  PlayCircleOutlined, CheckCircleOutlined,
+  PlayCircleOutlined, CheckCircleOutlined, PrinterOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 
@@ -158,7 +158,7 @@ export const TasksPage: React.FC = () => {
                 ]} />
               </Card>
               <Card size="small" title="任务分配" style={{marginTop:16}}>
-                <Button type="primary" size="small">+ 分配任务</Button>
+                <Button type="primary" size="small" onClick={() => setAssignVisible(true)}>+ 分配任务</Button>
               </Card>
             </Col>
           </Row>
