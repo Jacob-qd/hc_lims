@@ -1725,3 +1725,391 @@ export function computeDocumentHash(document: { id: string; reportNo: string; ti
   });
   return mockSm3Hash(normalized);
 }
+
+// ============================================
+// Report Engine Mock Data
+// ============================================
+
+export interface ReportTemplate {
+  id: string;
+  name: string;
+  type: 'scheduled' | 'manual';
+  dataSource: string;
+  outputFormat: string[];
+  status: 'active' | 'draft';
+  fields: ReportField[];
+  filters: ReportFilter[];
+  chartConfig?: ChartConfig;
+  outputSettings: OutputSettings;
+  cronExpression?: string;
+  nextRunTime?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ReportField {
+  fieldKey: string;
+  label: string;
+  alias?: string;
+  aggregation?: 'sum' | 'avg' | 'count' | 'min' | 'max' | 'none';
+}
+
+export interface ReportFilter {
+  field: string;
+  operator: 'eq' | 'ne' | 'gt' | 'gte' | 'lt' | 'lte' | 'contains' | 'in' | 'between';
+  value: any;
+  logic: 'AND' | 'OR';
+}
+
+export interface ChartConfig {
+  chartType: 'line' | 'bar' | 'pie' | 'area' | 'kpi' | 'table';
+  xAxis?: string;
+  yAxis?: string;
+  colorField?: string;
+  legend?: boolean;
+  title?: string;
+}
+
+export interface OutputSettings {
+  format: 'PDF' | 'Excel' | 'CSV' | 'HTML';
+  pageSize?: 'A4' | 'A3' | 'Letter';
+  headerText?: string;
+  footerText?: string;
+  orientation?: 'portrait' | 'landscape';
+}
+
+export interface ChartComponent {
+  id: string;
+  name: string;
+  type: 'line' | 'bar' | 'pie' | 'area' | 'kpi' | 'table';
+  dataSource: string;
+  config: ChartConfig;
+  previewData: any[];
+  createdAt: string;
+}
+
+export interface ReportSchedule {
+  id: string;
+  reportId: string;
+  reportName: string;
+  cronExpression: string;
+  nextRunTime: string;
+  lastRunTime?: string;
+  lastRunStatus?: 'success' | 'failed' | 'running';
+  outputFile?: string;
+  enabled: boolean;
+}
+
+export interface ReportExecution {
+  id: string;
+  reportId: string;
+  reportName: string;
+  scheduledTime: string;
+  actualTime: string;
+  status: 'success' | 'failed' | 'running';
+  outputFile?: string;
+  outputSize?: string;
+  errorMessage?: string;
+  triggerType: 'manual' | 'scheduled';
+}
+
+export const mockReportTemplates: ReportTemplate[] = [
+  {
+    id: 'tmpl1', name: '月度检测统计报表', type: 'scheduled', dataSource: 'samples',
+    outputFormat: ['PDF', 'Excel'], status: 'active',
+    fields: [
+      { fieldKey: 'sampleNo', label: '样品编号' },
+      { fieldKey: 'typeLabel', label: '样品类型' },
+      { fieldKey: 'statusLabel', label: '状态' },
+      { fieldKey: 'createdAt', label: '创建时间' },
+    ],
+    filters: [
+      { field: 'createdAt', operator: 'gte', value: '2024-05-01', logic: 'AND' },
+      { field: 'status', operator: 'eq', value: 'completed', logic: 'AND' },
+    ],
+    chartConfig: { chartType: 'bar', xAxis: 'typeLabel', yAxis: 'count', legend: true, title: '样品类型分布' },
+    outputSettings: { format: 'PDF', pageSize: 'A4', headerText: '红创检测认证有限公司', footerText: '机密文件', orientation: 'portrait' },
+    cronExpression: '0 0 1 * *',
+    nextRunTime: '2024-06-01 00:00:00',
+    createdAt: '2024-05-01 10:00:00', updatedAt: '2024-05-15 14:30:00',
+  },
+  {
+    id: 'tmpl2', name: '仪器利用率报表', type: 'scheduled', dataSource: 'instruments',
+    outputFormat: ['PDF'], status: 'active',
+    fields: [
+      { fieldKey: 'name', label: '仪器名称' },
+      { fieldKey: 'utilization', label: '利用率(%)', aggregation: 'avg' },
+      { fieldKey: 'statusLabel', label: '状态' },
+    ],
+    filters: [],
+    chartConfig: { chartType: 'line', xAxis: 'date', yAxis: 'utilization', legend: true, title: '仪器利用率趋势' },
+    outputSettings: { format: 'PDF', pageSize: 'A4', headerText: '红创检测认证有限公司', footerText: '仪器管理部', orientation: 'landscape' },
+    cronExpression: '0 8 * * 1',
+    nextRunTime: '2024-05-20 08:00:00',
+    createdAt: '2024-05-01 10:00:00', updatedAt: '2024-05-10 09:00:00',
+  },
+  {
+    id: 'tmpl3', name: '质量控制趋势报表', type: 'manual', dataSource: 'quality',
+    outputFormat: ['Excel'], status: 'active',
+    fields: [
+      { fieldKey: 'batch', label: '批次' },
+      { fieldKey: 'analyte', label: '分析物' },
+      { fieldKey: 'measured', label: '测定值', aggregation: 'avg' },
+      { fieldKey: 'deviation', label: '偏差(%)', aggregation: 'avg' },
+    ],
+    filters: [
+      { field: 'date', operator: 'gte', value: '2024-05-01', logic: 'AND' },
+    ],
+    chartConfig: { chartType: 'line', xAxis: 'date', yAxis: 'deviation', legend: true, title: 'QC偏差趋势' },
+    outputSettings: { format: 'Excel', pageSize: 'A4', headerText: '红创检测认证有限公司', footerText: '质量管理部' },
+    createdAt: '2024-05-05 11:00:00', updatedAt: '2024-05-12 16:00:00',
+  },
+  {
+    id: 'tmpl4', name: '人员工作量统计', type: 'manual', dataSource: 'tasks',
+    outputFormat: ['Excel', 'CSV'], status: 'draft',
+    fields: [
+      { fieldKey: 'analystName', label: '检测员' },
+      { fieldKey: 'taskNo', label: '任务数', aggregation: 'count' },
+      { fieldKey: 'progress', label: '完成率(%)', aggregation: 'avg' },
+    ],
+    filters: [
+      { field: 'createdAt', operator: 'gte', value: '2024-05-01', logic: 'AND' },
+    ],
+    chartConfig: { chartType: 'bar', xAxis: 'analystName', yAxis: 'count', legend: true, title: '人员工作量排名' },
+    outputSettings: { format: 'Excel', pageSize: 'A4' },
+    createdAt: '2024-05-10 09:00:00', updatedAt: '2024-05-10 09:00:00',
+  },
+];
+
+export const mockChartComponents: ChartComponent[] = [
+  {
+    id: 'chart1', name: '样品量月度趋势', type: 'line', dataSource: 'samples',
+    config: { chartType: 'line', xAxis: 'month', yAxis: 'count', legend: true, title: '样品量月度趋势' },
+    previewData: [
+      { month: '2024-01', count: 120 }, { month: '2024-02', count: 135 }, { month: '2024-03', count: 158 },
+      { month: '2024-04', count: 142 }, { month: '2024-05', count: 168 },
+    ],
+    createdAt: '2024-05-14 10:00:00',
+  },
+  {
+    id: 'chart2', name: '检测项目分布', type: 'pie', dataSource: 'tasks',
+    config: { chartType: 'pie', colorField: 'testItem', legend: true, title: '检测项目分布' },
+    previewData: [
+      { testItem: 'COD', count: 45 }, { testItem: '氨氮', count: 38 }, { testItem: '重金属', count: 28 },
+      { testItem: 'pH值', count: 52 }, { testItem: '总磷', count: 30 }, { testItem: '其他', count: 22 },
+    ],
+    createdAt: '2024-05-14 10:00:00',
+  },
+  {
+    id: 'chart3', name: '实验室工作量对比', type: 'bar', dataSource: 'tasks',
+    config: { chartType: 'bar', xAxis: 'labName', yAxis: 'count', legend: true, title: '实验室工作量对比' },
+    previewData: [
+      { labName: '理化实验室', count: 85 }, { labName: '环境实验室', count: 62 }, { labName: '无机分析室', count: 48 },
+      { labName: '仪器分析室', count: 55 }, { labName: '微生物实验室', count: 30 },
+    ],
+    createdAt: '2024-05-13 10:00:00',
+  },
+  {
+    id: 'chart4', name: '本月KPI卡片', type: 'kpi', dataSource: 'dashboard',
+    config: { chartType: 'kpi', title: '本月KPI' },
+    previewData: [
+      { label: '样品总量', value: 168, unit: '个', trend: '+12%' },
+      { label: '检测完成率', value: 92, unit: '%', trend: '+3%' },
+      { label: '平均周转时间', value: 4.5, unit: '天', trend: '-0.3天' },
+      { label: '质控合格率', value: 98.5, unit: '%', trend: '+0.5%' },
+    ],
+    createdAt: '2024-05-14 10:00:00',
+  },
+];
+
+export const mockReportSchedules: ReportSchedule[] = [
+  {
+    id: 'sch1', reportId: 'tmpl1', reportName: '月度检测统计报表',
+    cronExpression: '0 0 1 * *', nextRunTime: '2024-06-01 00:00:00',
+    lastRunTime: '2024-05-01 00:00:00', lastRunStatus: 'success',
+    outputFile: '月度检测统计报表_20240501.pdf', enabled: true,
+  },
+  {
+    id: 'sch2', reportId: 'tmpl2', reportName: '仪器利用率报表',
+    cronExpression: '0 8 * * 1', nextRunTime: '2024-05-20 08:00:00',
+    lastRunTime: '2024-05-13 08:00:00', lastRunStatus: 'success',
+    outputFile: '仪器利用率报表_20240513.pdf', enabled: true,
+  },
+];
+
+export const mockReportExecutions: ReportExecution[] = [
+  {
+    id: 'exec1', reportId: 'tmpl1', reportName: '月度检测统计报表',
+    scheduledTime: '2024-05-01 00:00:00', actualTime: '2024-05-01 00:00:05',
+    status: 'success', outputFile: '月度检测统计报表_20240501.pdf', outputSize: '2.3MB',
+    triggerType: 'scheduled',
+  },
+  {
+    id: 'exec2', reportId: 'tmpl2', reportName: '仪器利用率报表',
+    scheduledTime: '2024-05-13 08:00:00', actualTime: '2024-05-13 08:00:03',
+    status: 'success', outputFile: '仪器利用率报表_20240513.pdf', outputSize: '1.1MB',
+    triggerType: 'scheduled',
+  },
+  {
+    id: 'exec3', reportId: 'tmpl3', reportName: '质量控制趋势报表',
+    scheduledTime: '-', actualTime: '2024-05-10 14:30:00',
+    status: 'success', outputFile: '质量控制趋势报表_20240510.xlsx', outputSize: '856KB',
+    triggerType: 'manual',
+  },
+  {
+    id: 'exec4', reportId: 'tmpl1', reportName: '月度检测统计报表',
+    scheduledTime: '2024-04-01 00:00:00', actualTime: '2024-04-01 00:00:04',
+    status: 'success', outputFile: '月度检测统计报表_20240401.pdf', outputSize: '2.1MB',
+    triggerType: 'scheduled',
+  },
+  {
+    id: 'exec5', reportId: 'tmpl2', reportName: '仪器利用率报表',
+    scheduledTime: '2024-05-06 08:00:00', actualTime: '2024-05-06 08:00:02',
+    status: 'failed', errorMessage: '数据库连接超时',
+    triggerType: 'scheduled',
+  },
+];
+
+// ============================================
+// Dictionary Mock Data
+// ============================================
+
+export interface DictType {
+  id: string;
+  code: string;
+  name: string;
+  description: string;
+  sort: number;
+  status: 'active' | 'inactive';
+}
+
+export interface DictItem {
+  id: string;
+  typeId: string;
+  typeCode: string;
+  code: string;
+  name: string;
+  sort: number;
+  status: 'active' | 'inactive';
+}
+
+export const mockDictTypes: DictType[] = [
+  { id: 'dt1', code: 'sampleType', name: '样品类型', description: '样品分类字典', sort: 1, status: 'active' },
+  { id: 'dt2', code: 'testItem', name: '检测项目', description: '检测项目字典', sort: 2, status: 'active' },
+  { id: 'dt3', code: 'priority', name: '优先级', description: '任务优先级字典', sort: 3, status: 'active' },
+  { id: 'dt4', code: 'contractType', name: '合同类型', description: '合同分类字典', sort: 4, status: 'active' },
+  { id: 'dt5', code: 'contractStatus', name: '合同状态', description: '合同状态字典', sort: 5, status: 'active' },
+];
+
+export const mockDictItems: DictItem[] = [
+  { id: 'di1', typeId: 'dt1', typeCode: 'sampleType', code: 'surface_water', name: '地表水', sort: 1, status: 'active' },
+  { id: 'di2', typeId: 'dt1', typeCode: 'sampleType', code: 'groundwater', name: '地下水', sort: 2, status: 'active' },
+  { id: 'di3', typeId: 'dt1', typeCode: 'sampleType', code: 'drinking_water', name: '饮用水', sort: 3, status: 'active' },
+  { id: 'di4', typeId: 'dt1', typeCode: 'sampleType', code: 'waste_water', name: '废水', sort: 4, status: 'active' },
+  { id: 'di5', typeId: 'dt1', typeCode: 'sampleType', code: 'soil', name: '土壤', sort: 5, status: 'active' },
+  { id: 'di6', typeId: 'dt1', typeCode: 'sampleType', code: 'air', name: '环境空气', sort: 6, status: 'active' },
+  { id: 'di7', typeId: 'dt1', typeCode: 'sampleType', code: 'noise', name: '噪声', sort: 7, status: 'active' },
+  { id: 'di8', typeId: 'dt2', typeCode: 'testItem', code: 'ph', name: 'pH值', sort: 1, status: 'active' },
+  { id: 'di9', typeId: 'dt2', typeCode: 'testItem', code: 'cod', name: '化学需氧量(COD)', sort: 2, status: 'active' },
+  { id: 'di10', typeId: 'dt2', typeCode: 'testItem', code: 'nh3', name: '氨氮', sort: 3, status: 'active' },
+  { id: 'di11', typeId: 'dt2', typeCode: 'testItem', code: 'tp', name: '总磷', sort: 4, status: 'active' },
+  { id: 'di12', typeId: 'dt2', typeCode: 'testItem', code: 'pb', name: '重金属(Pb)', sort: 5, status: 'active' },
+  { id: 'di13', typeId: 'dt2', typeCode: 'testItem', code: 'pm25', name: 'PM2.5', sort: 6, status: 'active' },
+  { id: 'di14', typeId: 'dt3', typeCode: 'priority', code: 'urgent', name: '紧急', sort: 1, status: 'active' },
+  { id: 'di15', typeId: 'dt3', typeCode: 'priority', code: 'high', name: '高', sort: 2, status: 'active' },
+  { id: 'di16', typeId: 'dt3', typeCode: 'priority', code: 'medium', name: '中', sort: 3, status: 'active' },
+  { id: 'di17', typeId: 'dt3', typeCode: 'priority', code: 'low', name: '低', sort: 4, status: 'active' },
+  { id: 'di18', typeId: 'dt4', typeCode: 'contractType', code: 'annual', name: '年度合同', sort: 1, status: 'active' },
+  { id: 'di19', typeId: 'dt4', typeCode: 'contractType', code: 'project', name: '项目合同', sort: 2, status: 'active' },
+  { id: 'di20', typeId: 'dt5', typeCode: 'contractStatus', code: 'active', name: '执行中', sort: 1, status: 'active' },
+  { id: 'di21', typeId: 'dt5', typeCode: 'contractStatus', code: 'expiring', name: '即将到期', sort: 2, status: 'active' },
+  { id: 'di22', typeId: 'dt5', typeCode: 'contractStatus', code: 'expired', name: '已到期', sort: 3, status: 'active' },
+];
+
+// ============================================
+// Contract Mock Data
+// ============================================
+
+export interface Contract {
+  id: string;
+  no: string;
+  name: string;
+  customerId: string;
+  customerName: string;
+  amount: number;
+  type: 'annual' | 'project';
+  typeLabel: string;
+  startDate: string;
+  endDate: string;
+  status: 'active' | 'expiring' | 'expired';
+  statusLabel: string;
+  signDate: string;
+  contactPerson: string;
+  contactPhone: string;
+  remark: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const mockContracts: Contract[] = [
+  {
+    id: 'ct1', no: 'CT-2025-001', name: '地表水环境质量监测',
+    customerId: 'c1', customerName: '绿源环保科技有限公司',
+    amount: 150000, type: 'annual', typeLabel: '年度合同',
+    startDate: '2025-01-01', endDate: '2025-12-31',
+    status: 'active', statusLabel: '执行中',
+    signDate: '2024-12-20', contactPerson: '张经理', contactPhone: '13800138001',
+    remark: '年度框架协议，含季度报告',
+    createdAt: '2024-12-20 10:00:00', updatedAt: '2025-01-05 09:00:00',
+  },
+  {
+    id: 'ct2', no: 'CT-2025-002', name: '饮用水水质检测',
+    customerId: 'c2', customerName: '博克水务有限公司',
+    amount: 280000, type: 'project', typeLabel: '项目合同',
+    startDate: '2025-03-01', endDate: '2025-09-01',
+    status: 'active', statusLabel: '执行中',
+    signDate: '2025-02-15', contactPerson: '李主任', contactPhone: '13800138002',
+    remark: '出厂水及管网末梢水检测',
+    createdAt: '2025-02-15 14:00:00', updatedAt: '2025-03-01 08:00:00',
+  },
+  {
+    id: 'ct3', no: 'CT-2025-003', name: '废水排放合规检测',
+    customerId: 'c4', customerName: '清源化工有限公司',
+    amount: 96000, type: 'project', typeLabel: '项目合同',
+    startDate: '2025-04-15', endDate: '2025-10-15',
+    status: 'active', statusLabel: '执行中',
+    signDate: '2025-04-10', contactPerson: '王工', contactPhone: '13800138003',
+    remark: '月度检测，出具CMA报告',
+    createdAt: '2025-04-10 09:30:00', updatedAt: '2025-04-15 10:00:00',
+  },
+  {
+    id: 'ct4', no: 'CT-2024-008', name: '环境空气监测',
+    customerId: 'c5', customerName: '蓝天环境监测站',
+    amount: 200000, type: 'annual', typeLabel: '年度合同',
+    startDate: '2024-06-01', endDate: '2025-05-31',
+    status: 'expiring', statusLabel: '即将到期',
+    signDate: '2024-05-20', contactPerson: '赵站长', contactPhone: '13800138004',
+    remark: '需协商续约',
+    createdAt: '2024-05-20 11:00:00', updatedAt: '2025-04-20 16:00:00',
+  },
+  {
+    id: 'ct5', no: 'CT-2024-002', name: '食品安全检测',
+    customerId: 'c6', customerName: '宏达食品有限公司',
+    amount: 120000, type: 'annual', typeLabel: '年度合同',
+    startDate: '2024-01-01', endDate: '2024-12-31',
+    status: 'expired', statusLabel: '已到期',
+    signDate: '2023-12-15', contactPerson: '刘总', contactPhone: '13800138005',
+    remark: '已到期，待续签',
+    createdAt: '2023-12-15 10:00:00', updatedAt: '2024-12-31 17:00:00',
+  },
+];
+
+// Data source definitions for report builder
+export const mockDataSources = [
+  { key: 'samples', name: '样品数据', fields: ['sampleNo', 'name', 'type', 'typeLabel', 'customerName', 'projectName', 'status', 'statusLabel', 'priority', 'createdAt', 'testItems', 'testItemsCompleted'] },
+  { key: 'tasks', name: '检测任务', fields: ['taskNo', 'sampleName', 'testItem', 'method', 'analystName', 'instrumentName', 'labName', 'status', 'statusLabel', 'progress', 'plannedStart', 'plannedEnd', 'actualStart', 'actualEnd'] },
+  { key: 'instruments', name: '仪器设备', fields: ['name', 'model', 'serialNo', 'status', 'statusLabel', 'location', 'responsiblePerson', 'utilization', 'calibrationDue', 'maintenanceDate'] },
+  { key: 'quality', name: '质量控制', fields: ['batch', 'analyte', 'level', 'target', 'measured', 'deviation', 'westgardRule', 'analyst', 'date', 'status'] },
+  { key: 'reports', name: '检测报告', fields: ['reportNo', 'title', 'customerName', 'projectName', 'sampleTypeLabel', 'status', 'statusLabel', 'creatorName', 'createdAt', 'issuedAt'] },
+  { key: 'personnel', name: '人员信息', fields: ['name', 'empNo', 'dept', 'position', 'role', 'lab', 'joinDate', 'certStatus', 'certStatusLabel'] },
+];
