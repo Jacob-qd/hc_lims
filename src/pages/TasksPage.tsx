@@ -216,6 +216,8 @@ export const TasksPage: React.FC = () => {
               </Row>
               <Divider style={{ margin: '12px 0' }} />
               <Space>
+                {/* US3: 紧急插单 */}
+                <Button type="primary" danger icon={<CheckCircleOutlined />} onClick={() => message.success('紧急插单完成: TK-2026-URGENT 已插入队列首位')}>紧急插单</Button>
                 <Button type="primary" icon={<CheckCircleOutlined />} onClick={() => message.success('自动派工完成：已分配 5 个任务')}>执行自动派工</Button>
                 <Button onClick={() => message.info('批量分配功能')}>批量分配</Button>
               </Space>

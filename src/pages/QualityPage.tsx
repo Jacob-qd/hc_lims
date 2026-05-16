@@ -248,6 +248,14 @@ export const QualityPage: React.FC = () => {
                 </svg>
               </div>
               <Space style={{marginTop:8}}><Tag color="red">● 第10点: 1₂s警告 (26.1)</Tag><Tag color="green">均值:25.1 · SD:0.58 · CV:2.3%</Tag></Space>
+              {/* QC US6: 失败保留规则 */}
+              <Alert message="🔒 质控数据保护: 所有质控结果(含失败)永久保留，不可选择性删除。" type="warning" showIcon style={{ marginTop: 8 }} />
+              {/* QC US10: 多规则联动 */}
+              <Descriptions size="small" bordered style={{ marginTop: 8 }} column={3}>
+                <Descriptions.Item label="单规则1₂s"><Tag color="orange">⚠️ 警告，不冻结</Tag></Descriptions.Item>
+                <Descriptions.Item label="单失控规则"><Tag color="red">🔴 冻结结果</Tag></Descriptions.Item>
+                <Descriptions.Item label="多规则同时"><Tag color="red">🔴🔴 冻结+强制CAPA</Tag></Descriptions.Item>
+              </Descriptions>
             </Card>
           </div>
         )},

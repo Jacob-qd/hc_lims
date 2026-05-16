@@ -509,6 +509,35 @@ export const SamplesPage: React.FC = () => {
           ]} />
         </Card>},
       ]} defaultActiveKey="aliquot" style={{ marginTop: 16 }} />
+
+      {/* US4: 样品位置追踪 */}
+      <Card title="📍 库位管理" size="small" style={{ marginTop: 16 }}>
+        <Table dataSource={[
+          { id:'loc1', sampleNo:'SMP-20260521-001', name:'地表水样品-1', location:'样品室A · 冰箱#3 · 2层 · B盒', lastMoved:'2026-05-21 09:15', movedBy:'张伟' },
+          { id:'loc2', sampleNo:'SMP-20260521-001-C', name:'地表水留样', location:'样品室A · 冰箱#3 · 2层 · C盒', lastMoved:'2026-05-21 10:00', movedBy:'张伟' },
+        ]} rowKey="id" pagination={false} size="small" columns={[
+          {title:'样品编号',dataIndex:'sampleNo',render:(n:string)=><code>{n}</code>},
+          {title:'名称',dataIndex:'name'},
+          {title:'存储位置',dataIndex:'location',ellipsis:true},
+          {title:'最后移动',dataIndex:'lastMoved',width:140},
+          {title:'操作人',dataIndex:'movedBy'},
+          {title:'操作',render:()=><Button type="link" size="small" onClick={()=>message.success('位置已更新')}>移动</Button>},
+        ]} />
+      </Card>
+
+      {/* US5: 异常样品处理 */}
+      <Card title="⚠️ 异常样品" size="small" style={{ marginTop: 16 }} extra={<Button size="small" onClick={()=>message.success('异常报告已提交')}>提交异常报告</Button>}>
+        <Table dataSource={[
+          { id:'ab1', sampleNo:'SMP-20260515-003', name:'饮用水样品-5', issue:'温度超标(实测12℃, 要求2-8℃)', status:'conditional', reportedBy:'张伟', reportedAt:'2026-05-15 10:30', photos:2 },
+        ]} rowKey="id" pagination={false} size="small" columns={[
+          {title:'样品',dataIndex:'name'},
+          {title:'异常描述',dataIndex:'issue',ellipsis:true},
+          {title:'状态',dataIndex:'status',render:()=><Tag color="orange">有条件接收</Tag>},
+          {title:'报告人',dataIndex:'reportedBy'},
+          {title:'照片',dataIndex:'photos',render:(n:number)=><Tag>{n}张</Tag>},
+          {title:'操作',render:()=><Space size="small"><Button type="link" size="small">查看照片</Button><Button type="link" size="small">通知客户</Button></Space>},
+        ]} />
+      </Card>
     </div>
   );
 };

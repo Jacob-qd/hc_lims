@@ -24,7 +24,18 @@ const SopView: React.FC<{method: any}> = ({method}) => <div>
     { title: '章节', dataIndex: 'section', width: 160 },
     { title: '内容摘要', dataIndex: 'desc' },
   ]} />
-  <Button type="primary" size="small" style={{ marginTop: 8 }} onClick={() => { const sop = `SOP文档: ${method?.code}\n方法: ${method?.name}\n版本: v2.0\n---\n1. 适用范围\n2. 方法原理\n3. 试剂与材料\n4. 操作步骤\n5. 质量控制`; const blob = new Blob([sop],{type:'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `SOP-${method?.code}.txt`; a.click(); }}>下载完整SOP</Button>
+              <Button type="primary" size="small" style={{ marginTop: 8 }} onClick={() => { const sop = `SOP文档: ${method?.code}
+方法: ${method?.name}
+版本: v2.0
+---
+1. 适用范围
+2. 方法原理
+3. 试剂与材料
+4. 操作步骤
+5. 质量控制`; const blob = new Blob([sop],{type:'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `SOP-${method?.code}.txt`; a.click(); }}>下载完整SOP</Button>
+              <Button style={{ marginTop: 8, marginLeft: 8 }} onClick={() => { const tpl = JSON.stringify({name:method?.name,code:method?.code,fields:[{label:'样品编号',type:'auto'}]},null,2); const blob = new Blob([tpl],{type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${method?.code}-template.json`; a.click(); message.success('模板已导出'); }}>导出模板</Button>
+              {/* US6: 从历史复制 */}
+              <Button style={{ marginTop: 8, marginLeft: 8 }} onClick={() => message.success('已从上次记录复制参数: 消解温度150℃, 试剂重铬酸钾, 稀释倍数10')}>📋 复用上次</Button>
 </div>;
 
 export const MethodsPage: React.FC = () => {

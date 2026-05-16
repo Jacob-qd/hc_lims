@@ -1505,3 +1505,37 @@ export const mockIntegrations = [
   { id: 'int4', name: '钉钉', type: 'OA', status: 'connected', lastSync: '2024-05-15 14:00', direction: '双向', description: '审批流程、考勤数据、公告同步' },
   { id: 'int5', name: 'LIMSConnect MQ', type: '消息队列', status: 'connected', lastSync: '实时', direction: '双向', description: '企业服务总线(ESB)核心消息路由' },
 ];
+
+// ===== R5: Sample Locations =====
+export const mockSampleLocations = [
+  { id:'loc1', sampleNo:'SMP-20260521-001', name:'地表水样品-1', location:'样品室A · 冰箱#3 · 2层 · B盒', lastMoved:'2026-05-21 09:15', movedBy:'张伟' },
+  { id:'loc2', sampleNo:'SMP-20260521-001-C', name:'地表水留样', location:'样品室A · 冰箱#3 · 2层 · C盒', lastMoved:'2026-05-21 10:00', movedBy:'张伟' },
+];
+
+// ===== R5: Abnormal Samples =====
+export const mockAbnormalSamples = [
+  { id:'ab1', sampleNo:'SMP-20260515-003', name:'饮用水样品-5', issue:'温度超标(实测12℃, 要求2-8℃)', status:'conditional', reportedBy:'张伟', reportedAt:'2026-05-15 10:30', photos:2 },
+];
+
+// ===== R5: QC Trend Data =====
+export const mockQCTrendData = {
+  mean: 25.1, sd: 0.58, cv: 2.3,
+  points: [24.8,25.1,24.3,25.6,24.9,25.8,25.5,24.1,25.2,26.1,24.7,25.3,25.9,24.5],
+  violations: [
+    { index:10, value:26.1, rule:'1_2s', level:'warning', desc:'QC1=26.1 (>+2s)' },
+  ],
+};
+
+// ===== R5: Batch Data =====
+export const mockBatches = [
+  { id:'b1',batchNo:'BATCH-20260516-001',sampleCount:20,testItems:8,status:'in_progress',progress:65,createdAt:'2026-05-16',dueAt:'2026-05-20' },
+  { id:'b2',batchNo:'BATCH-20260515-002',sampleCount:15,testItems:6,status:'completed',progress:100,createdAt:'2026-05-15',dueAt:'2026-05-19' },
+  { id:'b3',batchNo:'BATCH-20260516-003',sampleCount:8,testItems:12,status:'pending',progress:0,createdAt:'2026-05-16',dueAt:'2026-05-25' },
+];
+
+// ===== R5: ELN History =====
+export const mockELNHistory = {
+  lastParams: {
+    digestionTemp: 150, digestionTime: 120, reagent: '重铬酸钾', dilution: 10,
+  },
+};
