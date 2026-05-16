@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Card, Table, Tag, Button, Input, Select, DatePicker, Row, Col,
   Space, Typography, Drawer, Timeline, Badge, Steps, Form,
-  Modal, message, Radio, Checkbox, Upload, Alert, Divider, Tooltip,
+  Modal, message, Radio, Checkbox, Upload, Alert, Divider, Tooltip, Tabs,
 } from 'antd';
 import {
   PlusOutlined, SearchOutlined, PrinterOutlined, ExportOutlined,

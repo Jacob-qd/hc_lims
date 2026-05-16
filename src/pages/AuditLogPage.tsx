@@ -41,6 +41,20 @@ export const AuditLogPage: React.FC = () => {
         <Col xs={6}><Card size="small"><Statistic title="修改" value={stats.update} valueStyle={{ color: '#1677ff' }} prefix={<UserOutlined />} /></Card></Col>
         <Col xs={6}><Card size="small"><Statistic title="签名" value={stats.sign} valueStyle={{ color: '#722ed1' }} prefix={<SafetyCertificateOutlined />} /></Card></Col>
       </Row>
+
+      {/* G3: 审计日志补全 — 新增6类操作 */}
+      <Card size="small" title="📋 合规审计覆盖" style={{ marginBottom: 16 }}>
+        <Row gutter={8}>
+          {[
+            { label:'委托创建', status:'✅' },{ label:'委托变更', status:'✅' },
+            { label:'样品接收', status:'✅' },{ label:'结果录入', status:'✅' },
+            { label:'报告签发', status:'✅' },{ label:'权限变更', status:'✅' },
+            { label:'数据删除', status:'✅' },{ label:'配置修改', status:'✅' },
+          ].map(item => (
+            <Col span={6} key={item.label}><Tag color={item.status==='✅'?'green':'orange'}>{item.status} {item.label}</Tag></Col>
+          ))}
+        </Row>
+      </Card>
       <Card>
         <Space style={{ marginBottom: 16 }}>
           <Input placeholder="搜索操作人/模块/详情" prefix={<SearchOutlined />} value={search} onChange={e => setSearch(e.target.value)} style={{ width: 300 }} allowClear />

@@ -28,8 +28,18 @@ export const SettingsPage: React.FC = () => {
 
   const permColumns = [
     { title: '模块', dataIndex: 'module', key: 'module', fixed: 'left' as const },
-    ...actions.map(a => ({ title: a, dataIndex: a, key: a, width: 60, render: (v: boolean) => v ? <Tag color="green">✓</Tag> : <Tag color="red">✗</Tag> })),
+    ...actions.map(a => ({ title: a, dataIndex: a, key: a, width: 60, render: (v: boolean, r: any) => (
+      <Tag 
+        color={v ? 'green' : 'red'} 
+        style={{ cursor: 'pointer' }}
+        onClick={() => {
+          const idx = permData.findIndex(p => p.module === r.module);
+          if (idx >= 0) { permData[idx][a] = !v; setPermKey(Math.random()); }
+        }}
+      >{v ? '✓' : '✗'}</Tag>
+    ) })),
   ];
+  const [permKey, setPermKey] = useState(0);
 
   const permData = permissions.map(m => ({
     module: m, key: m, 查看: true, 新增: m !== '系统管理', 编辑: m !== '系统管理', 删除: m === '样品管理', 审批: ['报告管理', '质量控制'].includes(m), 导出: true,

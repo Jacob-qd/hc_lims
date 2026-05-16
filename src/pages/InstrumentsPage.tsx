@@ -7,7 +7,7 @@ import {
 import {
   PlusOutlined, SearchOutlined, ExportOutlined, EditOutlined,
   EyeOutlined, ToolOutlined, CalendarOutlined,
-  CheckCircleOutlined, CloseCircleOutlined, SyncOutlined, PrinterOutlined, DeleteOutlined,
+  CheckCircleOutlined, CloseCircleOutlined, SyncOutlined, PrinterOutlined, DeleteOutlined, SafetyCertificateOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { Pie } from '@ant-design/plots';
@@ -306,6 +306,22 @@ export const InstrumentsPage: React.FC = () => {
               { title: '负责人', dataIndex: 'assignee' },
               { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={s==='overdue'?'red':s==='warning'?'orange':'blue'}>{s==='overdue'?'已逾期':s==='warning'?'即将到期':'已排期'}</Tag> },
               { title: '操作', render: () => <Space><Button type="link" size="small">校准</Button><Button type="link" size="small">推迟</Button></Space> },
+            ]} />
+          </Card>},
+          {/* P2-3: 期间核查 */}
+          { key: 'interim-check', label: <span><SafetyCertificateOutlined /> 期间核查</span>, children: <Card extra={<Button size="small" icon={<PlusOutlined />} onClick={() => message.success('核查计划已创建')}>新建核查</Button>}>
+            <Table dataSource={[
+              { id:'ic1', instrument:'HPLC-安捷伦1260', checkItem:'波长准确度', planDate:'2026-06-15', status:'scheduled', lastCheck:'2025-12-15', result:'-' },
+              { id:'ic2', instrument:'GC-MS-岛津QP2020', checkItem:'灵敏度', planDate:'2026-05-20', status:'in_progress', lastCheck:'2025-11-20', result:'待判定' },
+              { id:'ic3', instrument:'ICP-MS-Agilent 7800', checkItem:'检出限', planDate:'2026-04-01', status:'completed', lastCheck:'2025-10-01', result:'合格' },
+            ]} rowKey="id" pagination={false} size="small" columns={[
+              { title:'仪器', dataIndex:'instrument' },
+              { title:'核查项目', dataIndex:'checkItem' },
+              { title:'计划日期', dataIndex:'planDate', width:100 },
+              { title:'上次核查', dataIndex:'lastCheck', width:100 },
+              { title:'结果', dataIndex:'result', render:(r:string)=><Tag color={r==='合格'?'green':r==='待判定'?'orange':'default'}>{r||'待核查'}</Tag>, width:80 },
+              { title:'状态', dataIndex:'status', render:(s:string)=><Badge status={s==='completed'?'success':s==='in_progress'?'processing':'default'} text={s==='completed'?'已完成':s==='in_progress'?'核查中':'已计划'} /> },
+              { title:'操作', render:()=><Space size="small"><Button type="link" size="small">记录</Button><Button type="link" size="small">报告</Button></Space> },
             ]} />
           </Card>},
         ]} />

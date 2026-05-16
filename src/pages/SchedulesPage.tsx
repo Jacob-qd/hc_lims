@@ -49,7 +49,14 @@ export const SchedulesPage: React.FC = () => {
           </Card>
         )},
         { key: 'weekly', label: '周视图', children: (
-          <Row gutter={16}>
+          <div>
+            {/* P2-4: 预约冲突检测 */}
+            <Card size="small" style={{ marginBottom: 16 }}>
+              <Space><Badge status="error" /><Text>冲突检测:</Text>
+              <Tag color="red">GC-MS 周二下午 设备维护中，无法预约</Tag>
+              <Button size="small" type="link">查看详情</Button></Space>
+            </Card>
+            <Row gutter={16}>
             {weeklyData.map(day => (
               <Col span={12} key={day.date} style={{ marginBottom: 16 }}>
                 <Card title={day.date} size="small">

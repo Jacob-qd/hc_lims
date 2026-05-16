@@ -199,6 +199,25 @@ export const QualityPage: React.FC = () => {
               ]} />
             </Card>
 
+            {/* P2-2: 质控样台账 */}
+            <Card title="🧪 质控样品台账" size="small" style={{ marginBottom: 16 }} extra={<Button size="small" icon={<PlusOutlined />} onClick={() => message.success('质控样已添加')}>添加质控样</Button>}>
+              <Table dataSource={[
+                { id:'crm1', name:'COD标准溶液', lotNo:'CRM-COD-2026001', conc:'1000 mg/L', uncertainty:'±2%', certNo:'GBW(E)080203', expiryAt:'2027-06-01', openedAt:'2026-05-01', openedExpiry:'90天', stock:'45mL', status:'valid' },
+                { id:'crm2', name:'pH缓冲液(pH=4.00)', lotNo:'CRM-pH4-2026005', conc:'4.00', uncertainty:'±0.01', certNo:'GBW(E)130071', expiryAt:'2027-03-01', openedAt:'2026-04-15', openedExpiry:'60天', stock:'80mL', status:'valid' },
+                { id:'crm3', name:'Pb标准溶液', lotNo:'CRM-Pb-2025048', conc:'1000 mg/L', uncertainty:'±0.5%', certNo:'GBW(E)080129', expiryAt:'2026-04-01', openedAt:'2025-12-01', openedExpiry:'90天', stock:'10mL', status:'expired' },
+              ]} rowKey="id" pagination={false} size="small" columns={[
+                { title:'名称', dataIndex:'name', ellipsis:true },
+                { title:'批号', dataIndex:'lotNo', render:(n:string)=><code>{n}</code> },
+                { title:'浓度', dataIndex:'conc', width:90 },
+                { title:'证书号', dataIndex:'certNo', render:(n:string)=><Text style={{fontSize:11}}>{n}</Text>, width:120 },
+                { title:'有效期', dataIndex:'expiryAt', width:90 },
+                { title:'开封效期', dataIndex:'openedExpiry', width:70 },
+                { title:'库存', dataIndex:'stock', width:60 },
+                { title:'状态', dataIndex:'status', render:(s:string)=><Badge status={s==='valid'?'success':s==='expiring'?'warning':'error'} text={s==='valid'?'有效':s==='expiring'?'临期':'过期'} />, width:70 },
+                { title:'操作', render:()=><Space size="small"><Button type="link" size="small">使用</Button><Button type="link" size="small">报废</Button></Space> },
+              ]} />
+            </Card>
+
             <Card title="📈 Westgard 违例记录" size="small">
               <Table dataSource={[
                 { id: 'w1', batch: 'BATCH-038', rule: '1₂s', level: 'warning', detail: 'QC1=26.1 (>+2s)', time: '2024-05-15 10:30', action: '通知QA' },
