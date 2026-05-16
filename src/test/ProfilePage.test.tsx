@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { ProfilePage } from '../pages/ProfilePage';
@@ -9,8 +9,7 @@ describe('ProfilePage', () => {
 
   beforeEach(() => {
     fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockResolvedValue({
-      ok: true,
-      status: 200,
+      ok: true, status: 200,
       json: async () => ({ code: 200, data: [], message: 'success' }),
     } as Response);
   });
@@ -20,13 +19,7 @@ describe('ProfilePage', () => {
   });
 
   it('renders without crashing', async () => {
-    render(
-      <BrowserRouter>
-        <ConfigProvider>
-          <ProfilePage />
-        </ConfigProvider>
-      </BrowserRouter>
-    );
+    render(<BrowserRouter><ConfigProvider><ProfilePage /></ConfigProvider></BrowserRouter>);
     await waitFor(() => {
       expect(document.body.textContent).toBeTruthy();
     }, { timeout: 2000 });

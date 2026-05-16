@@ -17,7 +17,7 @@ describe('TasksPage', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockImplementation(async (url: string) => {
+    fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockImplementation(async (url: any) => {
       if (url.includes('/api/v1/tasks?')) return mockFetchResponse({ code: 200, data: { list: mockTasks, total: mockTasks.length } });
       if (url.includes('/api/v1/tasks/stats')) return mockFetchResponse({ code: 200, data: { pendingTest: 5, pendingReview: 3, pendingApprove: 2, overdue: 1 } });
       if (url.includes('/api/v1/tasks/tk1/assign')) return mockFetchResponse({ code: 200, message: '分配成功' });

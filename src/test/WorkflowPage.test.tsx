@@ -12,7 +12,7 @@ describe('WorkflowPage', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockImplementation(async (url: string) => {
+    fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockImplementation(async (url: any) => {
       if (url.includes('/api/v1/workflow/definitions')) return mockFetchResponse({ code: 200, data: { list: [{ id: 'wf1', name: '检测流程', type: '检测', description: '样品检测', nodes: [], edges: [], status: 'draft', version: 1, usedCount: 0, createdBy: '张伟', createdAt: '2025-01-01', updatedAt: '2025-01-01' }] } });
       if (url.includes('/api/v1/workflow/instances')) return mockFetchResponse({ code: 200, data: { list: [{ id: 'wi1', defId: 'wf1', defName: '检测流程', defVersion: 1, businessType: 'sample', businessId: 's1', businessSummary: '地表水检测', status: 'running', currentNodes: ['n1'], currentNodeNames: ['审批'], assignees: ['张伟'], variables: {}, startedBy: '张伟', startedAt: '2025-01-01', history: [] }] } });
       return mockFetchResponse({ code: 200, data: null });

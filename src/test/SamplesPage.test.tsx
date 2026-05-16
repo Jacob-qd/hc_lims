@@ -16,7 +16,7 @@ describe('SamplesPage', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockImplementation(async (url: string) => {
+    fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockImplementation(async (url: any) => {
       if (url.includes('/api/v1/samples')) return mockFetchResponse({ code: 200, data: { list: mockSamples, total: mockSamples.length } });
       if (url.includes('/api/v1/test-items')) return mockFetchResponse({ code: 200, data: [] });
       if (url.includes('/api/v1/field-configs')) return mockFetchResponse({ code: 200, data: { list: [] } });

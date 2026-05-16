@@ -20,7 +20,7 @@ describe('InstrumentsPage', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockImplementation(async (url: string) => {
+    fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockImplementation(async (url: any) => {
       if (url.includes('/api/v1/instruments')) return mockFetchResponse({ code: 200, data: { list: mockInstruments, total: mockInstruments.length } });
       return mockFetchResponse({ code: 200, data: null });
     });

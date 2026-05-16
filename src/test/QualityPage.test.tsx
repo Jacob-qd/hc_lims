@@ -12,7 +12,7 @@ describe('QualityPage', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockImplementation(async (url: string) => {
+    fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockImplementation(async (url: any) => {
       if (url.includes('/api/v1/quality/qc-results')) return mockFetchResponse({ code: 200, data: { list: [{ id: 'q1', batch: 'B1', analyte: 'COD', level: '严重', target: 100, measured: 102, deviation: 2, westgardRule: '通过', analyst: '张伟', instrument: 'pH计', date: '2025-01-01', status: 'normal' }] } });
       if (url.includes('/api/v1/quality/deviations')) return mockFetchResponse({ code: 200, data: { list: [{ id: 'd1', no: 'DEV-001', source: '质控', level: '中等', status: 'open', desc: '偏差描述', foundDate: '2025-01-01', rootCause: '原因', capaStatus: 'pending' }] } });
       if (url.includes('/api/v1/quality/control-chart')) return mockFetchResponse({ code: 200, data: { mean: 100, sd: 2, points: [{ value: 101, date: '2025-01-01' }, { value: 99, date: '2025-01-02' }] } });
