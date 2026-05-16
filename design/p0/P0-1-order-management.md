@@ -350,3 +350,21 @@ POST /api/v1/orders  → { customerName*, projectName*, sampleCount*, testPackag
 | T4 | SLA: 截止日期=昨天 | 红色进度条, "超期1天" |
 | T5 | 取消委托 | 状态→cancelled, 不再显示取消按钮 |
 | T6 | 导出CSV | 下载orders.csv |
+
+---
+
+## 7. Review 修正 (R1 + R2)
+
+### R1 修正
+- ✅ 委托编号改为后端生成 (Mock: `ORD-${date}-${random}`)
+- ✅ 快速委托客户选择限制为已有客户 (Select options 从 orders 去重)
+- ✅ 增加「变更检测套餐」操作按钮
+- ✅ 样品清单关联真实样品状态 (从 samples 数据获取)
+
+### R2 修正
+- 🔴 统一编号格式: `ORD-YYYYMMDD-NNN`
+- 🔴 统一时间格式: `YYYY-MM-DD HH:mm`
+- 🔴 委托状态→样品状态联动: 委托 submitted→通知收样; received→样品状态更新
+- 🔴 委托确认需业务员签名 (电子签名集成)
+- 🔴 增加完整审计日志: 创建/变更/取消/提交 均记录操作人+时间+前后值
+- 🔴 引入 useOrders() 数据获取层, 解耦 Mock 数据

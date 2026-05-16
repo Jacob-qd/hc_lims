@@ -420,3 +420,20 @@ POST /api/v1/eln/records/:id/calculate → 返回 { calculatedResults, judgments
 | T2 | pH模板: 读数=5.5, 标准6.0-9.0 | 判定=超标, 红色Tag |
 | T3 | 试运行中途点关闭 | Modal关闭, 无数据保存 |
 | T4 | 模板复制 | toast "已复制模板" |
+
+---
+
+## 7. Review 修正 (R1 + R2)
+
+### R1 修正
+- ✅ 公式引擎生产环境强制使用 math.js 安全沙箱 (demo可用eval)
+- ✅ 实现 significant_figures 修约模式
+- ✅ 增加用户级默认值覆盖 (localStorage: `eln-defaults-{templateId}`)
+- ✅ 试运行增加「转为正式记录」按钮
+
+### R2 修正
+- 🔴 ELN 记录统一编号: `ELN-YYYYMMDD-NNN`
+- 🔴 原始数据保护: 提交后不可修改, 修改需创建修订版本
+- 🔴 草稿自动保存: 每30秒或字段变更时 localStorage 自动保存
+- 🔴 审计日志: 每次保存/提交/计算均记录操作人+时间
+- 🔴 断网场景: 恢复网络后提示「有未提交的草稿, 是否恢复?」
