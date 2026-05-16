@@ -53,6 +53,14 @@ import {
   mockSm3Hash,
   mockSm2Sign,
   signatureMeanings,
+  mockReportTemplates,
+  mockChartComponents,
+  mockReportSchedules,
+  mockReportExecutions,
+  mockDictTypes,
+  mockDictItems,
+  mockContracts,
+  mockDataSources,
 } from './data';
 
 const apiUrl = (path: string) => `/api/v1${path}`;
@@ -932,5 +940,188 @@ export const handlers = [
   // GET /api/v1/audit/signatures - Signature audit log
   http.get(apiUrl('/audit/signatures'), () => {
     return HttpResponse.json({ code: 200, message: 'success', data: { list: mockSignatureAuditLog, total: mockSignatureAuditLog.length } });
+  }),
+
+  // ============================================
+  // Report Engine Handlers
+  // ============================================
+  http.get(apiUrl('/reports/templates'), () => {
+    return HttpResponse.json({ code: 200, message: 'success', data: { list: mockReportTemplates, total: mockReportTemplates.length } });
+  }),
+  http.post(apiUrl('/reports/templates'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const newTemplate = { id: 'tmpl' + Date.now(), ...body, createdAt: new Date().toISOString().replace('T', ' ').slice(0, 19), updatedAt: new Date().toISOString().replace('T', ' ').slice(0, 19) };
+    mockReportTemplates.push(newTemplate);
+    return HttpResponse.json({ code: 200, message: 'success', data: newTemplate });
+  }),
+  http.put(apiUrl('/reports/templates/:id'), async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    const idx = mockReportTemplates.findIndex(t => t.id === params.id);
+    if (idx === -1) return HttpResponse.json({ code: 404, message: '模板不存在' }, { status: 404 });
+    mockReportTemplates[idx] = { ...mockReportTemplates[idx], ...body, updatedAt: new Date().toISOString().replace('T', ' ').slice(0, 19) };
+    return HttpResponse.json({ code: 200, message: 'success', data: mockReportTemplates[idx] });
+  }),
+  http.delete(apiUrl('/reports/templates/:id'), ({ params }) => {
+    const idx = mockReportTemplates.findIndex(t => t.id === params.id);
+    if (idx >= 0) mockReportTemplates.splice(idx, 1);
+    return HttpResponse.json({ code: 200, message: 'success' });
+  }),
+  http.get(apiUrl('/reports/templates/:id'), ({ params }) => {
+    const tmpl = mockReportTemplates.find(t => t.id === params.id);
+    if (!tmpl) return HttpResponse.json({ code: 404, message: '模板不存在' }, { status: 404 });
+    return HttpResponse.json({ code: 200, message: 'success', data: tmpl });
+  }),
+  http.get(apiUrl('/reports/charts'), () => {
+    return HttpResponse.json({ code: 200, message: 'success', data: { list: mockChartComponents, total: mockChartComponents.length } });
+  }),
+  http.get(apiUrl('/reports/schedules'), () => {
+    return HttpResponse.json({ code: 200, message: 'success', data: { list: mockReportSchedules, total: mockReportSchedules.length } });
+  }),
+  http.post(apiUrl('/reports/schedules'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const newSchedule = { id: 'sch' + Date.now(), ...body, enabled: true };
+    mockReportSchedules.push(newSchedule);
+    return HttpResponse.json({ code: 200, message: 'success', data: newSchedule });
+  }),
+  http.put(apiUrl('/reports/schedules/:id'), async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    const idx = mockReportSchedules.findIndex(s => s.id === params.id);
+    if (idx === -1) return HttpResponse.json({ code: 404, message: '调度不存在' }, { status: 404 });
+    mockReportSchedules[idx] = { ...mockReportSchedules[idx], ...body };
+    return HttpResponse.json({ code: 200, message: 'success', data: mockReportSchedules[idx] });
+  }),
+  http.delete(apiUrl('/reports/schedules/:id'), ({ params }) => {
+    const idx = mockReportSchedules.findIndex(s => s.id === params.id);
+    if (idx >= 0) mockReportSchedules.splice(idx, 1);
+    return HttpResponse.json({ code: 200, message: 'success' });
+  }),
+  http.get(apiUrl('/reports/executions'), () => {
+    return HttpResponse.json({ code: 200, message: 'success', data: { list: mockReportExecutions, total: mockReportExecutions.length } });
+  }),
+  http.post(apiUrl('/reports/executions'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const newExec = { id: 'exec' + Date.now(), actualTime: new Date().toISOString().replace('T', ' ').slice(0, 19), ...body };
+    mockReportExecutions.unshift(newExec);
+    return HttpResponse.json({ code: 200, message: 'success', data: newExec });
+  }),
+  http.post(apiUrl('/reports/generate'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const reportId = body.reportId || body.templateId;
+    const report = mockReportTemplates.find(t => t.id === reportId);
+    const newExec = {
+      id: 'exec' + Date.now(),
+      reportId: reportId,
+      reportName: report?.name || '未命名报表',
+      scheduledTime: '-',
+      actualTime: new Date().toISOString().replace('T', ' ').slice(0, 19),
+      status: 'success',
+      outputFile: `${report?.name || '报表'}_${new Date().toISOString().slice(0,10).replace(/-/g,'')}.${(report?.outputSettings?.format || 'PDF').toLowerCase()}`,
+      outputSize: (Math.random() * 3 + 0.5).toFixed(1) + 'MB',
+      triggerType: 'manual',
+    };
+    mockReportExecutions.unshift(newExec as any);
+    return HttpResponse.json({ code: 200, message: 'success', data: newExec });
+  }),
+  http.get(apiUrl('/reports/data-sources'), () => {
+    return HttpResponse.json({ code: 200, message: 'success', data: { list: mockDataSources } });
+  }),
+
+  // ============================================
+  // Dictionary Handlers
+  // ============================================
+  http.get(apiUrl('/dict-types'), () => {
+    return HttpResponse.json({ code: 200, message: 'success', data: { list: mockDictTypes, total: mockDictTypes.length } });
+  }),
+  http.post(apiUrl('/dict-types'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const newType = { id: 'dt' + Date.now(), ...body };
+    mockDictTypes.push(newType);
+    return HttpResponse.json({ code: 200, message: 'success', data: newType });
+  }),
+  http.put(apiUrl('/dict-types/:id'), async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    const idx = mockDictTypes.findIndex(t => t.id === params.id);
+    if (idx === -1) return HttpResponse.json({ code: 404, message: '字典类型不存在' }, { status: 404 });
+    mockDictTypes[idx] = { ...mockDictTypes[idx], ...body };
+    return HttpResponse.json({ code: 200, message: 'success', data: mockDictTypes[idx] });
+  }),
+  http.delete(apiUrl('/dict-types/:id'), ({ params }) => {
+    const idx = mockDictTypes.findIndex(t => t.id === params.id);
+    if (idx >= 0) mockDictTypes.splice(idx, 1);
+    mockDictItems.filter(i => i.typeId === params.id).forEach(i => {
+      const ii = mockDictItems.findIndex(x => x.id === i.id);
+      if (ii >= 0) mockDictItems.splice(ii, 1);
+    });
+    return HttpResponse.json({ code: 200, message: 'success' });
+  }),
+  http.get(apiUrl('/dict-items'), ({ request }) => {
+    const url = new URL(request.url);
+    const typeId = url.searchParams.get('typeId');
+    let list = [...mockDictItems];
+    if (typeId) list = list.filter(i => i.typeId === typeId);
+    return HttpResponse.json({ code: 200, message: 'success', data: { list, total: list.length } });
+  }),
+  http.post(apiUrl('/dict-items'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const newItem = { id: 'di' + Date.now(), ...body };
+    mockDictItems.push(newItem);
+    return HttpResponse.json({ code: 200, message: 'success', data: newItem });
+  }),
+  http.put(apiUrl('/dict-items/:id'), async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    const idx = mockDictItems.findIndex(i => i.id === params.id);
+    if (idx === -1) return HttpResponse.json({ code: 404, message: '字典项不存在' }, { status: 404 });
+    mockDictItems[idx] = { ...mockDictItems[idx], ...body };
+    return HttpResponse.json({ code: 200, message: 'success', data: mockDictItems[idx] });
+  }),
+  http.delete(apiUrl('/dict-items/:id'), ({ params }) => {
+    const idx = mockDictItems.findIndex(i => i.id === params.id);
+    if (idx >= 0) mockDictItems.splice(idx, 1);
+    return HttpResponse.json({ code: 200, message: 'success' });
+  }),
+
+  // ============================================
+  // Contract Handlers
+  // ============================================
+  http.get(apiUrl('/contracts'), ({ request }) => {
+    const url = new URL(request.url);
+    const status = url.searchParams.get('status');
+    const keyword = url.searchParams.get('keyword');
+    let filtered = [...mockContracts];
+    if (status && status !== 'all') filtered = filtered.filter(c => c.status === status);
+    if (keyword) {
+      const kw = keyword.toLowerCase();
+      filtered = filtered.filter(c => c.no.toLowerCase().includes(kw) || c.name.toLowerCase().includes(kw) || c.customerName.toLowerCase().includes(kw));
+    }
+    return HttpResponse.json({ code: 200, message: 'success', data: { list: filtered, total: filtered.length } });
+  }),
+  http.get(apiUrl('/contracts/:id'), ({ params }) => {
+    const contract = mockContracts.find(c => c.id === params.id);
+    if (!contract) return HttpResponse.json({ code: 404, message: '合同不存在' }, { status: 404 });
+    return HttpResponse.json({ code: 200, message: 'success', data: contract });
+  }),
+  http.post(apiUrl('/contracts'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const newContract = {
+      id: 'ct' + Date.now(),
+      no: body.no || `CT-${new Date().getFullYear()}-${String(mockContracts.length + 1).padStart(3, '0')}`,
+      ...body,
+      createdAt: new Date().toISOString().replace('T', ' ').slice(0, 19),
+      updatedAt: new Date().toISOString().replace('T', ' ').slice(0, 19),
+    };
+    mockContracts.push(newContract);
+    return HttpResponse.json({ code: 200, message: 'success', data: newContract });
+  }),
+  http.put(apiUrl('/contracts/:id'), async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    const idx = mockContracts.findIndex(c => c.id === params.id);
+    if (idx === -1) return HttpResponse.json({ code: 404, message: '合同不存在' }, { status: 404 });
+    mockContracts[idx] = { ...mockContracts[idx], ...body, updatedAt: new Date().toISOString().replace('T', ' ').slice(0, 19) };
+    return HttpResponse.json({ code: 200, message: 'success', data: mockContracts[idx] });
+  }),
+  http.delete(apiUrl('/contracts/:id'), ({ params }) => {
+    const idx = mockContracts.findIndex(c => c.id === params.id);
+    if (idx >= 0) mockContracts.splice(idx, 1);
+    return HttpResponse.json({ code: 200, message: 'success' });
   }),
 ];
