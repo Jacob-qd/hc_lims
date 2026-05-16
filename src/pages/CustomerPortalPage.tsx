@@ -72,7 +72,7 @@ export const CustomerPortalPage: React.FC = () => {
             { title: '报告名称', dataIndex: 'sample' },
             { title: '生成日期', dataIndex: 'date' },
             { title: '状态', dataIndex: 'status', render: () => <Tag color="green">可下载</Tag> },
-            { title: '操作', render: () => <Button type="primary" size="small" icon={<FileTextOutlined />} onClick={() => message.success('报告下载中...')}>下载PDF</Button> },
+            { title: '操作', render: (_: any, r: any) => <Button type="primary" size="small" icon={<FileTextOutlined />} onClick={() => { const content = `报告编号: ${r.no}\n样品: ${r.sample}\n日期: ${r.date}\n状态: 已签发`; const blob = new Blob([content], {type:'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${r.no}.txt`; a.click(); message.success(`报告 ${r.no} 已下载`); }}>下载PDF</Button> },
           ]} pagination={false} size="middle" />
         )},
         { key: 'new', label: '在线委托', children: (
@@ -84,7 +84,7 @@ export const CustomerPortalPage: React.FC = () => {
               <Form.Item label="联系人" required><Input /></Form.Item>
               <Form.Item label="联系电话" required><Input /></Form.Item>
               <Form.Item label="备注"><Input.TextArea rows={3} /></Form.Item>
-              <Button type="primary" block size="large" onClick={() => message.success('委托申请已提交，我们将尽快与您联系')}>提交委托</Button>
+              <Button type="primary" block size="large" htmlType="submit" onClick={() => message.success('委托申请已提交，我们将尽快与您联系')}>提交委托</Button>
             </Form>
           </Card>
         )},

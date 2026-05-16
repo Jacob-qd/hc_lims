@@ -6,6 +6,7 @@ const { Title, Text } = Typography;
 
 export const ProfilePage: React.FC = () => {
   const [pwdForm] = Form.useForm();
+  const [profileForm] = Form.useForm();
 
   return (
     <div>
@@ -28,11 +29,11 @@ export const ProfilePage: React.FC = () => {
         <Col span={16}>
           <Tabs items={[
             { key: 'profile', label: <><UserOutlined /> 基本信息</>, children: <Card>
-              <Form layout="vertical" style={{maxWidth:400}}>
+              <Form form={profileForm} layout="vertical" style={{maxWidth:400}} onFinish={(v) => { message.success('个人信息已保存: '+v.name); }}>
                 <Form.Item label="真实姓名"><Input defaultValue="张伟" /></Form.Item>
                 <Form.Item label="邮箱"><Input defaultValue="zhangwei@hongchuang.cn" /></Form.Item>
                 <Form.Item label="手机"><Input defaultValue="138-1234-5678" /></Form.Item>
-                <Button type="primary" onClick={() => message.success('个人信息已保存')}>保存</Button>
+                <Button type="primary" htmlType="submit">保存</Button>
               </Form>
             </Card>},
             { key: 'password', label: <><LockOutlined /> 修改密码</>, children: <Card>
@@ -40,7 +41,7 @@ export const ProfilePage: React.FC = () => {
                 <Form.Item name="old" label="当前密码" rules={[{required:true}]}><Input.Password /></Form.Item>
                 <Form.Item name="new" label="新密码" rules={[{required:true,min:6}]}><Input.Password /></Form.Item>
                 <Form.Item name="confirm" label="确认新密码" rules={[{required:true},{validator:(_,v) => v === pwdForm.getFieldValue('new') ? Promise.resolve() : Promise.reject('密码不匹配')}]}><Input.Password /></Form.Item>
-                <Button type="primary" htmlType="submit" onClick={() => message.success('密码已修改')}>修改密码</Button>
+                <Button type="primary" htmlType="submit" onClick={() => pwdForm.validateFields().then(v => message.success('密码已修改')).catch(()=>{})}>修改密码</Button>
               </Form>
             </Card>},
             { key: 'preferences', label: <><BellOutlined /> 偏好设置</>, children: <Card>

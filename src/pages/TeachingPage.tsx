@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Tabs, Drawer, Descriptions, message, Progress, Rate } from 'antd';
+import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Tabs, Drawer, Descriptions, message, Progress, Rate, Modal, Form, Select } from 'antd';
 import { PlusOutlined, SearchOutlined, EyeOutlined, TeamOutlined, BookOutlined, FileTextOutlined, CheckCircleOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
@@ -10,6 +10,8 @@ export const TeachingPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<any>(null);
   const [drawer, setDrawer] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [form] = Form.useForm();
 
   useEffect(() => {
     fetch('/api/v1/teaching/courses').then(r => r.json()).then(d => { setCourses(d.data.list); setLoading(false); });
@@ -21,7 +23,7 @@ export const TeachingPage: React.FC = () => {
   return (
     <div>
       <Row justify="space-between" style={{ marginBottom: 16 }}><Col><Title level={4}>教学实验管理</Title></Col>
-        <Col><Button type="primary" icon={<PlusOutlined />} onClick={() => message.success('新建课程功能开发中')}>新建课程</Button></Col>
+        <Col><Button type="primary" icon={<PlusOutlined />} onClick={() => { form.resetFields(); setModalVisible(true); }}>新建课程</Button></Col>
       </Row>
       <Row gutter={[16,16]} style={{ marginBottom: 16 }}>
         <Col xs={6}><Card size="small"><Statistic title="本学期课程" value={stats.active} prefix={<BookOutlined />} /></Card></Col>
@@ -95,6 +97,20 @@ export const TeachingPage: React.FC = () => {
           ]} />
         )}
       </Drawer>
+
+      <Modal title="新建课程" open={modalVisible} onOk={() => form.submit()} onCancel={() => { setModalVisible(false); form.resetFields(); }}>
+        <Form form={form} layout="vertical" onFinish={(v) => {
+          courses.push({ id: 'c'+(courses.length+1), ...v, students: 0, experiments: 0, status: 'active' });
+          message.success('课程创建成功'); setModalVisible(false); form.resetFields();
+        }}>
+          <Form.Item name="name" label="课程名称" rules={[{ required: true }]}><Input /></Form.Item>
+          <Row gutter={16}>
+            <Col span={12}><Form.Item name="teacher" label="授课教师"><Input /></Form.Item></Col>
+            <Col span={12}><Form.Item name="semester" label="学期"><Select>{['2024-2025春','2024-2025秋','2025-2026春'].map(s=><Select.Option key={s}>{s}</Select.Option>)}</Select></Form.Item></Col>
+          </Row>
+          <Form.Item name="description" label="课程描述"><Input.TextArea /></Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

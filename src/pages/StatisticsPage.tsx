@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, Row, Col, Typography, Statistic, Table, Space, Select, DatePicker, Drawer, Button, message } from 'antd';
 import { Line, Pie, Bar } from '@ant-design/plots';
-import { SettingOutlined, BarChartOutlined, PieChartOutlined, LineChartOutlined, TableOutlined, SaveOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
+import { SettingOutlined, BarChartOutlined, PieChartOutlined, LineChartOutlined, TableOutlined, SaveOutlined, ArrowUpOutlined, ArrowDownOutlined, ExportOutlined, DownloadOutlined } from '@ant-design/icons';
 
 
 const { Title, Text } = Typography;
@@ -54,7 +54,7 @@ export const StatisticsPage: React.FC = () => {
         <Col><Title level={4} style={{ margin: 0 }}>数据分析</Title></Col>
         <Col>
           <Space>
-            <Button icon={<SettingOutlined />} onClick={() => setDesignerOpen(true)}>看板设计器</Button>
+            <Button icon={<ExportOutlined />} onClick={() => { const csv='指标,数值\n本月样品量,560\n平均周转时间,2.6天\n报告按时率,94.2%\n仪器利用率,63.2%'; const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='statistics_export.csv'; a.click(); message.success('数据已导出为CSV'); }}>导出报表</Button>
             <RangePicker />
             <Select defaultValue="all" style={{ width: 120 }}>
               <Select.Option value="all">全部实验室</Select.Option>

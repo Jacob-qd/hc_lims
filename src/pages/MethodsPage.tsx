@@ -13,6 +13,12 @@ export const MethodsPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<any>(null);
   const [drawer, setDrawer] = useState(false);
+  const [editModal, setEditModal] = useState(false);
+  const [editingMethod, setEditingMethod] = useState<any>(null);
+  const [versionModal, setVersionModal] = useState(false);
+  const [sopModal, setSopModal] = useState(false);
+  const [versionForm] = Form.useForm();
+  const [sopForm] = Form.useForm();
   const [createModal, setCreateModal] = useState(false);
   const [form] = Form.useForm();
 
@@ -31,8 +37,8 @@ export const MethodsPage: React.FC = () => {
       <Row justify="space-between" style={{ marginBottom: 16 }}><Col><Title level={4}>方法管理</Title></Col>
         <Col><Space>
           <Button icon={<PlusOutlined />} onClick={() => setCreateModal(true)}>新建方法</Button>
-          <Button onClick={() => message.info('版本发布功能')}>版本发布</Button>
-          <Button onClick={() => message.info('关联SOP功能')}>关联SOP</Button>
+          <Button onClick={() => setVersionModal(true)}>版本发布</Button>
+          <Button onClick={() => setSopModal(true)}>关联SOP</Button>
         </Space></Col>
       </Row>
       <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
@@ -59,7 +65,7 @@ export const MethodsPage: React.FC = () => {
           { title: '生效日期', dataIndex: 'effectiveDate' },
           { title: '负责人', dataIndex: 'responsible' },
           { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={statusColors[s]}>{s==='active'?'生效':s==='revision'?'修订中':s==='archived'?'已归档':'草稿'}</Tag> },
-          { title: '操作', render: (_: any, r: any) => <Space><Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawer(true); }}>详情</Button><Button type="link" size="small" icon={<EditOutlined />} onClick={() => message.info('编辑方法: '+r.code)}>编辑</Button><Button type="link" size="small" onClick={() => message.success('已复制方法: '+r.code)}>复制</Button></Space> },
+          { title: '操作', render: (_: any, r: any) => <Space><Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawer(true); }}>详情</Button><Button type="link" size="small" icon={<EditOutlined />} onClick={() => { setEditingMethod(r); form.setFieldsValue(r); setEditModal(true); }}>编辑</Button><Button type="link" size="small" onClick={() => { methods.push({...r, id:'m'+(methods.length+1),code:r.code+'-CPY',version:'v1.0(draft)',name:r.name+' (副本)'}); message.success('已复制方法: '+r.code); }}>复制</Button></Space> },
         ]} size="middle" />
       </Card>
 
@@ -94,14 +100,36 @@ export const MethodsPage: React.FC = () => {
         </>)}
       </Drawer>
 
-      <Modal title="新建方法" open={createModal} onOk={() => form.submit()} onCancel={() => { setCreateModal(false); form.resetFields(); }}>
-        <Form form={form} layout="vertical" onFinish={(v) => { message.success('方法创建成功'); setCreateModal(false); }}>
-          <Form.Item name="code" label="方法编号"><Input /></Form.Item>
+      <Modal title="编辑方法" open={editModal} onOk={() => form.submit()} onCancel={() => { setEditModal(false); setEditingMethod(null); form.resetFields(); }}>
+        <Form form={form} layout="vertical" onFinish={(v) => { if(editingMethod) Object.assign(editingMethod, v); message.success('方法更新成功'); setEditModal(false); setEditingMethod(null); form.resetFields(); }}>
+          <Form.Item name="code" label="方法编号"><Input disabled /></Form.Item>
           <Form.Item name="name" label="方法名称" rules={[{ required: true }]}><Input /></Form.Item>
           <Form.Item name="analyte" label="分析项目"><Input /></Form.Item>
-          <Form.Item name="matrix" label="样品基质"><Input /></Form.Item>
-          <Form.Item name="instrument" label="适用仪器"><Input /></Form.Item>
+          <Row gutter={16}>
+            <Col span={12}><Form.Item name="matrix" label="样品基质"><Input /></Form.Item></Col>
+            <Col span={12}><Form.Item name="instrument" label="适用仪器"><Input /></Form.Item></Col>
+          </Row>
           <Form.Item name="detectionLimit" label="检出限"><Input /></Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal title="版本发布" open={versionModal} onOk={() => versionForm.submit()} onCancel={() => { setVersionModal(false); versionForm.resetFields(); }}>
+        <Form form={versionForm} layout="vertical" onFinish={(v) => { message.success(`方法 ${v.methodCode} 版本 ${v.newVersion} 已发布`); setVersionModal(false); versionForm.resetFields(); }}>
+          <Form.Item name="methodCode" label="方法编号" rules={[{ required: true }]}><Select>{methods.filter(m=>m.status==='revision').map(m=><Select.Option key={m.code}>{m.code} - {m.name}</Select.Option>)}</Select></Form.Item>
+          <Row gutter={16}>
+            <Col span={12}><Form.Item name="newVersion" label="新版本号" rules={[{ required: true }]}><Input placeholder="v2.1" /></Form.Item></Col>
+            <Col span={12}><Form.Item name="effectiveDate" label="生效日期"><Input placeholder="2024-06-01" /></Form.Item></Col>
+          </Row>
+          <Form.Item name="changeLog" label="变更说明"><Input.TextArea rows={3} /></Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal title="关联SOP文档" open={sopModal} onOk={() => sopForm.submit()} onCancel={() => { setSopModal(false); sopForm.resetFields(); }}>
+        <Form form={sopForm} layout="vertical" onFinish={(v) => { message.success(`SOP文档已关联到方法 ${v.methodCode}`); setSopModal(false); sopForm.resetFields(); }}>
+          <Form.Item name="methodCode" label="方法编号" rules={[{ required: true }]}><Select>{methods.map(m=><Select.Option key={m.code}>{m.code} - {m.name}</Select.Option>)}</Select></Form.Item>
+          <Form.Item name="sopTitle" label="SOP标题" rules={[{ required: true }]}><Input /></Form.Item>
+          <Form.Item name="sopFile" label="文件路径"><Input placeholder="/docs/sop/METHOD-001-v2.pdf" /></Form.Item>
+          <Form.Item name="version" label="SOP版本"><Input placeholder="v2.0" /></Form.Item>
         </Form>
       </Modal>
     </div>

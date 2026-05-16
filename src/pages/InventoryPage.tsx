@@ -17,7 +17,12 @@ export const InventoryPage: React.FC = () => {
   const [prDrawer, setPrDrawer] = useState(false);
   const [inModal, setInModal] = useState(false);
   const [prModal, setPrModal] = useState(false);
+  const [outModal, setOutModal] = useState(false);
+  const [checkModal, setCheckModal] = useState(false);
   const [form] = Form.useForm();
+  const [stockForm] = Form.useForm();
+  const [outForm] = Form.useForm();
+  const [checkForm] = Form.useForm();
 
   const fetchData = async () => {
     setLoading(true);
@@ -162,6 +167,30 @@ export const InventoryPage: React.FC = () => {
           { title: '物料名称', dataIndex: 'name' }, { title: '规格', dataIndex: 'spec' },
           { title: '数量', dataIndex: 'qty' }, { title: '单价', dataIndex: 'price', render: (p: number) => `¥${p}` },
         ]} /></>}
+      </Modal>
+
+      <Modal title="试剂出库" open={outModal} onCancel={() => setOutModal(false)} footer={null}>
+        <Form form={outForm} layout="vertical" onFinish={(v) => { message.success(`出库成功: ${v.name} x${v.quantity}`); setOutModal(false); }}>
+          <Form.Item name="itemId" label="选择物料" required><Select showSearch>{items.map((i:any) => <Select.Option key={i.id} value={i.id}>{i.code} - {i.name} ({i.stock}{i.unit})</Select.Option>)}</Select></Form.Item>
+          <Form.Item name="name" label="物料名称"><Input /></Form.Item>
+          <Row gutter={16}>
+            <Col span={12}><Form.Item name="quantity" label="出库数量" required><Input type="number" /></Form.Item></Col>
+            <Col span={12}><Form.Item name="purpose" label="用途"><Select>{['检测使用','借用','报废','调拨'].map(p=><Select.Option key={p}>{p}</Select.Option>)}</Select></Form.Item></Col>
+          </Row>
+          <Form.Item name="recipient" label="领用人"><Input /></Form.Item>
+          <Button type="primary" block htmlType="submit">确认出库</Button>
+        </Form>
+      </Modal>
+
+      <Modal title="库存盘点" open={checkModal} onCancel={() => setCheckModal(false)} footer={null}>
+        <Form form={checkForm} layout="vertical" onFinish={(v) => { message.success('盘点完成'); setCheckModal(false); }}>
+          <Form.Item name="checkType" label="盘点类型"><Select>{['全盘','抽盘','定期盘点'].map(t=><Select.Option key={t}>{t}</Select.Option>)}</Select></Form.Item>
+          <Form.Item name="category" label="盘点分类"><Select allowClear>{['试剂','耗材','标准品','全部'].map(c=><Select.Option key={c}>{c}</Select.Option>)}</Select></Form.Item>
+          <Form.Item name="checker" label="盘点人" required><Input /></Form.Item>
+          <Form.Item name="date" label="盘点日期"><Input placeholder="2024-05-21" /></Form.Item>
+          <Form.Item name="notes" label="备注"><Input.TextArea /></Form.Item>
+          <Button type="primary" block htmlType="submit">开始盘点</Button>
+        </Form>
       </Modal>
 
       <Modal title="试剂入库" open={inModal} onCancel={() => setInModal(false)} footer={null}>
