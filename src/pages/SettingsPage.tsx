@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLabTypeStore } from '../stores/labTypeStore';
-import {Card, Tabs, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Switch, Input, Form, Modal, Tree} from 'antd';
+import { Card, Tabs, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Switch, Input, Form, Modal, Tree, Select, Descriptions } from 'antd';
 import { PlusOutlined, SettingOutlined, SafetyOutlined, UserOutlined, KeyOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;

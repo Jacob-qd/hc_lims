@@ -304,7 +304,6 @@ export const InstrumentsPage: React.FC = () => {
               { title: '操作', render: () => <Space><Button type="link" size="small">校准</Button><Button type="link" size="small">推迟</Button></Space> },
             ]} />
           </Card>},
-          {/* P2-3: 期间核查 */}
           { key: 'interim-check', label: <span><SafetyCertificateOutlined /> 期间核查</span>, children: <Card extra={<Button size="small" icon={<PlusOutlined />} onClick={() => message.success('核查计划已创建')}>新建核查</Button>}>
             <Table dataSource={[
               { id:'ic1', instrument:'HPLC-安捷伦1260', checkItem:'波长准确度', planDate:'2026-06-15', status:'scheduled', lastCheck:'2025-12-15', result:'-' },
