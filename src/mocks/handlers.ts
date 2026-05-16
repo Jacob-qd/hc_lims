@@ -54,6 +54,8 @@ import {
   computeDocumentHash,
   mockSm2Sign,
   signatureMeanings,
+  mockWorkflowDefinitions,
+  mockWorkflowInstances,
 } from './data';
 
 const apiUrl = (path: string) => `/api/v1${path}`;
@@ -933,5 +935,119 @@ export const handlers = [
   // GET /api/v1/audit/signatures - Signature audit log
   http.get(apiUrl('/audit/signatures'), () => {
     return HttpResponse.json({ code: 200, message: 'success', data: { list: mockSignatureAuditLog, total: mockSignatureAuditLog.length } });
+  }),
+
+  // ===== Workflow Engine =====
+  http.get(apiUrl('/workflow/definitions'), () => {
+    return HttpResponse.json({ code: 200, message: 'success', data: { list: mockWorkflowDefinitions, total: mockWorkflowDefinitions.length } });
+  }),
+
+  http.post(apiUrl('/workflow/definitions'), async ({ request }) => {
+    const body = (await request.json()) as Record<string, any>;
+    const newDef = {
+      id: 'wf' + Date.now(),
+      ...body,
+      version: 1,
+      usedCount: 0,
+      status: 'draft',
+      createdBy: '当前用户',
+      createdAt: new Date().toISOString().replace('T', ' ').slice(0, 16),
+      updatedAt: new Date().toISOString().replace('T', ' ').slice(0, 16),
+    };
+    mockWorkflowDefinitions.push(newDef as any);
+    return HttpResponse.json({ code: 200, message: 'success', data: newDef });
+  }),
+
+  http.put(apiUrl('/workflow/definitions/:id'), async ({ request, params }) => {
+    const body = (await request.json()) as Record<string, any>;
+    const idx = mockWorkflowDefinitions.findIndex((w) => w.id === params.id);
+    if (idx === -1) return HttpResponse.json({ code: 404, message: '流程不存在' }, { status: 404 });
+    const updated = { ...mockWorkflowDefinitions[idx], ...body, updatedAt: new Date().toISOString().replace('T', ' ').slice(0, 16) };
+    mockWorkflowDefinitions[idx] = updated as any;
+    return HttpResponse.json({ code: 200, message: 'success', data: updated });
+  }),
+
+  http.delete(apiUrl('/workflow/definitions/:id'), ({ params }) => {
+    const idx = mockWorkflowDefinitions.findIndex((w) => w.id === params.id);
+    if (idx === -1) return HttpResponse.json({ code: 404, message: '流程不存在' }, { status: 404 });
+    mockWorkflowDefinitions.splice(idx, 1);
+    return HttpResponse.json({ code: 200, message: '删除成功' });
+  }),
+
+  http.post(apiUrl('/workflow/definitions/:id/deploy'), ({ params }) => {
+    const def = mockWorkflowDefinitions.find((w) => w.id === params.id);
+    if (!def) return HttpResponse.json({ code: 404, message: '流程不存在' }, { status: 404 });
+    def.status = 'deployed';
+    def.version += 1;
+    def.updatedAt = new Date().toISOString().replace('T', ' ').slice(0, 16);
+    return HttpResponse.json({ code: 200, message: '部署成功', data: def });
+  }),
+
+  http.post(apiUrl('/workflow/definitions/:id/undeploy'), ({ params }) => {
+    const def = mockWorkflowDefinitions.find((w) => w.id === params.id);
+    if (!def) return HttpResponse.json({ code: 404, message: '流程不存在' }, { status: 404 });
+    def.status = 'disabled';
+    def.updatedAt = new Date().toISOString().replace('T', ' ').slice(0, 16);
+    return HttpResponse.json({ code: 200, message: '停用成功', data: def });
+  }),
+
+  http.get(apiUrl('/workflow/instances'), () => {
+    return HttpResponse.json({ code: 200, message: 'success', data: { list: mockWorkflowInstances, total: mockWorkflowInstances.length } });
+  }),
+
+  http.get(apiUrl('/workflow/instances/:id'), ({ params }) => {
+    const inst = mockWorkflowInstances.find((w) => w.id === params.id);
+    if (!inst) return HttpResponse.json({ code: 404, message: '实例不存在' }, { status: 404 });
+    return HttpResponse.json({ code: 200, message: 'success', data: inst });
+  }),
+
+  http.post(apiUrl('/workflow/instances/:id/urge'), ({ params }) => {
+    const inst = mockWorkflowInstances.find((w) => w.id === params.id);
+    if (!inst) return HttpResponse.json({ code: 404, message: '实例不存在' }, { status: 404 });
+    inst.history.push({
+      id: 'h' + Date.now(),
+      nodeId: inst.currentNodes[0] || '',
+      nodeName: inst.currentNodeNames[0] || '',
+      action: 'urge',
+      operator: '当前用户',
+      comment: '催办',
+      timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
+    });
+    return HttpResponse.json({ code: 200, message: '催办通知已发送' });
+  }),
+
+  http.post(apiUrl('/workflow/instances/:id/transfer'), async ({ params, request }) => {
+    const body = (await request.json()) as Record<string, any>;
+    const inst = mockWorkflowInstances.find((w) => w.id === params.id);
+    if (!inst) return HttpResponse.json({ code: 404, message: '实例不存在' }, { status: 404 });
+    inst.assignees = [body.assignee as string];
+    inst.history.push({
+      id: 'h' + Date.now(),
+      nodeId: inst.currentNodes[0] || '',
+      nodeName: inst.currentNodeNames[0] || '',
+      action: 'transfer',
+      operator: '当前用户',
+      comment: `转交给 ${body.assignee}`,
+      timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
+    });
+    return HttpResponse.json({ code: 200, message: '转交成功' });
+  }),
+
+  http.post(apiUrl('/workflow/instances/:id/terminate'), async ({ params, request }) => {
+    const body = (await request.json()) as Record<string, any>;
+    const inst = mockWorkflowInstances.find((w) => w.id === params.id);
+    if (!inst) return HttpResponse.json({ code: 404, message: '实例不存在' }, { status: 404 });
+    inst.status = 'terminated';
+    inst.completedAt = new Date().toISOString().replace('T', ' ').slice(0, 16);
+    inst.history.push({
+      id: 'h' + Date.now(),
+      nodeId: inst.currentNodes[0] || '',
+      nodeName: inst.currentNodeNames[0] || '',
+      action: 'terminated',
+      operator: '当前用户',
+      comment: body.reason as string || '手动终止',
+      timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
+    });
+    return HttpResponse.json({ code: 200, message: '流程已终止' });
   }),
 ];
