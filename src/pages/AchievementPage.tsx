@@ -17,7 +17,7 @@ export const AchievementPage: React.FC = () => {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    fetch('/api/v1/research/publications').then(r => r.json()).then(d => { setPubs(d.data.list); setLoading(false); });
+    fetch('/api/v1/research/publications').then(r => r.json()).then(d => { setPubs(d.data?.list || []); setLoading(false); });
   }, []);
 
   const filtered = pubs.filter((p: any) => p.title.includes(search) || p.authors.includes(search) || p.journal.includes(search));

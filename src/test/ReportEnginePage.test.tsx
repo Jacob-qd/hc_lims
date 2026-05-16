@@ -108,6 +108,9 @@ describe('ReportEnginePage', () => {
           },
         });
       }
+      if (url.includes('/api/v1/reports/executions/tmpl1')) {
+        return mockFetchResponse({ code: 200, data: { executionId: 'ex2' } });
+      }
       return mockFetchResponse({ code: 200, data: null });
     });
   });
@@ -117,39 +120,51 @@ describe('ReportEnginePage', () => {
   });
 
   it('renders and loads templates', async () => {
-    render(
-      <BrowserRouter>
-        <ConfigProvider>
-          <ReportEnginePage />
-        </ConfigProvider>
-      </BrowserRouter>
+    render(<BrowserRouter><ConfigProvider><ReportEnginePage /></ConfigProvider></BrowserRouter>
     );
     await waitFor(() => expect(screen.getByText('月度报表')).toBeInTheDocument());
   });
 
-  it('switches to charts tab', async () => {
-    render(
-      <BrowserRouter>
-        <ConfigProvider>
-          <ReportEnginePage />
-        </ConfigProvider>
-      </BrowserRouter>
+  it('switches to charts tab and previews', async () => {
+    render(<BrowserRouter><ConfigProvider><ReportEnginePage /></ConfigProvider></BrowserRouter>
     );
     await waitFor(() => expect(screen.getByText('月度报表')).toBeInTheDocument());
     fireEvent.click(screen.getByText('图表组件库'));
     await waitFor(() => expect(screen.getAllByText('柱状图').length).toBeGreaterThanOrEqual(1));
+    fireEvent.click(screen.getAllByText('预览')[0]);
+    await waitFor(() => expect(document.body.textContent).toContain('图表预览'));
   });
 
-  it('switches to schedules tab', async () => {
-    render(
-      <BrowserRouter>
-        <ConfigProvider>
-          <ReportEnginePage />
-        </ConfigProvider>
-      </BrowserRouter>
+  it('switches to schedules tab and toggles', async () => {
+    render(<BrowserRouter><ConfigProvider><ReportEnginePage /></ConfigProvider></BrowserRouter>
     );
     await waitFor(() => expect(screen.getByText('月度报表')).toBeInTheDocument());
     fireEvent.click(screen.getByText('调度任务'));
     await waitFor(() => expect(screen.getByText('定时配置')).toBeInTheDocument());
+    const enabledTag = screen.getByText('启用');
+    fireEvent.click(enabledTag);
+  });
+
+  it('opens create modal and navigates steps', async () => {
+    render(<BrowserRouter><ConfigProvider><ReportEnginePage /></ConfigProvider></BrowserRouter>
+    );
+    await waitFor(() => expect(screen.getByText('月度报表')).toBeInTheDocument());
+    fireEvent.click(screen.getByText('新建报表'));
+    await waitFor(() => expect(document.body.textContent).toContain('基础信息'));
+    fireEvent.click(screen.getByText('下一步'));
+    await waitFor(() => expect(document.body.textContent).toContain('字段配置'));
+    fireEvent.click(screen.getByText('下一步'));
+    await waitFor(() => expect(document.body.textContent).toContain('筛选条件'));
+    fireEvent.click(screen.getByText('下一步'));
+    await waitFor(() => expect(document.body.textContent).toContain('图表配置'));
+    fireEvent.click(screen.getByText('下一步'));
+    await waitFor(() => expect(document.body.textContent).toContain('输出设置'));
+  });
+
+  it('clicks run template', async () => {
+    render(<BrowserRouter><ConfigProvider><ReportEnginePage /></ConfigProvider></BrowserRouter>
+    );
+    await waitFor(() => expect(screen.getByText('月度报表')).toBeInTheDocument());
+    fireEvent.click(screen.getAllByText('运行')[0]);
   });
 });

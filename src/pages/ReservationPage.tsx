@@ -15,7 +15,7 @@ export const ReservationPage: React.FC = () => {
     try {
       const res = await window.fetch('/api/v1/research/reservations');
       const json = await res.json();
-      setReservations(json.data.list);
+      setReservations(json.data?.list || []);
     } catch { message.error('加载失败'); }
     finally { setLoading(false); }
   };
