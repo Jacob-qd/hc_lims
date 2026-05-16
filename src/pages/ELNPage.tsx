@@ -67,7 +67,7 @@ const mockRecords = [
 ];
 
 // ===== GB/T 8170 Rounding =====
-function gb8170Round(value: number, decimals: number): number {
+export function gb8170Round(value: number, decimals: number): number {
   const factor = Math.pow(10, decimals);
   const scaled = value * factor;
   const floor = Math.floor(scaled);
@@ -77,7 +77,7 @@ function gb8170Round(value: number, decimals: number): number {
   return (floor % 2 === 0 ? floor : floor + 1) / factor;
 }
 
-function evaluateFormula(formula: string, vars: Record<string, number>): number {
+export function evaluateFormula(formula: string, vars: Record<string, number>): number {
   // Simple formula evaluator for demo purposes
   // In production, use math.js safe sandbox
   const expr = formula.replace(/([a-zA-Z_]\w*)/g, (match) => {
@@ -91,7 +91,7 @@ function evaluateFormula(formula: string, vars: Record<string, number>): number 
   }
 }
 
-function judgeResult(value: number, standard: string, rule: string): string {
+export function judgeResult(value: number, standard: string, rule: string): string {
   if (rule === 'lte') {
     const limit = parseFloat(standard.replace(/[≤<]/g, ''));
     return value <= limit ? '符合' : '超标';

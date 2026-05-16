@@ -223,21 +223,23 @@ export const TasksPage: React.FC = () => {
 
             {/* Kanban */}
             <Row gutter={16}>
-              {Object.entries(statusGroups).map(([key, items]) => (
+              {['unassigned','pending','testing','pending_review','completed'].map(key => {
+                const items = statusGroups[key] || [];
+                const labels: Record<string,string> = {unassigned:'待分配',pending:'待检测',testing:'检测中',pending_review:'待审核',completed:'已完成'};
+                return (
                 <Col xs={24} sm={12} md={8} lg={4} key={key} style={{ marginBottom: 16 }}>
-                  <Card size="small" title={
-                    <Space><Badge color={statusColor[key]} />{key === 'unassigned' ? '待分配' : key === 'pending' ? '待检测' : key === 'testing' ? '检测中' : key === 'pending_review' ? '待审核' : '已完成'}<Tag>{items.length}</Tag></Space>
-                  }>
-                    {items.map(t => (
+                  <Card size="small" title={<Space><Badge color={statusColor[key]} />{labels[key]}<Tag>{items.length}</Tag></Space>}>
+                    {items.map((t: any) =>
                       <Card key={t.id} size="small" style={{ marginBottom: 8, cursor: 'pointer' }} onClick={() => { setSelectedTask(t); setDrawerVisible(true); }}>
                         <Text style={{ fontSize: 12 }}>{t.taskNo}</Text><br />
                         <Text ellipsis style={{ fontSize: 12 }}>{t.sampleName} - {t.testItem}</Text><br />
                         <Tag color={priorityColor[t.priority]} style={{ fontSize: 10 }}>{t.priorityLabel}</Tag>
                       </Card>
-                    ))}
+                    )}
                   </Card>
                 </Col>
-              ))}
+                );
+              })}
             </Row>
           )},
           { key: 'list', label: '任务列表', children: (

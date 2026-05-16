@@ -164,6 +164,12 @@ export const DashboardPage: React.FC = () => {
           <Select.Option value="center">🏢 中心实验室</Select.Option>
           <Select.Option value="physics">🔬 理化实验室</Select.Option>
           <Select.Option value="instrument">⚙️ 仪器分析室</Select.Option>
+        </Select>
+        {/* P3-1: 角色切换快捷入口 */}
+        <Select defaultValue="manager" size="small" style={{width:130}} onChange={v => message.info('已切换到: ' + (v==='manager'?'主管视图':v==='analyst'?'检测员视图':v==='qa'?'QA视图':'收样员视图'))}>
+          <Select.Option value="manager">👔 主管视图</Select.Option>
+          <Select.Option value="analyst">🔬 检测员视图</Select.Option>
+          <Select.Option value="qa">✅ QA视图</Select.Option>
         </Select></Col>
       </Row>
 

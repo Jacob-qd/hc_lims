@@ -266,7 +266,7 @@ export const COCPage: React.FC = () => {
         title={`COC: ${selectedChain?.cocNumber || ''}`}
         open={detailOpen}
         onCancel={() => { setDetailOpen(false); setSelectedChain(null); }}
-        footer={<Button onClick={() => { setDetailOpen(false); setSelectedChain(null); }}>关闭</Button>}
+        footer={<Space><Button onClick={() => { setDetailOpen(false); setSelectedChain(null); }}>关闭</Button><Button type="primary" icon={<ExportOutlined />} onClick={() => { const txt = `COC报告: ${selectedChain?.cocNumber}\n样品: ${selectedChain?.sampleName}\n事件数: ${selectedChain?.events?.length||0}\n完整性: ${selectedChain?.integrity?'完整':'异常'}`; const blob = new Blob([txt],{type:'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `COC-${selectedChain?.cocNumber}.txt`; a.click(); message.success('COC报告已导出'); }}>导出报告</Button></Space>}
         width={700}
       >
         {selectedChain && (
