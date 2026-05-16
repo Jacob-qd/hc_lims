@@ -77,7 +77,12 @@ export const CustomerPortalPage: React.FC = () => {
         )},
         { key: 'new', label: '在线委托', children: (
           <Card>
-            <Form layout="vertical" style={{ maxWidth: 600 }}>
+            {}
+            {/* R5-5: Quick package selection */}
+            <Row gutter={16} style={{marginBottom:16}}>
+              {[{icon:'🌊',name:'地表水24项',tat:'5天',price:'¥2,800',color:'#1677ff'},{icon:'💧',name:'饮用水106项',tat:'10天',price:'¥12,000',color:'#52c41a'},{icon:'🏔️',name:'土壤8项',tat:'5天',price:'¥1,600',color:'#722ed1'}].map(p=><Col span={8} key={p.name}><Card size="small" hoverable style={{borderLeft:'3px solid '+p.color,cursor:'pointer'}} onClick={()=>message.success(p.name+'套餐已选择, 预估'+p.tat+'·'+p.price)}><Text strong>{p.icon} {p.name}</Text><br/><Text type="secondary">{p.tat} · {p.price}</Text></Card></Col>)}
+            </Row>
+            <Form layout="vertical" style={{ maxWidth: 600 }} onFinish={(v) => { message.success('委托提交成功！委托号: WT-'+Date.now().toString().slice(-6)); }}>
               <Form.Item label="样品名称" required><Input placeholder="如：地表水样品" /></Form.Item>
               <Form.Item label="样品类型"><Select><Select.Option value="water">地表水</Select.Option><Select.Option value="soil">土壤</Select.Option><Select.Option value="air">环境空气</Select.Option></Select></Form.Item>
               <Form.Item label="检测项目"><Select mode="multiple" placeholder="选择检测项目"><Select.Option value="ph">pH值</Select.Option><Select.Option value="cod">COD</Select.Option><Select.Option value="nh3">氨氮</Select.Option></Select></Form.Item>

@@ -245,6 +245,22 @@ export const TasksPage: React.FC = () => {
           { key: 'list', label: '任务列表', children: (
             <Table columns={columns} dataSource={tasks} rowKey="id" loading={loading} pagination={{ pageSize: 10, showTotal: t => `共 ${t} 条` }} size="middle" />
           )},
+          {/* R5-4: Batch Management */}
+          { key: 'batch', label: '📦 批次管理', children: <Card extra={<Space><Button size="small" icon={<PlusOutlined />} onClick={() => message.success('批次已创建')}>新建批次</Button><Button size="small" onClick={() => message.success('批次报告已生成')}>生成批次报告</Button></Space>}>
+            <Table dataSource={[{
+              id:'b1',batchNo:'BATCH-20260516-001',sampleCount:20,testItems:8,status:'in_progress',progress:65,createdAt:'2026-05-16',dueAt:'2026-05-20'},
+              {id:'b2',batchNo:'BATCH-20260515-002',sampleCount:15,testItems:6,status:'completed',progress:100,createdAt:'2026-05-15',dueAt:'2026-05-19'},
+              {id:'b3',batchNo:'BATCH-20260516-003',sampleCount:8,testItems:12,status:'pending',progress:0,createdAt:'2026-05-16',dueAt:'2026-05-25'},
+            ]} rowKey="id" pagination={false} size="small" columns={[
+              {title:'批次编号',dataIndex:'batchNo',render:(n:string)=><code>{n}</code>},
+              {title:'样品数',dataIndex:'sampleCount',width:70},
+              {title:'检测项',dataIndex:'testItems',width:70},
+              {title:'进度',dataIndex:'progress',width:100,render:(p:number)=><Progress percent={p} size="small" />},
+              {title:'截止',dataIndex:'dueAt',width:100},
+              {title:'状态',dataIndex:'status',render:(s:string)=><Badge status={s==='completed'?'success':s==='in_progress'?'processing':'default'} text={s==='completed'?'已完成':s==='in_progress'?'进行中':'待开始'} />},
+              {title:'操作',render:()=><Space size="small"><Button type="link" size="small">详情</Button><Button type="link" size="small">报告</Button></Space>},
+            ]} />
+          </Card>},
         ]} />
       </Card>
 

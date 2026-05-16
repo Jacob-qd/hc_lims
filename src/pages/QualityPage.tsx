@@ -232,6 +232,23 @@ export const QualityPage: React.FC = () => {
                 { title: '处置', dataIndex: 'action' },
               ]} />
             </Card>
+            {/* R5-1: L-J QC Chart */}
+            <Card title="📈 L-J 质控图 (COD, 近30天)" size="small" style={{ marginTop: 16 }}>
+              <div style={{ height:180, padding:'10px 30px 10px 50px' }}>
+                <svg viewBox="0 0 550 160" style={{ width:'100%',height:'100%' }}>
+                  {[{y:0,l:'+3s'},{y:40,l:'+2s'},{y:80,l:'Mean'},{y:120,l:'-2s'},{y:160,l:'-3s'}].map((l:any,i:number) => <g key={i}>
+                    <line x1={0} y1={l.y} x2={550} y2={l.y} stroke={l.y===80?'#1677ff':l.y===40||l.y===120?'#faad14':'#f0f0f0'} strokeWidth={l.y===80?2:0.5} strokeDasharray={l.y===80?'':'4'} />
+                    <text x={-40} y={l.y+4} fontSize={10} fill="#999">{l.l}</text>
+                  </g>)}
+                  {[{v:24.8,c:'#52c41a'},{v:25.1,c:'#52c41a'},{v:24.3,c:'#52c41a'},{v:25.6,c:'#52c41a'},{v:24.9,c:'#52c41a'},{v:25.8,c:'#52c41a'},{v:25.5,c:'#52c41a'},{v:24.1,c:'#faad14'},{v:25.2,c:'#52c41a'},{v:26.1,c:'#ff4d4f'},{v:24.7,c:'#52c41a'},{v:25.3,c:'#52c41a'},{v:25.9,c:'#52c41a'},{v:24.5,c:'#52c41a'}].map((p:any,i:number) => {
+                    const x = 15 + i * 38;
+                    const yr = 160 - ((p.v - 22) / (28 - 22)) * 160;
+                    return <g key={i}><circle cx={x} cy={yr} r={4} fill={p.c} stroke="#fff" strokeWidth={1}/><text x={x} y={yr-8} fontSize={9} fill={p.c} textAnchor="middle">{p.v}</text></g>;
+                  })}
+                </svg>
+              </div>
+              <Space style={{marginTop:8}}><Tag color="red">● 第10点: 1₂s警告 (26.1)</Tag><Tag color="green">均值:25.1 · SD:0.58 · CV:2.3%</Tag></Space>
+            </Card>
           </div>
         )},
       ]} />
