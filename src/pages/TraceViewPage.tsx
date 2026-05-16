@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Timeline, Tag, Descriptions, Button, Row, Col, Typography, Space, Input, Steps } from 'antd';
+import {Card, Timeline, Tag, Descriptions, Button, Row, Col, Typography, Space, Input, Steps} from 'antd';
 import { SearchOutlined, LinkOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;

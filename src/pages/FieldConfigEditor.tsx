@@ -1,8 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import {
-  Card, Table, Button, Typography, Space, Modal, Form, Input, InputNumber, Select, Switch,
-  message, Row, Col, Tag, Tabs, Empty, Tooltip, Divider,
-} from 'antd';
+import {Card, Table, Button, Typography, Space, Modal, Form, Input, InputNumber, Select, Switch, Row, Col, Tag, Tabs, Empty, Tooltip, Divider} from 'antd';
 import {
   PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined,
   AppstoreOutlined, FileTextOutlined, ExperimentOutlined, SettingOutlined,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Descriptions, Tag, Tabs, Timeline, Table, Button, Row, Col, Typography, Steps } from 'antd';
+import {Card, Descriptions, Tag, Tabs, Timeline, Table, Button, Row, Col, Typography, Steps} from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
 

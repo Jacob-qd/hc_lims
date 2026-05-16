@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Card, Table, Tag, Button, Input, Select, DatePicker, Row, Col,
-  Space, Typography, Drawer, Timeline, Badge, Steps, Form,
-  Modal, message, Radio, Checkbox, Divider, Tooltip, Tabs,
-  Collapse, Descriptions, List, Empty, InputNumber, Upload,
-  Alert, Progress, Result,
-} from 'antd';
+import {Card, Table, Tag, Button, Input, Select, DatePicker, Row, Col, Space, Typography, Drawer, Timeline, Badge, Steps, Form, Alert, Divider, List, Modal, Radio, Checkbox, Tooltip, Tabs, Collapse, Descriptions, Empty, InputNumber, Upload, Progress, Result} from 'antd';
 import {
   PlusOutlined, SearchOutlined, PrinterOutlined, ExportOutlined,
   DeleteOutlined, FileTextOutlined, EditOutlined, EyeOutlined,
@@ -545,47 +539,111 @@ const WatermarkOverlay: React.FC<{ text: string }> = ({ text }) => (
   </div>
 );
 
-/** PDF Preview (Simplified) */
+/** PDF Preview with real mock data + zoom */
 const PdfPreviewPanel: React.FC<{ report: Report }> = ({ report }) => {
+  const [zoom, setZoom] = useState(100);
   const { cover } = report;
   const issued = report.status === 'issued';
   const issuedDate = report.signatures.find(s => s.role === 'approver')?.signedAt;
-  const watermarkText = issued ? `已签发 ${issuedDate ? new Date(issuedDate).toLocaleDateString() : ''}` : '';
+
+  // Mock test results
+  const mockResults = [
+    { item:'pH值', method:'HJ 1147-2020', result:'7.32', unit:'无量纲', limit:'6.0-9.0', judgment:'符合' },
+    { item:'化学需氧量(COD)', method:'HJ 828-2017', result:'25.6', unit:'mg/L', limit:'≤50', judgment:'符合' },
+    { item:'氨氮(NH₃-N)', method:'HJ 535-2009', result:'0.215', unit:'mg/L', limit:'≤1.0', judgment:'符合' },
+    { item:'总磷(TP)', method:'GB/T 11893-1989', result:'0.08', unit:'mg/L', limit:'≤0.2', judgment:'符合' },
+    { item:'总氮(TN)', method:'HJ 636-2012', result:'0.95', unit:'mg/L', limit:'≤1.0', judgment:'符合' },
+    { item:'五日生化需氧量(BOD₅)', method:'HJ 505-2009', result:'7.8', unit:'mg/L', limit:'≤10', judgment:'符合' },
+    { item:'悬浮物(SS)', method:'GB/T 11901-1989', result:'12', unit:'mg/L', limit:'≤30', judgment:'符合' },
+    { item:'重金属(Pb)', method:'GB/T 17141-1997', result:'0.005', unit:'mg/L', limit:'≤0.05', judgment:'符合' },
+  ];
+
   return (
-    <div style={{ background: '#f5f5f5', borderRadius: 8, padding: 24, minHeight: 400, position: 'relative' }}>
-      {issued && <WatermarkOverlay text={watermarkText} />}
-      <div
-        style={{
-          background: '#fff',
-          maxWidth: 420,
-          margin: '0 auto',
-          padding: 32,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-          borderRadius: 4,
-          position: 'relative',
-          zIndex: 1,
-        }}
-      >
-        <div style={{ textAlign: 'center', marginBottom: 24 }}>
-          <Title level={4} style={{ margin: 0 }}>{cover.companyName}</Title>
-          <Divider />
-          <Title level={3} style={{ margin: '8px 0', color: '#1677ff' }}>{cover.reportTitle}</Title>
-          <Text type="secondary">{cover.reportNo}</Text>
-        </div>
-        <Descriptions column={1} size="small" bordered>
-          <Descriptions.Item label="委托单位">{cover.entrustUnit}</Descriptions.Item>
-          <Descriptions.Item label="项目名称">{cover.projectName}</Descriptions.Item>
-          <Descriptions.Item label="样品类型">{cover.sampleType}</Descriptions.Item>
-          <Descriptions.Item label="采样地点">{cover.samplingLocation}</Descriptions.Item>
-          <Descriptions.Item label="采样日期">{cover.samplingDate}</Descriptions.Item>
-          <Descriptions.Item label="检测日期">{cover.testDate}</Descriptions.Item>
-          <Descriptions.Item label="签发日期">{cover.issueDate || '-'}</Descriptions.Item>
-          <Descriptions.Item label="共 {cover.pageCount} 页">{cover.pageCount} 页</Descriptions.Item>
-        </Descriptions>
-        <div style={{ textAlign: 'center', marginTop: 24 }}>
-          <Text type="secondary" style={{ fontSize: 11 }}>红创检测认证有限公司</Text>
-          <br />
-          <Text type="secondary" style={{ fontSize: 11 }}>检测专用章</Text>
+    <div style={{ background: '#e8e8e8', borderRadius: 8, overflow: 'hidden' }}>
+      {/* Zoom Controls */}
+      <div style={{ background:'#fff', padding:'6px 12px', borderBottom:'1px solid #e8e8e8', display:'flex', alignItems:'center', gap:8 }}>
+        <Button size="small" disabled={zoom<=50} onClick={()=>setZoom(z=>z-25)}>🔍−</Button>
+        <Button size="small" onClick={()=>setZoom(100)}>{zoom}%</Button>
+        <Button size="small" disabled={zoom>=200} onClick={()=>setZoom(z=>z+25)}>🔍+</Button>
+        <Button size="small" onClick={()=>setZoom(100)}>适合</Button>
+      </div>
+      {/* PDF Content */}
+      <div style={{ overflow:'auto', maxHeight:'65vh', padding:16, display:'flex', justifyContent:'center' }}>
+        <div style={{
+          background:'#fff', width:'680px', transform:`scale(${zoom/100})`, transformOrigin:'top center',
+          padding:'48px 40px', boxShadow:'0 4px 16px rgba(0,0,0,0.15)', borderRadius:2,
+          marginBottom: zoom > 100 ? (zoom-100)*3 : 0,
+        }}>
+          {/* Header */}
+          <div style={{ textAlign:'center', marginBottom:32 }}>
+            <Text style={{ fontSize:18, fontWeight:700, letterSpacing:4 }}>{cover.companyName || '红创检测认证有限公司'}</Text>
+            <Divider style={{ margin:'12px 0' }} />
+            <Title level={3} style={{ margin:0 }}>检 测 报 告</Title>
+            <div style={{ marginTop:8 }}>
+              <Tag color="blue" style={{ fontSize:12 }}>报告编号: {cover.reportNo || report.reportNo}</Tag>
+              <Tag style={{ marginLeft:8, fontSize:12 }}>{cover.pageCount || 1} 页</Tag>
+            </div>
+          </div>
+
+          {/* Basic Info */}
+          <Descriptions column={2} size="small" bordered style={{ marginBottom:24 }}>
+            <Descriptions.Item label="委托单位" span={2}>{cover.entrustUnit || report.customerName}</Descriptions.Item>
+            <Descriptions.Item label="项目名称" span={2}>{cover.projectName || '-'}</Descriptions.Item>
+            <Descriptions.Item label="样品类型">{cover.sampleType || '-'}</Descriptions.Item>
+            <Descriptions.Item label="样品状态">正常</Descriptions.Item>
+            <Descriptions.Item label="采样地点">{cover.samplingLocation || '-'}</Descriptions.Item>
+            <Descriptions.Item label="采样日期">{cover.samplingDate || '-'}</Descriptions.Item>
+            <Descriptions.Item label="收样日期">{cover.receiveDate || '-'}</Descriptions.Item>
+            <Descriptions.Item label="检测日期">{cover.testDate || '-'}</Descriptions.Item>
+            <Descriptions.Item label="签发日期">{cover.issueDate || issuedDate || '-'}</Descriptions.Item>
+            <Descriptions.Item label="检测类别">委托检测</Descriptions.Item>
+          </Descriptions>
+
+          {/* Test Results Table */}
+          <Text strong style={{ fontSize:14, display:'block', marginBottom:8 }}>检测结果</Text>
+          <Table
+            dataSource={mockResults}
+            rowKey="item"
+            pagination={false}
+            size="small"
+            bordered
+            columns={[
+              { title:'序号', render:(_:any,__:any,i:number)=><Text style={{fontSize:11}}>{i+1}</Text>, width:45 },
+              { title:'检测项目', dataIndex:'item', render:(v:string)=><Text style={{fontSize:11}}>{v}</Text> },
+              { title:'检测方法', dataIndex:'method', render:(v:string)=><Text style={{fontSize:10}}>{v}</Text>, width:120 },
+              { title:'结果', dataIndex:'result', render:(v:string)=><Text strong style={{fontSize:11}}>{v}</Text>, width:60 },
+              { title:'单位', dataIndex:'unit', width:55, render:(v:string)=><Text style={{fontSize:10}}>{v}</Text> },
+              { title:'限值', dataIndex:'limit', width:55, render:(v:string)=><Text style={{fontSize:10}}>{v}</Text> },
+              { title:'判定', dataIndex:'judgment', width:55, render:(v:string)=><Tag color={v==='符合'?'green':'red'} style={{fontSize:10}}>{v}</Tag> },
+            ]}
+          />
+
+          {/* Conclusion */}
+          <div style={{ marginTop:24, padding:'12px 16px', background:'#f6ffed', borderRadius:4, border:'1px solid #b7eb8f' }}>
+            <Text strong style={{ fontSize:12 }}>检测结论:</Text>
+            <Text style={{ fontSize:12, marginLeft:8 }}>
+              依据 {cover.sampleType||'相关'} 检测标准，所检项目结果{report.conclusion || '符合'}标准限值要求。
+            </Text>
+          </div>
+
+          {/* Signature Area */}
+          <Row justify="space-around" style={{ marginTop:40 }}>
+            {[
+              { role:'编制', name:report.signatures.find(s=>s.role==='compiler')?.userName||'李思', date:report.signatures.find(s=>s.role==='compiler')?.signedAt },
+              { role:'审核', name:report.signatures.find(s=>s.role==='reviewer')?.userName||'王强', date:report.signatures.find(s=>s.role==='reviewer')?.signedAt },
+              { role:'批准', name:report.signatures.find(s=>s.role==='approver')?.userName||'赵耀', date:report.signatures.find(s=>s.role==='approver')?.signedAt },
+            ].map((sig,i) => <Col key={i} style={{textAlign:'center'}}>
+              <div style={{fontSize:11,color:'#999',marginBottom:24}}>{sig.date||'____年__月__日'}</div>
+              <div style={{fontSize:13,fontWeight:700}}>{sig.name}</div>
+              <div style={{fontSize:11,color:'#999',marginTop:4}}>{sig.role}人</div>
+            </Col>)}
+          </Row>
+
+          {/* Stamp */}
+          <div style={{textAlign:'center',marginTop:24,paddingTop:16,borderTop:'1px solid #f0f0f0'}}>
+            <Text type="secondary" style={{fontSize:11}}>红创检测认证有限公司 检测专用章</Text>
+            {issued && <Tag color="green" style={{marginLeft:8,fontSize:10}}>✅ 电子签名已验证 (SM2)</Tag>}
+          </div>
         </div>
       </div>
     </div>

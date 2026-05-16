@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Input, Table, Tabs, Tag, Typography, Space, Select, DatePicker, Row, Col, Statistic, message } from 'antd';
+import {Card, Input, Table, Tabs, Tag, Typography, Space, Select, DatePicker, Row, Col, Statistic} from 'antd';
 import { SearchOutlined, DownloadOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
