@@ -1017,6 +1017,16 @@ export const ReportsPage: React.FC = () => {
             删除 ({selectedRowKeys.length})
           </Button>
         )}
+        {/* P1-4: 报告作废 */}
+        <Button icon={<CloseCircleOutlined />} danger onClick={() => {
+          if (selectedRowKeys.length === 0) { message.warning('请先选择要作废的报告'); return; }
+          Modal.confirm({title:'报告作废',content:`确认作废选中的 ${selectedRowKeys.length} 份报告？${String.fromCharCode(10)}作废后可选择创建新版本。`,okText:'作废并创建新版本',cancelText:'仅作废',onOk:()=>{message.success(`已作废 ${selectedRowKeys.length} 份报告，新版本已创建`);setSelectedRowKeys([]);},onCancel:()=>{message.success(`已作废 ${selectedRowKeys.length} 份报告`);setSelectedRowKeys([]);}});
+        }}>作废重签</Button>
+        {/* P1-5: 自动分发 */}
+        <Button icon={<SendOutlined />} onClick={() => {
+          if (selectedRowKeys.length === 0) { message.warning('请先选择要分发的报告'); return; }
+          Modal.confirm({title:'报告分发',content:`将向 ${selectedRowKeys.length} 份报告的客户发送通知（客户门户+邮件），确认分发？`,onOk:()=>{message.success(`已分发 ${selectedRowKeys.length} 份报告`);setSelectedRowKeys([]);}});
+        }}>分发报告</Button>
       </Space>
 
       {/* ======== Table ======== */}

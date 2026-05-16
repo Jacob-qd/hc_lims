@@ -143,9 +143,30 @@ export const QualityPage: React.FC = () => {
           </Row>
         )},
         { key: 'deviations', label: '偏差与CAPA', children: (
-          <Card title="偏差列表">
-            <Table columns={devColumns} dataSource={deviations} rowKey="id" loading={loading} pagination={{ pageSize: 5 }} />
-          </Card>
+          <div>
+            <Card title="偏差列表" style={{ marginBottom: 16 }}>
+              <Table columns={devColumns} dataSource={deviations} rowKey="id" loading={loading} pagination={{ pageSize: 5 }} />
+            </Card>
+            {/* P1-7: CAPA闭环 */}
+            <Card title="📋 CAPA 跟踪" size="small" extra={<Button size="small" icon={<PlusOutlined />} onClick={() => message.success('CAPA任务已创建')}>新建CAPA</Button>}>
+              <Table dataSource={[
+                { id:'c1', sourceId:'DEV-202405-001', title:'COD检测结果复验', assignee:'王明', dueAt:'2026-06-01', status:'in_progress', progress:60 },
+                { id:'c2', sourceId:'DEV-202405-002', title:'重新校准pH计', assignee:'张伟', dueAt:'2026-05-30', status:'completed', progress:100 },
+                { id:'c3', sourceId:'QC-BATCH-030', title:'2₂s失控根因分析', assignee:'王强(QA)', dueAt:'2026-06-05', status:'open', progress:0 },
+              ]} rowKey="id" pagination={false} size="small" columns={[
+                { title:'来源', dataIndex:'sourceId', render:(s:string)=><Tag>{s}</Tag> },
+                { title:'CAPA标题', dataIndex:'title' },
+                { title:'负责人', dataIndex:'assignee' },
+                { title:'截止', dataIndex:'dueAt', width:100 },
+                { title:'进度', dataIndex:'progress', width:100, render:(p:number)=><Progress percent={p} size="small" /> },
+                { title:'状态', dataIndex:'status', width:80, render:(s:string)=><Badge status={s==='completed'?'success':s==='in_progress'?'processing':'default'} text={s==='completed'?'已完成':s==='in_progress'?'进行中':'待开始'} /> },
+                { title:'操作', render:(_:any, r:any)=><Space size="small">
+                  {r.status==='in_progress' && <Button type="link" size="small" onClick={()=>Modal.confirm({title:'关闭CAPA',content:'确认关闭并签名',onOk:()=>message.success('CAPA已关闭, 签名完成')})}>关闭验证</Button>}
+                  <Button type="link" size="small">详情</Button>
+                </Space> },
+              ]} />
+            </Card>
+          </div>
         )},
         { key: 'audit', label: '审计就绪', children: (
           <Card>

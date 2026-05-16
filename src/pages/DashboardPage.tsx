@@ -191,6 +191,34 @@ export const DashboardPage: React.FC = () => {
         ))}
       </Row>
 
+      {/* ⚠️ 预警中心 — P1-1 */}
+      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
+        <Col span={24}>
+          <Card size="small" title={<Space><Text strong style={{ color: '#ff4d4f' }}>⚠️ 预警中心</Text><Badge count={4} style={{ backgroundColor: '#ff4d4f' }} /></Space>}>
+            <Row gutter={16}>
+              {[
+                { type: 'qc_violation', icon: '🔴', label: '质控违规', count: 1, msg: 'COD批次BATCH-030: 2₂s失控', link: '/quality', color: '#ff4d4f' },
+                { type: 'calibration_due', icon: '🟡', label: '校准到期', count: 2, msg: '电子天平(5/1到期) · UV-Vis(6/10到期)', link: '/instruments', color: '#faad14' },
+                { type: 'reagent_expiry', icon: '🟡', label: '试剂效期', count: 3, msg: 'COD标准液(6/1) · 硫酸汞(6/15) · pH缓冲液(6/20)', link: '/inventory', color: '#faad14' },
+                { type: 'cert_expiry', icon: '🔵', label: '资质到期', count: 1, msg: '李思 授权签字人资质 6/30到期', link: '/personnel', color: '#1677ff' },
+              ].map(alert => (
+                <Col span={6} key={alert.type}>
+                  <Card size="small" hoverable onClick={() => { if (alert.link.startsWith('/')) navigate(alert.link); }} style={{ borderLeft: `3px solid ${alert.color}`, cursor: 'pointer' }}>
+                    <Row justify="space-between" align="middle">
+                      <Col>
+                        <Text strong>{alert.icon} {alert.label}</Text>
+                        <Badge count={alert.count} style={{ backgroundColor: alert.color, marginLeft: 8 }} />
+                      </Col>
+                    </Row>
+                    <Text type="secondary" style={{ fontSize: 11, display: 'block', marginTop: 4 }}>{alert.msg}</Text>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          </Card>
+        </Col>
+      </Row>
+
       <Row gutter={[16, 16]}>
         {/* Recent Samples */}
         <Col span={16}>

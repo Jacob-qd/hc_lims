@@ -483,6 +483,32 @@ export const SamplesPage: React.FC = () => {
       </Modal>
       <BarcodePrintModal visible={barcodeVisible} onClose={() => setBarcodeVisible(false)} code={barcodeCode} label={barcodeLabel} type="sample" />
       <BatchBarcodePrint visible={batchBarcodeOpen} onClose={() => setBatchBarcodeOpen(false)} codes={samples.slice(0, 20).map((s:any,i:number) => ({ code: generateSampleBarcode(i+1), label: s.sampleNo+' '+s.name }))} />
+
+      {/* P1-2/P1-3: 分样与留样 */}
+      <Tabs items={[{
+        key: 'aliquot', label: '🧪 分样管理', children: <Card extra={<Button type="primary" size="small" icon={<PlusOutlined />} onClick={() => message.success('分样方案已创建')}>新建分样</Button>}>
+          <Table dataSource={[{ id: 'a1', parentSample: 'SMP-20260521-001 地表水样品-1', parentVolume: '1L', aliquots: [{no:'A',volume:'200mL',purpose:'COD+氨氮',lab:'理化实验室'},{no:'B',volume:'200mL',purpose:'重金属',lab:'无机分析室'},{no:'C',volume:'600mL',purpose:'留样',lab:'样品室A'}], status:'completed', createdAt:'2026-05-21' }]} rowKey="id" pagination={false} size="small" columns={[
+            { title: '父样品', dataIndex: 'parentSample', ellipsis: true },
+            { title: '总体积', dataIndex: 'parentVolume', width: 80 },
+            { title: '子样品', render: (_:any, r:any) => r.aliquots.map((a:any) => <Tag key={a.no} style={{marginRight:4}}>{a.no}: {a.volume}→{a.purpose}</Tag>) },
+            { title: '时间', dataIndex: 'createdAt', width: 100 },
+            { title: '状态', dataIndex: 'status', render: () => <Tag color="green">已完成</Tag> },
+            { title: '操作', render: () => <Space><Button type="link" size="small">详情</Button><Button type="link" size="small">打印标签</Button></Space> },
+          ]} />
+        </Card>},
+        { key: 'retention', label: '📦 留样管理', children: <Card extra={<Button type="primary" size="small" onClick={() => message.success('留样策略已保存')}>留样策略</Button>}>
+          <Table dataSource={[{ id:'r1',sampleNo:'SMP-20260521-001-C',name:'地表水留样',volume:'600mL',storage:'样品室A·冰箱3·2层',expiryAt:'2026-08-21',status:'active',daysLeft:92 },{ id:'r2',sampleNo:'SMP-20260515-002-B',name:'饮用水留样',volume:'500mL',storage:'样品室A·冰箱2·1层',expiryAt:'2026-05-21',status:'expiring',daysLeft:5 },{ id:'r3',sampleNo:'SMP-20260401-005-A',name:'土壤留样',volume:'200g',storage:'样品室B·常温柜·3层',expiryAt:'2026-05-01',status:'expired',daysLeft:-20 }]} rowKey="id" pagination={false} size="small" columns={[
+            { title: '样品编号', dataIndex: 'sampleNo', render: (n:string) => <code>{n}</code> },
+            { title: '名称', dataIndex: 'name' },
+            { title: '体积', dataIndex: 'volume', width: 80 },
+            { title: '存储位置', dataIndex: 'storage', ellipsis: true },
+            { title: '到期日期', dataIndex: 'expiryAt', width: 100 },
+            { title: '剩余天数', render: (_:any, r:any) => { const c = r.daysLeft < 0 ? '#ff4d4f' : r.daysLeft <= 7 ? '#faad14' : '#52c41a'; return <Text style={{color:c}}>{r.daysLeft < 0 ? `超期${Math.abs(r.daysLeft)}天` : `${r.daysLeft}天`}</Text>; }, width: 90 },
+            { title: '状态', dataIndex: 'status', render: (s:string) => <Badge status={s==='active'?'success':s==='expiring'?'warning':'error'} text={s==='active'?'正常':s==='expiring'?'即将到期':'已过期'} /> },
+            { title: '操作', render: (_:any, r:any) => <Space size="small">{r.status!=='expired' && <Button type="link" size="small" danger onClick={() => Modal.confirm({title:'留样处置',content:'选择处置方式',okText:'销毁',cancelText:'续期',onOk:()=>message.success('已销毁'),onCancel:()=>message.success('已续期30天')})}>处置</Button>}<Button type="link" size="small">记录</Button></Space> },
+          ]} />
+        </Card>},
+      ]} defaultActiveKey="aliquot" style={{ marginTop: 16 }} />
     </div>
   );
 };

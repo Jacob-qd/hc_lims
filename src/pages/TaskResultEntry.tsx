@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Row, Col, Typography, Descriptions, Table, Input, Select, Button, Tag, Upload, message, Timeline, Space, Form, Tabs, Progress, Alert } from 'antd';
+import { Card, Row, Col, Typography, Descriptions, Table, Input, Select, Button, Tag, Upload, message, Timeline, Space, Form, Tabs, Progress, Alert, Modal } from 'antd';
 import { SaveOutlined, CheckCircleOutlined, UploadOutlined, PlusOutlined, InboxOutlined, FileTextOutlined, DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
 
@@ -184,7 +184,11 @@ export const TaskResultEntry: React.FC = () => {
             }} disabled={saved}>{saved ? '已保存' : '保存草稿'}</Button>
             <Button type="primary" icon={<CheckCircleOutlined />} onClick={() => { 
               if (!saved) { message.warning('请先保存结果'); return; }
-              setSubmitted(true); message.success('已提交复核，等待审核');
+              // P1-6: 超标自动复测
+              const hasOOS = results.some(r => r.judgment === '超标');
+              if (hasOOS) {
+                Modal.confirm({title:'超标复测',content:`${results.filter(r=>r.judgment==='超标').map(r=>r.item+'='+r.result).join(', ')} 超标。是否创建复测任务？`,okText:'创建复测',onOk:()=>{message.success(`已创建 ${results.filter(r=>r.judgment==='超标').length} 个复测任务`);setSubmitted(true);},onCancel:()=>{setSubmitted(true);message.success('已提交复核');}});
+              } else { setSubmitted(true); message.success('已提交复核'); }
             }} disabled={submitted}>{submitted ? '已提交复核' : '提交复核'}</Button>
           </Space>
         </Col>
