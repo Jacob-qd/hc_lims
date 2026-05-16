@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Card, Table, Tag, Tabs, Button, Space, Typography, message, Modal, Form, Input, InputNumber, Switch, Popconfirm,
+  Card, Table, Tag, Button, Space, Typography, message, Modal, Form, Input, InputNumber, Switch, Popconfirm,
 } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
@@ -150,24 +150,6 @@ export const DictPage: React.FC = () => {
 
   const currentItems = dictItems.filter(i => i.typeId === activeType);
   const currentType = dictTypes.find(t => t.id === activeType);
-
-  const typeColumns = [
-    { title: '编码', dataIndex: 'code', key: 'code' },
-    { title: '名称', dataIndex: 'name', key: 'name' },
-    { title: '描述', dataIndex: 'description', key: 'description' },
-    { title: '排序', dataIndex: 'sort', key: 'sort' },
-    { title: '状态', dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={s === 'active' ? 'green' : 'default'}>{s === 'active' ? '启用' : '禁用'}</Tag> },
-    {
-      title: '操作', key: 'action', render: (_: any, record: DictType) => (
-        <Space size="small">
-          <Button type="link" size="small" icon={<EditOutlined />} onClick={() => openTypeModal('edit', record)}>编辑</Button>
-          <Popconfirm title="确认删除?" onConfirm={() => handleTypeDelete(record.id)}>
-            <Button type="link" size="small" danger icon={<DeleteOutlined />}>删除</Button>
-          </Popconfirm>
-        </Space>
-      ),
-    },
-  ];
 
   const itemColumns = [
     { title: '编码', dataIndex: 'code', key: 'code' },
