@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import {
   Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Tabs,
-  Select, DatePicker, message, Modal, Form, Input, Steps, Checkbox, Radio,
-  Tooltip, Popconfirm, List, Empty, Descriptions, Divider, Alert
+  Select, message, Modal, Form, Input, Steps, Checkbox, Radio,
+  Tooltip, Popconfirm, Empty, Divider, Alert
 } from 'antd';
 import {
   PlusOutlined, BarChartOutlined, FileTextOutlined, ClockCircleOutlined,
   SettingOutlined, PlayCircleOutlined, DownloadOutlined, EditOutlined,
-  DeleteOutlined, EyeOutlined, ScheduleOutlined, AreaChartOutlined,
+  DeleteOutlined, EyeOutlined, AreaChartOutlined,
   PieChartOutlined, LineChartOutlined, TableOutlined, DashboardOutlined,
-  ReloadOutlined, FileExcelOutlined, FilePdfOutlined, FileTextTwoTone
+  FileExcelOutlined, FilePdfOutlined, FileTextTwoTone
 } from '@ant-design/icons';
-import dayjs from 'dayjs';
 
 const { Title, Text } = Typography;
 const { Step } = Steps;
@@ -493,10 +492,10 @@ export const ReportEnginePage: React.FC = () => {
             </Form>
             <Table
               dataSource={selectedFields}
-              rowKey={(r, i) => String(i)}
+              rowKey={(_r, i) => String(i)}
               size="small"
               pagination={false}
-              columns={[
+              columns=[
                 { title: '字段', dataIndex: 'fieldKey' },
                 { title: '别名', dataIndex: 'alias' },
                 { title: '聚合', dataIndex: 'aggregation', render: (v: string) => v === 'none' ? '-' : v },
@@ -537,10 +536,10 @@ export const ReportEnginePage: React.FC = () => {
             </Form>
             <Table
               dataSource={filters}
-              rowKey={(r, i) => String(i)}
+              rowKey={(_r, i) => String(i)}
               size="small"
               pagination={false}
-              columns={[
+              columns=[
                 { title: '字段', dataIndex: 'field' },
                 { title: '操作符', dataIndex: 'operator' },
                 { title: '值', dataIndex: 'value', render: (v: any) => String(v) },
