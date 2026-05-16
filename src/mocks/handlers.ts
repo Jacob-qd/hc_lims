@@ -50,7 +50,6 @@ import {
   mockDigitalSignatures,
   mockSignatureAuditLog,
   computeDocumentHash,
-  mockSm3Hash,
   mockSm2Sign,
   signatureMeanings,
   mockReportTemplates,
@@ -61,6 +60,9 @@ import {
   mockDictItems,
   mockContracts,
   mockDataSources,
+  mockCalibrationRecords,
+  mockMaintenanceRecords,
+  mockTurnaroundTrendReal,
 } from './data';
 
 const apiUrl = (path: string) => `/api/v1${path}`;
@@ -193,7 +195,7 @@ export const handlers = [
   }),
 
   http.get(apiUrl('/samples/:id/detail'), ({ params }) => {
-    const detail = mockSampleDetail[params.id as string];
+    const detail = (mockSampleDetail as any)[params.id as string];
     if (!detail) {
       return HttpResponse.json({ code: 404, message: '样品详情不存在', data: null }, { status: 404 });
     }
@@ -241,14 +243,14 @@ export const handlers = [
   }),
 
   http.post(apiUrl('/tasks'), async ({ request }) => {
-    const body = await request.json();
+    const body = (await request.json()) as any;
     const task: any = { id: 'tk' + Date.now(), taskNo: 'TK-2025-' + String(mockTasks.length + 1).padStart(3, '0'), ...body, createdAt: new Date().toISOString().slice(0, 10), updatedAt: new Date().toISOString().slice(0, 10) };
     mockTasks.push(task);
     return HttpResponse.json({ code: 200, data: task, message: '创建成功' });
   }),
 
   http.post(apiUrl('/tasks/:id/assign'), async ({ params, request }) => {
-    const body = await request.json();
+    const body = (await request.json()) as any;
     const task = mockTasks.find(t => t.id === params.id);
     if (task) { task.analystId = body.analystId; task.analystName = body.analystName; task.instrumentId = body.instrumentId; task.instrumentName = body.instrumentName; task.plannedStart = body.plannedStart; task.plannedEnd = body.plannedEnd; task.status = 'pending'; task.statusLabel = '待检测'; }
     return HttpResponse.json({ code: 200, message: '分配成功' });
@@ -433,11 +435,11 @@ export const handlers = [
     if (!instrument) return HttpResponse.json({ code: 404, message: '仪器不存在' });
     const calibrations = mockCalibrationRecords.filter(c => c.instrumentId === params.id);
     const maintenances = mockMaintenanceRecords.filter(m => m.instrumentId === params.id);
-    return HttpResponse.json({ code: 200, data: { ...instrument, calibrations, maintenances } });
+    return HttpResponse.json({ code: 200, data: { ...(instrument as any), calibrations, maintenances } });
   }),
 
   http.post(apiUrl('/instruments'), async ({ request }) => {
-    const body = await request.json();
+    const body = (await request.json()) as any;
     const newInstrument = { id: `i${mockInstruments.length + 1}`, ...body, connectionStatus: 'online', utilization: 0 };
     mockInstruments.push(newInstrument);
     return HttpResponse.json({ code: 200, data: newInstrument, message: '创建成功' });
@@ -467,7 +469,7 @@ export const handlers = [
   // ===== Research Module Handlers =====
   http.get(apiUrl('/research/projects'), () => HttpResponse.json({ code: 200, data: { list: mockResearchProjects } })),
   http.post(apiUrl('/research/projects'), async ({ request }) => {
-    const body = await request.json();
+    const body = (await request.json()) as any;
     const item = { id: 'rp' + Date.now(), ...body };
     mockResearchProjects.push(item);
     return HttpResponse.json({ code: 200, data: item, message: '创建成功' });
@@ -475,7 +477,7 @@ export const handlers = [
 
   http.get(apiUrl('/research/eln-entries'), () => HttpResponse.json({ code: 200, data: { list: mockELNEntries } })),
   http.post(apiUrl('/research/eln-entries'), async ({ request }) => {
-    const body = await request.json();
+    const body = (await request.json()) as any;
     const item = { id: 'eln' + Date.now(), no: 'ELN' + new Date().toISOString().slice(0,10).replace(/-/g,''), status: 'draft', tags: [], ...body };
     mockELNEntries.push(item);
     return HttpResponse.json({ code: 200, data: item, message: '创建成功' });
@@ -488,7 +490,7 @@ export const handlers = [
 
   http.get(apiUrl('/research/reservations'), () => HttpResponse.json({ code: 200, data: { list: mockReservations } })),
   http.post(apiUrl('/research/reservations'), async ({ request }) => {
-    const body = await request.json();
+    const body = (await request.json()) as any;
     const item = { id: 'res' + Date.now(), status: 'pending', fee: 0, ...body };
     mockReservations.push(item);
     return HttpResponse.json({ code: 200, data: item, message: '预约成功' });
@@ -650,7 +652,7 @@ export const handlers = [
   http.get(apiUrl('/dynamic-render/:module/:templateId'), ({ params }) => {
     const { module, templateId } = params;
     const tmpl = mockFieldTemplates.find((t: any) => t.id === templateId);
-    const configs = tmpl?.fieldConfigs || (mockFieldConfigs as any)[module] || [];
+    const configs = tmpl?.fieldConfigs || (mockFieldConfigs as any)[module as string] || [];
     const groups: Record<string, any[]> = {};
     configs.filter((f: any) => f.active !== false).sort((a: any, b: any) => a.sortOrder - b.sortOrder).forEach((f: any) => {
       const g = f.groupName || '默认分组';

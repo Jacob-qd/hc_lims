@@ -495,7 +495,7 @@ export const ReportEnginePage: React.FC = () => {
               rowKey={(_r, i) => String(i)}
               size="small"
               pagination={false}
-              columns=[
+              columns={[
                 { title: '字段', dataIndex: 'fieldKey' },
                 { title: '别名', dataIndex: 'alias' },
                 { title: '聚合', dataIndex: 'aggregation', render: (v: string) => v === 'none' ? '-' : v },
@@ -539,7 +539,7 @@ export const ReportEnginePage: React.FC = () => {
               rowKey={(_r, i) => String(i)}
               size="small"
               pagination={false}
-              columns=[
+              columns={[
                 { title: '字段', dataIndex: 'field' },
                 { title: '操作符', dataIndex: 'operator' },
                 { title: '值', dataIndex: 'value', render: (v: any) => String(v) },

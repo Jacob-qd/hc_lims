@@ -95,18 +95,6 @@ export const DictPage: React.FC = () => {
     }
   };
 
-  const handleTypeDelete = async (id: string) => {
-    const res = await fetch(`/api/v1/dict-types/${id}`, { method: 'DELETE' });
-    const data = await res.json();
-    if (data.code === 200) {
-      message.success('删除成功');
-      if (activeType === id && dictTypes.length > 1) {
-        setActiveType(dictTypes.find(t => t.id !== id)?.id || '');
-      }
-      fetchData();
-    }
-  };
-
   const openItemModal = (mode: 'create' | 'edit', record?: DictItem) => {
     setItemModalMode(mode);
     setEditingItemId(mode === 'edit' ? record?.id || null : null);
