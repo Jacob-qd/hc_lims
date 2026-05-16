@@ -16,7 +16,7 @@ import type { Sample } from '../mocks/data';
 import { sampleTypes, sampleStatuses, customers, projects, labs } from '../mocks/data';
 import type { Dayjs } from 'dayjs';
 import { DynamicFieldRenderer } from '../components/DynamicFieldRenderer';
-import { BarcodePrintModal, BatchBarcodePrint } from '../components/BarcodeLabel';
+import { BarcodePrintModal, BatchBarcodePrint, generateSampleBarcode } from '../components/BarcodeLabel';
 import type { FieldConfig } from '../types/dynamicForm';
 
 const { Title, Text } = Typography;
