@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { Modal, Button, Space, Typography, message } from 'antd';
-import { PrinterOutlined, DownloadOutlined } from '@ant-design/icons';
+import { Modal, Button, Space, Typography } from 'antd';
+import { PrinterOutlined } from '@ant-design/icons';
 import JsBarcode from 'jsbarcode';
 
 const { Text } = Typography;
@@ -13,7 +13,7 @@ interface BarcodeLabelProps {
   type?: 'sample' | 'reagent' | 'instrument' | 'report';
 }
 
-const typePrefix = { sample: 'SMP', reagent: 'RE', instrument: 'INS', report: 'RPT' };
+// const typePrefix = { sample: 'SMP', reagent: 'RE', instrument: 'INS', report: 'RPT' };
 
 export const BarcodePreview: React.FC<{ code: string; label?: string; height?: number }> = ({ code, label, height = 50 }) => {
   const svgRef = useRef<SVGSVGElement>(null);

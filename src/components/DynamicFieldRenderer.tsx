@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Form, Input, InputNumber, Select, DatePicker, Switch, Radio, Checkbox, Upload, Button } from 'antd';
+import { Form, Input, InputNumber, Select, DatePicker, Switch, Radio, Upload, Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import type { FormFieldSchema, FieldConfig, DynamicFields } from '../types/dynamicForm';
 
@@ -11,7 +11,6 @@ interface DynamicFieldRendererProps {
   values?: DynamicFields;
   onChange?: (values: DynamicFields) => void;
   form?: any; // AntD Form instance
-  layout?: 'vertical' | 'horizontal';
   disabled?: boolean;
 }
 
@@ -26,6 +25,7 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
   disabled = false,
 }) => {
   // 将配置按 group 分组 + 排序
+  const layout = 'vertical';
   const groups = useMemo(() => {
     const map: Record<string, FormFieldSchema[]> = {};
     const sorted = [...configs]
@@ -36,9 +36,9 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
       const g = (f as any).groupName || 'default';
       if (!map[g]) map[g] = [];
       map[g].push({
-        key: f.fieldKey,
+        key: (f as any).fieldKey || (f as any).key,
         label: f.label,
-        type: f.fieldType,
+        type: (f as any).fieldType || (f as any).type,
         required: f.required,
         defaultValue: f.defaultValue,
         placeholder: f.placeholder,

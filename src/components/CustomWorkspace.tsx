@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Drawer, Card, Row, Col, Switch, Tag, Button, Typography, Space, message } from 'antd';
+import { Drawer, Card, Row, Col, Switch, Tag, Button, Typography, message } from 'antd';
 import { SettingOutlined, SaveOutlined, DragOutlined } from '@ant-design/icons';
 
 const { Text } = Typography;
@@ -24,8 +24,6 @@ const allWidgets: Widget[] = [
 
 export const CustomWorkspace: React.FC<{ open: boolean; onClose: () => void; onSave: (visible: string[]) => void; initialVisible: string[] }> = ({ open, onClose, onSave, initialVisible }) => {
   const [visible, setVisible] = useState<string[]>(initialVisible);
-  const [saved, setSaved] = useState(false);
-
   const toggle = (key: string, checked: boolean) => {
     if (checked) setVisible([...visible, key]);
     else setVisible(visible.filter(k => k !== key));
@@ -33,15 +31,13 @@ export const CustomWorkspace: React.FC<{ open: boolean; onClose: () => void; onS
 
   const handleSave = () => {
     onSave(visible);
-    setSaved(true);
     message.success('工作台布局已保存');
-    setTimeout(() => setSaved(false), 2000);
   };
 
   return (
     <Drawer title={<span><SettingOutlined /> 自定义工作台</span>} open={open} onClose={onClose} width={420} extra={<Button type="primary" icon={<SaveOutlined />} onClick={handleSave}>保存布局</Button>}>
       <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>选择要在首页显示的组件，拖拽可调整顺序（长按拖拽手柄）</Text>
-      {allWidgets.map((w, i) => (
+      {allWidgets.map((w) => (
         <Card key={w.key} size="small" style={{ marginBottom: 8 }} hoverable>
           <Row align="middle" justify="space-between">
             <Col span={2}><DragOutlined style={{ color: '#d9d9d9', cursor: 'grab' }} /></Col>

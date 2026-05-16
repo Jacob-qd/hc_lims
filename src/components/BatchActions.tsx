@@ -1,6 +1,6 @@
 import React from 'react';
 import { Space, Button, Dropdown, message, Modal } from 'antd';
-import { DownOutlined, ExportOutlined, ImportOutlined, DeleteOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { DownOutlined, ExportOutlined, ImportOutlined, DeleteOutlined } from '@ant-design/icons';
 
 interface BatchActionsProps {
   selectedCount: number;
