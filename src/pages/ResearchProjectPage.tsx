@@ -64,7 +64,7 @@ export const ResearchProjectPage: React.FC = () => {
           { title: '经费', dataIndex: 'budget', render: (b: number) => `¥${(b/10000).toFixed(1)}万` },
           { title: '执行率', dataIndex: 'progress', render: (p: number) => <Progress percent={p} size="small" /> },
           { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={statusColors[s]}>{statusLabels[s]}</Tag> },
-          { title: '操作', render: (_: any, r: any) => <Button type="link" size="small" icon={<EyeOutlined, EditOutlined />} onClick={() => { setSelected(r); setDrawerVisible(true); }}>详情</Button> },
+          { title: '操作', render: (_: any, r: any) => <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawerVisible(true); }}>详情</Button> },
         ]} size="middle" />
       </Card>
 

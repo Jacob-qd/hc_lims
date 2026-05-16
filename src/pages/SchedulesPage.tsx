@@ -1,8 +1,45 @@
 import React, { useState } from 'react';
-import {Card, Table, Tag, Row, Col, Typography, Badge, Space, Tabs, Progress, Button, Modal, Form, Input, Select} from 'antd';
+import { Card, Table, Tag, Row, Col, Typography, Badge, Space, Tabs, Progress, Button, Modal, Form, Input, Select, message } from 'antd';
 import { CalendarOutlined, PlusOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
+
+const weeklyInstruments = [
+  { date:'05-19(一)', cards:[
+    {name:'液相色谱仪',morning:'TK-001 pH值',afternoon:'TK-002 COD',status:'running'},
+    {name:'气相色谱仪',morning:'空闲',afternoon:'TK-003 氨氮',status:'idle'},
+    {name:'原子吸收',morning:'TK-004 重金属',afternoon:'TK-006 Cd',status:'running'},
+  ]},
+  { date:'05-20(二)', cards:[
+    {name:'液相色谱仪',morning:'TK-002 COD',afternoon:'空闲',status:'idle'},
+    {name:'气相色谱仪',morning:'TK-003 氨氮',afternoon:'维护',status:'maintenance'},
+    {name:'原子吸收',morning:'TK-004 重金属',afternoon:'TK-006 Cd',status:'running'},
+  ]},
+];
+
+function WeeklyCard(props: { inst: any }) {
+  const { inst } = props;
+  const st = inst.status === 'running' ? 'processing' as const : inst.status === 'maintenance' ? 'warning' as const : 'default' as const;
+  return React.createElement(Card, { size: 'small', style: { marginBottom: 8 } },
+    React.createElement(Space, { direction: 'vertical', style: { width: '100%' } },
+      React.createElement(Space, null,
+        React.createElement(Badge, { status: st }),
+        React.createElement(Text, { strong: true }, inst.name)
+      ),
+      React.createElement(Text, { type: 'secondary' }, '上午: ' + inst.morning),
+      React.createElement(Text, { type: 'secondary' }, '下午: ' + inst.afternoon)
+    )
+  );
+}
+
+function WeekColumn(props: { day: any }) {
+  const { day } = props;
+  const children = day.cards.map(function(inst: any) {
+    return React.createElement(WeeklyCard, { key: inst.name, inst: inst });
+  });
+  const kids = [React.createElement(Card, { title: day.date, size: 'small', key: 'card' }, ...children)];
+  return React.createElement(Col, { span: 12, key: day.date, style: { marginBottom: 16 } }, ...kids);
+}
 
 export const SchedulesPage: React.FC = () => {
   const [scheduleData, setScheduleData] = useState([
@@ -13,19 +50,6 @@ export const SchedulesPage: React.FC = () => {
   ]);
   const [modalVisible, setModalVisible] = useState(false);
   const [form] = Form.useForm();
-
-  const weeklyData = [
-    { date: '05-19(一)', instruments: [
-      { name: '液相色谱仪', morning: 'TK-001 pH值', afternoon: 'TK-002 COD', status: 'running' },
-      { name: '气相色谱仪', morning: '空闲', afternoon: 'TK-003 氨氮', status: 'idle' },
-      { name: '原子吸收', morning: 'TK-004 重金属', afternoon: 'TK-006 Cd', status: 'running' },
-    ]},
-    { date: '05-20(二)', instruments: [
-      { name: '液相色谱仪', morning: 'TK-002 COD', afternoon: '空闲', status: 'idle' },
-      { name: '气相色谱仪', morning: 'TK-003 氨氮', afternoon: '维护', status: 'maintenance' },
-      { name: '原子吸收', morning: 'TK-004 重金属', afternoon: 'TK-006 Cd', status: 'running' },
-    ]},
-  ];
 
   return (
     <div>
@@ -50,33 +74,15 @@ export const SchedulesPage: React.FC = () => {
         )},
         { key: 'weekly', label: '周视图', children: (
           <div>
-            {/* P2-4: 预约冲突检测 */}
             <Card size="small" style={{ marginBottom: 16 }}>
-              <Space><Badge status="error" /><Text>冲突检测:</Text>
-              <Tag color="red">GC-MS 周二下午 设备维护中，无法预约</Tag>
-              <Button size="small" type="link">查看详情</Button></Space>
+              <Space><Badge status="error" /><Text>冲突检测:</Text><Tag color="red">GC-MS 周二下午维护中</Tag></Space>
             </Card>
             <Row gutter={16}>
-            {weeklyData.map(function(day) {
-              var items = [];
-              for (var i = 0; i < day.instruments.length; i++) {
-                var inst = day.instruments[i];
-                items.push(React.createElement(Card, {key:inst.name,size:'small',style:{marginBottom:8}},
-                  React.createElement(Space,{direction:'vertical',style:{width:'100%'}},
-                    React.createElement(Space,null,
-                      React.createElement(Badge,{status:inst.status==='running'?'processing':inst.status==='maintenance'?'warning':'default'}),
-                      React.createElement(Text,{strong:true},inst.name)
-                    ),
-                    React.createElement(Text,{type:'secondary'},'上午: '+inst.morning),
-                    React.createElement(Text,{type:'secondary'},'下午: '+inst.afternoon)
-                  )
-                ));
-              }
-              return React.createElement(Col,{span:12,key:day.date,style:{marginBottom:16}},
-                React.createElement(Card,{title:day.date,size:'small'},React.createElement(React.Fragment,null,...items))
-              );
-            })}
-          </Row>
+              {weeklyInstruments.map(function(day) {
+                return React.createElement(WeekColumn, { key: day.date, day: day });
+              })}
+            </Row>
+          </div>
         )},
       ]} />
 
@@ -85,14 +91,14 @@ export const SchedulesPage: React.FC = () => {
           setScheduleData(prev => [...prev, { time: v.startTime + '-' + v.endTime, instrument: v.instrument, task: v.task, analyst: v.analyst, lab: v.lab, progress: 0 }]);
           message.success('排期创建成功'); setModalVisible(false); form.resetFields();
         }}>
-          <Form.Item name="task" label="任务编号/描述" rules={[{ required: true }]}><Input placeholder="TK-2025-001 pH值检测" /></Form.Item>
+          <Form.Item name="task" label="任务编号/描述" rules={[{ required: true }]}><Input placeholder="TK-2025-001" /></Form.Item>
           <Row gutter={16}>
             <Col span={12}><Form.Item name="instrument" label="仪器" required><Select>{['液相色谱仪','气相色谱仪','原子吸收光谱仪','紫外分光光度计','ICP-MS质谱仪'].map(i=><Select.Option key={i}>{i}</Select.Option>)}</Select></Form.Item></Col>
             <Col span={12}><Form.Item name="analyst" label="分析员"><Input /></Form.Item></Col>
           </Row>
           <Row gutter={16}>
-            <Col span={12}><Form.Item name="startTime" label="开始时间" required><Select>{['08:00','08:30','09:00','10:00','14:00','16:00'].map(t=><Select.Option key={t}>{t}</Select.Option>)}</Select></Form.Item></Col>
-            <Col span={12}><Form.Item name="endTime" label="结束时间" required><Select>{['10:00','11:00','12:00','12:30','17:00','18:00'].map(t=><Select.Option key={t}>{t}</Select.Option>)}</Select></Form.Item></Col>
+            <Col span={12}><Form.Item name="startTime" label="开始时间" required><Select>{['08:00','08:30','09:00','10:00','14:00'].map(t=><Select.Option key={t}>{t}</Select.Option>)}</Select></Form.Item></Col>
+            <Col span={12}><Form.Item name="endTime" label="结束时间" required><Select>{['10:00','11:00','12:00','12:30','17:00'].map(t=><Select.Option key={t}>{t}</Select.Option>)}</Select></Form.Item></Col>
           </Row>
           <Form.Item name="lab" label="实验室"><Input /></Form.Item>
         </Form>
