@@ -246,11 +246,9 @@ export const TasksPage: React.FC = () => {
               })}
             </Row>
             </div>
-          ),
-          key: 'board',
-          label: '任务看板'
-        },
-        { key: 'list', label: '任务列表', children: (
+          )},
+        {
+          key: 'list', label: '任务列表', children: (
             <Table columns={columns} dataSource={tasks} rowKey="id" loading={loading} pagination={{ pageSize: 10, showTotal: t => `共 ${t} 条` }} size="middle" />
           )},
           {/* R5-4: Batch Management */}
