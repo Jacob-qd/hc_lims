@@ -20,12 +20,9 @@ interface DynamicFieldRendererProps {
 export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
   configs,
   values = {},
-  onChange,
-  layout = 'vertical',
   disabled = false,
 }) => {
   // 将配置按 group 分组 + 排序
-  const layout = 'vertical';
   const groups = useMemo(() => {
     const map: Record<string, FormFieldSchema[]> = {};
     const sorted = [...configs]

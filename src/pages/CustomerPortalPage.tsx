@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Row, Col, Typography, Statistic, Table, Tag, Button, Input, Space, Tabs, Progress, Steps, message, Form, Select } from 'antd';
+import { Card, Row, Col, Typography, Statistic, Table, Tag, Button, Input, Space, Tabs, Progress, Steps, Badge, message, Form, Select } from 'antd';
 import { FileTextOutlined, ExperimentOutlined, CloudUploadOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
@@ -21,7 +21,6 @@ const flowSteps = ['委托提交', '样品接收', '检测中', '报告出具'];
 export const CustomerPortalPage: React.FC = () => {
   const [trackNo, setTrackNo] = useState('');
   const [trackResult, setTrackResult] = useState<any>(null);
-  const [orderVisible] = useState(false);
 
   const handleTrack = () => {
     const found = mockOrders.find(o => o.no === trackNo || o.sample.includes(trackNo));
@@ -37,7 +36,7 @@ export const CustomerPortalPage: React.FC = () => {
       </Card>
 
       <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-        <Col span={8}><Card hoverable onClick={() => setOrderVisible(true)}><Statistic title="在线委托" value="新委托" prefix={<CloudUploadOutlined />} valueStyle={{ fontSize: 16 }} /></Card></Col>
+        <Col span={8}><Card hoverable><Statistic title="在线委托" value="新委托" prefix={<CloudUploadOutlined />} valueStyle={{ fontSize: 16 }} /></Card></Col>
         <Col span={8}><Card hoverable><Statistic title="我的委托" value={mockOrders.length} prefix={<ExperimentOutlined />} /></Card></Col>
         <Col span={8}><Card hoverable><Statistic title="可下载报告" value={mockReports.length} prefix={<FileTextOutlined />} /></Card></Col>
       </Row>

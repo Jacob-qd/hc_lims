@@ -19,6 +19,8 @@ import {
   mockTasksExpanded,
   mockResearchGroupsExpanded,
   mockInstruments,
+  mockCalibrationRecords,
+  mockMaintenanceRecords,
   mockInstrumentsExpanded,
   mockQualityDataExpanded,
   mockDeviationsExpanded,
@@ -50,7 +52,6 @@ import {
   mockDigitalSignatures,
   mockSignatureAuditLog,
   computeDocumentHash,
-  mockSm3Hash,
   mockSm2Sign,
   signatureMeanings,
 } from './data';
@@ -185,7 +186,7 @@ export const handlers = [
   }),
 
   http.get(apiUrl('/samples/:id/detail'), ({ params }) => {
-    const detail = mockSampleDetail[params.id as string];
+    const detail = (mockSampleDetail as any)[params.id as string];
     if (!detail) {
       return HttpResponse.json({ code: 404, message: '样品详情不存在', data: null }, { status: 404 });
     }
@@ -233,14 +234,14 @@ export const handlers = [
   }),
 
   http.post(apiUrl('/tasks'), async ({ request }) => {
-    const body = await request.json();
+    const body = await request.json() as any;
     const task: any = { id: 'tk' + Date.now(), taskNo: 'TK-2025-' + String(mockTasks.length + 1).padStart(3, '0'), ...body, createdAt: new Date().toISOString().slice(0, 10), updatedAt: new Date().toISOString().slice(0, 10) };
     mockTasks.push(task);
     return HttpResponse.json({ code: 200, data: task, message: '创建成功' });
   }),
 
   http.post(apiUrl('/tasks/:id/assign'), async ({ params, request }) => {
-    const body = await request.json();
+    const body = await request.json() as any;
     const task = mockTasks.find(t => t.id === params.id);
     if (task) { task.analystId = body.analystId; task.analystName = body.analystName; task.instrumentId = body.instrumentId; task.instrumentName = body.instrumentName; task.plannedStart = body.plannedStart; task.plannedEnd = body.plannedEnd; task.status = 'pending'; task.statusLabel = '待检测'; }
     return HttpResponse.json({ code: 200, message: '分配成功' });
@@ -429,7 +430,7 @@ export const handlers = [
   }),
 
   http.post(apiUrl('/instruments'), async ({ request }) => {
-    const body = await request.json();
+    const body = await request.json() as any;
     const newInstrument = { id: `i${mockInstruments.length + 1}`, ...body, connectionStatus: 'online', utilization: 0 };
     mockInstruments.push(newInstrument);
     return HttpResponse.json({ code: 200, data: newInstrument, message: '创建成功' });
@@ -459,7 +460,7 @@ export const handlers = [
   // ===== Research Module Handlers =====
   http.get(apiUrl('/research/projects'), () => HttpResponse.json({ code: 200, data: { list: mockResearchProjects } })),
   http.post(apiUrl('/research/projects'), async ({ request }) => {
-    const body = await request.json();
+    const body = await request.json() as any;
     const item = { id: 'rp' + Date.now(), ...body };
     mockResearchProjects.push(item);
     return HttpResponse.json({ code: 200, data: item, message: '创建成功' });
@@ -467,7 +468,7 @@ export const handlers = [
 
   http.get(apiUrl('/research/eln-entries'), () => HttpResponse.json({ code: 200, data: { list: mockELNEntries } })),
   http.post(apiUrl('/research/eln-entries'), async ({ request }) => {
-    const body = await request.json();
+    const body = await request.json() as any;
     const item = { id: 'eln' + Date.now(), no: 'ELN' + new Date().toISOString().slice(0,10).replace(/-/g,''), status: 'draft', tags: [], ...body };
     mockELNEntries.push(item);
     return HttpResponse.json({ code: 200, data: item, message: '创建成功' });
@@ -480,7 +481,7 @@ export const handlers = [
 
   http.get(apiUrl('/research/reservations'), () => HttpResponse.json({ code: 200, data: { list: mockReservations } })),
   http.post(apiUrl('/research/reservations'), async ({ request }) => {
-    const body = await request.json();
+    const body = await request.json() as any;
     const item = { id: 'res' + Date.now(), status: 'pending', fee: 0, ...body };
     mockReservations.push(item);
     return HttpResponse.json({ code: 200, data: item, message: '预约成功' });
@@ -499,7 +500,7 @@ export const handlers = [
   http.get(apiUrl('/research/eln/expanded'), () => HttpResponse.json({ code: 200, data: { list: [...mockELNEntries, ...mockELNExpanded], total: mockELNEntries.length + mockELNExpanded.length } })),
   http.get(apiUrl('/research/reservations/expanded'), () => HttpResponse.json({ code: 200, data: { list: [...mockReservations, ...mockReservationExpanded], total: mockReservations.length + mockReservationExpanded.length } })),
   http.get(apiUrl('/analysts'), () => HttpResponse.json({ code: 200, data: { list: mockAnalysts } })),
-  http.get(apiUrl('/dashboard/trend'), () => HttpResponse.json({ code: 200, data: { list: mockTurnaroundTrendReal } })),
+  http.get(apiUrl('/dashboard/trend'), () => HttpResponse.json({ code: 200, data: { list: mockTurnaroundTrend } })),
 
   // ===== Inventory =====
   http.get(apiUrl('/inventory'), () => HttpResponse.json({ code: 200, data: { list: mockInventory } })),
@@ -520,13 +521,13 @@ export const handlers = [
   http.get(apiUrl('/field-configs'), ({ request }) => {
     const url = new URL(request.url);
     const module = url.searchParams.get('module') || 'sample';
-    const data = (mockFieldConfigs as any)[module] || [];
+    const data = (mockFieldConfigs as any)[module as string] || [];
     return HttpResponse.json({ code: 200, data: { list: data } });
   }),
   http.post(apiUrl('/field-configs'), async ({ request }) => {
     const body = await request.json() as any;
     const module = body.module || 'sample';
-    if (!(mockFieldConfigs as any)[module]) (mockFieldConfigs as any)[module] = [];
+    if (!(mockFieldConfigs as any)[module as string]) (mockFieldConfigs as any)[module as string] = [];
     const item = { id: 'fc' + Date.now(), sortOrder: ((mockFieldConfigs as any)[module]?.length || 0) + 1, active: true, ...body };
     (mockFieldConfigs as any)[module].push(item);
     return HttpResponse.json({ code: 200, data: item, message: '字段创建成功' });
@@ -548,7 +549,7 @@ export const handlers = [
   }),
   http.put(apiUrl('/field-configs/reorder'), async ({ request }) => {
     const { module, orderedIds } = await request.json() as any;
-    const configs = (mockFieldConfigs as any)[module] || [];
+    const configs = (mockFieldConfigs as any)[module as string] || [];
     orderedIds.forEach((id: string, index: number) => {
       const f = configs.find((c: any) => c.id === id);
       if (f) f.sortOrder = index + 1;
@@ -642,7 +643,7 @@ export const handlers = [
   http.get(apiUrl('/dynamic-render/:module/:templateId'), ({ params }) => {
     const { module, templateId } = params;
     const tmpl = mockFieldTemplates.find((t: any) => t.id === templateId);
-    const configs = tmpl?.fieldConfigs || (mockFieldConfigs as any)[module] || [];
+    const configs = tmpl?.fieldConfigs || (mockFieldConfigs as any)[module as string] || [];
     const groups: Record<string, any[]> = {};
     configs.filter((f: any) => f.active !== false).sort((a: any, b: any) => a.sortOrder - b.sortOrder).forEach((f: any) => {
       const g = f.groupName || '默认分组';

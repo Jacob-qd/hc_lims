@@ -34,19 +34,6 @@ describe('12种字段类型全覆盖', () => {
 });
 
 describe('条件运算符全覆盖', () => {
-  const _operators: { op: string; label: string }[] = [
-    { op: 'eq', label: '等于' },
-    { op: 'neq', label: '不等于' },
-    { op: 'gt', label: '大于' },
-    { op: 'gte', label: '大于等于' },
-    { op: 'lt', label: '小于' },
-    { op: 'lte', label: '小于等于' },
-    { op: 'in', label: '包含于' },
-    { op: 'contains', label: '包含文本' },
-    { op: 'empty', label: '为空' },
-    { op: 'notEmpty', label: '不为空' },
-  ];
-
   const base: FieldConfig = { id:'c', module:'sample', fieldKey:'trigger', label:'触发', fieldType:'text', required:false, sortOrder:1, groupName:'G', active:true };
   const makeTarget = (op: string, val: unknown): FieldConfig => ({
     id:`t_${op}`, module:'sample', fieldKey:`target_${op}`, label:`目标_${op}`, fieldType:'text',

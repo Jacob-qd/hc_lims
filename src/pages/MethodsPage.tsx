@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Tabs, Modal, Form, message, Timeline, Progress } from 'antd';
-import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined, HistoryOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const statusColors: Record<string, string> = { active: '#52c41a', revision: '#faad14', archived: '#d9d9d9', draft: '#1677ff' };
@@ -95,7 +95,7 @@ export const MethodsPage: React.FC = () => {
       </Drawer>
 
       <Modal title="新建方法" open={createModal} onOk={() => form.submit()} onCancel={() => { setCreateModal(false); form.resetFields(); }}>
-        <Form form={form} layout="vertical" onFinish={(v) => { message.success('方法创建成功'); setCreateModal(false); }}>
+        <Form form={form} layout="vertical" onFinish={() => { message.success('方法创建成功'); setCreateModal(false); }}>
           <Form.Item name="code" label="方法编号"><Input /></Form.Item>
           <Form.Item name="name" label="方法名称" rules={[{ required: true }]}><Input /></Form.Item>
           <Form.Item name="analyte" label="分析项目"><Input /></Form.Item>

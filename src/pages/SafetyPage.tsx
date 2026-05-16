@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Tabs, message, Modal, Form, Badge } from 'antd';
 import { PlusOutlined, SearchOutlined, WarningOutlined, SafetyOutlined, DeleteOutlined } from '@ant-design/icons';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 const dangerColors: Record<string, string> = { 剧毒: '#ff4d4f', 易燃: '#fa8c16', 腐蚀: '#1677ff', 氧化: '#faad14', 一般: '#d9d9d9' };
 
 export const SafetyPage: React.FC = () => {
@@ -73,7 +73,7 @@ export const SafetyPage: React.FC = () => {
       ]} />
 
       <Modal title="新增化学品" open={inModal} onCancel={() => setInModal(false)} footer={null}>
-        <Form layout="vertical" onFinish={(v) => { message.success('添加成功'); setInModal(false); }}>
+        <Form layout="vertical" onFinish={() => { message.success('添加成功'); setInModal(false); }}>
           <Form.Item name="name" label="化学品名称" required><Input /></Form.Item>
           <Form.Item name="cas" label="CAS号"><Input /></Form.Item>
           <Form.Item name="category" label="危险分类"><Input /></Form.Item>

@@ -38,7 +38,7 @@ export const AchievementPage: React.FC = () => {
         <Space style={{ marginBottom: 16 }}>
           <Input placeholder="搜索标题/作者/期刊" prefix={<SearchOutlined />} value={search} onChange={e => setSearch(e.target.value)} style={{ width: 280 }} allowClear />
           <Select placeholder="类型" style={{ width: 120 }} allowClear>
-            {Object.entries(typeColors).map(([k, v]) => <Select.Option key={k}><Tag color={v}>{k}</Tag></Select.Option>)}
+            {Object.entries(typeColors).map(([k, col]) => <Select.Option key={k}><Tag color={col}>{k}</Tag></Select.Option>)}
           </Select>
           <Select placeholder="年份" style={{ width: 100 }} allowClear>
             {[2025,2024].map(y => <Select.Option key={y}>{y}</Select.Option>)}
@@ -94,7 +94,7 @@ export const AchievementPage: React.FC = () => {
       </Drawer>
 
       <Modal title="新增成果" open={createModal} onOk={() => form.submit()} onCancel={() => { setCreateModal(false); form.resetFields(); }}>
-        <Form form={form} layout="vertical" onFinish={(v) => { message.success('成果已添加'); setCreateModal(false); }}>
+        <Form form={form} layout="vertical" onFinish={() => { message.success('成果已添加'); setCreateModal(false); }}>
           <Form.Item name="title" label="标题" required><Input /></Form.Item>
           <Form.Item name="type" label="类型"><Select><Select.Option value="论文">论文</Select.Option><Select.Option value="专利">专利</Select.Option><Select.Option value="报告">报告</Select.Option></Select></Form.Item>
           <Form.Item name="journal" label="期刊/专利号"><Input /></Form.Item>

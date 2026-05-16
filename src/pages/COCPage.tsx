@@ -65,7 +65,6 @@ export const COCPage: React.FC = () => {
   const [selectedChain, setSelectedChain] = useState<COCChain | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
-  const [disposalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
 
   const loadChains = useCallback(async () => {
@@ -93,30 +92,6 @@ export const COCPage: React.FC = () => {
     active: chains.filter(c => c.status === 'active').length,
     completed: chains.filter(c => c.status === 'completed' || c.status === 'disposed').length,
     broken: chains.filter(c => !c.integrity).length,
-  };
-
-  // 链完整性校验
-  const _verifyChain = (events: COCEvent[]): { valid: boolean; msg: string } => {
-    if (events.length === 0) return { valid: false, msg: '无事件记录' };
-    const sorted = [...events].sort((a, b) => new Date(a.occurredAt).getTime() - new Date(b.occurredAt).getTime());
-    for (let i = 1; i < sorted.length; i++) {
-      const prev = sorted[i - 1];
-      const curr = sorted[i];
-      if (curr.prevEventId && curr.prevEventId !== prev.id) {
-        return { valid: false, msg: `事件 ${curr.id} 的前序事件不匹配 (应为 ${prev.id})` };
-      }
-      const allowedNext = VALID_SEQUENCE[prev.eventType] || [];
-      if (!allowedNext.includes(curr.eventType)) {
-        return { valid: false, msg: `不允许从 ${EVENT_CONFIG[prev.eventType]?.label} 直接到 ${EVENT_CONFIG[curr.eventType]?.label}` };
-      }
-      if (new Date(curr.occurredAt) < new Date(prev.occurredAt)) {
-        return { valid: false, msg: `事件 ${curr.id} 的时间早于前序事件` };
-      }
-    }
-    if (sorted[0].eventType !== 'SAMPLING') {
-      return { valid: false, msg: '首事件必须是采样(SAMPLING)' };
-    }
-    return { valid: true, msg: '链完整性校验通过' };
   };
 
   const showDetail = async (chainId: string) => {

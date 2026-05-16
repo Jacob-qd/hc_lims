@@ -82,7 +82,7 @@ export const SettingsPage: React.FC = () => {
                   { title: '实验室', dataIndex: 'lab' },
                   { title: '最后登录', dataIndex: 'lastLogin' },
                   { title: 'MFA', dataIndex: 'mfa', render: (v: boolean) => v ? <Tag color="green">已启用</Tag> : <Tag color="red">未启用</Tag> },
-                  { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color="green">正常</Tag> },
+                  { title: '状态', dataIndex: 'status', render: () => <Tag color="green">正常</Tag> },
                 ]} />
               </Card>
             </Col>

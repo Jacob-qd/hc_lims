@@ -42,7 +42,7 @@ export const DictPage: React.FC = () => (
           { title: '编码', dataIndex: 'code' },
           { title: '名称', dataIndex: 'name' },
           { title: '排序', dataIndex: 'sort' },
-          { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color="green">启用</Tag> },
+          { title: '状态', dataIndex: 'status', render: () => <Tag color="green">启用</Tag> },
           { title: '操作', render: () => <Space><Button type="link" size="small" onClick={() => message.success('编辑字典项')}>编辑</Button><Button type="link" size="small" danger onClick={() => message.success('已删除')}>删除</Button></Space> },
         ]} />
       </Card>,

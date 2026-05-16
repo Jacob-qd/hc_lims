@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, Table, Tag, Row, Col, Typography, Statistic, Space, Input, Select } from 'antd';
 import { SearchOutlined, SafetyCertificateOutlined, UserOutlined, FileTextOutlined, ExperimentOutlined } from '@ant-design/icons';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 const mockLogs = Array.from({ length: 50 }, (_, i) => {
   const actions = ['创建', '修改', '删除', '查看', '审核通过', '审核退回', '签名', '导出'];

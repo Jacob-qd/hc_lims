@@ -22,6 +22,7 @@ const initialResults = [
 export const TaskResultEntry: React.FC = () => {
   useParams();
   const navigate = useNavigate();
+  const [results, setResults] = useState(initialResults);
 
   const handleResultChange = (key: string, field: string, value: string) => {
     setResults(prev => prev.map(r => r.key === key ? { ...r, [field]: value } : r));

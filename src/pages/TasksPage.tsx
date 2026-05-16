@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Card, Table, Tag, Button, Input, InputNumber, Select, Row, Col, Space, Typography,
+  Card, Table, Tag, Button, Input, Select, Row, Col, Space, Typography,
   Drawer, Tabs, Descriptions, Timeline, Statistic, Modal, Form, message,
   Divider, Progress, Badge, InputNumber,
 } from 'antd';
@@ -11,7 +11,6 @@ import {
 import type { ColumnsType } from 'antd/es/table';
 
 const { Title, Text } = Typography;
-const { Option } = Select;
 const { Option } = Select;
 
 interface TaskItem {

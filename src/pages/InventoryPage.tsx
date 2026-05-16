@@ -93,7 +93,7 @@ export const InventoryPage: React.FC = () => {
             </Card></Col>
             <Col span={12}><Card title="库存结构分布" size="small">
               <svg viewBox="0 0 300 200" style={{width:'100%',height:220}}>
-                {[{v:65,c:'#1677ff',l:'试剂'},{v:25,c:'#52c41a',l:'耗材'},{v:10,c:'#722ed1',l:'标准品'}].map((item,i,arr) => {
+                {[{v:65,c:'#1677ff',l:'试剂'},{v:25,c:'#52c41a',l:'耗材'},{v:10,c:'#722ed1',l:'标准品'}].map((_item,_i,arr) => {
                   const total = arr.reduce((s,x) => s+x.v, 0);
                   let offset = 0;
                   const slices = arr.map(x => { const o = offset; offset += x.v/total*360; return {...x, start:o, end:offset}; });
