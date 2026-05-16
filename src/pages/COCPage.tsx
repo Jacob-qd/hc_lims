@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Timeline, Descriptions, Modal, Form, Steps, Select, Tabs, Empty, Tooltip, Divider, Alert, Badge, List} from 'antd';
 import {
   PlusOutlined, SearchOutlined, SendOutlined, CheckCircleOutlined,
-  BarcodeOutlined, EyeOutlined, PrinterOutlined, WarningOutlined,
+  BarcodeOutlined, EyeOutlined, ExportOutlined, PrinterOutlined, WarningOutlined,
   SwapOutlined, DeleteOutlined, ReloadOutlined, FilePdfOutlined,
   ClockCircleOutlined, UserOutlined, EnvironmentOutlined,
 } from '@ant-design/icons';
@@ -195,7 +195,7 @@ export const COCPage: React.FC = () => {
       title: '操作', key: 'action', width: 300,
       render: (_: any, r: COCChain) => (
         <Space>
-          <Button size="small" icon={<EyeOutlined />} onClick={() => showDetail(r.id)}>详情</Button>
+          <Button size="small" icon={<EyeOutlined, ExportOutlined />} onClick={() => showDetail(r.id)}>详情</Button>
           {r.status === 'active' && (
             <>
               <Select value={newEventType} onChange={setNewEventType} size="small" style={{ width: 90 }}>

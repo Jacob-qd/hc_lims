@@ -57,9 +57,11 @@ export const SchedulesPage: React.FC = () => {
               <Button size="small" type="link">查看详情</Button></Space>
             </Card>
             <Row gutter={16}>
-            {weeklyData.map(day => {
-              const cards = day.instruments.map(inst =>
-                React.createElement(Card, {key:inst.name,size:'small',style:{marginBottom:8}},
+            {weeklyData.map(function(day) {
+              var items = [];
+              for (var i = 0; i < day.instruments.length; i++) {
+                var inst = day.instruments[i];
+                items.push(React.createElement(Card, {key:inst.name,size:'small',style:{marginBottom:8}},
                   React.createElement(Space,{direction:'vertical',style:{width:'100%'}},
                     React.createElement(Space,null,
                       React.createElement(Badge,{status:inst.status==='running'?'processing':inst.status==='maintenance'?'warning':'default'}),
@@ -68,10 +70,10 @@ export const SchedulesPage: React.FC = () => {
                     React.createElement(Text,{type:'secondary'},'上午: '+inst.morning),
                     React.createElement(Text,{type:'secondary'},'下午: '+inst.afternoon)
                   )
-                )
-              );
+                ));
+              }
               return React.createElement(Col,{span:12,key:day.date,style:{marginBottom:16}},
-                React.createElement(Card,{title:day.date,size:'small'},...cards)
+                React.createElement(Card,{title:day.date,size:'small'},React.createElement(React.Fragment,null,...items))
               );
             })}
           </Row>
