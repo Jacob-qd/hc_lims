@@ -89,6 +89,7 @@ export const ReservationPage: React.FC = () => {
                   {title:'预约人',dataIndex:'user'},
                   {title:'时间',dataIndex:'time'},
                   {title:'状态',dataIndex:'status',render:(s:string) => <Badge status={s==='active'?'processing':s==='completed'?'success':'default'} />},
+                  {title:'操作',render:(_:any,r:any) => <Button type="link" size="small" danger onClick={() => { reservations.splice(reservations.findIndex((x:any)=>x.id===r.id),1); fetch(); }} disabled={r.status !== 'active'}>取消</Button>},
                 ]} />
               </Card>
               <Button type="primary" icon={<PlusOutlined />} block onClick={() => setModalVisible(true)}>新建预约</Button>

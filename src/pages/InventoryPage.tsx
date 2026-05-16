@@ -194,7 +194,7 @@ export const InventoryPage: React.FC = () => {
       </Modal>
 
       <Modal title="试剂入库" open={inModal} onCancel={() => setInModal(false)} footer={null}>
-        <Form layout="vertical">
+        <Form layout="vertical" onFinish={(v) => { message.success('入库成功: '+v.name); setInModal(false); fetch(); }}>
           <Form.Item label="试剂名称" required><Input /></Form.Item>
           <Form.Item label="规格型号"><Input /></Form.Item>
           <Form.Item label="批次号"><Input /></Form.Item>
@@ -202,17 +202,17 @@ export const InventoryPage: React.FC = () => {
           <Form.Item label="数量"><Input type="number" /></Form.Item>
           <Form.Item label="有效期"><Input placeholder="YYYY-MM-DD" /></Form.Item>
           <Form.Item label="库位"><Input /></Form.Item>
-          <Button type="primary" block onClick={() => { message.success('入库成功'); setInModal(false); fetch(); }}>确认入库</Button>
+          <Button type="primary" block htmlType="submit">确认入库</Button>
         </Form>
       </Modal>
 
       <Modal title="采购申请" open={prModal} onCancel={() => setPrModal(false)} footer={null}>
-        <Form layout="vertical">
-          <Form.Item label="物料名称" required><Input /></Form.Item>
-          <Form.Item label="规格"><Input /></Form.Item>
-          <Form.Item label="数量"><Input type="number" /></Form.Item>
-          <Form.Item label="紧急程度"><Select><Select.Option value="紧急">紧急</Select.Option><Select.Option value="普通">普通</Select.Option></Select></Form.Item>
-          <Button type="primary" block onClick={() => { message.success('采购申请已提交'); setPrModal(false); }}>提交申请</Button>
+        <Form layout="vertical" onFinish={(v) => { message.success('采购申请已提交: '+v.name); setPrModal(false); }}>
+          <Form.Item name="name" label="物料名称" required><Input /></Form.Item>
+          <Form.Item name="spec" label="规格"><Input /></Form.Item>
+          <Form.Item name="quantity" label="数量"><Input type="number" /></Form.Item>
+          <Form.Item name="urgency" label="紧急程度"><Select><Select.Option value="紧急">紧急</Select.Option><Select.Option value="普通">普通</Select.Option></Select></Form.Item>
+          <Button type="primary" block htmlType="submit">提交申请</Button>
         </Form>
       </Modal>
     </div>

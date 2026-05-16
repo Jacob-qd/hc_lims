@@ -81,3 +81,155 @@ a {
   background: var(--bg-card);
   box-shadow: var(--shadow-card);
 }
+
+/* ===== Unified Page Styles ===== */
+
+/* Page header */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.page-header h4 {
+  margin: 0 !important;
+}
+
+/* Stat cards row */
+.stat-cards-row {
+  margin-bottom: 16px;
+}
+.stat-cards-row .ant-card-small > .ant-card-body {
+  padding: 16px;
+}
+
+/* Search/filter bar */
+.filter-bar {
+  margin-bottom: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Table actions cell */
+.ant-table-wrapper .ant-table-cell .ant-space-item .ant-btn-link {
+  padding: 0 4px;
+}
+
+/* Unified table style */
+.ant-table-wrapper {
+  border-radius: 8px;
+}
+.ant-table-thead > tr > th {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-secondary);
+  background: #fafafa;
+}
+.ant-table-row:hover > td {
+  background: var(--color-primary-light) !important;
+}
+
+/* Detail drawer */
+.ant-drawer-body {
+  padding: 16px 24px;
+}
+
+/* Modal form spacing */
+.ant-modal-body .ant-form-item:last-child {
+  margin-bottom: 0;
+}
+.ant-modal-body .ant-form-item {
+  margin-bottom: 16px;
+}
+
+/* Statistic card consistency */
+.ant-statistic-title {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.ant-statistic-content {
+  font-size: 24px;
+}
+
+/* Tag consistency */
+.ant-tag {
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 20px;
+  padding: 0 6px;
+}
+
+/* Badge consistency */
+.ant-badge-status-text {
+  font-size: 13px;
+  margin-left: 6px;
+}
+
+/* Tabs card */
+.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab {
+  border-radius: 8px 8px 0 0;
+}
+
+/* Breadcrumb */
+.ant-breadcrumb {
+  font-size: 13px;
+}
+
+/* Button groups in headers */
+.page-header .ant-space, .filter-bar .ant-space {
+  flex-wrap: wrap;
+}
+
+/* Print hidden */
+@media print {
+  .ant-layout-sider, .ant-layout-header, .page-header button, .filter-bar {
+    display: none !important;
+  }
+  .ant-layout-content {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
+
+/* ===== Scrollbar styling ===== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d9d9d9;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #bfbfbf;
+}
+
+/* ===== Animation ===== */
+.ant-card, .ant-modal-content {
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .filter-bar {
+    flex-direction: column;
+  }
+  .ant-table {
+    font-size: 12px;
+  }
+}

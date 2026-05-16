@@ -43,6 +43,7 @@ export const SafetyPage: React.FC = () => {
               { title: '责任人', dataIndex: 'responsible' },
               { title: 'MSDS', dataIndex: 'msds', render: (m: string) => m === '有' ? <Tag color="green">有</Tag> : <Tag color="red">无</Tag> },
               { title: '状态', dataIndex: 'status', render: (s: string) => <Badge status={s === 'normal' ? 'success' : 'warning'} text={s === 'normal' ? '正常' : '预警'} /> },
+              { title: '操作', render: (_: any, r: any) => <Space size="small"><Button type="link" size="small">详情</Button><Button type="link" size="small">编辑</Button><Button type="link" size="small" danger icon={<DeleteOutlined />}>删除</Button></Space> },
             ]} size="middle" />
           </Card>
         )},

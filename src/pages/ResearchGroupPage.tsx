@@ -154,12 +154,12 @@ export const ResearchGroupPage: React.FC = () => {
       <GroupDetail group={selected} visible={drawerVisible} onClose={() => { setDrawerVisible(false); setSelected(null); }} />
 
       <Modal title="新建课题组" open={modalVisible} onCancel={() => setModalVisible(false)} footer={null}>
-        <Form layout="vertical">
-          <Form.Item label="课题组名称" required><Input placeholder="请输入名称" /></Form.Item>
-          <Form.Item label="所属院系" required><Input placeholder="如：化学与分子工程学院" /></Form.Item>
-          <Form.Item label="PI（课题组长）" required><Input placeholder="请输入PI姓名" /></Form.Item>
-          <Form.Item label="研究方向"><Input placeholder="研究方向描述" /></Form.Item>
-          <Button type="primary" block onClick={() => { message.success('课题组创建成功'); setModalVisible(false); }}>创建</Button>
+        <Form layout="vertical" onFinish={(v) => { message.success('课题组创建成功: '+v.name); setModalVisible(false); }}>
+          <Form.Item name="name" label="课题组名称" required><Input placeholder="请输入名称" /></Form.Item>
+          <Form.Item name="dept" label="所属院系" required><Input placeholder="如：化学与分子工程学院" /></Form.Item>
+          <Form.Item name="pi" label="PI（课题组长）" required><Input placeholder="请输入PI姓名" /></Form.Item>
+          <Form.Item name="field" label="研究方向"><Input placeholder="研究方向描述" /></Form.Item>
+          <Button type="primary" block htmlType="submit">创建</Button>
         </Form>
       </Modal>
     </div>

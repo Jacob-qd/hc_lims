@@ -266,7 +266,7 @@ export const COCPage: React.FC = () => {
         title={`COC: ${selectedChain?.cocNumber || ''}`}
         open={detailOpen}
         onCancel={() => { setDetailOpen(false); setSelectedChain(null); }}
-        footer={null}
+        footer={<Button onClick={() => { setDetailOpen(false); setSelectedChain(null); }}>关闭</Button>}
         width={700}
       >
         {selectedChain && (

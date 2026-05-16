@@ -44,6 +44,7 @@ export const SchedulesPage: React.FC = () => {
               { title: '分析员', dataIndex: 'analyst' },
               { title: '实验室', dataIndex: 'lab' },
               { title: '进度', dataIndex: 'progress', render: (p: number) => p > 0 ? <Progress percent={p} size="small" /> : <Tag color="orange">维护中</Tag> },
+              { title: '操作', render: (_: any, r: any) => <Space size="small"><Button type="link" size="small">编辑</Button><Button type="link" size="small" danger onClick={() => { setScheduleData(prev => prev.filter(s => s.time !== r.time)); message.success('已删除'); }}>删除</Button></Space> },
             ]} size="middle" />
           </Card>
         )},
