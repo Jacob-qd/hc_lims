@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Card, Table, Tag, Tabs, Row, Col, Typography, Badge, Button, Space, message } from 'antd';
-import { BellOutlined, CheckCircleOutlined, DeleteOutlined, ExclamationCircleOutlined, InfoCircleOutlined, WarningOutlined } from '@ant-design/icons';
+import { Card, Table, Tag, Tabs, Row, Col, Typography, Badge, Button, Space, message, Switch, Select, Input, Form } from 'antd';
+import { BellOutlined, CheckCircleOutlined, DeleteOutlined, ExclamationCircleOutlined, InfoCircleOutlined, WarningOutlined, SettingOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 
@@ -64,6 +64,29 @@ export const NotificationPage: React.FC = () => {
             </Card>
           ))}
         </div>},
+        { key: 'channels', label: <span><SettingOutlined /> 通知渠道</span>, children: <Card title="多通道通知配置">
+          <Form layout="vertical" style={{ maxWidth: 600 }} onFinish={(v) => message.success('通知配置已保存')}>
+            <Card size="small" title="📧 邮件通知" style={{ marginBottom: 12 }}>
+              <Form.Item label="启用"><Switch defaultChecked /></Form.Item>
+              <Form.Item label="SMTP服务器"><Input defaultValue="smtp.hongchuang.cn" /></Form.Item>
+              <Form.Item label="发件人地址"><Input defaultValue="lims@hongchuang.cn" /></Form.Item>
+            </Card>
+            <Card size="small" title="📱 短信通知" style={{ marginBottom: 12 }}>
+              <Form.Item label="启用"><Switch /></Form.Item>
+              <Form.Item label="短信网关"><Select defaultValue="aliyun"><Select.Option value="aliyun">阿里云短信</Select.Option><Select.Option value="tencent">腾讯云短信</Select.Option></Select></Form.Item>
+              <Form.Item label="签名"><Input placeholder="红创检测" /></Form.Item>
+            </Card>
+            <Card size="small" title="💬 企业微信通知" style={{ marginBottom: 12 }}>
+              <Form.Item label="启用"><Switch defaultChecked /></Form.Item>
+              <Form.Item label="Webhook URL"><Input placeholder="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=..." /></Form.Item>
+            </Card>
+            <Card size="small" title="🔔 站内通知">
+              <Form.Item label="启用"><Switch defaultChecked /></Form.Item>
+              <Form.Item label="通知频率"><Select defaultValue="realtime"><Select.Option value="realtime">实时推送</Select.Option><Select.Option value="digest">每日摘要</Select.Option><Select.Option value="hourly">每小时</Select.Option></Select></Form.Item>
+            </Card>
+            <Button type="primary" htmlType="submit" style={{ marginTop: 16 }}>保存配置</Button>
+          </Form>
+        </Card>},
       ]} />
     </div>
   );

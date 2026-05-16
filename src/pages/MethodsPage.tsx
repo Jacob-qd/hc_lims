@@ -5,7 +5,27 @@ import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined, HistoryOutline
 const { Title, Text } = Typography;
 const statusColors: Record<string, string> = { active: '#52c41a', revision: '#faad14', archived: '#d9d9d9', draft: '#1677ff' };
 
-const SopView: React.FC<{method: any}> = ({method}) => <div>方法: {method?.code} ({method?.name})</div>;
+const SopView: React.FC<{method: any}> = ({method}) => <div>
+  <Descriptions column={1} size="small" bordered style={{ marginBottom: 12 }}>
+    <Descriptions.Item label="方法">{method?.code} - {method?.name}</Descriptions.Item>
+    <Descriptions.Item label="SOP编号">SOP-{method?.code}-v2</Descriptions.Item>
+    <Descriptions.Item label="版本">v2.0</Descriptions.Item>
+    <Descriptions.Item label="生效日期">2024-06-01</Descriptions.Item>
+    <Descriptions.Item label="编制人">张伟</Descriptions.Item>
+    <Descriptions.Item label="审核人">王强</Descriptions.Item>
+  </Descriptions>
+  <Table dataSource={[
+    { section: '1. 适用范围', desc: '适用于地表水、地下水中重金属元素的测定' },
+    { section: '2. 方法原理', desc: '样品经酸化处理后，采用ICP-MS法测定' },
+    { section: '3. 试剂与材料', desc: '硝酸(优级纯)、标准溶液、高纯氩气' },
+    { section: '4. 操作步骤', desc: '样品前处理 → 仪器准备 → 上机检测 → 数据处理' },
+    { section: '5. 质量控制', desc: '空白、平行样、加标回收、标准参考物质' },
+  ]} rowKey="section" pagination={false} size="small" columns={[
+    { title: '章节', dataIndex: 'section', width: 160 },
+    { title: '内容摘要', dataIndex: 'desc' },
+  ]} />
+  <Button type="primary" size="small" style={{ marginTop: 8 }} onClick={() => message.success('SOP文档已下载')}>下载完整SOP (PDF)</Button>
+</div>;
 
 export const MethodsPage: React.FC = () => {
   const [methods, setMethods] = useState<any[]>([]);

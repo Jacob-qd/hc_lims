@@ -135,6 +135,25 @@ export const InventoryPage: React.FC = () => {
             { title: '操作', render: (_: any, r: any) => <Button type="link" size="small" onClick={() => { setSelected(r); setPrDrawer(true); }}>查看</Button> },
           ]} pagination={false} size="middle" /></Card>
         )},
+        { key: 'suppliers', label: '供应商管理', children: (
+          <Card extra={<Button type="primary" size="small" icon={<PlusOutlined />} onClick={() => message.success('供应商添加成功')}>添加供应商</Button>}>
+            <Table dataSource={[
+              { id: 's1', name: '国药集团化学试剂有限公司', contact: '赵经理', phone: '021-12345678', type: '试剂', rating: 'A', products: 45, lastOrder: '2024-05-15' },
+              { id: 's2', name: '赛默飞世尔科技', contact: '刘总监', phone: '010-87654321', type: '仪器配件', rating: 'A', products: 23, lastOrder: '2024-05-10' },
+              { id: 's3', name: '安捷伦科技', contact: '陈经理', phone: '021-23456789', type: '耗材', rating: 'B', products: 18, lastOrder: '2024-04-28' },
+              { id: 's4', name: '西格玛奥德里奇', contact: '周销售', phone: '010-34567890', type: '标准品', rating: 'A', products: 32, lastOrder: '2024-05-12' },
+            ]} rowKey="id" pagination={false} size="small" columns={[
+              { title: '供应商名称', dataIndex: 'name', ellipsis: true },
+              { title: '联系人', dataIndex: 'contact' },
+              { title: '电话', dataIndex: 'phone' },
+              { title: '类型', dataIndex: 'type', render: (t: string) => <Tag>{t}</Tag> },
+              { title: '评级', dataIndex: 'rating', render: (r: string) => <Tag color={r==='A'?'green':r==='B'?'orange':'default'}>{r}</Tag> },
+              { title: '供应产品', dataIndex: 'products' },
+              { title: '最近采购', dataIndex: 'lastOrder' },
+              { title: '操作', render: () => <Space size="small"><Button type="link" size="small">详情</Button><Button type="link" size="small">评估</Button></Space> },
+            ]} />
+          </Card>
+        )},
       ]} />
 
       <Drawer title={selected?.name} open={drawer} onClose={() => { setDrawer(false); setSelected(null); }} width={420}>

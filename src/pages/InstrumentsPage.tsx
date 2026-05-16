@@ -288,6 +288,25 @@ export const InstrumentsPage: React.FC = () => {
               </Col>
             </Row>
           </Card>},
+          { key: 'auto-schedule', label: <span><CalendarOutlined /> 校准排期</span>, children: <Card>
+            <Descriptions bordered size="small" column={2} style={{ marginBottom: 12 }}>
+              <Descriptions.Item label="自动排期"><Switch defaultChecked /> <Text type="secondary">到期前30天自动生成校准任务</Text></Descriptions.Item>
+              <Descriptions.Item label="预警提前量"><Select defaultValue="30" style={{width:100}}><Select.Option value="14">14天</Select.Option><Select.Option value="30">30天</Select.Option><Select.Option value="60">60天</Select.Option></Select></Descriptions.Item>
+            </Descriptions>
+            <Table dataSource={[
+              { instrument: 'HPLC-安捷伦1260', nextCal: '2024-08-15', cycle: '12个月', status: 'scheduled', assignee: '张伟' },
+              { instrument: 'GC-MS-岛津QP2020', nextCal: '2024-07-20', cycle: '12个月', status: 'scheduled', assignee: '李明' },
+              { instrument: 'ICP-MS-Agilent 7800', nextCal: '2024-06-10', cycle: '12个月', status: 'warning', assignee: '郑丽' },
+              { instrument: 'UV-Vis-岛津UV2600', nextCal: '2024-05-01', cycle: '12个月', status: 'overdue', assignee: '王明' },
+            ]} rowKey="instrument" pagination={false} size="small" columns={[
+              { title: '仪器', dataIndex: 'instrument' },
+              { title: '下次校准', dataIndex: 'nextCal' },
+              { title: '校准周期', dataIndex: 'cycle' },
+              { title: '负责人', dataIndex: 'assignee' },
+              { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={s==='overdue'?'red':s==='warning'?'orange':'blue'}>{s==='overdue'?'已逾期':s==='warning'?'即将到期':'已排期'}</Tag> },
+              { title: '操作', render: () => <Space><Button type="link" size="small">校准</Button><Button type="link" size="small">推迟</Button></Space> },
+            ]} />
+          </Card>},
         ]} />
       </Card>
 
