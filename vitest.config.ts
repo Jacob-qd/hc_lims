@@ -11,8 +11,8 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      include: ['src/pages/**/*.tsx', 'src/components/**/*.tsx'],
-      thresholds: { functions: 60, lines: 60, branches: 50 },
+      include: ['src/pages/**/*.tsx', 'src/components/**/*.tsx', 'src/stores/**/*.ts', 'src/utils/**/*.ts', 'src/router/**/*.tsx', 'src/domain/**/*.ts'],
+      thresholds: { functions: 90, lines: 90, branches: 85 },
     },
   },
 });

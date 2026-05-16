@@ -1,0 +1,247 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for pages/QueryPage.tsx</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">pages</a> QueryPage.tsx</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>0/9</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/0</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/5</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>0/9</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line low'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React from 'react';
+import { Card, Input, Table, Tag, Typography, Space, Select, Row, Col, Statistic, message } from 'antd';
+&nbsp;
+const { Title, Text } = <span class="cstat-no" title="statement not covered" >Typography;</span>
+&nbsp;
+const mockResults = <span class="cstat-no" title="statement not covered" >[</span>
+  { id: '1', type: '样品', code: 'SMP20240520001', name: '地表水样品-1', customer: '绿源环保', status: '检测中', date: '2024-05-20' },
+  { id: '2', type: '样品', code: 'SMP20240520002', name: '饮用水样品-2', customer: '博克水务', status: '已接收', date: '2024-05-20' },
+  { id: '3', type: '任务', code: 'TK-2025-001', name: 'pH值检测', customer: '绿源环保', status: '已完成', date: '2024-05-21' },
+  { id: '4', type: '任务', code: 'TK-2025-004', name: '重金属(Pb)检测', customer: '红创检测', status: '检测中', date: '2024-05-21' },
+  { id: '5', type: '报告', code: 'RPT20240521001', name: '地表水检测报告', customer: '绿源环保', status: '已签发', date: '2024-05-21' },
+  { id: '6', type: '报告', code: 'RPT20240520022', name: '土壤检测报告', customer: '红创检测', status: '待审核', date: '2024-05-20' },
+];
+&nbsp;
+const typeColors: Record&lt;string, string&gt; = <span class="cstat-no" title="statement not covered" >{ 样品: '#1677ff', 任务: '#52c41a', 报告: '#722ed1' };</span>
+&nbsp;
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >QueryPage: React.FC = () =&gt; {</span></span>
+<span class="cstat-no" title="statement not covered" >  return (</span>
+    &lt;div&gt;
+      &lt;Title level={4} style={{ marginBottom: 16 }}&gt;综合查询&lt;/Title&gt;
+&nbsp;
+      &lt;Card style={{ marginBottom: 16 }}&gt;
+        &lt;Space style={{ width: '100%' }} size="large"&gt;
+          &lt;Input.Search placeholder="输入样品编号/任务编号/报告编号/客户名称" enterButton="查询" size="large" style={{ width: 500 }} <span class="fstat-no" title="function not covered" >onSearch={v</span> =&gt; <span class="cstat-no" title="statement not covered" >message.success('查询: '+v)} /&gt;</span>
+          &lt;Select placeholder="查询类型" style={{ width: 120 }} allowClear&gt;
+            &lt;Select.Option value="all"&gt;全部&lt;/Select.Option&gt;
+            &lt;Select.Option value="sample"&gt;样品&lt;/Select.Option&gt;
+            &lt;Select.Option value="task"&gt;任务&lt;/Select.Option&gt;
+            &lt;Select.Option value="report"&gt;报告&lt;/Select.Option&gt;
+          &lt;/Select&gt;
+          &lt;Select placeholder="状态" style={{ width: 120 }} allowClear&gt;
+            &lt;Select.Option value="all"&gt;全部状态&lt;/Select.Option&gt;
+          &lt;/Select&gt;
+        &lt;/Space&gt;
+      &lt;/Card&gt;
+&nbsp;
+      &lt;Row gutter={[16, 16]} style={{ marginBottom: 16 }}&gt;
+        &lt;Col span={6}&gt;&lt;Card size="small"&gt;&lt;Statistic title="样品" value={2} suffix="条" /&gt;&lt;/Card&gt;&lt;/Col&gt;
+        &lt;Col span={6}&gt;&lt;Card size="small"&gt;&lt;Statistic title="任务" value={2} suffix="条" /&gt;&lt;/Card&gt;&lt;/Col&gt;
+        &lt;Col span={6}&gt;&lt;Card size="small"&gt;&lt;Statistic title="报告" value={2} suffix="条" /&gt;&lt;/Card&gt;&lt;/Col&gt;
+        &lt;Col span={6}&gt;&lt;Card size="small"&gt;&lt;Statistic title="共" value={6} suffix="条结果" /&gt;&lt;/Card&gt;&lt;/Col&gt;
+      &lt;/Row&gt;
+&nbsp;
+      &lt;Table dataSource={mockResults} rowKey="id" columns={[
+        { title: '类型', dataIndex: 'type', <span class="fstat-no" title="function not covered" >render: (t</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Tag color={typeColors[t]}&gt;{t}&lt;/Tag&gt; },</span>
+        { title: '编号', dataIndex: 'code', <span class="fstat-no" title="function not covered" >render: (c</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Text code&gt;{c}&lt;/Text&gt; },</span>
+        { title: '名称', dataIndex: 'name' },
+        { title: '客户', dataIndex: 'customer' },
+        { title: '状态', dataIndex: 'status', <span class="fstat-no" title="function not covered" >render: (s</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Tag&gt;{s}&lt;/Tag&gt; },</span>
+        { title: '日期', dataIndex: 'date' },
+      ]} pagination={false} size="middle" /&gt;
+    &lt;/div&gt;
+  );
+};
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-05-16T16:31:52.803Z
+            </div>
+        <script src="../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../sorter.js"></script>
+        <script src="../block-navigation.js"></script>
+    </body>
+</html>
+    

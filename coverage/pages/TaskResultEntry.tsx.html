@@ -1,0 +1,553 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for pages/TaskResultEntry.tsx</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">pages</a> TaskResultEntry.tsx</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>0/26</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/6</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/15</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>0/22</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line low'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a>
+<a name='L127'></a><a href='#L127'>127</a>
+<a name='L128'></a><a href='#L128'>128</a>
+<a name='L129'></a><a href='#L129'>129</a>
+<a name='L130'></a><a href='#L130'>130</a>
+<a name='L131'></a><a href='#L131'>131</a>
+<a name='L132'></a><a href='#L132'>132</a>
+<a name='L133'></a><a href='#L133'>133</a>
+<a name='L134'></a><a href='#L134'>134</a>
+<a name='L135'></a><a href='#L135'>135</a>
+<a name='L136'></a><a href='#L136'>136</a>
+<a name='L137'></a><a href='#L137'>137</a>
+<a name='L138'></a><a href='#L138'>138</a>
+<a name='L139'></a><a href='#L139'>139</a>
+<a name='L140'></a><a href='#L140'>140</a>
+<a name='L141'></a><a href='#L141'>141</a>
+<a name='L142'></a><a href='#L142'>142</a>
+<a name='L143'></a><a href='#L143'>143</a>
+<a name='L144'></a><a href='#L144'>144</a>
+<a name='L145'></a><a href='#L145'>145</a>
+<a name='L146'></a><a href='#L146'>146</a>
+<a name='L147'></a><a href='#L147'>147</a>
+<a name='L148'></a><a href='#L148'>148</a>
+<a name='L149'></a><a href='#L149'>149</a>
+<a name='L150'></a><a href='#L150'>150</a>
+<a name='L151'></a><a href='#L151'>151</a>
+<a name='L152'></a><a href='#L152'>152</a>
+<a name='L153'></a><a href='#L153'>153</a>
+<a name='L154'></a><a href='#L154'>154</a>
+<a name='L155'></a><a href='#L155'>155</a>
+<a name='L156'></a><a href='#L156'>156</a>
+<a name='L157'></a><a href='#L157'>157</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useState } from 'react';
+import { Card, Row, Col, Typography, Descriptions, Table, Input, Select, Button, Tag, Upload, message, Timeline, Space, Form } from 'antd';
+import { SaveOutlined, CheckCircleOutlined, UploadOutlined, PlusOutlined } from '@ant-design/icons';
+import { useParams, useNavigate } from 'react-router-dom';
+&nbsp;
+const { Title, Text } = <span class="cstat-no" title="statement not covered" >Typography;</span>
+const { Option } = <span class="cstat-no" title="statement not covered" >Select;</span>
+const { TextArea } = <span class="cstat-no" title="statement not covered" >Input;</span>
+&nbsp;
+const mockTask = <span class="cstat-no" title="statement not covered" >{</span>
+  id: 'tk2', taskNo: 'TK-2025-002', sampleNo: 'SMP20240520001',
+  sampleName: '地表水样品-1', testItem: '化学需氧量(COD)', method: 'HJ 828-2017 重铬酸钾法',
+  submitter: '李思', date: '2024-05-21', analyst: '王明', instrument: 'COD消解仪 HCA-100',
+};
+&nbsp;
+const initialResults = <span class="cstat-no" title="statement not covered" >[</span>
+  { key: '1', index: '化学需氧量(COD)', result: '25.6', unit: 'mg/L', limit: '4', standard: '≤50', judgment: '符合', note: '' },
+  { key: '2', index: '五日生化需氧量(BOD₅)', result: '7.8', unit: 'mg/L', limit: '0.5', standard: '≤10', judgment: '符合', note: '' },
+  { key: '3', index: '氨氮(NH₃-N)', result: '0.215', unit: 'mg/L', limit: '0.025', standard: '≤1.0', judgment: '符合', note: '' },
+];
+&nbsp;
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >TaskResultEntry: React.FC = () =&gt; {</span></span>
+<span class="cstat-no" title="statement not covered" >  useParams();</span>
+  const <span class="cstat-no" title="statement not covered" >navigate = useNavigate();</span>
+  const [results, <span class="cstat-no" title="statement not covered" >setResults] = useState(initialResults);</span>
+&nbsp;
+  const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >handleResultChange = (k</span>ey: string, field: string, value: string) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >    setResults(p</span>rev =&gt; <span class="cstat-no" title="statement not covered" >prev.<span class="fstat-no" title="function not covered" >map(r</span> =&gt; <span class="cstat-no" title="statement not covered" >r.key === key ? { ...r, [field]: value } : r))</span></span>;</span>
+  };
+&nbsp;
+  const columns = <span class="cstat-no" title="statement not covered" >[</span>
+    { title: '检测指标', dataIndex: 'index', key: 'index', width: 180 },
+    { title: '检测结果', dataIndex: 'result', key: 'result', width: 100, <span class="fstat-no" title="function not covered" >render: (v</span>: string, r: any) =&gt; (
+<span class="cstat-no" title="statement not covered" >      &lt;Input size="small" value={v} <span class="fstat-no" title="function not covered" >onChange={e</span> =&gt; <span class="cstat-no" title="statement not covered" >handleResultChange(r.key, 'result', e.target.value)}</span> style={{ width: 80 }} /&gt;</span>
+    )},
+    { title: '单位', dataIndex: 'unit', key: 'unit', width: 60 },
+    { title: '检出限', dataIndex: 'limit', key: 'limit', width: 60 },
+    { title: '限值要求', dataIndex: 'standard', key: 'standard', width: 80 },
+    { title: '判定', dataIndex: 'judgment', key: 'judgment', width: 80, <span class="fstat-no" title="function not covered" >render: (v</span>: string) =&gt; (
+<span class="cstat-no" title="statement not covered" >      &lt;Tag color={v === '符合' ? 'green' : 'red'}&gt;{v}&lt;/Tag&gt;</span>
+    )},
+    { title: '备注', dataIndex: 'note', key: 'note', width: 120, <span class="fstat-no" title="function not covered" >render: (v</span>: string, r: any) =&gt; (
+<span class="cstat-no" title="statement not covered" >      &lt;Input size="small" value={v} <span class="fstat-no" title="function not covered" >onChange={e</span> =&gt; <span class="cstat-no" title="statement not covered" >handleResultChange(r.key, 'note', e.target.value)} /&gt;</span></span>
+    )},
+  ];
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  return (</span>
+    &lt;div&gt;
+      &lt;Row justify="space-between" style={{ marginBottom: 16 }}&gt;
+        &lt;Col&gt;&lt;Button <span class="fstat-no" title="function not covered" >onClick={() =&gt; <span class="cstat-no" title="statement not covered" >n</span>avigate(-1)}</span>&gt;← 返回&lt;/Button&gt;&lt;/Col&gt;
+        &lt;Col&gt;&lt;Title level={4} style={{ margin: 0 }}&gt;检测结果录入&lt;/Title&gt;&lt;/Col&gt;
+        &lt;Col&gt;
+          &lt;Space&gt;
+            &lt;Button icon={&lt;SaveOutlined /&gt;} <span class="fstat-no" title="function not covered" >onClick={() =&gt; <span class="cstat-no" title="statement not covered" >m</span>essage.success('结果已保存')}</span>&gt;保存&lt;/Button&gt;
+            &lt;Button type="primary" icon={&lt;CheckCircleOutlined /&gt;} <span class="fstat-no" title="function not covered" >onClick={() =&gt; <span class="cstat-no" title="statement not covered" >m</span>essage.success('已提交复核')}</span>&gt;提交复核&lt;/Button&gt;
+          &lt;/Space&gt;
+        &lt;/Col&gt;
+      &lt;/Row&gt;
+&nbsp;
+      &lt;Card size="small" style={{ marginBottom: 16 }}&gt;
+        &lt;Descriptions size="small" column={4}&gt;
+          &lt;Descriptions.Item label="样品编号"&gt;{mockTask.sampleNo}&lt;/Descriptions.Item&gt;
+          &lt;Descriptions.Item label="样品名称"&gt;{mockTask.sampleName}&lt;/Descriptions.Item&gt;
+          &lt;Descriptions.Item label="检测项目"&gt;{mockTask.testItem}&lt;/Descriptions.Item&gt;
+          &lt;Descriptions.Item label="检测方法"&gt;{mockTask.method}&lt;/Descriptions.Item&gt;
+          &lt;Descriptions.Item label="送检人"&gt;{mockTask.submitter}&lt;/Descriptions.Item&gt;
+          &lt;Descriptions.Item label="检测日期"&gt;{mockTask.date}&lt;/Descriptions.Item&gt;
+        &lt;/Descriptions&gt;
+      &lt;/Card&gt;
+&nbsp;
+      &lt;Row gutter={16}&gt;
+        &lt;Col xs={24} lg={18}&gt;
+          &lt;Card title="检测指标" size="small" style={{ marginBottom: 16 }}&gt;
+            &lt;Table columns={columns} dataSource={results} pagination={false} size="small" bordered /&gt;
+            &lt;Button type="dashed" icon={&lt;PlusOutlined /&gt;} style={{ width: '100%', marginTop: 8 }} <span class="fstat-no" title="function not covered" >onClick={() =&gt; <span class="cstat-no" title="statement not covered" >m</span>essage.success('添加新检测指标')}</span>&gt;添加指标&lt;/Button&gt;
+          &lt;/Card&gt;
+&nbsp;
+          &lt;Card title="原始记录" size="small" style={{ marginBottom: 16 }} extra={
+            &lt;Select defaultValue="" style={{width:160}} size="small" <span class="fstat-no" title="function not covered" >onChange={(v</span>) =&gt; <span class="cstat-no" title="statement not covered" >v &amp;&amp; message.info('已加载模板: ' + v)}</span>&gt;
+              &lt;Option value=""&gt;选择模板...&lt;/Option&gt;
+              &lt;Option value="spectrophotometry"&gt;分光光度法模板&lt;/Option&gt;
+              &lt;Option value="chromatography"&gt;色谱法模板&lt;/Option&gt;
+              &lt;Option value="titration"&gt;滴定法模板&lt;/Option&gt;
+              &lt;Option value="gravimetric"&gt;重量法模板&lt;/Option&gt;
+            &lt;/Select&gt;
+          }&gt;
+            &lt;Form layout="vertical"&gt;
+              &lt;Row gutter={16}&gt;
+                &lt;Col span={12}&gt;&lt;Form.Item label="检测标准"&gt;&lt;Input defaultValue="HJ 828-2017" /&gt;&lt;/Form.Item&gt;&lt;/Col&gt;
+                &lt;Col span={6}&gt;&lt;Form.Item label="环境温度(°C)"&gt;&lt;Input defaultValue="25" /&gt;&lt;/Form.Item&gt;&lt;/Col&gt;
+                &lt;Col span={6}&gt;&lt;Form.Item label="湿度(%)"&gt;&lt;Input defaultValue="60" /&gt;&lt;/Form.Item&gt;&lt;/Col&gt;
+              &lt;/Row&gt;
+              &lt;Form.Item label="样品前处理过程"&gt;&lt;TextArea rows={2} placeholder="描述样品前处理步骤..." defaultValue="取 50mL 水样, 加入 10mL 重铬酸钾溶液" /&gt;&lt;/Form.Item&gt;
+              &lt;Form.Item label="检测过程记录"&gt;&lt;TextArea rows={3} placeholder="记录检测过程中的关键参数和观察..." defaultValue="消解温度 165°C, 时间 15min" /&gt;&lt;/Form.Item&gt;
+              &lt;Form.Item label="备注"&gt;&lt;TextArea rows={1} placeholder="异常情况或其他说明..." /&gt;&lt;/Form.Item&gt;
+            &lt;/Form&gt;
+          &lt;/Card&gt;
+&nbsp;
+          &lt;Card title="仪器读数" size="small" style={{ marginBottom: 16 }}&gt;
+            &lt;Table dataSource={[
+              { key: '1', seq: 1, sample: '空白', reading: '0.001' },
+              { key: '2', seq: 2, sample: '标准曲线1 (20mg/L)', reading: '0.152' },
+              { key: '3', seq: 3, sample: '标准曲线2 (40mg/L)', reading: '0.287' },
+              { key: '4', seq: 4, sample: '样品', reading: '0.321' },
+            ]} columns={[
+              { title: '序号', dataIndex: 'seq', width: 60 },
+              { title: '样品/标准', dataIndex: 'sample' },
+              { title: '读数', dataIndex: 'reading' },
+            ]} pagination={false} size="small" bordered /&gt;
+            &lt;Button type="dashed" icon={&lt;PlusOutlined /&gt;} style={{ width: '100%', marginTop: 8 }} <span class="fstat-no" title="function not covered" >onClick={() =&gt; <span class="cstat-no" title="statement not covered" >m</span>essage.success('添加仪器读数')}</span>&gt;添加读数&lt;/Button&gt;
+          &lt;/Card&gt;
+&nbsp;
+          &lt;Card title="计算过程" size="small" style={{ marginBottom: 16 }}&gt;
+            &lt;Text type="secondary"&gt;ρ = (A - A₀) × K = (0.321 - 0.001) × 80.0 = 25.6 mg/L&lt;/Text&gt;
+          &lt;/Card&gt;
+&nbsp;
+          &lt;Card title="附件上传" size="small" style={{ marginBottom: 16 }}&gt;
+            &lt;Upload.Dragger multiple showUploadList={{ showPreviewIcon: true }}&gt;
+              &lt;p&gt;&lt;UploadOutlined style={{ fontSize: 24 }} /&gt;&lt;/p&gt;
+              &lt;p&gt;支持 jpg/png/pdf/doc/xls，单文件≤20MB&lt;/p&gt;
+            &lt;/Upload.Dragger&gt;
+          &lt;/Card&gt;
+&nbsp;
+          &lt;Card title="审核信息" size="small"&gt;
+            &lt;Descriptions size="small" column={3}&gt;
+              &lt;Descriptions.Item label="录入人"&gt;王明&lt;/Descriptions.Item&gt;
+              &lt;Descriptions.Item label="录入时间"&gt;2024-05-21 10:25&lt;/Descriptions.Item&gt;
+              &lt;Descriptions.Item label="复核人"&gt;—&lt;/Descriptions.Item&gt;
+            &lt;/Descriptions&gt;
+          &lt;/Card&gt;
+        &lt;/Col&gt;
+&nbsp;
+        &lt;Col xs={24} lg={6}&gt;
+          &lt;Card title="样品概览" size="small" style={{ marginBottom: 16 }}&gt;
+            &lt;Text strong&gt;{mockTask.sampleName}&lt;/Text&gt;
+            &lt;Descriptions size="small" column={1}&gt;
+              &lt;Descriptions.Item label="状态"&gt;&lt;Tag color="blue"&gt;检测中&lt;/Tag&gt;&lt;/Descriptions.Item&gt;
+              &lt;Descriptions.Item label="检测项目"&gt;{mockTask.testItem}&lt;/Descriptions.Item&gt;
+            &lt;/Descriptions&gt;
+          &lt;/Card&gt;
+&nbsp;
+          &lt;Card title="任务进度" size="small"&gt;
+            &lt;Timeline items={[
+              { color: 'green', children: &lt;&gt;&lt;Text strong&gt;任务接收&lt;/Text&gt;&lt;br /&gt;&lt;Text type="secondary"&gt;2024-05-20 15:22&lt;/Text&gt;&lt;/&gt; },
+              { color: 'green', children: &lt;&gt;&lt;Text strong&gt;样品登记&lt;/Text&gt;&lt;br /&gt;&lt;Text type="secondary"&gt;2024-05-20 15:35&lt;/Text&gt;&lt;/&gt; },
+              { color: 'green', children: &lt;&gt;&lt;Text strong&gt;样品分配&lt;/Text&gt;&lt;br /&gt;&lt;Text type="secondary"&gt;2024-05-21 09:00&lt;/Text&gt;&lt;/&gt; },
+              { color: 'blue', children: &lt;&gt;&lt;Text strong&gt;检测中（当前）&lt;/Text&gt;&lt;br /&gt;&lt;Text type="secondary"&gt;结果录入&lt;/Text&gt;&lt;/&gt; },
+              { color: 'gray', children: &lt;&gt;&lt;Text strong&gt;复核&lt;/Text&gt;&lt;br /&gt;&lt;Text type="secondary"&gt;待开始&lt;/Text&gt;&lt;/&gt; },
+              { color: 'gray', children: &lt;&gt;&lt;Text strong&gt;审核&lt;/Text&gt;&lt;br /&gt;&lt;Text type="secondary"&gt;待开始&lt;/Text&gt;&lt;/&gt; },
+            ]} /&gt;
+          &lt;/Card&gt;
+        &lt;/Col&gt;
+      &lt;/Row&gt;
+    &lt;/div&gt;
+  );
+};
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-05-16T16:31:52.803Z
+            </div>
+        <script src="../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../sorter.js"></script>
+        <script src="../block-navigation.js"></script>
+    </body>
+</html>
+    
