@@ -89,9 +89,52 @@ export const SettingsPage: React.FC = () => {
           </Row>
         )},
         { key: 'roles', label: '角色权限', children: (
-          <Card title="权限配置矩阵">
-            <Table columns={permColumns as any} dataSource={permData} pagination={false} size="small" bordered />
-          </Card>
+          <div>
+            <Card title="权限矩阵配置" extra={<Space><Button size="small" icon={<PlusOutlined />} onClick={() => message.success('角色已创建')}>新建角色</Button><Select defaultValue="analyst" style={{width:120}} onChange={()=>{}}>
+              {['admin','qa','analyst','reviewer','signer','receiver'].map(r=><Select.Option key={r} value={r}>{r==='admin'?'系统管理员':r==='qa'?'QA主管':r==='analyst'?'检测员':r==='reviewer'?'审核人':r==='signer'?'授权签字人':'收样员'}</Select.Option>)}
+            </Select></Space>} style={{ marginBottom: 16 }}>
+              <Table columns={permColumns as any} dataSource={permData} pagination={false} size="small" bordered />
+            </Card>
+
+            <Card title="🔐 密码策略 (21 CFR Part 11)" size="small" style={{ marginBottom: 16 }}>
+              <Descriptions bordered size="small" column={2}>
+                <Descriptions.Item label="最小长度"><Tag color="blue">8 位</Tag></Descriptions.Item>
+                <Descriptions.Item label="复杂度要求"><Tag color="blue">大小写+数字+特殊字符</Tag></Descriptions.Item>
+                <Descriptions.Item label="过期时间"><Tag color="blue">90 天</Tag></Descriptions.Item>
+                <Descriptions.Item label="历史密码不可重复"><Tag color="blue">最近 5 次</Tag></Descriptions.Item>
+                <Descriptions.Item label="失败锁定"><Tag color="orange">5 次失败锁定 30 分钟</Tag></Descriptions.Item>
+                <Descriptions.Item label="MFA 双因子"><Switch defaultChecked={false} /></Descriptions.Item>
+              </Descriptions>
+              <Button size="small" type="primary" style={{ marginTop: 8 }} onClick={() => message.success('密码策略已保存')}>保存策略</Button>
+            </Card>
+
+            <Card title="📋 角色模板" size="small" style={{ marginBottom: 16 }}>
+              <Table dataSource={[
+                { id: 't1', name: '新入职检测员', roles: '检测员 + 设备使用者 + 样品查看者', desc: '适用于新入职实验员快速配置' },
+                { id: 't2', name: 'QA专员', roles: 'QA主管 + 报告查看者 + 审计查看者', desc: '适用于质量保证人员' },
+                { id: 't3', name: '实验室主管', roles: '审核人 + 检测员 + 设备管理员 + 报告查看者', desc: '适用于科室管理者' },
+              ]} rowKey="id" pagination={false} size="small" columns={[
+                { title: '模板名称', dataIndex: 'name' },
+                { title: '包含角色', dataIndex: 'roles' },
+                { title: '说明', dataIndex: 'desc' },
+                { title: '操作', render: () => <Space size="small"><Button type="link" size="small">应用</Button><Button type="link" size="small">编辑</Button></Space> },
+              ]} />
+            </Card>
+
+            <Card title="🔑 权限委托" size="small">
+              <Table dataSource={[
+                { id: 'd1', fromUser: '王强(实验室主管)', toUser: '张伟(副主管)', perms: '审批+分配', validFrom: '2026-06-01', validUntil: '2026-06-15', reason: '主管休假', status: 'pending' },
+              ]} rowKey="id" pagination={false} size="small" columns={[
+                { title: '委托人', dataIndex: 'fromUser' },
+                { title: '受托人', dataIndex: 'toUser' },
+                { title: '委托权限', dataIndex: 'perms' },
+                { title: '有效期', render: (_:any, r:any) => `${r.validFrom} ~ ${r.validUntil}` },
+                { title: '原因', dataIndex: 'reason' },
+                { title: '操作', render: () => <Space size="small"><Button type="link" size="small">审批</Button><Button type="link" size="small" danger>拒绝</Button></Space> },
+              ]} />
+              <Button size="small" icon={<PlusOutlined />} style={{ marginTop: 8 }} onClick={() => message.success('委托申请已提交')}>新建委托</Button>
+            </Card>
+          </div>
         )},
         { key: 'config', label: '系统配置', children: (
           <Space direction="vertical" style={{ width: '100%' }} size="middle">

@@ -166,6 +166,62 @@ export const TasksPage: React.FC = () => {
           </Row>
         )},
         { key: 'board', label: '任务看板', children: (
+          <div>
+            {/* Dispatch Rules */}
+            <Card size="small" title="⚙️ 派工规则" style={{ marginBottom: 16 }} extra={<Button size="small" icon={<PlusOutlined />} onClick={() => message.success('规则已创建')}>新建规则</Button>}>
+              <Table dataSource={[
+                { id: 'r1', name: 'COD自动派工', condition: '检测项目=COD', assign: '理化实验室 · 自动(负载最低)', status: 'active' },
+                { id: 'r2', name: '重金属自动派工', condition: '检测项目 IN (Pb,Cd,Hg,As)', assign: '无机分析室 · 自动(有资质)', status: 'active' },
+                { id: 'r3', name: 'pH优先派工', condition: '检测项目=pH值 且 优先级=紧急', assign: '理化实验室 · 张伟(效率最高)', status: 'active' },
+              ]} rowKey="id" pagination={false} size="small" columns={[
+                { title: '规则名称', dataIndex: 'name' },
+                { title: '条件', dataIndex: 'condition' },
+                { title: '分配策略', dataIndex: 'assign', ellipsis: true },
+                { title: '状态', dataIndex: 'status', render: () => <Badge status="success" text="启用" /> },
+                { title: '操作', render: () => <Space size="small"><Button type="link" size="small">编辑</Button><Button type="link" size="small">禁用</Button></Space> },
+              ]} />
+            </Card>
+
+            {/* Load Monitor */}
+            <Card size="small" title="📊 负载监控" style={{ marginBottom: 16 }}>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Text strong style={{ display: 'block', marginBottom: 8 }}>检测员负载</Text>
+                  {[
+                    { name: '张伟', load: 8, max: 10, completed: 12, avgTAT: 2.3 },
+                    { name: '李明', load: 6, max: 10, completed: 8, avgTAT: 3.1 },
+                    { name: '王明', load: 4, max: 10, completed: 15, avgTAT: 2.8 },
+                    { name: '郑丽', load: 3, max: 10, completed: 10, avgTAT: 2.5 },
+                  ].map(a => (
+                    <div key={a.name} style={{ marginBottom: 8 }}>
+                      <Row justify="space-between"><Col><Text>{a.name}</Text></Col><Col><Text type="secondary">{a.load}/{a.max} · 均{a.avgTAT}h</Text></Col></Row>
+                      <Progress percent={a.load / a.max * 100} size="small" status={a.load >= 8 ? 'exception' : 'active'} />
+                    </div>
+                  ))}
+                </Col>
+                <Col span={12}>
+                  <Text strong style={{ display: 'block', marginBottom: 8 }}>设备占用</Text>
+                  {[
+                    { name: 'HPLC-安捷伦1260', load: 4, max: 6 },
+                    { name: 'GC-MS-岛津QP2020', load: 2, max: 4 },
+                    { name: 'ICP-MS-7800', load: 5, max: 6 },
+                    { name: 'UV-Vis-2600', load: 2, max: 4 },
+                  ].map(i => (
+                    <div key={i.name} style={{ marginBottom: 8 }}>
+                      <Row justify="space-between"><Col><Text>{i.name}</Text></Col><Col><Text type="secondary">{i.load}/{i.max}通道</Text></Col></Row>
+                      <Progress percent={i.load / i.max * 100} size="small" status={i.load >= i.max * 0.8 ? 'exception' : 'active'} />
+                    </div>
+                  ))}
+                </Col>
+              </Row>
+              <Divider style={{ margin: '12px 0' }} />
+              <Space>
+                <Button type="primary" icon={<CheckCircleOutlined />} onClick={() => message.success('自动派工完成：已分配 5 个任务')}>执行自动派工</Button>
+                <Button onClick={() => message.info('批量分配功能')}>批量分配</Button>
+              </Space>
+            </Card>
+
+            {/* Kanban */}
             <Row gutter={16}>
               {Object.entries(statusGroups).map(([key, items]) => (
                 <Col xs={24} sm={12} md={8} lg={4} key={key} style={{ marginBottom: 16 }}>

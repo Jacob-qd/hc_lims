@@ -161,6 +161,39 @@ export const QualityPage: React.FC = () => {
             </Space>
           </Card>
         )},
+        { key: 'qc-plans', label: '📋 质控方案', children: (
+          <div>
+            <Card extra={<Button type="primary" size="small" icon={<PlusOutlined />} onClick={() => message.success('质控方案已创建')}>新建方案</Button>} style={{ marginBottom: 16 }}>
+              <Table dataSource={[
+                { id: 'qp1', name: '水质检测标准QC方案', methods: 'HJ 828-2017', types: '空白+平行+加标+质控样', freq: '20样/次', rules: '1₂s,1₃s,2₂s,R₄s,4₁s,10x', eval: '2024-05-15', result: '受控' },
+                { id: 'qp2', name: '重金属QC方案', methods: 'GB/T 17141-1997', types: '空白+质控样', freq: '10样/次', rules: '1₂s,1₃s,2₂s', eval: '2024-05-14', result: '受控' },
+              ]} rowKey="id" pagination={false} size="small" columns={[
+                { title: '方案名称', dataIndex: 'name' },
+                { title: 'QC类型', dataIndex: 'types', render: (t:string) => t.split('+').map((x:string)=> <Tag key={x} color="blue" style={{marginRight:2}}>{x}</Tag>) },
+                { title: '频率', dataIndex: 'freq' },
+                { title: 'Westgard', dataIndex: 'rules', render: (w:string) => w.split(',').map((r:string)=> <Tag key={r} color={r.includes('₃')?'orange':'green'}>{r}</Tag>) },
+                { title: '最近评估', dataIndex: 'eval' },
+                { title: '状态', dataIndex: 'result', render: (r:string) => <Tag color={r==='受控'?'green':'red'}>{r}</Tag> },
+                { title: '操作', render: () => <Space size="small"><Button type="link" size="small">评估</Button><Button type="link" size="small">质控图</Button><Button type="link" size="small">编辑</Button></Space> },
+              ]} />
+            </Card>
+
+            <Card title="📈 Westgard 违例记录" size="small">
+              <Table dataSource={[
+                { id: 'w1', batch: 'BATCH-038', rule: '1₂s', level: 'warning', detail: 'QC1=26.1 (>+2s)', time: '2024-05-15 10:30', action: '通知QA' },
+                { id: 'w2', batch: 'BATCH-035', rule: '7T', level: 'warning', detail: '连续7点均值同侧', time: '2024-05-14', action: '建议排查' },
+                { id: 'w3', batch: 'BATCH-030', rule: '2₂s', level: 'reject', detail: 'QC1=32.5, QC2=33.1', time: '2024-05-12', action: '冻结结果' },
+              ]} rowKey="id" pagination={false} size="small" columns={[
+                { title: '批次', dataIndex: 'batch' },
+                { title: '规则', dataIndex: 'rule', render: (r:string) => <Tag color={r==='2₂s'?'red':'orange'}>{r}</Tag> },
+                { title: '级别', dataIndex: 'level', render: (l:string) => <Badge status={l==='reject'?'error':'warning'} text={l==='reject'?'🔴 失控':'⚠️ 警告'} /> },
+                { title: '详情', dataIndex: 'detail' },
+                { title: '时间', dataIndex: 'time' },
+                { title: '处置', dataIndex: 'action' },
+              ]} />
+            </Card>
+          </div>
+        )},
       ]} />
 
       <Drawer title={selectedDev?.no + ' ' + selectedDev?.desc?.substring(0,30)} open={devDrawer} onClose={() => { setDevDrawer(false); setSelectedDev(null); }} width={560} extra={<Space><Button icon={<PrinterOutlined />} onClick={() => { const rpt = `偏差报告\n编号: ${selectedDev?.no}\n描述: ${selectedDev?.desc}\n类型: ${selectedDev?.type}`; const blob = new Blob([rpt],{type:'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `deviation-${selectedDev?.no}.txt`; a.click(); }}>导出报告</Button><Button type="primary" onClick={() => { message.success('CAPA任务已创建'); setDevDrawer(false); }}>创建CAPA</Button></Space>}>
