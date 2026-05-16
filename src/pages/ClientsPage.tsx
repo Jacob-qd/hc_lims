@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Tabs, Modal, Form, message } from 'antd';
-import { PlusOutlined, SearchOutlined, EyeOutlined, FileTextOutlined, ExperimentOutlined, TeamOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined, EyeOutlined, FileTextOutlined, ExperimentOutlined, TeamOutlined, EditOutlined, DeleteOutlined, PrinterOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 
 const { Title, Text } = Typography;
@@ -65,7 +65,8 @@ export const ClientsPage: React.FC = () => {
         ]} pagination={{ pageSize: 10 }} size="middle" />
       </Card>
 
-      <Drawer title={selected?.name} open={drawerVisible} onClose={() => { setDrawerVisible(false); setSelected(null); }} width={400}>
+      <Drawer title={selected?.name} open={drawerVisible} onClose={() => { setDrawerVisible(false); setSelected(null); }} width={400}
+        extra={<Space><Button icon={<EditOutlined />} onClick={() => { setEditingClient(selected); form.setFieldsValue(selected); setModalVisible(true); }}>编辑</Button><Button icon={<PrinterOutlined />} onClick={() => message.success('客户信息已打印')}>打印</Button><Button danger icon={<DeleteOutlined />} onClick={() => Modal.confirm({title:'删除客户',content:`确认删除 ${selected?.name}？`,onOk:()=>{const idx=clients.findIndex(c=>c.id===selected.id);if(idx>=0)clients.splice(idx,1);setDrawerVisible(false);message.success('已删除');}})}>删除</Button></Space>}>
         {selected && (
           <>
           <Descriptions column={1} bordered size="small">

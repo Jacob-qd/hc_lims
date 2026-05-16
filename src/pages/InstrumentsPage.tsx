@@ -33,7 +33,8 @@ const statusColorMap: Record<string, string> = {
 const InstrumentDetail: React.FC<{ instrument: Instrument | null; visible: boolean; onClose: () => void }> = ({ instrument, visible, onClose }) => {
   if (!instrument) return null;
   return (
-    <Drawer title={`${instrument.name} - 详情`} open={visible} onClose={onClose} width={560}>
+    <Drawer title={`${instrument.name} - 详情`} open={visible} onClose={onClose} width={560}
+      extra={<Space><Button icon={<EditOutlined />} onClick={() => message.success('编辑仪器功能')}>编辑</Button><Button icon={<PrinterOutlined />} onClick={() => message.success('仪器档案已打印')}>打印</Button><Button danger icon={<DeleteOutlined />} onClick={() => Modal.confirm({title:'删除仪器',content:`确认删除 ${instrument.name}？`,onOk:()=>{onClose();message.success('已删除')}})}>删除</Button></Space>}>
       <Descriptions column={2} size="small" bordered>
         <Descriptions.Item label="仪器名称" span={2}>{instrument.name}</Descriptions.Item>
         <Descriptions.Item label="型号">{instrument.model}</Descriptions.Item>

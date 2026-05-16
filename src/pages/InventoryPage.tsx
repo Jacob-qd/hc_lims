@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Modal, Form, message, Tabs, Progress } from 'antd';
-import { PlusOutlined, SearchOutlined, EyeOutlined, ShoppingCartOutlined, InboxOutlined, BarChartOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined, EyeOutlined, ShoppingCartOutlined, InboxOutlined, BarChartOutlined, StockOutlined, BarcodeOutlined, PrinterOutlined, EditOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const categoryColors: Record<string, string> = { 试剂: '#1677ff', 耗材: '#52c41a', 标准品: '#722ed1' };
@@ -156,7 +156,7 @@ export const InventoryPage: React.FC = () => {
         )},
       ]} />
 
-      <Drawer title={selected?.name} open={drawer} onClose={() => { setDrawer(false); setSelected(null); }} width={420}>
+      <Drawer title={selected?.name} open={drawer} onClose={() => { setDrawer(false); setSelected(null); }} width={420} extra={<Space><Button icon={<EditOutlined />} onClick={() => message.success('编辑物料')}>编辑</Button><Button icon={<PrinterOutlined />} onClick={() => message.success('物料标签已打印')}>打印标签</Button></Space>}>
         {selected && <Descriptions column={1} bordered size="small">
           <Descriptions.Item label="名称">{selected.name}</Descriptions.Item>
           <Descriptions.Item label="编码">{selected.code}</Descriptions.Item>

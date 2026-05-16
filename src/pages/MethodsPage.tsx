@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Tabs, Modal, Form, message, Timeline, Progress } from 'antd';
-import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined, HistoryOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined, HistoryOutlined, PrinterOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const statusColors: Record<string, string> = { active: '#52c41a', revision: '#faad14', archived: '#d9d9d9', draft: '#1677ff' };
@@ -89,7 +89,7 @@ export const MethodsPage: React.FC = () => {
         ]} size="middle" />
       </Card>
 
-      <Drawer title={`${selected?.code} ${selected?.name}`} open={drawer} onClose={() => { setDrawer(false); setSelected(null); }} width={520}>
+      <Drawer title={`${selected?.code} ${selected?.name}`} open={drawer} onClose={() => { setDrawer(false); setSelected(null); }} width={520} extra={<Space><Button icon={<EditOutlined />} onClick={() => { setEditingMethod(selected); form.setFieldsValue(selected); setEditModal(true); }}>编辑</Button><Button icon={<PrinterOutlined />} onClick={() => message.success('方法已导出PDF')}>导出PDF</Button></Space>}>
         {selected && (<>
           <Descriptions column={2} bordered size="small">
             <Descriptions.Item label="方法编号" span={2}>{selected.code}</Descriptions.Item>

@@ -5,6 +5,7 @@ import {
 } from 'antd';
 import {
   CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined,
+  PrinterOutlined,
 } from '@ant-design/icons';
 import { Pie } from '@ant-design/plots';
 import type { ColumnsType } from 'antd/es/table';
@@ -162,7 +163,7 @@ export const QualityPage: React.FC = () => {
         )},
       ]} />
 
-      <Drawer title={selectedDev?.no + ' ' + selectedDev?.desc?.substring(0,30)} open={devDrawer} onClose={() => { setDevDrawer(false); setSelectedDev(null); }} width={560}>
+      <Drawer title={selectedDev?.no + ' ' + selectedDev?.desc?.substring(0,30)} open={devDrawer} onClose={() => { setDevDrawer(false); setSelectedDev(null); }} width={560} extra={<Space><Button icon={<PrinterOutlined />} onClick={() => message.success('偏差报告已导出')}>导出报告</Button><Button type="primary" onClick={() => message.success('CAPA任务已创建')}>创建CAPA</Button></Space>}>
         {selectedDev && (
           <>
             <Row gutter={16} style={{marginBottom:16}}>

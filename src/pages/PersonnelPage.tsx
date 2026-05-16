@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Tabs, Drawer, Descriptions, Timeline, Badge, Modal, Form, message } from 'antd';
-import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined, PrinterOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const certColors: Record<string, string> = { active: '#52c41a', warning: '#faad14', expired: '#ff4d4f' };
@@ -104,7 +104,7 @@ export const PersonnelPage: React.FC = () => {
         )},
       ]} />
 
-      <Drawer title={selected?.name} open={drawer} onClose={() => { setDrawer(false); setSelected(null); }} width={480}>
+      <Drawer title={selected?.name} open={drawer} onClose={() => { setDrawer(false); setSelected(null); }} width={480} extra={<Space><Button icon={<EditOutlined />} onClick={() => message.success('编辑人员信息')}>编辑</Button><Button icon={<PrinterOutlined />} onClick={() => message.success('人员档案已打印')}>打印档案</Button></Space>}>
         {selected && (<>
           <Descriptions column={2} bordered size="small">
             <Descriptions.Item label="姓名">{selected.name}</Descriptions.Item>

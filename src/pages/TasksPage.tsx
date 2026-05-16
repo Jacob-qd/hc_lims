@@ -188,7 +188,7 @@ export const TasksPage: React.FC = () => {
         ]} />
       </Card>
 
-      <Drawer title={selectedTask?.taskNo} open={drawerVisible} onClose={() => { setDrawerVisible(false); setSelectedTask(null); }} width={480}>
+      <Drawer title={selectedTask?.taskNo} open={drawerVisible} onClose={() => { setDrawerVisible(false); setSelectedTask(null); }} width={480} extra={<Space><Button icon={<EditOutlined />} onClick={() => navigate(`/tasks/${selectedTask?.id}/result`)}>录入结果</Button><Button icon={<PrinterOutlined />} onClick={() => message.success('任务单已打印')}>打印</Button></Space>}>
         {selectedTask && (
           <>
             <Descriptions column={2} size="small" bordered>

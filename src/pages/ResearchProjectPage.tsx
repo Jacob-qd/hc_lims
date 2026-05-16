@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Tabs, Progress, Modal, Form, message, DatePicker } from 'antd';
-import { PlusOutlined, SearchOutlined, EyeOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined, EyeOutlined, PrinterOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 
@@ -68,7 +68,7 @@ export const ResearchProjectPage: React.FC = () => {
         ]} size="middle" />
       </Card>
 
-      <Drawer title={selected?.name} open={drawerVisible} onClose={() => { setDrawerVisible(false); setSelected(null); }} width={520}>
+      <Drawer title={selected?.name} open={drawerVisible} onClose={() => { setDrawerVisible(false); setSelected(null); }} width={520} extra={<Space><Button icon={<EditOutlined />} onClick={() => message.success('编辑项目')}>编辑</Button><Button icon={<PrinterOutlined />} onClick={() => message.success('项目报告已导出')}>导出报告</Button></Space>}>
         {selected && (<>
           <Row gutter={16} style={{ marginBottom: 16 }}>
             <Col span={8}><Card size="small"><Statistic title="经费总额" value={`¥${(selected.budget/10000).toFixed(1)}万`} /></Card></Col>
