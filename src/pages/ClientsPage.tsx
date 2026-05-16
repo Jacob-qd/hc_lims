@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Tabs } from 'antd';
-import { PlusOutlined, SearchOutlined, EyeOutlined, FileTextOutlined, ExperimentOutlined, TeamOutlined } from '@ant-design/icons';
+import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Tabs, Modal, Form, message } from 'antd';
+import { PlusOutlined, SearchOutlined, EyeOutlined, FileTextOutlined, ExperimentOutlined, TeamOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 
 const { Title, Text } = Typography;
@@ -23,12 +23,15 @@ const creditColor: Record<string, string> = { A: '#52c41a', B: '#faad14', C: '#f
 export const ClientsPage: React.FC = () => {
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [selected, setSelected] = useState<any>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [form] = Form.useForm();
+  const [editingClient, setEditingClient] = useState<any>(null);
 
   return (
     <div>
       <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
         <Col><Title level={4} style={{ margin: 0 }}>客户管理</Title></Col>
-        <Col><Button type="primary" icon={<PlusOutlined />}>新增客户</Button></Col>
+        <Col><Button type="primary" icon={<PlusOutlined />} onClick={() => setModalVisible(true)}>新增客户</Button></Col>
       </Row>
 
       <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
@@ -58,7 +61,7 @@ export const ClientsPage: React.FC = () => {
           { title: '合作状态', dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={statusColor[s]}>{statusLabel[s]}</Tag> },
           { title: '累计样品', dataIndex: 'samples', key: 'samples' },
           { title: '信用等级', dataIndex: 'credit', key: 'credit', render: (c: string) => <Tag color={creditColor[c]}>{c}</Tag> },
-          { title: '操作', key: 'action', render: (_: any, r: any) => <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawerVisible(true); }}>查看</Button> },
+          { title: '操作', key: 'action', render: (_: any, r: any) => <Space><Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawerVisible(true); }}>查看</Button><Button type="link" size="small" icon={<EditOutlined />} onClick={() => { setEditingClient(r); form.setFieldsValue(r); setModalVisible(true); }}>编辑</Button><Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={() => Modal.confirm({title:'删除客户',content:`确认删除 ${r.name}？`,onOk:()=>{const idx=clients.findIndex(c=>c.id===r.id);if(idx>=0)clients.splice(idx,1);message.success('已删除');}})}>删除</Button></Space> },
         ]} pagination={{ pageSize: 10 }} size="middle" />
       </Card>
 
@@ -83,6 +86,28 @@ export const ClientsPage: React.FC = () => {
           </>
         )}
       </Drawer>
+
+      <Modal title={editingClient ? '编辑客户' : '新增客户'} open={modalVisible} onOk={() => form.submit()} onCancel={() => { setModalVisible(false); setEditingClient(null); form.resetFields(); }}>
+        <Form form={form} layout="vertical" onFinish={(v) => {
+          if (editingClient) {
+            Object.assign(editingClient, v);
+          } else {
+            clients.push({ id: 'c' + (clients.length + 1), ...v, status: 'active', samples: 0, credit: 'B' });
+          }
+          message.success(editingClient ? '客户更新成功' : '客户创建成功');
+          setModalVisible(false); setEditingClient(null); form.resetFields();
+        }}>
+          <Form.Item name="name" label="客户名称" rules={[{ required: true }]}><Input /></Form.Item>
+          <Row gutter={16}>
+            <Col span={12}><Form.Item name="type" label="客户类型"><Select>{['企业','政府','个人'].map(t=><Select.Option key={t}>{t}</Select.Option>)}</Select></Form.Item></Col>
+            <Col span={12}><Form.Item name="industry" label="行业"><Input /></Form.Item></Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}><Form.Item name="contact" label="联系人" rules={[{ required: true }]}><Input /></Form.Item></Col>
+            <Col span={12}><Form.Item name="phone" label="联系电话"><Input /></Form.Item></Col>
+          </Row>
+        </Form>
+      </Modal>
     </div>
   );
 };

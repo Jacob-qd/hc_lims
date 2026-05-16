@@ -111,6 +111,20 @@ export const SettingsPage: React.FC = () => {
           </Space>
         )},
       ]} />
+
+      <Modal title="新增用户" open={userModal} onOk={() => userForm.submit()} onCancel={() => { setUserModal(false); userForm.resetFields(); }}>
+        <Form form={userForm} layout="vertical" onFinish={(v) => {
+          users.push({ id: 'u' + (users.length + 1), ...v, lastLogin: '-', mfa: false, status: 'active' });
+          message.success('用户创建成功'); setUserModal(false); userForm.resetFields();
+        }}>
+          <Form.Item name="name" label="用户名" rules={[{ required: true }]}><Input /></Form.Item>
+          <Row gutter={16}>
+            <Col span={12}><Form.Item name="dept" label="部门"><Input /></Form.Item></Col>
+            <Col span={12}><Form.Item name="role" label="角色"><Select>{['检测员','仪器管理员','质量主管','报告审核员','系统管理员'].map(r=><Select.Option key={r}>{r}</Select.Option>)}</Select></Form.Item></Col>
+          </Row>
+          <Form.Item name="lab" label="实验室"><Input /></Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

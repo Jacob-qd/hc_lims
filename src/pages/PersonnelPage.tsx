@@ -15,6 +15,10 @@ export const PersonnelPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<any>(null);
   const [drawer, setDrawer] = useState(false);
+  const [personnelModal, setPersonnelModal] = useState(false);
+  const [trainingModal, setTrainingModal] = useState(false);
+  const [personnelForm] = Form.useForm();
+  const [trainingForm] = Form.useForm();
 
   const fetchData = async () => {
     setLoading(true);
@@ -32,7 +36,10 @@ export const PersonnelPage: React.FC = () => {
 
   return (
     <div>
-      <Title level={4} style={{ marginBottom: 16 }}>人员与培训</Title>
+      <Row justify="space-between" style={{ marginBottom: 16 }}>
+        <Col><Title level={4} style={{ margin: 0 }}>人员与培训</Title></Col>
+        <Col><Space><Button type="primary" icon={<PlusOutlined />} onClick={() => setPersonnelModal(true)}>新增人员</Button><Button icon={<PlusOutlined />} onClick={() => setTrainingModal(true)}>新增培训</Button></Space></Col>
+      </Row>
       <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
         <Col xs={6}><Card size="small"><Statistic title="总人数" value={stats.total} /></Card></Col>
         <Col xs={6}><Card size="small"><Statistic title="在岗" value={stats.active} valueStyle={{ color: '#52c41a' }} /></Card></Col>
@@ -115,6 +122,40 @@ export const PersonnelPage: React.FC = () => {
           ]} />
         </>)}
       </Drawer>
+
+      <Modal title="新增人员" open={personnelModal} onOk={() => personnelForm.submit()} onCancel={() => { setPersonnelModal(false); personnelForm.resetFields(); }}>
+        <Form form={personnelForm} layout="vertical" onFinish={(v) => {
+          setPersonnel(prev => [...prev, { id: 'p' + (prev.length + 1), ...v, certStatus: 'active' }]);
+          message.success('人员创建成功'); setPersonnelModal(false); personnelForm.resetFields();
+        }}>
+          <Row gutter={16}>
+            <Col span={12}><Form.Item name="name" label="姓名" rules={[{ required: true }]}><Input /></Form.Item></Col>
+            <Col span={12}><Form.Item name="empNo" label="工号"><Input /></Form.Item></Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}><Form.Item name="dept" label="部门"><Input /></Form.Item></Col>
+            <Col span={12}><Form.Item name="position" label="岗位"><Input /></Form.Item></Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}><Form.Item name="role" label="角色"><Select>{['PI','博士后','博士生','硕士生','检测员','仪器管理员','质量主管','报告审核员'].map(r=><Select.Option key={r}>{r}</Select.Option>)}</Select></Form.Item></Col>
+            <Col span={12}><Form.Item name="lab" label="实验室"><Input /></Form.Item></Col>
+          </Row>
+        </Form>
+      </Modal>
+
+      <Modal title="新增培训" open={trainingModal} onOk={() => trainingForm.submit()} onCancel={() => { setTrainingModal(false); trainingForm.resetFields(); }}>
+        <Form form={trainingForm} layout="vertical" onFinish={(v) => {
+          setTrainings(prev => [...prev, { id: 't' + (prev.length + 1), ...v, status: 'planned' }]);
+          message.success('培训创建成功'); setTrainingModal(false); trainingForm.resetFields();
+        }}>
+          <Form.Item name="name" label="培训名称" rules={[{ required: true }]}><Input /></Form.Item>
+          <Row gutter={16}>
+            <Col span={12}><Form.Item name="target" label="培训对象"><Input /></Form.Item></Col>
+            <Col span={12}><Form.Item name="dept" label="部门"><Input /></Form.Item></Col>
+          </Row>
+          <Form.Item name="planDate" label="计划日期"><Input placeholder="2024-06-01" /></Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };
