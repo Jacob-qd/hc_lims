@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">42.85% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/35</span>
+                <span class='fraction'>15/35</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">3.57% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/28</span>
+                <span class='fraction'>1/28</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">19.04% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/21</span>
+                <span class='fraction'>4/21</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">52.17% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/23</span>
+                <span class='fraction'>12/23</span>
             </div>
         
             
@@ -167,23 +167,23 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -267,23 +267,23 @@
 import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Tabs, Drawer, Descriptions, message } from 'antd';
 import { PlusOutlined, SearchOutlined, EyeOutlined, TeamOutlined, BookOutlined, FileTextOutlined } from '@ant-design/icons';
 &nbsp;
-const { Title, Text } = <span class="cstat-no" title="statement not covered" >Typography;</span>
+const { Title, Text } = Typography;
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >TeachingPage: React.FC = () =&gt; {</span></span>
-  const [courses, <span class="cstat-no" title="statement not covered" >setCourses] = useState&lt;any[]&gt;([]);</span>
-  const [loading, <span class="cstat-no" title="statement not covered" >setLoading] = useState(true);</span>
-  const [search, <span class="cstat-no" title="statement not covered" >setSearch] = useState('');</span>
-  const [selected, <span class="cstat-no" title="statement not covered" >setSelected] = useState&lt;any&gt;(null);</span>
-  const [drawer, <span class="cstat-no" title="statement not covered" >setDrawer] = useState(false);</span>
+export const TeachingPage: React.FC = () =&gt; {
+  const [courses, setCourses] = useState&lt;any[]&gt;([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [selected, setSelected] = useState&lt;any&gt;(null);
+  const [drawer, setDrawer] = useState(false);
 &nbsp;
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  useEffect(() =&gt; {</span></span>
-<span class="cstat-no" title="statement not covered" >    fetch('/api/v1/teaching/courses').<span class="fstat-no" title="function not covered" >then(r</span> =&gt; <span class="cstat-no" title="statement not covered" >r.json())</span>.<span class="fstat-no" title="function not covered" >then(d</span> =&gt; { <span class="cstat-no" title="statement not covered" >setCourses(d.data.list); <span class="cstat-no" title="statement not covered" >s</span>etLoading(false); });</span></span>
+  useEffect(() =&gt; {
+    fetch('/api/v1/teaching/courses').then(r =&gt; r.json()).then(d =&gt; { setCourses(d.data.list); setLoading(false); });
   }, []);
 &nbsp;
-  const filtered = <span class="cstat-no" title="statement not covered" >courses.<span class="fstat-no" title="function not covered" >filter((c</span>: any) =&gt; <span class="cstat-no" title="statement not covered" >c.name.includes(search) || c.teacher.includes(search))</span>;</span>
-  const stats = <span class="cstat-no" title="statement not covered" >{ total: courses.length, students: courses.<span class="fstat-no" title="function not covered" >reduce((s</span>: number, c: any) =&gt; <span class="cstat-no" title="statement not covered" >s + c.students, 0</span>), experiments: courses.<span class="fstat-no" title="function not covered" >reduce((s</span>: number, c: any) =&gt; <span class="cstat-no" title="statement not covered" >s + c.experiments, 0</span>), active: courses.<span class="fstat-no" title="function not covered" >filter((c</span>: any) =&gt; <span class="cstat-no" title="statement not covered" >c.status === 'active').</span>length };</span>
+  const filtered = courses.<span class="fstat-no" title="function not covered" >filter((c</span>: any) =&gt; <span class="cstat-no" title="statement not covered" >c.name.includes(search) || c.teacher.includes(search))</span>;
+  const stats = { total: courses.length, students: courses.<span class="fstat-no" title="function not covered" >reduce((s</span>: number, c: any) =&gt; <span class="cstat-no" title="statement not covered" >s + c.students, 0</span>), experiments: courses.<span class="fstat-no" title="function not covered" >reduce((s</span>: number, c: any) =&gt; <span class="cstat-no" title="statement not covered" >s + c.experiments, 0</span>), active: courses.<span class="fstat-no" title="function not covered" >filter((c</span>: any) =&gt; <span class="cstat-no" title="statement not covered" >c.status === 'active').</span>length };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return (</span>
+  return (
     &lt;div&gt;
       &lt;Row justify="space-between" style={{ marginBottom: 16 }}&gt;&lt;Col&gt;&lt;Title level={4}&gt;教学实验管理&lt;/Title&gt;&lt;/Col&gt;
         &lt;Col&gt;&lt;Button type="primary" icon={&lt;PlusOutlined /&gt;} <span class="fstat-no" title="function not covered" >onClick={() =&gt; <span class="cstat-no" title="statement not covered" >m</span>essage.success('新建课程功能开发中')}</span>&gt;新建课程&lt;/Button&gt;&lt;/Col&gt;
@@ -312,7 +312,7 @@ export const <span class="cstat-no" title="statement not covered" ><span class="
 &nbsp;
       &lt;Drawer title={selected?.name} open={drawer} <span class="fstat-no" title="function not covered" >onClose={() =&gt; {</span> <span class="cstat-no" title="statement not covered" >setDrawer(false); <span class="cstat-no" title="statement not covered" >s</span>etSelected(null); }} w</span>idth={520}&gt;
         {selected &amp;&amp; (
-          &lt;Tabs items={[
+<span class="branch-1 cbranch-no" title="branch not covered" >          &lt;Tabs items={[</span>
             { key: 'info', label: '基本信息', children: (
               &lt;Descriptions column={1} bordered size="small"&gt;
                 &lt;Descriptions.Item label="课程名称"&gt;{selected.name}&lt;/Descriptions.Item&gt;
@@ -370,7 +370,7 @@ export const <span class="cstat-no" title="statement not covered" ><span class="
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-05-16T16:31:52.803Z
+                at 2026-05-16T17:14:20.038Z
             </div>
         <script src="../prettify.js"></script>
         <script>
