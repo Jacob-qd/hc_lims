@@ -1070,4 +1070,15 @@ export const handlers = [
   http.get(apiUrl('/inventory/purchase-requests/expanded'), () => {
     return HttpResponse.json({ code: 200, data: mockPurchaseRequests });
   }),
+
+  // ============================================
+  // Order Management Handlers
+  // ============================================
+  http.get(apiUrl('/orders'), () => {
+    return HttpResponse.json({ code: 200, data: { list: [], total: 0 } });
+  }),
+  http.post(apiUrl('/orders'), async ({ request }) => {
+    const body = await request.json() as any;
+    return HttpResponse.json({ code: 200, message: '委托创建成功', data: { ...body, id: 'o' + Date.now(), orderNo: 'ORD-' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '-' + String(Math.floor(Math.random()*1000)).padStart(3,'0') } });
+  }),
 ];

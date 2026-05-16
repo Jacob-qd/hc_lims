@@ -31,6 +31,7 @@ const menuItems = [
     { key: '/methods', icon: <ProfileOutlined />, label: '方法管理' },
   ]},
   { key: 'business', icon: <TeamOutlined />, label: '商务管理', children: [
+    { key: '/orders', icon: <BankOutlined />, label: '委托管理' },
     { key: '/clients', icon: <TeamOutlined />, label: '客户管理' },
     { key: '/contracts', icon: <BankOutlined />, label: '合同管理' },
   ]},
