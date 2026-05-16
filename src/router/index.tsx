@@ -43,6 +43,7 @@ const FieldConfigEditor = lazy(() => import('../pages/FieldConfigEditor').then(m
 const CertificatePage = lazy(() => import('../pages/CertificatePage').then(m => ({ default: m.CertificatePage })));
 const ProficiencyTestingPage = lazy(() => import('../pages/ProficiencyTestingPage').then(m => ({ default: m.ProficiencyTestingPage })));
 const OrdersPage = lazy(() => import('../pages/OrdersPage').then(m => ({ default: m.OrdersPage })));
+const TraceViewPage = lazy(() => import('../pages/TraceViewPage').then(m => ({ default: m.TraceViewPage })));
 const SystemMonitorPage = lazy(() => import('../pages/SystemMonitorPage').then(m => ({ default: m.SystemMonitorPage })));
 const InstrumentDataPage = lazy(() => import('../pages/InstrumentDataPage').then(m => ({ default: m.InstrumentDataPage })));
 const AIAssistantPage = lazy(() => import('../pages/AIAssistantPage').then(m => ({ default: m.AIAssistantPage })));
@@ -102,6 +103,7 @@ export const router = createBrowserRouter([
       { path: 'reports/engine', element: <ReportEnginePage /> },
       { path: 'settings/field-configs', element: <FieldConfigEditor /> },
       { path: 'certificates', element: <CertificatePage /> },
+      { path: 'trace', element: <TraceViewPage /> },
       { path: 'orders', element: <OrdersPage /> },
       { path: 'proficiency-testing', element: <ProficiencyTestingPage /> },
       { path: 'system-monitor', element: <SystemMonitorPage /> },
