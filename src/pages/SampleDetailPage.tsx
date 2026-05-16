@@ -128,6 +128,26 @@ export const SampleDetailPage: React.FC = () => {
           </div>
         )},
         { key: 'attachments', label: '附件', children: <Text type="secondary">暂无附件</Text> },
+        { key: 'coc', label: 'COC监管链', children: (
+          <div>
+            <Button size="small" type="primary" style={{ marginBottom: 12 }} onClick={() => navigate('/coc')}>
+              查看完整COC
+            </Button>
+            <Card title="COC 事件时间线" size="small">
+              <Timeline items={[
+                { color: 'blue', children: <><Text strong>采样</Text><br /><Text>采样员 刘强</Text><br /><Text type="secondary">2024-05-20 09:30 现场采样完成</Text></> },
+                { color: 'purple', children: <><Text strong>送样</Text><br /><Text>采样员 刘强</Text><br /><Text type="secondary">2024-05-20 10:00 冷链专送</Text></> },
+                { color: 'cyan', children: <><Text strong>收样</Text><br /><Text>张伟</Text><br /><Text type="secondary">2024-05-20 10:45 样品完好,温度4°C</Text></> },
+                { color: 'green', children: <><Text strong>登记</Text><br /><Text>张伟</Text><br /><Text type="secondary">2024-05-20 11:00 编号SMP20240520001</Text></> },
+                { color: 'orange', children: <><Text strong>检测</Text><br /><Text>王明</Text><br /><Text type="secondary">2024-05-21 09:00 COD检测中</Text></> },
+              ]} />
+            </Card>
+            <Card title="COC 完整性" size="small" style={{ marginTop: 12 }}>
+              <Tag color="green">✅ 链完整</Tag>
+              <Text type="secondary" style={{ marginLeft: 8 }}>当前状态: 流转中</Text>
+            </Card>
+          </div>
+        )},
       ]} />
     </div>
   );

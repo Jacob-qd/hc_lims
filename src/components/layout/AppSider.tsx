@@ -20,6 +20,7 @@ const menuItems = [
   { key: 'divider1', type: 'divider' as const },
   { key: 'detection', icon: <ExperimentOutlined />, label: '检测实验室', children: [
     { key: '/samples', icon: <InboxOutlined />, label: '样品管理' },
+    { key: '/coc', icon: <SafetyCertificateOutlined />, label: 'COC监管链' },
     { key: '/tasks', icon: <ExperimentOutlined />, label: '检测管理' },
     { key: '/reports', icon: <FileTextOutlined />, label: '报告管理' },
     { key: '/certificates', icon: <SafetyCertificateOutlined />, label: '签名证书' },

@@ -1040,6 +1040,62 @@ export const mockFieldTemplates = [
 const now = new Date();
 const d = (days: number, h: number) => new Date(now.getTime() - days * 86400000 + h * 3600000).toISOString();
 
+// COC utilities
+let cocSerialCounter = 3; // existing mock chains count
+export function generateCOCNumber(): string {
+  const date = new Date();
+  const yy = String(date.getFullYear()).slice(-2);
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  cocSerialCounter += 1;
+  return `COC-${yy}${mm}${dd}-${String(cocSerialCounter).padStart(4, '0')}`;
+}
+
+export type COCEventType =
+  | 'SAMPLING' | 'SUBMISSION' | 'RECEIPT' | 'REGISTRATION'
+  | 'SUB_SAMPLING' | 'TESTING' | 'RETENTION' | 'DISPOSAL' | 'EXCEPTION';
+
+export interface COCEvent {
+  id: string; chainId: string; eventType: COCEventType;
+  operatorName: string; occurredAt: string; location?: string;
+  notes?: string; metadata?: Record<string, unknown>;
+  prevEventId: string | null; signature?: string;
+}
+
+export interface COCChain {
+  id: string; cocNumber: string; sampleId: string; sampleName: string;
+  status: 'active' | 'completed' | 'broken' | 'disposed';
+  integrity: boolean; integrityMsg?: string; events: COCEvent[];
+  createdAt: string; completedAt?: string;
+}
+
+export const VALID_SEQUENCE: Record<COCEventType, COCEventType[]> = {
+  SAMPLING: ['SUBMISSION'],
+  SUBMISSION: ['RECEIPT'],
+  RECEIPT: ['REGISTRATION', 'SUB_SAMPLING', 'TESTING', 'EXCEPTION'],
+  REGISTRATION: ['TESTING', 'SUB_SAMPLING', 'RETENTION', 'EXCEPTION'],
+  SUB_SAMPLING: ['TESTING', 'EXCEPTION'],
+  TESTING: ['RETENTION', 'EXCEPTION'],
+  RETENTION: ['DISPOSAL', 'EXCEPTION'],
+  DISPOSAL: [],
+  EXCEPTION: ['RECEIPT', 'REGISTRATION', 'TESTING', 'RETENTION', 'DISPOSAL'],
+};
+
+export function verifyChainIntegrity(events: COCEvent[]): { valid: boolean; msg: string } {
+  if (events.length === 0) return { valid: false, msg: '无事件记录' };
+  const sorted = [...events].sort((a, b) => new Date(a.occurredAt).getTime() - new Date(b.occurredAt).getTime());
+  if (sorted[0].eventType !== 'SAMPLING') return { valid: false, msg: '首事件必须是采样(SAMPLING)' };
+  for (let i = 1; i < sorted.length; i++) {
+    const prev = sorted[i - 1];
+    const curr = sorted[i];
+    if (curr.prevEventId && curr.prevEventId !== prev.id) return { valid: false, msg: '前序事件不匹配' };
+    const allowed = VALID_SEQUENCE[prev.eventType] || [];
+    if (!allowed.includes(curr.eventType)) return { valid: false, msg: `不允许 ${prev.eventType}→${curr.eventType}` };
+    if (new Date(curr.occurredAt) < new Date(prev.occurredAt)) return { valid: false, msg: '时间倒序' };
+  }
+  return { valid: true, msg: '校验通过' };
+}
+
 const makeEvent = (id: string, chainId: string, type: any, op: string, offsetDays: number, offsetHour: number, prev: string | null, loc: string, note?: string): any => ({
   id, chainId, eventType: type, operatorName: op, occurredAt: d(offsetDays, offsetHour),
   location: loc, notes: note, prevEventId: prev, metadata: {},
@@ -1068,7 +1124,7 @@ const cocEvents3 = [
   makeEvent('evt13', 'coc3', 'EXCEPTION', '质量主管', 2, 11, 'evt12', '办公室', '链完整性异常,缺少送样和收样环节'),
 ];
 
-export const mockCOCChains = [
+export const mockCOCChains: COCChain[] = [
   {
     id: 'coc1', cocNumber: 'COC-260514-0001', sampleId: 'SMP001', sampleName: '地表水样品-水质监测',
     status: 'active', integrity: true, events: cocEvents1, createdAt: d(2, 8), completedAt: undefined,

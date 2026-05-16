@@ -45,6 +45,9 @@ import {
   mockFieldConfigs,
   mockFieldTemplates,
   mockCOCChains,
+  generateCOCNumber,
+  verifyChainIntegrity,
+  type COCEvent,
   mockBackupList,
   mockSm2Certificates,
   mockDigitalSignatures,
@@ -204,9 +207,10 @@ export const handlers = [
 
   http.post(apiUrl('/samples'), async ({ request }) => {
     const body = (await request.json()) as Record<string, unknown>;
+    const sampleNo = `SMP${new Date().toISOString().slice(0, 10).replace(/-/g, '')}${String(mockSamples.length + 1).padStart(3, '0')}`;
     const newSample = {
       id: `s${mockSamples.length + 1}`,
-      sampleNo: `SMP${new Date().toISOString().slice(0, 10).replace(/-/g, '')}${String(mockSamples.length + 1).padStart(3, '0')}`,
+      sampleNo,
       ...body,
       status: 'pending_receive',
       statusLabel: '待接收',
@@ -215,6 +219,32 @@ export const handlers = [
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
+    mockSamples.push(newSample as any);
+    // Auto-create COC chain
+    const cocId = `coc${Date.now()}`;
+    const samplingTime = (body.samplingTime as string) || new Date().toISOString();
+    const samplingLocation = (body.samplingLocation as string) || '未知地点';
+    const cocChain = {
+      id: cocId,
+      cocNumber: generateCOCNumber(),
+      sampleId: newSample.id,
+      sampleName: (body.name as string) || sampleNo,
+      status: 'active' as const,
+      integrity: true,
+      events: [{
+        id: `evt${Date.now()}`,
+        chainId: cocId,
+        eventType: 'SAMPLING' as const,
+        operatorName: (body.sampler as string) || '采样员',
+        occurredAt: samplingTime,
+        location: samplingLocation,
+        notes: '样品创建时自动记录采样事件',
+        prevEventId: null,
+        metadata: { sampleNo, samplingMethod: (body.samplingMethod as string) || '常规采样' },
+      }],
+      createdAt: new Date().toISOString(),
+    };
+    mockCOCChains.push(cocChain as any);
     return HttpResponse.json({ code: 200, message: 'success', data: newSample });
   }),
 
@@ -604,39 +634,109 @@ export const handlers = [
       ? HttpResponse.json({ code: 200, data: chain })
       : HttpResponse.json({ code: 404, message: '链不存在' }, { status: 404 });
   }),
+  http.get(apiUrl('/coc/chains/by-sample/:sid'), ({ params }) => {
+    const chain = mockCOCChains.find(c => c.sampleId === params.sid);
+    return chain
+      ? HttpResponse.json({ code: 200, data: chain })
+      : HttpResponse.json({ code: 404, message: '该样品暂无COC记录' }, { status: 404 });
+  }),
   http.post(apiUrl('/coc/chains/:id/events'), async ({ params, request }) => {
     const body = await request.json() as any;
     const chain = mockCOCChains.find(c => c.id === params.id);
     if (!chain) return HttpResponse.json({ code: 404, message: '链不存在' }, { status: 404 });
+    if (chain.status === 'disposed') return HttpResponse.json({ code: 400, message: '样品已处置，不可添加事件' }, { status: 400 });
     const events = chain.events || [];
     const prevId = events.length > 0 ? events[events.length - 1].id : null;
-    const evt = {
-      id: 'evt' + Date.now(), chainId: params.id, eventType: body.eventType,
+    const evt: COCEvent = {
+      id: 'evt' + Date.now(), chainId: params.id as string, eventType: body.eventType,
       operatorName: body.operatorName || '当前用户',
       occurredAt: body.occurredAt || new Date().toISOString(),
       location: body.location || '实验室', notes: body.notes,
-      metadata: {}, prevEventId: prevId,
+      metadata: body.metadata || {}, prevEventId: prevId,
+      signature: body.signature,
     };
-    events.push(evt);
+    events.push(evt as any);
+    // Auto verify integrity
+    const check = verifyChainIntegrity(events as COCEvent[]);
+    Object.assign(chain, { integrity: check.valid, integrityMsg: check.valid ? undefined : check.msg });
+    if (!check.valid) chain.status = 'broken';
+    if (body.eventType === 'DISPOSAL') {
+      chain.status = 'disposed';
+      chain.completedAt = new Date().toISOString();
+    }
     return HttpResponse.json({ code: 200, data: evt, message: '事件添加成功' });
+  }),
+  http.post(apiUrl('/coc/chains/:id/verify'), ({ params }) => {
+    const chain = mockCOCChains.find(c => c.id === params.id);
+    if (!chain) return HttpResponse.json({ code: 404, message: '链不存在' }, { status: 404 });
+    const check = verifyChainIntegrity(chain.events as COCEvent[]);
+    chain.integrity = check.valid;
+    chain.integrityMsg = check.valid ? undefined : check.msg;
+    if (!check.valid) chain.status = 'broken';
+    return HttpResponse.json({ code: 200, data: { valid: check.valid, msg: check.msg }, message: check.valid ? '校验通过' : '链完整性异常' });
   }),
   http.post(apiUrl('/coc/transfer'), async ({ request }) => {
     const body = await request.json() as any;
     const chain = mockCOCChains.find(c => c.id === body.chainId);
-    if (!chain) return HttpResponse.json({ code: 404 }, { status: 404 });
+    if (!chain) return HttpResponse.json({ code: 404, message: '链不存在' }, { status: 404 });
+    const events = chain.events || [];
+    const prevId = events.length > 0 ? events[events.length - 1].id : null;
+    const now = new Date().toISOString();
+    // Submission event (fromParty)
+    events.push({
+      id: 'evt' + Date.now(), chainId: body.chainId,
+      eventType: 'SUBMISSION',
+      operatorName: body.fromParty || '送样人',
+      occurredAt: now, location: body.fromLocation || '交接点',
+      notes: `送样: ${body.sampleCount}件, ${body.transportMode || '未知运输方式'}`,
+      metadata: { fromParty: body.fromParty, sampleCount: body.sampleCount, transportMode: body.transportMode, temperature: body.temperature },
+      prevEventId: prevId,
+      signature: body.fromSignature,
+    });
+    // Receipt event (toParty)
+    events.push({
+      id: 'evt' + (Date.now() + 1), chainId: body.chainId,
+      eventType: 'RECEIPT',
+      operatorName: body.toParty || '收样人',
+      occurredAt: now, location: body.toLocation || '收样室',
+      notes: `收样确认: 完好${body.intactCount || body.sampleCount}件${body.damagedCount ? `,破损${body.damagedCount}件` : ''}${body.temperature ? `,温度${body.temperature}°C` : ''}`,
+      metadata: { toParty: body.toParty, sampleCount: body.sampleCount, intactCount: body.intactCount, damagedCount: body.damagedCount, temperature: body.temperature },
+      prevEventId: 'evt' + Date.now(),
+      signature: body.toSignature,
+    });
+    // Auto verify
+    const check = verifyChainIntegrity(events as COCEvent[]);
+    Object.assign(chain, { integrity: check.valid, integrityMsg: check.valid ? undefined : check.msg });
+    if (!check.valid) chain.status = 'broken';
+    return HttpResponse.json({ code: 200, data: {}, message: '交接记录创建成功' });
+  }),
+  http.post(apiUrl('/coc/disposal'), async ({ request }) => {
+    const body = await request.json() as any;
+    const chain = mockCOCChains.find(c => c.id === body.chainId);
+    if (!chain) return HttpResponse.json({ code: 404, message: '链不存在' }, { status: 404 });
     const events = chain.events || [];
     const prevId = events.length > 0 ? events[events.length - 1].id : null;
     events.push({
       id: 'evt' + Date.now(), chainId: body.chainId,
-      eventType: body.fromParty && body.toParty ? 'SUBMISSION' : 'RECEIPT',
-      operatorName: body.fromParty || '当前用户',
-      occurredAt: new Date().toISOString(), location: '交接台',
-      notes: `从 ${body.fromParty || '?'} 到 ${body.toParty || '?'}`,
-      metadata: { fromParty: body.fromParty, toParty: body.toParty, sampleCount: body.sampleCount,
-        transportMode: body.transportMode, temperature: body.temperature },
+      eventType: 'DISPOSAL',
+      operatorName: body.operatorName || '当前用户',
+      occurredAt: body.disposalDate || new Date().toISOString(),
+      location: body.location || '处置室',
+      notes: `处置方式: ${body.disposalMethod}${body.reason ? `,原因: ${body.reason}` : ''}`,
+      metadata: { disposalMethod: body.disposalMethod, reason: body.reason, approvedBy: body.approvedBy },
       prevEventId: prevId,
     });
-    return HttpResponse.json({ code: 200, data: {}, message: '交接记录创建成功' });
+    chain.status = 'disposed';
+    chain.completedAt = new Date().toISOString();
+    const check = verifyChainIntegrity(events as COCEvent[]);
+    chain.integrity = check.valid;
+    chain.integrityMsg = check.valid ? undefined : check.msg;
+    return HttpResponse.json({ code: 200, data: {}, message: '样品处置记录成功' });
+  }),
+  http.get(apiUrl('/coc/print/:id'), ({ params }) => {
+    const chain = mockCOCChains.find(c => c.id === params.id);
+    if (!chain) return HttpResponse.json({ code: 404, message: '链不存在' }, { status: 404 });
+    return HttpResponse.json({ code: 200, data: chain, message: 'COC表单数据已生成' });
   }),
 
   // ===== Backup =====
