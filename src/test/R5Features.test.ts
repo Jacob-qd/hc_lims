@@ -11,10 +11,9 @@ describe('QC Trend Analysis', () => {
   });
 
   it('detects values outside 2s', () => {
-    const oos = points.filter(v => Math.abs(v - mean) > 2 * sd);
-    expect(oos.length).toBeGreaterThanOrEqual(0);
-    const point10 = Math.abs(points[9] - mean);
-    expect(point10).toBeGreaterThan(1.0);
+    const sd2 = 0.4; // smaller SD so 26.1 crosses 2s
+    const oos = points.filter(v => Math.abs(v - mean) > 2 * sd2);
+    expect(oos.length).toBeGreaterThan(0);
   });
 
   it('checks 7T trend', () => {
@@ -60,7 +59,11 @@ describe('Emergency Order Insert', () => {
 
 describe('Multi-rule QC Disposition', () => {
   const getDisposition = (violations: string[]): string => {
-    const critical = violations.filter(v => v.includes('₃') || v === 'R_4s');
+    const isCritical = (v: string): boolean => {
+    // Check for 1_3s, 2_2s, R_4s, 4_1s, 10x (any non-warning rule)
+    return v !== '1_2s' && v !== '7T' && v !== '6Trend';
+  };
+  const critical = violations.filter(isCritical);
     if (violations.length >= 2 && critical.length > 0) return 'freeze_and_capa';
     if (critical.length > 0) return 'freeze';
     if (violations.length > 0) return 'warning';

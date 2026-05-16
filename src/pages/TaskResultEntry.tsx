@@ -196,6 +196,9 @@ export const TaskResultEntry: React.FC = () => {
 
       {submitted && <Alert message="✅ 结果已提交复核，等待审核人员审核" type="success" showIcon style={{ marginBottom: 16 }} />}
 
+      {/* US4: 设备数据自动回填 Mock */}
+      {!submitted && <Card size="small" style={{marginBottom:16}} extra={<Button size="small" type="primary" onClick={()=>{setReadings(prev=>[...prev,{key:'auto-'+Date.now(),seq:prev.length+1,sample:'样品(自动采集)',reading:'0.321',dilution:'1',note:'波长:254nm·温度:25°C'}]);message.success('设备数据已自动回填');}}>🔄 模拟设备采集</Button>}><Text type="secondary">点击模拟仪器自动采集数据并回填</Text></Card>}
+
       <Card size="small" style={{ marginBottom: 16 }}>
         <Descriptions size="small" column={4}>
           <Descriptions.Item label="样品编号">{mockTask.sampleNo}</Descriptions.Item>
