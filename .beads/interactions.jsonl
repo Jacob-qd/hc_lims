@@ -38,3 +38,4 @@
 {"id":"int-b9585947","kind":"field_change","created_at":"2026-05-15T08:16:06.946968Z","actor":"hc_lims/polecats/chrome","issue_id":"hc-wisp-dnm5","extra":{"field":"status","new_value":"closed","old_value":"open","reason":"done"}}
 {"id":"int-4086c532","kind":"field_change","created_at":"2026-05-15T08:16:07.648619Z","actor":"hc_lims/polecats/chrome","issue_id":"hc-iz4","extra":{"field":"status","new_value":"closed","old_value":"open","reason":"Closed"}}
 {"id":"int-7b904d50","kind":"field_change","created_at":"2026-05-16T16:30:44.074581Z","actor":"hc_lims/polecats/guzzle","issue_id":"hc-69b","extra":{"field":"status","new_value":"in_progress","old_value":"open"}}
+{"id":"int-1ed2a189","kind":"field_change","created_at":"2026-05-16T16:52:45.786754Z","actor":"hc_lims/refinery","issue_id":"hc-ah2","extra":{"field":"status","new_value":"closed","old_value":"open","reason":"Merged via refinery (nitro/hc-ah2 → main)"}}

@@ -1,34 +1,25 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { SettingsPage } from '../pages/SettingsPage';
 
+vi.mock('../stores/labTypeStore', () => ({
+  useLabTypeStore: () => ({ labType: 'commercial', setLabType: vi.fn() }),
+}));
+
 describe('SettingsPage', () => {
-  let fetchSpy: ReturnType<typeof vi.spyOn>;
-
-  beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({ code: 200, data: [], message: 'success' }),
-    } as Response);
+  it('renders settings', () => {
+    render(<BrowserRouter><ConfigProvider><SettingsPage /></ConfigProvider></BrowserRouter>);
+    expect(screen.getByText('系统管理')).toBeInTheDocument();
+    expect(screen.getByText('用户管理')).toBeInTheDocument();
   });
 
-  afterEach(() => {
-    fetchSpy.mockRestore();
-  });
-
-  it('renders without crashing', async () => {
-    render(
-      <BrowserRouter>
-        <ConfigProvider>
-          <SettingsPage />
-        </ConfigProvider>
-      </BrowserRouter>
-    );
-    await waitFor(() => {
-      expect(document.body.textContent).toBeTruthy();
-    }, { timeout: 2000 });
+  it('switches tabs', async () => {
+    render(<BrowserRouter><ConfigProvider><SettingsPage /></ConfigProvider></BrowserRouter>);
+    fireEvent.click(screen.getByText('角色权限'));
+    await waitFor(() => expect(screen.getByText('权限配置矩阵')).toBeInTheDocument());
+    fireEvent.click(screen.getByText('系统配置'));
+    await waitFor(() => expect(screen.getByText('实验室类型')).toBeInTheDocument());
   });
 });
