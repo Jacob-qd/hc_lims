@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import {
   Card, Table, Tag, Row, Col, Typography, Tabs, Timeline, Descriptions,
-  Statistic, Space, message, Progress, Button, Drawer, Badge,
+  Statistic, Space, message, Button, Drawer, Badge, Modal, Form, Input, Select,
 } from 'antd';
 import {
-  CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined,
+  CheckCircleOutlined, CloseCircleOutlined,
 } from '@ant-design/icons';
-import { Pie } from '@ant-design/plots';
+// import { Pie } from '@ant-design/plots';
 import type { ColumnsType } from 'antd/es/table';
 
 const { Title, Text } = Typography;
@@ -88,7 +88,7 @@ export const QualityPage: React.FC = () => {
     capaPending: deviations.filter(d => d.capaStatus === 'pending').length,
   };
 
-  const statusColor: Record<string, string> = { normal: '#52c41a', warning: '#faad14', error: '#ff4d4f' };
+  // const statusColor: Record<string, string> = { normal: '#52c41a', warning: '#faad14', error: '#ff4d4f' };
   const levelColor: Record<string, string> = { 严重: '#ff4d4f', 中等: '#faad14', 轻微: '#1677ff' };
   const devStatusColor: Record<string, string> = { open: '#1677ff', investigating: '#faad14', closed: '#52c41a' };
 
@@ -149,7 +149,7 @@ export const QualityPage: React.FC = () => {
                 <Form.Item label="批号"><Input placeholder="如: QC-BATCH-001" /></Form.Item>
                 <Form.Item label="标准值"><Input placeholder="目标浓度" /></Form.Item>
                 <Form.Item label="有效期"><Input type="date" /></Form.Item>
-                <Form.Item label="基体"><Select style={{width:'100%'}}><Option value="water">水质</Option><Option value="soil">土壤</Option></Select></Form.Item>
+                <Form.Item label="基体"><Select style={{width:'100%'}}><Select.Option value="water">水质</Select.Option><Select.Option value="soil">土壤</Select.Option></Select></Form.Item>
               </Form>
             ), onOk: () => message.success('质控样品已创建'), });
           }}>新增质控样</Button>}>
@@ -205,7 +205,7 @@ export const QualityPage: React.FC = () => {
                   <Descriptions.Item label="状态"><Tag color={devStatusColor[selectedDev.status]}>{selectedDev.status === 'open' ? '开放' : selectedDev.status === 'investigating' ? '调查中' : '已关闭'}</Tag></Descriptions.Item>
                   <Descriptions.Item label="事件描述">{selectedDev.desc}</Descriptions.Item>
                   <Descriptions.Item label="发现日期">{selectedDev.foundDate}</Descriptions.Item>
-                  <Descriptions.Item label="责任人">{selectedDev['责任人'] || '-'}</Descriptions.Item>
+                  <Descriptions.Item label="责任人">{(selectedDev as any)['责任人'] || '-'}</Descriptions.Item>
                   <Descriptions.Item label="影响评估">待评估</Descriptions.Item>
                 </Descriptions>
                 <div style={{marginTop:16}}><Text strong>处理流程</Text></div>
@@ -235,7 +235,7 @@ export const QualityPage: React.FC = () => {
               </Card>},
               {key:'attachments', label:'附件', children:<Text type="secondary">暂无附件</Text>},
               {key:'audit', label:'审计追踪', children:<Table dataSource={[
-                {time:selectedDev.foundDate+' 09:15',user:selectedDev['责任人']||'-',action:'创建偏差',detail:'偏差编号 '+selectedDev.no},
+                {time:selectedDev.foundDate+' 09:15',user:(selectedDev as any)['责任人']||'-',action:'创建偏差',detail:'偏差编号 '+selectedDev.no},
                 {time:selectedDev.foundDate+' 10:30',user:'系统',action:'自动通知',detail:'通知质量主管'},
               ]} rowKey="time" pagination={false} size="small" columns={[
                 {title:'时间',dataIndex:'time'},{title:'操作人',dataIndex:'user'},{title:'操作',dataIndex:'action'},{title:'详情',dataIndex:'detail'},
@@ -248,6 +248,6 @@ export const QualityPage: React.FC = () => {
   );
 };
 
-const Divider: React.FC<{ children?: React.ReactNode }> = ({ children }) => (
-  <div style={{ borderTop: '1px solid #f0f0f0', margin: '16px 0' }}>{children}</div>
-);
+// const Divider: React.FC<{ children?: React.ReactNode }> = ({ children }) => (
+//   <div style={{ borderTop: '1px solid #f0f0f0', margin: '16px 0' }}>{children}</div>
+// );

@@ -5,15 +5,15 @@ import {
   Modal, Form, message, Tooltip, Progress, Divider,
 } from 'antd';
 import {
-  PlusOutlined, SearchOutlined, ExportOutlined, EditOutlined,
-  EyeOutlined, ToolOutlined, CalendarOutlined,
-  CheckCircleOutlined, CloseCircleOutlined, SyncOutlined,
+  PlusOutlined, SearchOutlined, EditOutlined,
+  EyeOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { Pie } from '@ant-design/plots';
 import dayjs from 'dayjs';
 
 const { Title, Text } = Typography;
+const { Option } = Select;
 
 interface Instrument {
   id: string; name: string; model: string; serialNo: string;

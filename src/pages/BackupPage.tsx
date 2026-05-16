@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, message, Modal, Progress, Form, Select, InputNumber, Switch, Divider, Descriptions } from 'antd';
-import { CloudDownloadOutlined, DatabaseOutlined, ReloadOutlined, ClockCircleOutlined, CheckCircleOutlined, WarningOutlined, DownloadOutlined, PlayCircleOutlined, SettingOutlined } from '@ant-design/icons';
+import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, message, Modal, Form, Select, InputNumber } from 'antd';
+import { CloudDownloadOutlined, DatabaseOutlined, ReloadOutlined, ClockCircleOutlined, CheckCircleOutlined, DownloadOutlined, SettingOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const { Option } = Select;

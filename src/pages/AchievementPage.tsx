@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Tabs, message, Modal, Form, Tooltip } from 'antd';
-import { PlusOutlined, SearchOutlined, EyeOutlined, DownloadOutlined, FileTextOutlined, TrophyOutlined, BookOutlined, FilePdfOutlined, TableOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined, EyeOutlined, DownloadOutlined, FileTextOutlined, TrophyOutlined, BookOutlined, FilePdfOutlined } from '@ant-design/icons';
 import { exportCSV, exportPDF, exportJSON } from '../utils/export';
 
 const { Title, Text } = Typography;

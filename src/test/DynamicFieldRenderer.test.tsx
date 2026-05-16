@@ -1,8 +1,7 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { Form, Button } from 'antd';
-import React from 'react';
-import { DynamicFieldRenderer, getDefaultValues, configsToSchema } from '../components/DynamicFieldRenderer';
+import { describe, it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { Form } from 'antd';
+import { DynamicFieldRenderer, configsToSchema, getDefaultValues } from '../components/DynamicFieldRenderer';
 import type { FieldConfig } from '../types/dynamicForm';
 
 const fieldTypes: FieldConfig[] = [

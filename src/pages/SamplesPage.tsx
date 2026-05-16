@@ -2,19 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Card, Table, Tag, Button, Input, Select, DatePicker, Row, Col,
-  Space, Typography, Drawer, Timeline, Badge, Steps, Form,
-  Modal, message, Radio, Checkbox, Upload, Alert, Divider, Tooltip,
+  Space, Typography, Drawer, Timeline, Steps, Form,
+  Modal, message, Radio, Upload, Alert, Divider,
 } from 'antd';
 import {
   PlusOutlined, SearchOutlined, PrinterOutlined, ExportOutlined,
-  DeleteOutlined, InboxOutlined, EditOutlined, EyeOutlined,
-  ExclamationCircleOutlined, ArrowRightOutlined, CloudUploadOutlined,
-  CheckCircleOutlined, CloseCircleOutlined,
+  DeleteOutlined, InboxOutlined,
+  ExclamationCircleOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { Sample } from '../mocks/data';
-import { sampleTypes, sampleStatuses, customers, projects, labs } from '../mocks/data';
-import type { Dayjs } from 'dayjs';
+import { sampleTypes, sampleStatuses, customers, projects } from '../mocks/data';
+// import type { Dayjs } from 'dayjs';
 import { DynamicFieldRenderer } from '../components/DynamicFieldRenderer';
 import type { FieldConfig } from '../types/dynamicForm';
 import { BarcodePrintModal, generateSampleBarcode, BatchBarcodePrint } from '../components/BarcodeLabel';
@@ -41,7 +40,7 @@ export const SamplesPage: React.FC = () => {
   const [form] = Form.useForm();
   const [selectedTestItems, setSelectedTestItems] = useState<string[]>([]);
   const [testItemOptions, setTestItemOptions] = useState<any[]>([]);
-  const [stats, setStats] = useState({ todayReceive: 42, pendingReceive: 18, inStock: 1248, urgent: 7 });
+  const [stats] = useState({ todayReceive: 42, pendingReceive: 18, inStock: 1248, urgent: 7 });
   const [dynamicConfigs, setDynamicConfigs] = useState<FieldConfig[]>([]);
   const [dynamicValues, setDynamicValues] = useState<Record<string, unknown>>({});
   const [importOpen, setImportOpen] = useState(false);

@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useLabTypeStore } from '../stores/labTypeStore';
-import { Card, Tabs, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Switch, Input, Form, message, Modal, Tree } from 'antd';
+import { Card, Tabs, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Switch, Input, Form, Tree } from 'antd';
 import { PlusOutlined, SettingOutlined, SafetyOutlined, UserOutlined, KeyOutlined } from '@ant-design/icons';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const roles = [
   { key: 'admin', name: '系统管理员', type: '系统角色', users: 3, desc: '系统全部权限' },
@@ -114,4 +114,4 @@ export const SettingsPage: React.FC = () => {
     </div>
   );
 };
-const Text = Typography.Text;
+

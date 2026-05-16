@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Tabs, Progress, Modal, Form, message, DatePicker } from 'antd';
+import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Tabs, Progress, Modal, Form, message } from 'antd';
 import { PlusOutlined, SearchOutlined, EyeOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
@@ -35,7 +35,7 @@ export const ResearchProjectPage: React.FC = () => {
   const handleCreate = async (values: any) => {
     const res = await window.fetch('/api/v1/research/projects', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...values, status: 'active', used: 0 }) });
     const json = await res.json();
-    if (json.code === 200) { message.success('创建成功'); setModalVisible(false); form.resetFields(); fetch(); }
+    if (json.code === 200) { message.success('创建成功'); setModalVisible(false); form.resetFields(); fetchData(); }
   };
 
   return (

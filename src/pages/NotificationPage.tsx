@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Table, Tag, Tabs, Row, Col, Typography, Badge, Button, Space, message } from 'antd';
+import { Card, Tag, Tabs, Row, Col, Typography, Badge, Button, Space, message } from 'antd';
 import { BellOutlined, CheckCircleOutlined, DeleteOutlined, ExclamationCircleOutlined, InfoCircleOutlined, WarningOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;

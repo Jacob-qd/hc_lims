@@ -9,7 +9,7 @@ describe('工作流引擎 — 流程定义解析', () => {
   interface WorkflowEdge { from: string; to: string; condition?: EdgeCondition; }
 
   interface WorkflowDef { nodes: WorkflowNode[]; edges: WorkflowEdge[]; }
-  interface WorkflowInstance { defId: string; currentNodeIds: string[]; status: string; variables: Record<string, any>; history: { nodeId: string; action: string; time: string }[]; }
+  // WorkflowInstance interface removed (unused)
 
   function findNextNodes(def: WorkflowDef, currentNodeId: string, action: string): string[] {
     const edge = def.edges.find(e => e.from === currentNodeId && (!e.condition || e.condition === action || e.condition === 'default'));

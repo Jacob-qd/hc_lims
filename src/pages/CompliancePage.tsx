@@ -1,8 +1,8 @@
 import React from 'react';
-import { Card, Row, Col, Typography, Tag, Table, Timeline, Steps, Alert, Space, Button, message, Statistic } from 'antd';
-import { CheckCircleOutlined, CloseCircleOutlined, WarningOutlined, SafetyCertificateOutlined, FileSearchOutlined, AuditOutlined, LockOutlined } from '@ant-design/icons';
+import { Card, Row, Col, Typography, Tag, Table, Timeline, Steps, Alert, Statistic } from 'antd';
+import { CheckCircleOutlined, CloseCircleOutlined, WarningOutlined, SafetyCertificateOutlined, AuditOutlined } from '@ant-design/icons';
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
 
 const complianceItems = [
   { id: 'c1', requirement: '§11.10(a) 系统验证', status: 'partial', desc: '验证文档框架已建立，IQ/OQ/PQ 模板待完善', effort: '2周' },

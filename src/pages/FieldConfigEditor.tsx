@@ -11,7 +11,6 @@ import type { FieldConfig, ModuleType } from '../types/dynamicForm';
 import { DynamicFieldRenderer } from '../components/DynamicFieldRenderer';
 
 const { Title, Text } = Typography;
-const { TextArea } = Input;
 const { Option } = Select;
 
 const MODULES: { key: ModuleType; label: string; icon: React.ReactNode }[] = [
@@ -165,14 +164,14 @@ export const FieldConfigEditor: React.FC = () => {
       render: (_: any, r: FieldConfig) => (
         <Space>
           <Tooltip title="编辑"><Button size="small" icon={<EditOutlined />} onClick={() => handleEdit(r)} /></Tooltip>
-          <Tooltip title="下移" onClick={() => {
+          <Tooltip title="下移"><Button size="small" onClick={() => {
             const next = configs.find(c => c.sortOrder === r.sortOrder + 1);
             if (next) handleReorder(r.id, next.id);
-          }}><Button size="small">↓</Button></Tooltip>
-          <Tooltip title="上移" onClick={() => {
+          }}>↓</Button></Tooltip>
+          <Tooltip title="上移"><Button size="small" onClick={() => {
             const prev = configs.find(c => c.sortOrder === r.sortOrder - 1);
             if (prev) handleReorder(r.id, prev.id);
-          }}><Button size="small">↑</Button></Tooltip>
+          }}>↑</Button></Tooltip>
           <Tooltip title="删除"><Button size="small" danger icon={<DeleteOutlined />} onClick={() => handleDelete(r.id)} /></Tooltip>
         </Space>
       ),

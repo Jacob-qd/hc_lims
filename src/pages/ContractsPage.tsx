@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, message } from 'antd';
-import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Tabs, Badge, Modal, Form, Input, Select, message, Timeline } from 'antd';
 import { PlusOutlined, ApartmentOutlined, CheckCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 const mockWorkflows = [
   { id: 'wf1', name: '样品检测流程', nodes: 5, type: '检测', status: 'active', used: 128 },
@@ -46,8 +46,8 @@ export const WorkflowPage: React.FC = () => {
         { key: 'instances', label: '运行中实例', children: <Card>
           <Table dataSource={mockInstances} rowKey="id" columns={[
             { title: '流程', dataIndex: 'workflow' },
-            { title: '关联业务', dataIndex: 'sample', render: (s: string, r: any) => r.sample || r.report || r.pr },
-            { title: '当前步骤', dataIndex: 'step', render: (s: string) => <Tag color="blue">{s}</Tag> },
+            { title: '关联业务', dataIndex: 'sample', render: (_: string, r: any) => r.sample || r.report || r.pr },
+            { title: '当前步骤', dataIndex: 'step', render: (step: string) => <Tag color="blue">{step}</Tag> },
             { title: '处理人', dataIndex: 'assignee' },
             { title: '开始时间', dataIndex: 'startTime' },
             { title: '状态', dataIndex: 'status', render: () => <Badge status="processing" text="运行中" /> },
@@ -59,7 +59,7 @@ export const WorkflowPage: React.FC = () => {
       ]} />
 
       <Modal title="新建流程模板" open={createVisible} onOk={() => wfForm.submit()} onCancel={() => { setCreateVisible(false); wfForm.resetFields(); }}>
-        <Form form={wfForm} layout="vertical" onFinish={(v) => { message.success('流程模板创建成功'); setCreateVisible(false); }}>
+        <Form form={wfForm} layout="vertical" onFinish={() => { message.success('流程模板创建成功'); setCreateVisible(false); }}>
           <Form.Item name="name" label="流程名称" required><Input placeholder="如: 样品检测流程" /></Form.Item>
           <Form.Item name="type" label="流程类型"><Select><Select.Option value="检测">检测</Select.Option><Select.Option value="报告">报告</Select.Option><Select.Option value="采购">采购</Select.Option><Select.Option value="质量">质量</Select.Option></Select></Form.Item>
           <Form.Item name="nodes" label="审批节点"><Select mode="multiple" placeholder="选择审批节点">

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card, Descriptions, Tag, Tabs, Timeline, Table, Button, Row, Col, Typography, Steps, Modal, message } from 'antd';
-import { ArrowLeftOutlined, PlusOutlined } from '@ant-design/icons';
+import { Card, Descriptions, Tag, Tabs, Timeline, Table, Button, Row, Col, Typography, Steps, Modal, message, Form, Input, Select, InputNumber } from 'antd';
+import { ArrowLeftOutlined, PlusOutlined, InboxOutlined } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
@@ -28,7 +28,7 @@ const flowRecords = [
 ];
 
 export const SampleDetailPage: React.FC = () => {
-  const { id } = useParams();
+  useParams();
   const navigate = useNavigate();
   const currentStep = mockSample.status === 'testing' ? 3 : 0;
 
@@ -109,7 +109,7 @@ export const SampleDetailPage: React.FC = () => {
               title: '登记留样', content: (
                 <Form layout="vertical">
                   <Form.Item label="留样量"><Input placeholder="如 200mL" /></Form.Item>
-                  <Form.Item label="保存条件"><Select style={{width:'100%'}}><Option value="4C">4°C冷藏</Option><Option value="-20C">-20°C冷冻</Option><Option value="ambient">常温</Option></Select></Form.Item>
+                  <Form.Item label="保存条件"><Select style={{width:'100%'}}><Select.Option value="4C">4°C冷藏</Select.Option><Select.Option value="-20C">-20°C冷冻</Select.Option><Select.Option value="ambient">常温</Select.Option></Select></Form.Item>
                   <Form.Item label="保留期限(天)"><InputNumber min={1} max={365} defaultValue={30} style={{width:'100%'}} /></Form.Item>
                 </Form>
               ), onOk: () => message.success('留样登记成功'),

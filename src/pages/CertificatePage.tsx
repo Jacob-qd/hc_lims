@@ -5,7 +5,7 @@ import {
 } from 'antd';
 import {
   PlusOutlined, SearchOutlined, SafetyCertificateOutlined,
-  DeleteOutlined, KeyOutlined, ClockCircleOutlined,
+  KeyOutlined, ClockCircleOutlined,
   CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined,
   DownloadOutlined,
 } from '@ant-design/icons';
@@ -13,7 +13,7 @@ import type { ColumnsType } from 'antd/es/table';
 import { mockSm2Certificates } from '../mocks/data';
 import type { Sm2Certificate } from '../mocks/data';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 const { RangePicker } = DatePicker;
 
 const getStatusColor = (status: string) => {

@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, Table, Tag, Tabs, Button, Space, Typography, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 const dictData: Record<string, { code: string; name: string; sort: number; status: string }[]> = {
   sampleType: [

@@ -1,8 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import React from 'react';
-import { Form, Button } from 'antd';
-import { DynamicFieldRenderer, getDefaultValues } from '../components/DynamicFieldRenderer';
+import { describe, it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { Form } from 'antd';
+import { DynamicFieldRenderer } from '../components/DynamicFieldRenderer';
 import type { FieldConfig } from '../types/dynamicForm';
 
 // 模拟全部 12 种字段类型的覆盖测试
@@ -35,7 +34,7 @@ describe('12种字段类型全覆盖', () => {
 });
 
 describe('条件运算符全覆盖', () => {
-  const operators: { op: string; label: string }[] = [
+  const _operators: { op: string; label: string }[] = [
     { op: 'eq', label: '等于' },
     { op: 'neq', label: '不等于' },
     { op: 'gt', label: '大于' },

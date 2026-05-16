@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Tag, Button, Row, Col, Typography, Space, Input, Select, Modal, Form, message, Tabs, Descriptions, Timeline, Radio } from 'antd';
-import { PlusOutlined, SearchOutlined, EditOutlined, LockOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { Card, Table, Tag, Button, Row, Col, Typography, Space, Input, Select, Modal, Form, message, Tabs, Descriptions, Timeline } from 'antd';
+import { PlusOutlined, SearchOutlined, EditOutlined, CheckCircleOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -36,7 +36,7 @@ export const ELNPage: React.FC = () => {
   const handleCreate = async (values: any) => {
     const res = await window.fetch('/api/v1/research/eln-entries', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(values) });
     const json = await res.json();
-    if (json.code === 200) { message.success('创建成功'); setCreateVisible(false); form.resetFields(); fetch(); }
+    if (json.code === 200) { message.success('创建成功'); setCreateVisible(false); form.resetFields(); fetchData(); }
   };
 
   const openEditor = (entry: any) => {
@@ -50,7 +50,7 @@ export const ELNPage: React.FC = () => {
     if (currentEntry) {
       message.success('保存成功');
       setEditorVisible(false);
-      fetch();
+      fetchData();
     }
   };
 
@@ -58,7 +58,7 @@ export const ELNPage: React.FC = () => {
     if (!currentEntry) return;
     const res = await window.fetch(`/api/v1/research/eln-entries/${currentEntry.id}/sign`, { method: 'POST' });
     const json = await res.json();
-    if (json.code === 200) { message.success('签名成功'); setSignVisible(false); setEditorVisible(false); fetch(); }
+    if (json.code === 200) { message.success('签名成功'); setSignVisible(false); setEditorVisible(false); fetchData(); }
   };
 
   return (

@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Select, Modal, Form, message, DatePicker, Tabs, Descriptions, Input, Badge } from 'antd';
+import { Card, Table, Button, Row, Col, Typography, Statistic, Select, Modal, Form, message, Tabs, Input, Badge } from 'antd';
 import { PlusOutlined, CalendarOutlined, DollarOutlined } from '@ant-design/icons';
 
-const { Title, Text } = Typography;
-
-const statusColors: Record<string, string> = { pending: '#1677ff', active: '#52c41a', completed: '#d9d9d9', cancelled: '#ff4d4f' };
-const statusLabels: Record<string, string> = { pending: '待确认', active: '使用中', completed: '已完成', cancelled: '已取消' };
+const { Title } = Typography;
 
 export const ReservationPage: React.FC = () => {
   const [reservations, setReservations] = useState<any[]>([]);
@@ -27,13 +24,7 @@ export const ReservationPage: React.FC = () => {
   const handleCreate = async (values: any) => {
     const res = await window.fetch('/api/v1/research/reservations', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(values) });
     const json = await res.json();
-    if (json.code === 200) { message.success('预约成功'); setModalVisible(false); form.resetFields(); fetch(); }
-  };
-
-  const handleCancel = async (id: string) => {
-    const res = await window.fetch(`/api/v1/research/reservations/${id}`, { method: 'DELETE' });
-    const json = await res.json();
-    if (json.code === 200) { message.success('已取消'); fetch(); }
+    if (json.code === 200) { message.success('预约成功'); setModalVisible(false); form.resetFields(); fetchData(); }
   };
 
   const stats = { total: reservations.length, active: reservations.filter((r: any) => r.status === 'active').length, pending: reservations.filter((r: any) => r.status === 'pending').length, totalFee: reservations.reduce((s: number, r: any) => s + (r.fee || 0), 0) };

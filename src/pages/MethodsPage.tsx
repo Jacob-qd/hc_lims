@@ -83,7 +83,7 @@ export const MethodsPage: React.FC = () => {
               { color: 'green', children: <>{selected.version} 当前版本<br />{selected.effectiveDate} 生效</> },
               { color: 'blue', children: <>v1.0 初版<br />2023-01-01 发布</> },
             ]} /> },
-            { key: 'validation', label: '验证记录', children: <div><Progress type="circle" percent={75} size={80} /><br /><Space style={{marginTop:16}} direction="vertical" style={{width:'100%'}}>
+            { key: 'validation', label: '验证记录', children: <div><Progress type="circle" percent={75} size={80} /><br /><Space direction="vertical" style={{marginTop:16, width:'100%'}}>
               {[{item:'准确度',status:'passed'},{item:'精密度',status:'passed'},{item:'线性范围',status:'passed'},{item:'检出限',status:'passed'},{item:'定量限',status:'testing'},{item:'回收率',status:'pending'}].map(v =>
                 <Card key={v.item} size="small" style={{marginBottom:4}}>
                   <Row justify="space-between"><Col><Text>{v.item}</Text></Col><Col><Tag color={v.status==='passed'?'green':v.status==='testing'?'orange':'default'}>{v.status==='passed'?'已验证':v.status==='testing'?'验证中':'待验证'}</Tag></Col></Row>

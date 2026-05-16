@@ -4,6 +4,7 @@ import { SaveOutlined, CheckCircleOutlined, UploadOutlined, PlusOutlined } from 
 import { useParams, useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
+const { Option } = Select;
 const { TextArea } = Input;
 
 const mockTask = {
@@ -19,10 +20,8 @@ const initialResults = [
 ];
 
 export const TaskResultEntry: React.FC = () => {
-  const { id } = useParams();
+  useParams();
   const navigate = useNavigate();
-  const [results, setResults] = useState(initialResults);
-  const [form] = Form.useForm();
 
   const handleResultChange = (key: string, field: string, value: string) => {
     setResults(prev => prev.map(r => r.key === key ? { ...r, [field]: value } : r));

@@ -131,7 +131,7 @@ describe('报告管理 — 合并报告逻辑', () => {
 });
 
 describe('报告管理 — 水印逻辑', () => {
-  function shouldShowWatermark(status: string, signatures: { role: string; signedAt: string }[]): { show: boolean; text: string } {
+  function shouldShowWatermark(status: string, signatures: { role: string; signedAt: string; name?: string }[]): { show: boolean; text: string } {
     if (status !== 'issued') return { show: false, text: '' };
     const approver = signatures.find(s => s.role === 'approver');
     const date = approver?.signedAt ? new Date(approver.signedAt).toLocaleDateString('zh-CN') : '';

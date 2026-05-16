@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Modal, Form, message, Tabs, Progress } from 'antd';
-import { PlusOutlined, SearchOutlined, EyeOutlined, ShoppingCartOutlined, InboxOutlined, BarChartOutlined } from '@ant-design/icons';
+import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Modal, Form, message, Tabs } from 'antd';
+import { SearchOutlined, ShoppingCartOutlined, InboxOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const categoryColors: Record<string, string> = { 试剂: '#1677ff', 耗材: '#52c41a', 标准品: '#722ed1' };
@@ -17,7 +17,7 @@ export const InventoryPage: React.FC = () => {
   const [prDrawer, setPrDrawer] = useState(false);
   const [inModal, setInModal] = useState(false);
   const [prModal, setPrModal] = useState(false);
-  const [form] = Form.useForm();
+  // const [form] = Form.useForm();
 
   const fetchData = async () => {
     setLoading(true);
@@ -187,7 +187,7 @@ export const InventoryPage: React.FC = () => {
           <Form.Item label="数量"><Input type="number" /></Form.Item>
           <Form.Item label="有效期"><Input placeholder="YYYY-MM-DD" /></Form.Item>
           <Form.Item label="库位"><Input /></Form.Item>
-          <Button type="primary" block onClick={() => { message.success('入库成功'); setInModal(false); fetch(); }}>确认入库</Button>
+          <Button type="primary" block onClick={() => { message.success('入库成功'); setInModal(false); fetchData(); }}>确认入库</Button>
         </Form>
       </Modal>
 

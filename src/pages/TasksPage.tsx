@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Card, Table, Tag, Button, Input, Select, Row, Col, Space, Typography,
+  Card, Table, Tag, Button, Input, InputNumber, Select, Row, Col, Space, Typography,
   Drawer, Tabs, Descriptions, Timeline, Statistic, Modal, Form, message,
-  Tooltip, Progress, Badge,
+  Divider, Progress, Badge, InputNumber,
 } from 'antd';
 import {
-  PlusOutlined, SearchOutlined, EditOutlined, EyeOutlined,
-  PlayCircleOutlined, CheckCircleOutlined,
+  SearchOutlined, EditOutlined, EyeOutlined,
+  PlayCircleOutlined, CheckCircleOutlined, ReloadOutlined, ExperimentOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 
 const { Title, Text } = Typography;
+const { Option } = Select;
+const { Option } = Select;
 
 interface TaskItem {
   id: string; taskNo: string; sampleId: string; sampleNo: string;
@@ -239,7 +241,7 @@ export const TasksPage: React.FC = () => {
                     content: (
                       <div>
                         <p>将为当前检测任务创建复测记录</p>
-                        <Form layout="vertical" onFinish={() => {}}>
+                        <Form layout="vertical">
                           <Form.Item label="复测原因"><Select defaultValue="超标" style={{width:'100%'}}>
                             <Option value="超标">检测结果超标</Option>
                             <Option value="异常">数据异常</Option>

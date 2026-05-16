@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Card, Row, Col, Typography, Statistic, Table, Tag, Alert, Progress, Space, Button, message } from 'antd';
-import { CheckCircleOutlined, CloseCircleOutlined, WarningOutlined, SyncOutlined, DashboardOutlined, CloudServerOutlined, DatabaseOutlined, ApiOutlined } from '@ant-design/icons';
+import React, { useState } from 'react';
+import { Card, Row, Col, Typography, Statistic, Table, Tag, Progress, Space, Button, message } from 'antd';
+import { CheckCircleOutlined, WarningOutlined, SyncOutlined, DashboardOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
-
-const api = (p: string) => `/api/v1${p}`;
 
 const mockMetrics = [
   { key: 'cpu', label: 'CPU 使用率', value: '32%', status: 'normal', threshold: 80 },

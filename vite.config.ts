@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     hmr: { overlay: false },
   },
-  esbuild: {
+  build: {
     target: 'es2020',
   },
 })

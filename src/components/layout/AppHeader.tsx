@@ -5,7 +5,6 @@ import {
   MoonOutlined,
   SunOutlined,
   UserOutlined,
-  GlobalOutlined,
   LogoutOutlined,
   SettingOutlined,
 } from '@ant-design/icons';
@@ -91,7 +90,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onOpenDrawer }) => {
       <Space size={20}>
         <Select
           value={useI18nStore.getState().locale}
-          onChange={(v: string) => useI18nStore.getState().setLocale(v)}
+          onChange={(v: any) => useI18nStore.getState().setLocale(v)}
           size="small"
           style={{ width: 78 }}
           variant="borderless"

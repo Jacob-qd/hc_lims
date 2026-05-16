@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Tabs, Select, DatePicker, message, Modal, Form, Input } from 'antd';
-import { PlusOutlined, BarChartOutlined, FileTextOutlined, ClockCircleOutlined, SettingOutlined } from '@ant-design/icons';
+import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Tabs, Select, message, Modal, Form, Input } from 'antd';
+import { PlusOutlined, BarChartOutlined, FileTextOutlined, ClockCircleOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 
@@ -56,7 +56,7 @@ export const ReportEnginePage: React.FC = () => {
         { key: 'schedule', label: '调度任务', children: <Card><Text type="secondary">报表调度任务管理...</Text></Card> },
       ]} />
       <Modal title="新建报表" open={createVisible} onCancel={() => setCreateVisible(false)} footer={null}>
-        <Form layout="vertical" onFinish={(v) => { message.success('报表创建成功'); setCreateVisible(false); }}>
+        <Form layout="vertical" onFinish={(_v) => { message.success('报表创建成功'); setCreateVisible(false); }}>
           <Form.Item name="name" label="报表名称" required><Input /></Form.Item>
           <Form.Item name="type" label="类型"><Select><Select.Option value="定时">定时报表</Select.Option><Select.Option value="手动">手动报表</Select.Option></Select></Form.Item>
           <Form.Item name="format" label="输出格式"><Select mode="multiple"><Select.Option value="PDF">PDF</Select.Option><Select.Option value="Excel">Excel</Select.Option><Select.Option value="CSV">CSV</Select.Option></Select></Form.Item>

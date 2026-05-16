@@ -1,18 +1,17 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input,
-  Timeline, Descriptions, Modal, Form, message, Steps, Select, Tabs, Empty,
-  Tooltip, Divider, Alert, Badge, List,
+  Timeline, Descriptions, Modal, Form, message, Select, Tabs, Empty,
+  Alert,
 } from 'antd';
 import {
-  PlusOutlined, SearchOutlined, SendOutlined, CheckCircleOutlined,
-  BarcodeOutlined, EyeOutlined, PrinterOutlined, WarningOutlined,
-  SwapOutlined, DeleteOutlined, ReloadOutlined, FilePdfOutlined,
+  BarcodeOutlined, EyeOutlined, WarningOutlined,
+  SwapOutlined, ReloadOutlined,
   ClockCircleOutlined, UserOutlined, EnvironmentOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
 const { Option } = Select;
 
 // ===== Types =====
@@ -66,7 +65,7 @@ export const COCPage: React.FC = () => {
   const [selectedChain, setSelectedChain] = useState<COCChain | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
-  const [disposalOpen, setDisposalOpen] = useState(false);
+  const [disposalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
 
   const loadChains = useCallback(async () => {
@@ -97,7 +96,7 @@ export const COCPage: React.FC = () => {
   };
 
   // 链完整性校验
-  const verifyChain = (events: COCEvent[]): { valid: boolean; msg: string } => {
+  const _verifyChain = (events: COCEvent[]): { valid: boolean; msg: string } => {
     if (events.length === 0) return { valid: false, msg: '无事件记录' };
     const sorted = [...events].sort((a, b) => new Date(a.occurredAt).getTime() - new Date(b.occurredAt).getTime());
     for (let i = 1; i < sorted.length; i++) {

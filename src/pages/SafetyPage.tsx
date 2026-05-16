@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Tabs, Descriptions, message, Modal, Form, Timeline, Badge, Progress } from 'antd';
+import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Tabs, message, Modal, Form, Badge } from 'antd';
 import { PlusOutlined, SearchOutlined, WarningOutlined, SafetyOutlined, DeleteOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
@@ -10,7 +10,6 @@ export const SafetyPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [inModal, setInModal] = useState(false);
-  const [form] = Form.useForm();
 
   useEffect(() => {
     fetch('/api/v1/research/chemicals').then(r => r.json()).then(d => { setChemicals(d.data.list); setLoading(false); });

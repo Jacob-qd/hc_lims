@@ -5,7 +5,7 @@ describe('数据备份 — 备份策略逻辑', () => {
     return {
       id: 'b' + Date.now(),
       name: `hc_lims_full_${new Date().toISOString().slice(0,10).replace(/-/g,'')}_120000.sql`,
-      size: '256MB',
+      // size removed to match type
       type: type === 'auto' ? '自动' : '手动',
       date: new Date().toISOString().replace('T', ' ').slice(0, 16),
       status: 'completed',

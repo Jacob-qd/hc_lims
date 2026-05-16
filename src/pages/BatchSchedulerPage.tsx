@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Card, Table, Tag, Button, Row, Col, Typography, Space, message, Modal, Form, Select, Switch, TimePicker } from 'antd';
+import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, message, Modal, Form, Select, TimePicker } from 'antd';
 import { ClockCircleOutlined, PlusOutlined, PlayCircleOutlined, PauseCircleOutlined, HistoryOutlined } from '@ant-design/icons';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 export const BatchSchedulerPage: React.FC = () => {
   const [tasks] = useState([
@@ -23,8 +23,8 @@ export const BatchSchedulerPage: React.FC = () => {
             Modal.confirm({ title: '新建定时任务', content: (
               <Form layout="vertical">
                 <Form.Item label="任务名称"><input className="ant-input" placeholder="如: 周报自动生成" /></Form.Item>
-                <Form.Item label="任务类型"><Select style={{width:'100%'}}><Option value="report">报表生成</Option><Option value="backup">数据备份</Option><Option value="notification">消息通知</Option><Option value="archive">数据归档</Option></Select></Form.Item>
-                <Form.Item label="执行频率"><Select style={{width:'100%'}}><Option value="daily">每日</Option><Option value="weekly">每周</Option><Option value="monthly">每月</Option></Select></Form.Item>
+                <Form.Item label="任务类型"><Select style={{width:'100%'}}><Select.Option value="report">报表生成</Select.Option><Select.Option value="backup">数据备份</Select.Option><Select.Option value="notification">消息通知</Select.Option><Select.Option value="archive">数据归档</Select.Option></Select></Form.Item>
+                <Form.Item label="执行频率"><Select style={{width:'100%'}}><Select.Option value="daily">每日</Select.Option><Select.Option value="weekly">每周</Select.Option><Select.Option value="monthly">每月</Select.Option></Select></Form.Item>
                 <Form.Item label="执行时间"><TimePicker style={{width:'100%'}} /></Form.Item>
               </Form>
             ), onOk: () => message.success('定时任务创建成功'), });

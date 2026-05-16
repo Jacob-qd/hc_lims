@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Card, Row, Col, Typography, Statistic, Table, Tag, Button, Input, Space, Tabs, Descriptions, Progress, Timeline, Badge, message, Form, Select, Upload } from 'antd';
-import { SearchOutlined, FileTextOutlined, ExperimentOutlined, CheckCircleOutlined, ClockCircleOutlined, CloudUploadOutlined } from '@ant-design/icons';
+import { Card, Row, Col, Typography, Statistic, Table, Tag, Button, Input, Space, Tabs, Progress, Steps, message, Form, Select } from 'antd';
+import { FileTextOutlined, ExperimentOutlined, CloudUploadOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 
@@ -21,7 +21,7 @@ const flowSteps = ['委托提交', '样品接收', '检测中', '报告出具'];
 export const CustomerPortalPage: React.FC = () => {
   const [trackNo, setTrackNo] = useState('');
   const [trackResult, setTrackResult] = useState<any>(null);
-  const [orderVisible, setOrderVisible] = useState(false);
+  const [orderVisible] = useState(false);
 
   const handleTrack = () => {
     const found = mockOrders.find(o => o.no === trackNo || o.sample.includes(trackNo));
