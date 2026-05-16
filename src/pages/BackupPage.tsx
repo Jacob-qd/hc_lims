@@ -116,6 +116,25 @@ export const BackupPage: React.FC = () => {
             ]} pagination={false} size="middle" />
           </Card>
         },
+        {
+          key: 'archive', label: <span><HistoryOutlined /> 数据归档</span>, children: <Card extra={<Button type="primary" size="small" icon={<HistoryOutlined />} onClick={() => message.success('归档任务已创建')}>创建归档</Button>}>
+            <Descriptions bordered size="small" column={2} style={{ marginBottom: 12 }}>
+              <Descriptions.Item label="自动归档"><Switch defaultChecked /> <Text type="secondary">超过2年的数据自动归档</Text></Descriptions.Item>
+              <Descriptions.Item label="归档周期"><Select defaultValue="2年" style={{width:100}}><Select.Option value="1年">1年</Select.Option><Select.Option value="2年">2年</Select.Option></Select></Descriptions.Item>
+            </Descriptions>
+            <Table dataSource={[
+              { id: 'a1', name: '归档_2022年度数据', module: '全模块', records: 45820, size: '8.5GB', date: '2024-01-15', status: 'completed', location: 'S3/archive/2022/' },
+              { id: 'a2', name: '归档_2023年度数据', module: '全模块', records: 62150, size: '12.3GB', date: '2025-01-15', status: 'completed', location: 'S3/archive/2023/' },
+            ]} rowKey="id" pagination={false} size="small" columns={[
+              { title: '归档名称', dataIndex: 'name', ellipsis: true },
+              { title: '记录数', dataIndex: 'records', render: (n:number) => n.toLocaleString() },
+              { title: '大小', dataIndex: 'size' },
+              { title: '归档日期', dataIndex: 'date' },
+              { title: '状态', dataIndex: 'status', render: () => <Tag color="green">完成</Tag> },
+              { title: '操作', render: () => <Space size="small"><Button type="link" size="small">检索</Button><Button type="link" size="small">恢复</Button></Space> },
+            ]} />
+          </Card>
+        },
       ]} />
 
       {/* Schedule Modal */}
