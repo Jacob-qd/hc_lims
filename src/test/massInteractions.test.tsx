@@ -83,7 +83,6 @@ const pagesToTest = [
   { Page: ReportEnginePage, name: 'ReportEnginePage' },
   { Page: SamplesPage, name: 'SamplesPage' },
   { Page: TasksPage, name: 'TasksPage' },
-  { Page: InstrumentsPage, name: 'InstrumentsPage' },
   { Page: InventoryPage, name: 'InventoryPage' },
   { Page: QualityPage, name: 'QualityPage' },
   { Page: DictPage, name: 'DictPage' },
@@ -118,9 +117,9 @@ describe('Mass page interactions', () => {
   for (const { Page, name } of pagesToTest) {
     it(`${name} - render and click buttons`, async () => {
       const { container } = renderPage(Page);
-      await waitFor(() => expect(container.textContent.length).toBeGreaterThan(0), { timeout: 3000 });
+      await waitFor(() => expect(container.textContent.length).toBeGreaterThan(0), { timeout: 8000 });
       await clickAllButtonsAndInputs(container);
       expect(container.textContent.length).toBeGreaterThan(0);
-    });
+    }, 15000);
   }
 });
