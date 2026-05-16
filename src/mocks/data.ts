@@ -1413,6 +1413,301 @@ export const mockSignatureAuditLog: SignatureAuditEntry[] = [
   { id: 'audit-006', signatureId: 'dsig-006', action: 'CREATED', operatorId: '4', operatorName: '王强', details: '报告 RPT20240519001 批准签名创建', createdAt: '2024-05-22 16:30' },
 ];
 
+// ============================================
+// Workflow Engine Mock Data
+// ============================================
+
+export interface WorkflowNode {
+  id: string;
+  type: 'start' | 'approval' | 'condition' | 'cc' | 'end';
+  name: string;
+  x: number;
+  y: number;
+  config?: Record<string, any>;
+}
+
+export interface WorkflowEdge {
+  id: string;
+  source: string;
+  target: string;
+  condition?: string;
+  label?: string;
+}
+
+export interface WorkflowDefinition {
+  id: string;
+  name: string;
+  type: string;
+  description: string;
+  nodes: WorkflowNode[];
+  edges: WorkflowEdge[];
+  status: 'draft' | 'deployed' | 'disabled';
+  version: number;
+  usedCount: number;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WorkflowInstance {
+  id: string;
+  defId: string;
+  defName: string;
+  defVersion: number;
+  businessType: string;
+  businessId: string;
+  businessSummary: string;
+  status: 'running' | 'completed' | 'terminated' | 'suspended';
+  currentNodes: string[];
+  currentNodeNames: string[];
+  assignees: string[];
+  variables: Record<string, any>;
+  startedBy: string;
+  startedAt: string;
+  completedAt?: string;
+  history: WorkflowHistoryItem[];
+}
+
+export interface WorkflowHistoryItem {
+  id: string;
+  nodeId: string;
+  nodeName: string;
+  action: string;
+  operator: string;
+  comment?: string;
+  timestamp: string;
+}
+
+export const mockWorkflowDefinitions: WorkflowDefinition[] = [
+  {
+    id: 'wf1',
+    name: '样品检测流程',
+    type: '检测',
+    description: '从样品接收到报告生成的完整检测流程',
+    status: 'deployed',
+    version: 3,
+    usedCount: 128,
+    createdBy: '张伟',
+    createdAt: '2024-01-15 09:00',
+    updatedAt: '2024-05-10 14:30',
+    nodes: [
+      { id: 'n1', type: 'start', name: '开始', x: 100, y: 80, config: { trigger: 'manual' } },
+      { id: 'n2', type: 'approval', name: '样品接收', x: 100, y: 200, config: { approverType: 'role', approverRole: 'sample_receiver', approvalMode: 'or', timeoutHours: 24 } },
+      { id: 'n3', type: 'approval', name: '任务分配', x: 100, y: 320, config: { approverType: 'role', approverRole: 'lab_manager', approvalMode: 'or' } },
+      { id: 'n4', type: 'approval', name: '检测执行', x: 100, y: 440, config: { approverType: 'role', approverRole: 'analyst', approvalMode: 'or' } },
+      { id: 'n5', type: 'condition', name: '结果判定', x: 100, y: 560, config: { expression: 'result.qualified === true' } },
+      { id: 'n6', type: 'approval', name: '数据复核', x: 300, y: 560, config: { approverType: 'role', approverRole: 'reviewer', approvalMode: 'or' } },
+      { id: 'n7', type: 'cc', name: '通知客户', x: 100, y: 680, config: { recipients: ['customer'] } },
+      { id: 'n8', type: 'end', name: '结束', x: 100, y: 800 },
+    ],
+    edges: [
+      { id: 'e1', source: 'n1', target: 'n2' },
+      { id: 'e2', source: 'n2', target: 'n3' },
+      { id: 'e3', source: 'n3', target: 'n4' },
+      { id: 'e4', source: 'n4', target: 'n5' },
+      { id: 'e5', source: 'n5', target: 'n6', condition: '不合格', label: '不合格' },
+      { id: 'e6', source: 'n5', target: 'n7', condition: '合格', label: '合格' },
+      { id: 'e7', source: 'n6', target: 'n4' },
+      { id: 'e8', source: 'n7', target: 'n8' },
+    ],
+  },
+  {
+    id: 'wf2',
+    name: '报告审核流程',
+    type: '报告',
+    description: '报告编制后的多级审核流程',
+    status: 'deployed',
+    version: 2,
+    usedCount: 95,
+    createdBy: '张伟',
+    createdAt: '2024-02-01 10:00',
+    updatedAt: '2024-04-20 11:00',
+    nodes: [
+      { id: 'n1', type: 'start', name: '开始', x: 100, y: 80 },
+      { id: 'n2', type: 'approval', name: '编制完成', x: 100, y: 200, config: { approverType: 'role', approverRole: 'compiler', approvalMode: 'or' } },
+      { id: 'n3', type: 'approval', name: '技术审核', x: 100, y: 320, config: { approverType: 'role', approverRole: 'reviewer', approvalMode: 'or' } },
+      { id: 'n4', type: 'approval', name: '批准签发', x: 100, y: 440, config: { approverType: 'role', approverRole: 'signatory', approvalMode: 'or' } },
+      { id: 'n5', type: 'cc', name: '归档通知', x: 100, y: 560, config: { recipients: ['archive_admin'] } },
+      { id: 'n6', type: 'end', name: '结束', x: 100, y: 680 },
+    ],
+    edges: [
+      { id: 'e1', source: 'n1', target: 'n2' },
+      { id: 'e2', source: 'n2', target: 'n3' },
+      { id: 'e3', source: 'n3', target: 'n4' },
+      { id: 'e4', source: 'n4', target: 'n5' },
+      { id: 'e5', source: 'n5', target: 'n6' },
+    ],
+  },
+  {
+    id: 'wf3',
+    name: '采购审批流程',
+    type: '采购',
+    description: '试剂耗材采购多级审批',
+    status: 'deployed',
+    version: 1,
+    usedCount: 32,
+    createdBy: '李明',
+    createdAt: '2024-03-01 09:00',
+    updatedAt: '2024-03-15 16:00',
+    nodes: [
+      { id: 'n1', type: 'start', name: '开始', x: 100, y: 80 },
+      { id: 'n2', type: 'approval', name: '申请提交', x: 100, y: 200, config: { approverType: 'any', approvalMode: 'or' } },
+      { id: 'n3', type: 'condition', name: '金额判断', x: 100, y: 320, config: { expression: 'amount > 5000' } },
+      { id: 'n4', type: 'approval', name: '部门审批', x: 300, y: 320, config: { approverType: 'role', approverRole: 'dept_manager', approvalMode: 'or' } },
+      { id: 'n5', type: 'approval', name: '直接审批', x: 100, y: 440, config: { approverType: 'role', approverRole: 'purchase_manager', approvalMode: 'or' } },
+      { id: 'n6', type: 'approval', name: '质量审批', x: 300, y: 440, config: { approverType: 'role', approverRole: 'quality_manager', approvalMode: 'or' } },
+      { id: 'n7', type: 'end', name: '结束', x: 100, y: 560 },
+    ],
+    edges: [
+      { id: 'e1', source: 'n1', target: 'n2' },
+      { id: 'e2', source: 'n2', target: 'n3' },
+      { id: 'e3', source: 'n3', target: 'n4', condition: '>5000', label: '>5000元' },
+      { id: 'e4', source: 'n3', target: 'n5', condition: '<=5000', label: '<=5000元' },
+      { id: 'e5', source: 'n4', target: 'n6' },
+      { id: 'e6', source: 'n5', target: 'n7' },
+      { id: 'e7', source: 'n6', target: 'n7' },
+    ],
+  },
+  {
+    id: 'wf4',
+    name: '偏差处理流程',
+    type: '质量',
+    description: '检测偏差/OOS处理流程',
+    status: 'draft',
+    version: 1,
+    usedCount: 0,
+    createdBy: '张伟',
+    createdAt: '2024-05-01 10:00',
+    updatedAt: '2024-05-01 10:00',
+    nodes: [
+      { id: 'n1', type: 'start', name: '开始', x: 100, y: 80 },
+      { id: 'n2', type: 'approval', name: '偏差发现', x: 100, y: 200, config: { approverType: 'any', approvalMode: 'or' } },
+      { id: 'n3', type: 'approval', name: '原因分析', x: 100, y: 320, config: { approverType: 'role', approverRole: 'quality_manager', approvalMode: 'or' } },
+      { id: 'n4', type: 'approval', name: '纠正措施', x: 100, y: 440, config: { approverType: 'role', approverRole: 'lab_manager', approvalMode: 'or' } },
+      { id: 'n5', type: 'end', name: '结束', x: 100, y: 560 },
+    ],
+    edges: [
+      { id: 'e1', source: 'n1', target: 'n2' },
+      { id: 'e2', source: 'n2', target: 'n3' },
+      { id: 'e3', source: 'n3', target: 'n4' },
+      { id: 'e4', source: 'n4', target: 'n5' },
+    ],
+  },
+];
+
+export const mockWorkflowInstances: WorkflowInstance[] = [
+  {
+    id: 'wi1',
+    defId: 'wf1',
+    defName: '样品检测流程',
+    defVersion: 3,
+    businessType: '样品',
+    businessId: 'SMP20240521001',
+    businessSummary: '地表水 COD 检测',
+    status: 'running',
+    currentNodes: ['n4'],
+    currentNodeNames: ['检测执行'],
+    assignees: ['李思'],
+    variables: { sampleId: 'SMP20240521001', testItem: 'COD' },
+    startedBy: '张伟',
+    startedAt: '2024-05-21 09:00',
+    history: [
+      { id: 'h1', nodeId: 'n1', nodeName: '开始', action: 'start', operator: '系统', timestamp: '2024-05-21 09:00' },
+      { id: 'h2', nodeId: 'n2', nodeName: '样品接收', action: 'approved', operator: '张伟', comment: '样品完好', timestamp: '2024-05-21 09:15' },
+      { id: 'h3', nodeId: 'n3', nodeName: '任务分配', action: 'approved', operator: '张伟', comment: '分配给李思', timestamp: '2024-05-21 09:30' },
+    ],
+  },
+  {
+    id: 'wi2',
+    defId: 'wf2',
+    defName: '报告审核流程',
+    defVersion: 2,
+    businessType: '报告',
+    businessId: 'RPT20240521001',
+    businessSummary: '水质检测报告 #001',
+    status: 'running',
+    currentNodes: ['n3'],
+    currentNodeNames: ['技术审核'],
+    assignees: ['王强'],
+    variables: { reportId: 'RPT20240521001' },
+    startedBy: '李思',
+    startedAt: '2024-05-21 10:00',
+    history: [
+      { id: 'h1', nodeId: 'n1', nodeName: '开始', action: 'start', operator: '系统', timestamp: '2024-05-21 10:00' },
+      { id: 'h2', nodeId: 'n2', nodeName: '编制完成', action: 'approved', operator: '李思', comment: '报告编制完成', timestamp: '2024-05-21 10:30' },
+    ],
+  },
+  {
+    id: 'wi3',
+    defId: 'wf3',
+    defName: '采购审批流程',
+    defVersion: 1,
+    businessType: '采购',
+    businessId: 'PR-2025-001',
+    businessSummary: '乙腈 500mL 采购',
+    status: 'running',
+    currentNodes: ['n4'],
+    currentNodeNames: ['部门审批'],
+    assignees: ['张伟'],
+    variables: { amount: 6800, item: '乙腈 500mL' },
+    startedBy: '李明',
+    startedAt: '2024-05-20 14:00',
+    history: [
+      { id: 'h1', nodeId: 'n1', nodeName: '开始', action: 'start', operator: '系统', timestamp: '2024-05-20 14:00' },
+      { id: 'h2', nodeId: 'n2', nodeName: '申请提交', action: 'approved', operator: '李明', comment: '急需', timestamp: '2024-05-20 14:10' },
+      { id: 'h3', nodeId: 'n3', nodeName: '金额判断', action: 'condition', operator: '系统', comment: '金额6800>5000', timestamp: '2024-05-20 14:10' },
+    ],
+  },
+  {
+    id: 'wi4',
+    defId: 'wf1',
+    defName: '样品检测流程',
+    defVersion: 3,
+    businessType: '样品',
+    businessId: 'SMP20240520003',
+    businessSummary: '土壤重金属检测',
+    status: 'completed',
+    currentNodes: ['n8'],
+    currentNodeNames: ['结束'],
+    assignees: [],
+    variables: { sampleId: 'SMP20240520003', testItem: '重金属' },
+    startedBy: '张伟',
+    startedAt: '2024-05-20 08:00',
+    completedAt: '2024-05-21 16:00',
+    history: [
+      { id: 'h1', nodeId: 'n1', nodeName: '开始', action: 'start', operator: '系统', timestamp: '2024-05-20 08:00' },
+      { id: 'h2', nodeId: 'n2', nodeName: '样品接收', action: 'approved', operator: '张伟', timestamp: '2024-05-20 08:15' },
+      { id: 'h3', nodeId: 'n3', nodeName: '任务分配', action: 'approved', operator: '张伟', timestamp: '2024-05-20 08:30' },
+      { id: 'h4', nodeId: 'n4', nodeName: '检测执行', action: 'approved', operator: '李思', timestamp: '2024-05-20 15:00' },
+      { id: 'h5', nodeId: 'n5', nodeName: '结果判定', action: 'condition', operator: '系统', timestamp: '2024-05-20 15:00' },
+      { id: 'h6', nodeId: 'n7', nodeName: '通知客户', action: 'cc', operator: '系统', timestamp: '2024-05-20 15:05' },
+      { id: 'h7', nodeId: 'n8', nodeName: '结束', action: 'end', operator: '系统', timestamp: '2024-05-21 16:00' },
+    ],
+  },
+  {
+    id: 'wi5',
+    defId: 'wf2',
+    defName: '报告审核流程',
+    defVersion: 2,
+    businessType: '报告',
+    businessId: 'RPT20240520002',
+    businessSummary: '废水检测报告 #003',
+    status: 'terminated',
+    currentNodes: ['n3'],
+    currentNodeNames: ['技术审核'],
+    assignees: ['王强'],
+    variables: { reportId: 'RPT20240520002' },
+    startedBy: '李思',
+    startedAt: '2024-05-19 09:00',
+    completedAt: '2024-05-19 11:00',
+    history: [
+      { id: 'h1', nodeId: 'n1', nodeName: '开始', action: 'start', operator: '系统', timestamp: '2024-05-19 09:00' },
+      { id: 'h2', nodeId: 'n2', nodeName: '编制完成', action: 'approved', operator: '李思', timestamp: '2024-05-19 09:30' },
+      { id: 'h3', nodeId: 'n3', nodeName: '技术审核', action: 'terminated', operator: '张伟', comment: '客户取消', timestamp: '2024-05-19 11:00' },
+    ],
+  },
+];
+
 // Helper to compute SM3 document hash
 export function computeDocumentHash(document: { id: string; reportNo: string; title: string; customerName: string; testResults: any[] }): string {
   const normalized = JSON.stringify({
