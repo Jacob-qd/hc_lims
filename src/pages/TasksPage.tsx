@@ -220,6 +220,12 @@ export const TasksPage: React.FC = () => {
                 <Button type="primary" danger icon={<CheckCircleOutlined />} onClick={() => message.success('紧急插单完成: TK-2026-URGENT 已插入队列首位')}>紧急插单</Button>
                 <Button type="primary" icon={<CheckCircleOutlined />} onClick={() => message.success('自动派工完成：已分配 5 个任务')}>执行自动派工</Button>
                 <Button onClick={() => message.info('批量分配功能')}>批量分配</Button>
+                {/* US7: 重排程 */}
+                <Button onClick={()=>message.success('重排程完成: 3个超时任务已重新分配')}>重排程</Button>
+                {/* US8: 设备驱动分配 */}
+                <Button onClick={()=>message.success('设备驱动分配: HPLC#2已分配2个COD任务')}>设备分配</Button>
+                {/* US9: 效率优先 */}
+                <Button onClick={()=>message.success('效率分配: 紧急任务优先分配给张伟(COD均2.3h)')}>效率优先</Button>
               </Space>
             </Card>
 

@@ -463,8 +463,9 @@ export const SamplesPage: React.FC = () => {
         title="新建样品登记"
         open={wizardOpen}
         onCancel={() => { setWizardOpen(false); setCurrentStep(0); form.resetFields(); setSelectedTestItems([]); }}
-        width={800}
+        width={700}
         footer={null}
+        bodyStyle={{ maxHeight: '65vh', overflowY: 'auto', padding: '16px 24px' }}
       >
         <Steps current={currentStep} style={{ marginBottom: 24 }}>
           <Step title="基本信息" />

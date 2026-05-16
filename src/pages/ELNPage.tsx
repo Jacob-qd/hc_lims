@@ -103,6 +103,22 @@ export function judgeResult(value: number, standard: string, rule: string): stri
   return '待判定';
 }
 
+// US7: 合理性校验
+export function checkReasonability(value: number, methodId: string): { reasonable: boolean; range: string; message: string } {
+  const historyRanges: Record<string, { min: number; max: number; mean: number }> = {
+    'COD': { min: 18, max: 35, mean: 25.1 },
+    'pH': { min: 6.5, max: 8.5, mean: 7.3 },
+    'NH3': { min: 0.1, max: 0.5, mean: 0.25 },
+  };
+  const range = historyRanges[methodId] || { min: 0, max: Infinity, mean: 0 };
+  const reasonable = value >= range.min * 0.5 && value <= range.max * 1.5;
+  return {
+    reasonable,
+    range: `${range.min}-${range.max}`,
+    message: reasonable ? '✅ 结果在历史正常范围内' : `⚠️ 结果异常！历史范围: ${range.min}-${range.max}, 均值: ${range.mean}`,
+  };
+}
+
 export const ELNPage: React.FC = () => {
   const [templates] = useState(mockTemplates);
   const [records] = useState(mockRecords);
