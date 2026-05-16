@@ -3,7 +3,7 @@ import {
   Card, Table, Tag, Button, Input, Select, DatePicker, Row, Col,
   Space, Typography, Drawer, Timeline, Badge, Steps, Form,
   Modal, message, Radio, Checkbox, Divider, Tabs,
-  Collapse, Descriptions, List, Empty, Upload,
+ Descriptions, List, Empty, Upload,
   Alert,
 } from 'antd';
 import {
@@ -50,14 +50,7 @@ const getRoleColor = (role: string) => {
   return map[role] || 'default';
 };
 
-const flowStepStatus = (report: Report): Record<string, 'process' | 'finish' | 'wait'> => {
-  const sigRoles = report.signatures.map(s => s.role);
-  return {
-    compiler: sigRoles.includes('compiler') ? 'finish' : (report.status === 'draft' ? 'process' : 'wait'),
-    reviewer: sigRoles.includes('reviewer') ? 'finish' : (sigRoles.includes('compiler') ? 'process' : 'wait'),
-    approver: sigRoles.includes('approver') ? 'finish' : (sigRoles.includes('reviewer') ? 'process' : 'wait'),
-  };
-};
+
 
 // ================================================
 // Sub-Components
@@ -280,7 +273,7 @@ const AnnotationsPanel: React.FC<{
   onAdd: (content: string, mentions: string[]) => void;
   onResolve: (annId: string) => void;
   onReply: (annId: string, content: string) => void;
-}> = ({ annotations, reportId, onAdd, onResolve, onReply }) => {
+}> = ({ annotations, reportId: _reportId, onAdd, onResolve, onReply }) => {
   const [newContent, setNewContent] = useState('');
   const [replyContents, setReplyContents] = useState<Record<string, string>>({});
 
@@ -482,7 +475,7 @@ const FlowStepIndicator: React.FC<{ report: Report }> = ({ report }) => {
     { title: '批准签发', role: 'approver', label: '批准人' },
   ];
 
-  const sigMap = new Map(report.signatures.map(s => [s.role, s]));
+  const sigMap = new Map<string, ReportSignature>(report.signatures.map(s => [s.role, s]));
 
   const stepStatus = (role: string): 'finish' | 'process' | 'wait' | 'error' => {
     const sig = sigMap.get(role);
@@ -619,7 +612,7 @@ export const ReportsPage: React.FC = () => {
   // Signature Verification
   const [verifyResult, setVerifyResult] = useState<any>(null);
   const [verifyLoading, setVerifyLoading] = useState(false);
-  const [verifyOpen, setVerifyOpen] = useState(false);
+  const [_verifyOpen, setVerifyOpen] = useState(false);
 
   // Selection
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
@@ -679,7 +672,7 @@ export const ReportsPage: React.FC = () => {
 
   // ============ Actions ============
 
-  const handleSubmitForReview = (report: Report) => {
+  const handleSubmitForReview = (_report: Report) => {
     setSignRole('compiler');
     setSignRoleLabel('编制');
     setSignModalOpen(true);
@@ -759,19 +752,7 @@ export const ReportsPage: React.FC = () => {
     loadReports();
   };
 
-  const handleDelete = (report: Report) => {
-    Modal.confirm({
-      title: `确定删除报告 ${report.reportNo}？`,
-      content: '此操作不可恢复',
-      onOk: () => {
-        setReports(prev => prev.filter(r => r.id !== report.id));
-        message.success('删除成功');
-      },
-    });
-  };
-
   const handleBatchSign = () => {
-    const count = selectedRowKeys.length;
     const toSign = reports.filter(r => selectedRowKeys.includes(r.id) && r.status === 'tech_reviewed');
     if (toSign.length === 0) {
       message.warning('选中的报告中没有待批准签发的报告');
@@ -784,7 +765,7 @@ export const ReportsPage: React.FC = () => {
       onOk: () => {
         setReports(prev => prev.map(r =>
           selectedRowKeys.includes(r.id) && r.status === 'tech_reviewed'
-            ? { ...r, status: 'issued', signatures: [...r.signatures, { role: 'approver', name: '当前用户', signedAt: new Date().toISOString() }] }
+            ? { ...r, status: 'issued', signatures: [...r.signatures, { role: 'approver', name: '当前用户', signedAt: new Date().toISOString() } as unknown as ReportSignature] }
             : r
         ));
         setSelectedRowKeys([]);
@@ -1557,7 +1538,7 @@ export const ReportsPage: React.FC = () => {
                               style={{ width: 90 }}
                               onChange={val => {
                                 const next = [...editReport.testResults];
-                                next[idx] = { ...next[idx], judgment: val };
+                                next[idx] = { ...next[idx], judgment: val as any };
                                 setEditReport({ ...editReport, testResults: next });
                               }}
                             >
