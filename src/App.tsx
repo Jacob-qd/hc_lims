@@ -1,5 +1,6 @@
 import { RouterProvider } from 'react-router-dom';
 import { ConfigProvider, theme } from 'antd';
+import zhCN from 'antd/locale/zh_CN';
 import { useThemeStore } from './stores/themeStore';
 import { router } from './router';
 
@@ -8,6 +9,7 @@ function App() {
 
   return (
     <ConfigProvider
+      locale={zhCN}
       theme={{
         algorithm: mode === 'dark' ? theme.darkAlgorithm : theme.defaultAlgorithm,
         token: {

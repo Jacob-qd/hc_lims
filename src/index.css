@@ -142,8 +142,7 @@ a {
 
 /* Modal form spacing */
 .ant-modal-body {
-  max-height: 65vh;
-  overflow-y: auto;
+  max-height: 75vh;
 }
 .ant-modal-body .ant-form-item:last-child {
   margin-bottom: 0;

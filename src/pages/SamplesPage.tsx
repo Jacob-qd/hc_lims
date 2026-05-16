@@ -461,7 +461,7 @@ export const SamplesPage: React.FC = () => {
         onCancel={() => { setWizardOpen(false); setCurrentStep(0); form.resetFields(); setSelectedTestItems([]); }}
         width={700}
         footer={null}
-        bodyStyle={{ maxHeight: '65vh', overflowY: 'auto', padding: '16px 24px' }}
+        bodyStyle={{ maxHeight: '70vh', overflowY: 'auto' }}
       >
         <Steps current={currentStep} style={{ marginBottom: 24 }}>
           <Step title="基本信息" />
