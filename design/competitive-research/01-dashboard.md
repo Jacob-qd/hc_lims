@@ -193,3 +193,52 @@ interface DashboardAlert {
 2. 🟡 **KPI 增强**：添加同比环比 + 红绿箭头
 3. 🟡 **角色看板**：基于当前用户角色动态展示
 4. 🟢 **定时推送**：日报/周报自动生成
+
+---
+
+## 5. 开发实现规格 — 预警中心 (最大缺失)
+
+### 5.1 组件
+```
+DashboardPage 新增:
+└── AlertPanel (替换现有简单告警列表)
+    ├── AlertSummary (4类计数: 🔴质控/🟡校准/🟡试剂/🔵资质)
+    └── AlertList
+        └── AlertItem (类型图标 + 级别Badge + 消息 + 时间 + [处理]按钮)
+```
+
+### 5.2 预警数据结构
+```typescript
+interface DashboardAlert {
+  id: string;
+  type: 'qc_violation' | 'calibration_due' | 'reagent_expiry' | 'cert_expiry';
+  level: 'critical' | 'warning' | 'info';
+  message: string;
+  detail: string;
+  linkUrl: string;     // 点击[处理]跳转
+  createdAt: string;
+  acknowledged: boolean;
+}
+```
+
+### 5.3 交互
+```
+[处理] → 根据 linkUrl 跳转: qc_violation→/quality, calibration_due→/instruments, reagent_expiry→/inventory, cert_expiry→/personnel
+预警计数: 实时从各模块聚合, 未acknowledged的计入Badge
+```
+
+### 5.4 KPI增强
+```
+每个KPI卡片增加:
+├── 数值 (大号)
+├── 同比/环比箭头 (↑绿色 ↓红色)
+├── 变化百分比
+└── onClick → 钻取到明细列表
+```
+
+### 5.5 测试
+| # | 测试 | 预期 |
+|---|------|------|
+| T1 | 仪表盘加载 | 4类预警计数正确 |
+| T2 | 点击质控违规[处理] | 跳转到 /quality |
+| T3 | KPI点击钻取 | 跳转到对应列表页 |

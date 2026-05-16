@@ -222,3 +222,67 @@ interface CustodyEvent {
 2. 🔴 **留样管理**：留样策略 + 到期提醒 + 处置确认签名
 3. 🟡 **样品接收增强**：验收规则 + 异常处理 + 拍照留证
 4. 🟡 **存储库位**：结构化库位 (房间/冰箱/层/盒/位)
+
+---
+
+## 5. 开发实现规格 — 分样与留样 (最大缺失)
+
+### 5.1 分样管理
+```
+SamplesPage 新增 Tab[分样管理]:
+├── 选择父样品 → 点击[分样]
+├── 分样Modal:
+│   ├── 父样品信息展示
+│   ├── 子样品列表 (动态添加行):
+│   │   ├── 子样编号 (自动生成 SMP-xxx-A/B/C)
+│   │   ├── 体积 (mL)
+│   │   ├── 用途 (检测/留样/备份)
+│   │   ├── 目标实验室
+│   │   └── 存储位置
+│   └── 总体积校验 (子样总体积 ≤ 父样总体积)
+└── 确认 → 创建子样品 → 父样品状态更新
+```
+
+### 5.2 留样管理
+```
+SamplesPage 新增 Tab[留样管理]:
+├── 留样列表 (样品编号/留样期限/到期日期/存储位置/状态)
+├── 到期提醒: 到期前7天 → 列表红色标记 + 通知
+├── 处置操作:
+│   ├── [销毁] → 确认弹窗 → 填写销毁方式 → 签名
+│   ├── [退回] → 确认弹窗 → 填写退回原因
+│   └── [续期] → 输入新的保留天数
+└── 留样策略配置: 默认保留天数/按样品类型配置
+```
+
+### 5.3 数据模型
+```typescript
+interface SampleAliquot {
+  id: string;
+  parentSampleId: string;
+  aliquotNo: string;        // SMP-xxx-A
+  volume: string;           // "200mL"
+  purpose: 'testing' | 'retention' | 'backup';
+  targetLabId?: string;
+  storageLocation?: StorageLocation;
+  status: 'active' | 'consumed' | 'disposed';
+}
+
+interface SampleRetention {
+  sampleId: string;
+  retentionPeriod: number;  // 天
+  expiryAt: string;
+  disposalMethod?: 'destroy' | 'return' | 'extend';
+  disposalAt?: string;
+  disposalBy?: string;
+  disposalSignature?: string;
+}
+```
+
+### 5.4 测试
+| # | 测试 | 预期 |
+|---|------|------|
+| T1 | 分样: 1L样品→3份子样品 | 创建成功, 总体积=1000mL |
+| T2 | 分样: 子样体积>父样 | 校验失败, 红色提示 |
+| T3 | 留样到期提醒 | 到期红色标记 |
+| T4 | 留样处置销毁 | 签名确认, 状态更新 |

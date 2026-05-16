@@ -394,3 +394,53 @@ GET /api/v1/roles/templates
   { id: "tpl-qa-specialist", name: "QA专员", roles: ["qa", "report-viewer", "audit-viewer"] }
 ]
 ```
+
+---
+
+## 6. 开发实现规格
+
+### 6.1 组件树 (SettingsPage增强)
+```
+SettingsPage → Tab[角色权限]
+├── Card[权限矩阵]
+│   ├── Select[角色切换] → 切换显示不同角色权限
+│   ├── PermissionTable (模块×操作 矩阵)
+│   └── Button[新建角色]
+├── Card[密码策略] → Descriptions(8项策略展示) + Switch[MFA] + Button[保存]
+├── Card[角色模板] → Table(模板名/角色/说明/操作)
+└── Card[权限委托] → Table(委托人/受托人/权限/有效期/原因/操作)
+```
+
+### 6.2 交互
+```
+角色切换: Select onChange → 切换 permData 展示
+新建角色: 打开 Modal → 填写名称→选择菜单权限→保存
+应用角色模板: 点击[应用] → 确认 → toast
+委托审批: [审批]→通过, [拒绝]→拒绝并通知
+保存密码策略: [保存策略]→toast
+```
+
+### 6.3 边缘情况
+| 场景 | 处理 |
+|------|------|
+| 委托到期 | 系统自动标记expired, 无需手动操作 |
+| 角色无任何权限 | 矩阵全部显示✗ |
+| 权限变更后 | 用户下次登录生效 |
+
+### 6.4 API
+```
+GET    /api/v1/roles                    → { list: Role[] }
+POST   /api/v1/roles                    → 创建角色
+PUT    /api/v1/roles/:id                → 更新权限矩阵
+GET    /api/v1/users/:id/permissions    → 用户有效权限
+POST   /api/v1/delegations              → 创建委托
+PUT    /api/v1/delegations/:id/approve  → 审批通过
+```
+
+### 6.5 测试
+| # | 测试 | 预期 |
+|---|------|------|
+| T1 | 切换角色到"检测员" | 权限矩阵变化 |
+| T2 | 查看密码策略 | 8项策略正确展示 |
+| T3 | 应用"新入职检测员"模板 | toast "角色已应用" |
+| T4 | 新建权限委托 | toast "委托申请已提交" |

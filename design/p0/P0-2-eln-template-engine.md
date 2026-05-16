@@ -335,3 +335,88 @@ function getHistoricalRange(methodId: string, testItem: string): { min: number; 
   // 返回 P2.5-P97.5 范围
 }
 ```
+
+---
+
+## 6. 开发实现规格
+
+### 6.1 组件树
+```
+ELNPage
+├── Tabs
+│   ├── Tab[模板库]
+│   │   ├── SearchBar
+│   │   └── TemplateTable (名称/方法/版本/字段数/状态/操作)
+│   │       └── 操作: [查看]→DesignerDrawer [试运行]→ExecutionModal [复制]
+│   └── Tab[实验记录]
+│       └── RecordTable (模板/版本/任务/样品/实验员/状态)
+├── DesignerDrawer (width=700)
+│   ├── Descriptions (模板基本信息)
+│   ├── 逐Section渲染Card
+│   │   └── 每Field渲染: label + typeTag + requiredTag + 属性文本
+│   └── Footer: [保存] [发布] [试运行]
+├── ExecutionModal (width=700)
+│   ├── Steps (当前步骤高亮)
+│   ├── 当前Section → Card
+│   │   ├── auto fields → Input(disabled, 自动带入值)
+│   │   ├── select fields → Select
+│   │   ├── number fields → Input(type=number)
+│   │   ├── calculation fields → 公式展示 + 计算结果(仅最后一步显示)
+│   │   └── judgment fields → 标准展示 + 判定Tag(仅最后一步显示)
+│   └── Footer: [上一步] [下一步] [执行计算] [关闭]
+└── CreateTemplateModal
+    └── Form (名称/方法/版本)
+```
+
+### 6.2 公式引擎规格
+```typescript
+// 输入: formula="(absorbance-blank)*K*dilution", vars={absorbance:0.321,blank:0.001,K:80,dilution:1}
+// 处理: 正则替换变量名为值 → eval safe expression
+// 输出: 25.6
+// 修约: gb8170Round(25.6, 1) → 25.6 (保留1位小数, 四舍六入五成双)
+// 判定: judgeResult(25.6, "≤50", "lte") → "符合"
+```
+
+### 6.3 试运行交互流
+```
+点击[试运行] → loadTemplateDefaults
+  → 初始化fieldValues (auto字段自动填入mock值)
+  → currentStep=0
+  → 打开ExecutionModal
+步骤0: 展示section[0]的字段 → 填写 → [下一步]
+步骤1..N-1: 同步骤0
+步骤N (最后一步): 填写 → [执行计算]
+  → handleCalculate()
+    → 遍历所有calculation字段
+    → evaluateFormula(formula, vars)
+    → gb8170Round(value, rounding)
+    → 遍历所有judgment字段
+    → judgeResult(value, standard, rule)
+    → setCalcResults
+    → 显示计算结果
+```
+
+### 6.4 边缘情况
+| 场景 | 处理 |
+|------|------|
+| 公式含未填变量 | evaluateFormula返回NaN → 显示"计算失败: 请填写所有依赖字段" |
+| 试运行中途关闭 | 不保存任何数据, 仅用于验证 |
+| 模板发布后编辑 | 提示"编辑将创建新版本", 旧版本不可变 |
+| 字段类型不匹配 | 表单渲染时根据type渲染对应控件, 未知type降级为text Input |
+
+### 6.5 API
+```
+GET  /api/v1/eln/templates  → { list: ELNTemplate[] }
+POST /api/v1/eln/templates  → { name*, methodName?, version? }  → 返回模板
+GET  /api/v1/eln/records    → { list: ELNRecord[] }
+POST /api/v1/eln/records    → { taskId*, templateId*, fieldValues }  → 返回记录
+POST /api/v1/eln/records/:id/calculate → 返回 { calculatedResults, judgments }
+```
+
+### 6.6 测试用例
+| # | 测试 | 预期 |
+|---|------|------|
+| T1 | COD模板试运行: 填完所有字段→执行计算 | COD=25.6, 判定=符合 |
+| T2 | pH模板: 读数=5.5, 标准6.0-9.0 | 判定=超标, 红色Tag |
+| T3 | 试运行中途点关闭 | Modal关闭, 无数据保存 |
+| T4 | 模板复制 | toast "已复制模板" |

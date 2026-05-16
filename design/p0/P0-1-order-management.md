@@ -259,3 +259,94 @@ in_progress → partial_complete → completed → archived(invoiced)
 1. 选择客户（搜索/最近）→ 自动带出历史检测套餐
 2. 选择套餐 → 输入样品数量
 3. 确认委托 → 30 秒完成
+
+---
+
+## 6. 开发实现规格 (Implementation Spec)
+
+### 6.1 组件树
+
+```
+OrdersPage
+├── PageHeader
+│   ├── Button[快速委托] → setQuickOpen(true)
+│   ├── Button[新建委托] → setCreateOpen(true)
+│   ├── Button[批量导入] → 文件上传触发
+│   └── Button[导出] → CSV下载
+├── StatCards (4列: 总数/执行中/本月完成/紧急)
+├── FilterBar (搜索框 + 状态Select + 紧急度Select)
+├── OrderTable
+│   ├── 委托编号列 (可点击 → 打开DetailDrawer)
+│   ├── 客户/项目列 (ellipsis溢出省略)
+│   ├── SLA列 (Progress + 颜色标记)
+│   └── 操作列 (详情/提交/变更 - 状态感知)
+├── DetailDrawer (width=640)
+│   ├── Descriptions (基本信息)
+│   ├── Tabs
+│   │   ├── 状态时间线 (Timeline)
+│   │   ├── 检测套餐 (套餐详情)
+│   │   └── 样品清单 (Table)
+│   └── Extra: [取消委托] [导出]
+├── CreateModal (width=600)
+│   └── Form (客户/PO/项目/套餐/样品/紧急度/截止日期)
+└── QuickOrderModal (width=500)
+    └── Form (客户选择器 + 套餐选择器 + 样品数 + 紧急度)
+```
+
+### 6.2 状态管理
+
+```typescript
+const [orders, setOrders] = useState(mockOrders);
+const [search, setSearch] = useState('');
+const [statusFilter, setStatusFilter] = useState('all');
+const [selected, setSelected] = useState<any>(null);
+const [detailOpen, setDetailOpen] = useState(false);
+const [createOpen, setCreateOpen] = useState(false);
+const [quickOpen, setQuickOpen] = useState(false);
+const [editing, setEditing] = useState<any>(null);
+```
+
+### 6.3 交互事件流
+
+**创建委托**: 点击[新建] → fill form → validateFields() → handleCreate → match套餐→构造Order → setOrders前置 → toast → closeModal
+
+**快速委托**: 点击[快速] → 选客户(Select showSearch) → 选套餐 → 填样品数 → handleQuickCreate → 查历史自动填PO/项目 → status='submitted'跳过草稿 → 计算金额=price×count → toast含金额信息
+
+**SLA计算**: daysLeft = ceil((dueDate - now) / 86400000); color: <0=red, ≤2=yellow, >2=green
+
+### 6.4 表单验证
+
+| 字段 | 规则 | 错误提示 |
+|------|------|---------|
+| customerName | required | "请选择或输入客户" |
+| projectName | required | "请输入项目名称" |
+| sampleCount | min:1 | "样品数量至少为1" |
+| testPackageId | optional | - |
+
+### 6.5 边缘情况
+
+| 场景 | 处理 |
+|------|------|
+| 委托已提交后修改 | 只有 draft 状态可提交, 其他显示「变更」|
+| 取消委托 | completed/cancelled 状态不可取消 |
+| 空列表 | Empty占位: "暂无委托" |
+| 搜索无结果 | 空数据 + "未找到匹配的委托" |
+| 套餐未选择 | 快速委托时必选, 否则无法计算TAT和金额 |
+
+### 6.6 API 规格
+
+```
+GET  /api/v1/orders?search=&status=&page=1  → { code, data: { list:Order[], total } }
+POST /api/v1/orders  → { customerName*, projectName*, sampleCount*, testPackageId?, urgency?, dueDate? }  → { code, message, data:Order }
+```
+
+### 6.7 测试用例
+
+| # | 测试场景 | 预期 |
+|---|---------|------|
+| T1 | 快速委托: 绿源+地表水24项+3样品 | 创建成功, 金额=8400, 状态=已提交 |
+| T2 | 新建委托: 不填客户名 | 校验失败, 红色提示 |
+| T3 | 搜索"绿源" | 过滤仅显示绿源环保 |
+| T4 | SLA: 截止日期=昨天 | 红色进度条, "超期1天" |
+| T5 | 取消委托 | 状态→cancelled, 不再显示取消按钮 |
+| T6 | 导出CSV | 下载orders.csv |

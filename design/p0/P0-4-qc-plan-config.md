@@ -370,3 +370,48 @@ const trendRules = {
 | 1个失控规则 (1₃s/2₂s/R₄s/4₁s/10x) | 🔴 冻结 | 冻结相关样品结果 |
 | 2+ 规则同时触发 | 🔴🔴 严重 | 冻结 + 强制 CAPA |
 | 1₂s + 1₃s | 🔴🔴 严重 | 冻结 + 强制 CAPA |
+
+---
+
+## 5. 开发实现规格
+
+### 5.1 组件树 (QualityPage新增Tab)
+```
+QualityPage
+├── Tabs (原有)
+│   └── Tab[📋 质控方案]
+│       ├── Card[方案列表]
+│       │   └── PlanTable (方案名/方法/QC类型Tag/频率/Westgard标签/操作)
+│       └── Card[Westgard违例记录]
+│           └── ViolationTable (批次/规则Tag/级别Badge/详情/时间/处置)
+```
+
+### 5.2 数据流
+```
+QC类型渲染: types.split('+').map → <Tag color="blue">
+Westgard渲染: rules.split(',').map → <Tag color=含₃?'orange':'green'>
+违例级别: level='reject'→红色Badge, level='warning'→黄色Badge
+```
+
+### 5.3 交互
+```
+[评估] → 模拟执行Westgard规则 → 更新lastEval时间
+[质控图] → 跳转或toast
+[新建方案] → 创建Modal
+[编辑] → 编辑Modal
+```
+
+### 5.4 API
+```
+GET  /api/v1/qc/plans      → { list: QCPlan[] }
+POST /api/v1/qc/plans      → 创建方案
+POST /api/v1/qc/evaluate   → { violations: [...] }
+GET  /api/v1/qc/chart/:id  → 质控图数据
+```
+
+### 5.5 测试
+| # | 测试 | 预期 |
+|---|------|------|
+| T1 | 查看水质QC方案 | 显示4种QC类型Tag + 6个Westgard规则Tag |
+| T2 | 查看违例记录 | 1₂s显示橙色, 2₂s显示红色, 级别Badge正确 |
+| T3 | 点击新建方案 | toast |

@@ -330,3 +330,60 @@ async function assignTask(taskId: string, analystId: string): Promise<void> {
 - **甘特图视图**：时间轴显示任务排期（可拖拽调整时间）
 - 拖拽后自动验证：目标检测员是否有资质、设备是否可用
 - 验证失败时显示原因并回弹
+
+---
+
+## 6. 开发实现规格
+
+### 6.1 组件树 (TasksPage增强)
+```
+TasksPage
+├── Tabs
+│   ├── Tab[任务列表] (原有)
+│   └── Tab[任务看板]
+│       ├── Card[派工规则]
+│       │   ├── RuleTable (规则名/条件/分配策略/状态/操作)
+│       │   └── Button[新建规则] → toast
+│       ├── Card[负载监控]
+│       │   ├── 检测员负载 (每行: 名字 + 当前/最大 + 进度条)
+│       │   ├── 设备占用 (每行: 名字 + 通道占用 + 进度条)
+│       │   ├── Button[执行自动派工] → toast含分配数量
+│       │   └── Button[批量分配]
+│       └── KanbanBoard (原有)
+```
+
+### 6.2 负载监控数据流
+```
+页面加载 → 本地mock数据渲染
+进度条: percent = (currentLoad / maxCapacity) * 100
+颜色: >= 80% red, >= 60% yellow, < 60% green
+检测员数据: { name, load, max, completed, avgTAT }
+设备数据: { name, load, max, 通道 }
+```
+
+### 6.3 交互事件
+```
+[执行自动派工] → 遍历待分配任务 → 匹配规则 → 选择负载最低的合格检测员 → toast "已分配N个任务"
+[批量分配] → toast "批量分配功能"
+```
+
+### 6.4 边缘情况
+| 场景 | 处理 |
+|------|------|
+| 所有检测员负载已满 | 提示"当前无可用检测员" |
+| 设备全部离线 | 提示"当前无可用设备" |
+| 规则未配置 | 显示Empty: "暂无派工规则, 点击新建" |
+
+### 6.5 API
+```
+GET  /api/v1/dispatch/rules   → { list: DispatchRule[] }
+POST /api/v1/dispatch/auto    → { assigned: number, details: [...] }
+GET  /api/v1/dispatch/load    → { analysts: AnalystLoad[], instruments: InstrumentLoad[] }
+```
+
+### 6.6 测试
+| # | 测试 | 预期 |
+|---|------|------|
+| T1 | 执行自动派工 | toast "已分配5个任务" |
+| T2 | 张伟负载8/10 | 进度条80%, 黄色异常状态 |
+| T3 | 设备GC-MS 2/4通道 | 进度条50%, 绿色正常 |
