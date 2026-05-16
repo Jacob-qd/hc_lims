@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Card, Table, Tag, Button, Input, Select, Row, Col, Space, Typography,
   Drawer, Tabs, Descriptions, Timeline, Statistic, Modal, Form, message,
@@ -31,6 +32,7 @@ const priorityColor: Record<string, string> = {
 };
 
 export const TasksPage: React.FC = () => {
+  const navigate = useNavigate();
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [stats, setStats] = useState<any>({});
   const [loading, setLoading] = useState(true);
@@ -188,7 +190,14 @@ export const TasksPage: React.FC = () => {
         ]} />
       </Card>
 
-      <Drawer title={selectedTask?.taskNo} open={drawerVisible} onClose={() => { setDrawerVisible(false); setSelectedTask(null); }} width={480} extra={<Space><Button icon={<EditOutlined />} onClick={() => navigate(`/tasks/${selectedTask?.id}/result`)}>录入结果</Button><Button icon={<PrinterOutlined />} onClick={() => { const w=window.open('','_blank');if(w&&selectedTask){w.document.write(`<pre>任务: ${selectedTask.taskNo}\n样品: ${selectedTask.sampleNo}\n检测项: ${selectedTask.testItem}\n方法: ${selectedTask.method}\n截止: ${selectedTask.deadline}</pre>`);w.print();} }}>打印</Button></Space>}>
+      <Drawer title={selectedTask?.taskNo} open={drawerVisible} onClose={() => { setDrawerVisible(false); setSelectedTask(null); }} width={480} extra={<Space>
+        {(() => {
+          const s = selectedTask?.status;
+          if (s === 'unassigned') return <Button disabled icon={<EditOutlined />}>待分配后方可录入</Button>;
+          if (s === 'completed' || s === 'pending_review') return <Button icon={<EyeOutlined />} onClick={() => navigate(`/tasks/${selectedTask?.id}/result`)}>查看结果</Button>;
+          return <Button type="primary" icon={<EditOutlined />} onClick={() => navigate(`/tasks/${selectedTask?.id}/result`)}>录入结果</Button>;
+        })()}
+        <Button icon={<PrinterOutlined />} onClick={() => { const w=window.open('','_blank');if(w&&selectedTask){w.document.write(`<pre>任务: ${selectedTask.taskNo}\n样品: ${selectedTask.sampleNo}\n检测项: ${selectedTask.testItem}\n方法: ${selectedTask.method}\n截止: ${selectedTask.deadline}</pre>`);w.print();} }}>打印</Button></Space>}>
         {selectedTask && (
           <>
             <Descriptions column={2} size="small" bordered>
