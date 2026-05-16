@@ -241,6 +241,156 @@ interface User {
 
 | 天 | 内容 |
 |:--:|------|
-| D1 | 角色数据模型 + 权限矩阵配置页面 |
-| D2 | 用户授权页面 + 数据权限过滤逻辑 |
-| D3 | 签名权限 + 权限变更审计 + 集成到 RouteGuard + AppSider |
+| D1 | 角色数据模型 + 权限矩阵配置页面 + 多角色合并策略 |
+| D2 | 用户授权页面 + 数据权限过滤中间件 + 权限检查 API |
+| D3 | 签名权限 + 临时委托 + 密码策略 + 权限变更审计 |
+
+---
+
+## 5. Review 修正 (v1.1)
+
+### 5.1 补充 User Story
+
+#### US6 — 多角色权限合并
+> 作为**系统管理员**，当用户有多个角色时（如"检测员"+"设备使用者"），系统应按 deny-override 原则合并权限——任一角色限制的权限即为最终限制。
+
+#### US7 — 临时权限委托
+> 作为**实验室主管**，我休假 2 周期间，需要将审批权限临时委托给副主管。到期后自动收回，不留后门。
+
+#### US8 — 新员工快速配置
+> 作为**系统管理员**，新入职检测员应能一键应用"新检测员"角色模板（包含检测员基本权限 + 设备使用 + 样品查看），无需手动勾选 20+ 项权限。
+
+#### US9 — 权限变更通知
+> 作为**检测员**，当我的权限被修改时，应收到站内通知和邮件，告知"您的 XX 权限已被 YY 修改为 ZZ"。
+
+#### US10 — 密码策略合规
+> 作为**系统**，应符合 21 CFR Part 11 要求：密码 8 位以上含大小写+数字+特殊字符，90 天过期，5 次失败锁定 30 分钟，不可重复使用最近 5 次密码。
+
+### 5.2 多角色权限合并策略
+
+```typescript
+// deny-override: 安全优先原则
+function mergePermissions(roles: Role[]): EffectivePermissions {
+  const merged: EffectivePermissions = {
+    menuPermissions: new Set<string>(),
+    dataScope: 'all' as DataScope,
+    operations: {},
+    signScopes: []
+  };
+  
+  for (const role of roles) {
+    // 菜单: 取并集
+    role.menuPermissions.forEach(m => merged.menuPermissions.add(m));
+    
+    // 数据范围: 取最严格（deny-override）
+    const scopePriority = { self: 1, lab: 2, all: 3 };
+    if (scopePriority[role.dataScope] < scopePriority[merged.dataScope]) {
+      merged.dataScope = role.dataScope;
+    }
+    
+    // 操作权限: 逐个资源取最严格
+    for (const [resource, perm] of Object.entries(role.permissions)) {
+      if (!merged.operations[resource]) {
+        merged.operations[resource] = { ...perm };
+      } else {
+        // deny-override: 任一角色无权限 = 最终无权限
+        const existing = merged.operations[resource];
+        existing.view = existing.view && perm.view;
+        existing.create = existing.create && perm.create;
+        existing.delete = existing.delete && perm.delete;
+        // edit 取最严格
+        const editPriority = { none: 0, own: 1, all: 2 };
+        if (editPriority[perm.edit] < editPriority[existing.edit]) {
+          existing.edit = perm.edit;
+        }
+      }
+    }
+  }
+  
+  return merged;
+}
+```
+
+### 5.3 临时权限委托
+
+```typescript
+interface PermissionDelegation {
+  id: string;
+  fromUserId: string;
+  toUserId: string;
+  permissions: string[];         // 委托的权限列表
+  validFrom: string;
+  validUntil: string;            // 到期自动收回
+  reason: string;                 // 委托原因（必填，审计用）
+  status: 'active' | 'expired' | 'revoked';
+  approvedBy: string;             // 需要上级审批
+  createdAt: string;
+}
+
+// 定时任务：每小时检查过期委托并自动收回
+async function revokeExpiredDelegations(): Promise<void> {
+  const expired = await db.findDelegations({ 
+    status: 'active', 
+    validUntil: { lt: new Date().toISOString() } 
+  });
+  for (const d of expired) {
+    await db.updateDelegation(d.id, { status: 'expired' });
+    await auditLog.create({ action: 'delegation_expired', details: d });
+    await notifyUser(d.fromUserId, `对 ${d.toUserId} 的权限委托已到期收回`);
+  }
+}
+```
+
+### 5.4 密码策略配置
+
+```typescript
+interface PasswordPolicy {
+  minLength: number;             // >= 8
+  requireUppercase: boolean;     // 必须含大写
+  requireLowercase: boolean;     // 必须含小写
+  requireDigit: boolean;         // 必须含数字
+  requireSpecial: boolean;       // 必须含特殊字符
+  maxAgeDays: number;            // 90 天过期
+  maxFailedAttempts: number;     // 5 次锁定
+  lockoutDurationMinutes: number;// 30 分钟
+  historyCount: number;          // 不可重复最近 5 次
+}
+
+const defaultPolicy: PasswordPolicy = {
+  minLength: 8,
+  requireUppercase: true,
+  requireLowercase: true,
+  requireDigit: true,
+  requireSpecial: true,
+  maxAgeDays: 90,
+  maxFailedAttempts: 5,
+  lockoutDurationMinutes: 30,
+  historyCount: 5
+};
+```
+
+### 5.5 权限检查 API
+
+```typescript
+// 实时权限检查
+GET /api/v1/auth/check?action=edit&resource=report:RPT-001
+→ { allowed: true, reason: null }
+→ { allowed: false, reason: "您没有报告编辑权限" }
+
+// 有效权限查询（合并所有角色）
+GET /api/v1/users/:id/effective-permissions
+→ {
+  menuPermissions: ["/dashboard", "/tasks", ...],
+  dataScope: "lab",
+  operations: { "report": { view: true, create: false, edit: "own", delete: false } },
+  signScopes: [{ type: "prepared", documentTypes: ["report"] }],
+  activeDelegations: [{ fromUser: "王强", until: "2026-06-01" }]
+}
+
+// 角色模板
+GET /api/v1/roles/templates
+→ [
+  { id: "tpl-new-analyst", name: "新入职检测员", roles: ["analyst", "instrument-user", "sample-viewer"] },
+  { id: "tpl-qa-specialist", name: "QA专员", roles: ["qa", "report-viewer", "audit-viewer"] }
+]
+```

@@ -218,6 +218,115 @@ interface InstrumentLoad {
 
 | 天 | 内容 |
 |:--:|------|
-| D1 | 派工规则数据模型 + 规则配置页面 |
-| D2 | 自动派工逻辑（资质匹配 + 负载均衡）+ 看板视图 |
-| D3 | 紧急插单 + 批量操作 + 集成到 TasksPage |
+| D1 | 设备能力矩阵 + 派工规则配置页面（含权重参数） |
+| D2 | 自动派工核心算法（人+设备双维度）+ 负载看板 + 甘特图 |
+| D3 | 手动拖拽微调 + 紧急插单 + 重排程触发 + 集成到 TasksPage |
+
+---
+
+## 5. Review 修正 (v1.1)
+
+### 5.1 补充 User Story
+
+#### US6 — 手动微调自动派工结果
+> 作为**实验室主管**，系统自动派工后，我需要在甘特图/看板上看到结果，并能拖拽调整——把张伟的 2 个任务拖给李明。
+
+#### US7 — 紧急插单重排程
+> 作为**业务员**，周五下午 4 点收到 20 个紧急样品，系统应一键"全部紧急"，自动重排程，预估新的完成时间。
+
+#### US8 — 设备驱动的任务分配
+> 作为**实验室主管**，HPLC #1 故障维修，系统应自动将该设备上的待检测任务重新分配给 HPLC #2（如通道有空闲）。
+
+#### US9 — 基于历史效率的智能分配
+> 作为**系统**，应学习每个检测员对每种方法的平均完成时间（张伟做 COD 平均 2.3 小时，李明 3.1 小时），紧急任务优先分配给效率更高的人。
+
+#### US10 — 负载预警
+> 作为**实验室主管**，当某人或某设备的负载超过 80%，系统应自动告警并建议"考虑分配给 XXX"。
+
+### 5.2 设备能力矩阵
+
+```typescript
+interface InstrumentCapability {
+  instrumentId: string;
+  instrumentName: string;
+  supportedMethods: string[];     // 支持的方法 ID
+  supportedTestItems: string[];   // 支持的检测项目 ID
+  channelCount: number;           // 通道数（同时可运行的任务数）
+  calibrationStatus: 'valid' | 'expiring_30d' | 'expiring_7d' | 'expired';
+  calibrationDueAt: string;
+  maintenanceStatus: 'available' | 'scheduled' | 'in_progress';
+  nextMaintenanceAt?: string;
+  averageTAT: number;            // 该方法在设备上的平均耗时(小时)
+}
+```
+
+### 5.3 排程算法明确定义
+
+```typescript
+interface DispatchScore {
+  taskId: string;
+  analystId: string;
+  instrumentId?: string;
+  totalScore: number;
+  breakdown: {
+    urgencyScore: number;    // 权重 0.35
+    tatScore: number;        // 权重 0.25
+    loadScore: number;       // 权重 0.20
+    efficiencyScore: number; // 权重 0.15
+    equipmentScore: number;  // 权重 0.05
+  };
+}
+
+function calculateDispatchScore(task: Task, analyst: Analyst, instrument?: Instrument): DispatchScore {
+  const urgencyScore = { normal: 1, rush: 2, urgent: 3 }[task.urgency] * 0.35;
+  const tatScore = (1 / Math.max(task.remainingTAT, 0.5)) * 0.25;
+  const loadScore = (1 - analyst.currentLoad / analyst.maxCapacity) * 0.20;
+  const efficiencyScore = (1 / analyst.averageTAT[task.methodId]) * 0.15;
+  const equipmentScore = instrument && instrument.calibrationStatus === 'valid' ? 0.05 : 0;
+  
+  return {
+    taskId: task.id, analystId: analyst.id, instrumentId: instrument?.id,
+    totalScore: urgencyScore + tatScore + loadScore + efficiencyScore + equipmentScore,
+    breakdown: { urgencyScore, tatScore, loadScore, efficiencyScore, equipmentScore }
+  };
+}
+```
+
+### 5.4 重排程触发条件
+
+| 触发事件 | 影响范围 | 重排程动作 |
+|---------|---------|----------|
+| 设备故障/离线 | 该设备所有待执行任务 | 寻找同能力替代设备 |
+| 检测员请假 | 该检测员所有未开始任务 | 重新分配给其他合格人员 |
+| 紧急插单 | 所有未开始任务 | 提升紧急任务优先级，重算顺序 |
+| 前序任务超时 | 依赖链上的后续任务 | 预警 + 建议重新分配 |
+| 新设备上线 | 可选的排队任务 | 可选地分担负载 |
+
+### 5.5 并发安全
+
+```typescript
+// 采用乐观锁 + 版本号
+interface Task {
+  id: string;
+  version: number;  // 每次分配 +1
+}
+
+async function assignTask(taskId: string, analystId: string): Promise<void> {
+  const task = await db.findTask(taskId);
+  const updated = await db.updateTask(
+    { id: taskId, version: task.version },
+    { assigneeId: analystId, version: task.version + 1 }
+  );
+  if (updated.affectedRows === 0) {
+    throw new ConcurrencyError('任务已被其他人分配，请刷新重试');
+  }
+}
+```
+
+### 5.6 手动拖拽调整
+
+派工看板采用看板 + 甘特图双视图：
+- **看板视图**：按检测员分列，每列显示当前任务卡片（可拖拽）
+- **甘特图视图**：时间轴显示任务排期（可拖拽调整时间）
+- 拖拽后自动验证：目标检测员是否有资质、设备是否可用
+- 验证失败时显示原因并回弹

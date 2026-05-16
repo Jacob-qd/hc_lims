@@ -245,6 +245,128 @@ interface QCResult {
 
 | 天 | 内容 |
 |:--:|------|
-| D1 | QC 方案数据模型 + 方案配置页面 |
-| D2 | Westgard 全规则引擎 + L-J 质控图组件 |
-| D3 | QC 自动插入逻辑 + 异常冻结 + 集成到 QualityPage |
+| D1 | QC 方案数据模型 + 方案配置页面 + 质控样品独立台账 |
+| D2 | Westgard 全规则引擎（限定同批次检查）+ L-J 质控图 + 趋势预判 |
+| D3 | QC 自动插入逻辑 + 异常冻结 + 质控数据归档 + 集成到 QualityPage |
+
+---
+
+## 4. Review 修正 (v1.1)
+
+### 4.1 补充 User Story
+
+#### US6 — 质控失败完整保留
+> 作为**QA**，质控失败后实验员重跑是正常的，但**所有质控结果必须保留**（包括失败的那次）。任何选择性删除质控记录的行为都是造假，系统必须禁止。
+
+#### US7 — 质控样效期管理
+> 作为**实验员**，月初配的质控样开封后，系统应在每次使用时检查效期。超过开封效期的质控样，系统应阻止使用并提示"质控样已过期，请更换"。
+
+#### US8 — 趋势预判
+> 作为**QA**，即使质控值未超限，如果连续 7 个点在同一侧（系统偏差）或连续 6 个点递增（漂移），系统应提前告警"质控存在潜在系统偏差，建议排查"。
+
+#### US9 — 评审审计追溯
+> 作为**CNAS 评审专家**，我需要查看过去 3 年的质控数据、质控图和违规处置记录。系统应支持按年度/季度归档查询和 PDF 导出。
+
+#### US10 — 多规则联动处置
+> 作为**QA**，当一个批次同时触发 1₂s 和 2₂s 时，处置级别应升级。单一规则违规 = 警告，多规则违规 = 冻结。
+
+### 4.2 Westgard 规则修正 — 限定同批次检查
+
+```typescript
+// ✅ 正确：仅检查同一批次内的质控值
+function evaluate2_2s(batchId: string, allValues: QCValue[]): WestgardResult {
+  const batchValues = allValues.filter(v => v.batchId === batchId);
+  for (let i = 1; i < batchValues.length; i++) {
+    const a = batchValues[i-1].value - batchValues[i-1].mean;
+    const b = batchValues[i].value - batchValues[i].mean;
+    if (Math.abs(a) > 2 * batchValues[i-1].sd && 
+        Math.abs(b) > 2 * batchValues[i].sd && 
+        a * b > 0) {
+      return { violated: true, rule: '2_2s', points: [batchValues[i-1], batchValues[i]] };
+    }
+  }
+  return { violated: false };
+}
+```
+
+### 4.3 质控样品独立台账
+
+```typescript
+interface QCReferenceMaterial {
+  id: string;
+  name: string;                  // "COD标准溶液"
+  lotNo: string;                 // 生产批号
+  concentration: number;
+  uncertainty: number;           // 不确定度 (±)
+  unit: string;
+  certificateNo: string;         // 标准物质证书编号
+  supplier: string;
+  manufactureDate: string;
+  expiryDate: string;            // 未开封效期
+  openedExpiryDays: number;      // 开封后效期 (天)
+  openedAt?: string;             // 开封日期
+  storageCondition: string;      // "4℃冷藏"
+  currentStock: number;          // 当前库存 (mL/mg)
+  status: 'valid' | 'expiring' | 'expired' | 'depleted';
+}
+
+// 使用质控样时检查
+function validateQCMaterial(material: QCReferenceMaterial): { valid: boolean; reason?: string } {
+  if (material.status === 'expired') return { valid: false, reason: '质控样已过期' };
+  if (material.status === 'depleted') return { valid: false, reason: '质控样库存不足' };
+  if (material.openedAt) {
+    const daysSinceOpen = dayjs().diff(dayjs(material.openedAt), 'day');
+    if (daysSinceOpen > material.openedExpiryDays) {
+      return { valid: false, reason: `质控样开封已 ${daysSinceOpen} 天，超过效期 ${material.openedExpiryDays} 天` };
+    }
+  }
+  return { valid: true };
+}
+```
+
+### 4.4 趋势预判规则
+
+```typescript
+const trendRules = {
+  '7T': {
+    name: '7点同侧趋势',
+    description: '连续 7 个质控值在均值同侧',
+    evaluate: (values: QCValue[]) => {
+      let count = 1;
+      for (let i = 1; i < values.length; i++) {
+        if ((values[i-1].value - values[i-1].mean) * (values[i].value - values[i].mean) > 0) {
+          count++;
+          if (count >= 7) return { violated: true, rule: '7T' };
+        } else count = 1;
+      }
+      return { violated: false };
+    }
+  },
+  '6Trend': {
+    name: '6点趋势漂移',
+    description: '连续 6 个质控值递增或递减',
+    evaluate: (values: QCValue[]) => {
+      let incCount = 1, decCount = 1;
+      for (let i = 1; i < values.length; i++) {
+        if (values[i].value > values[i-1].value) { incCount++; decCount = 1; }
+        else if (values[i].value < values[i-1].value) { decCount++; incCount = 1; }
+        else { incCount = 1; decCount = 1; }
+        if (incCount >= 6 || decCount >= 6) {
+          return { violated: true, rule: '6Trend', direction: incCount >= 6 ? 'up' : 'down' };
+        }
+      }
+      return { violated: false };
+    }
+  }
+};
+```
+
+### 4.5 多规则联动处置
+
+| 违规组合 | 处置级别 | 动作 |
+|---------|:---:|------|
+| 仅 1₂s | ⚠️ 警告 | 标记，不冻结 |
+| 仅 7T / 6Trend | ⚠️ 警告 | 通知 QA，建议排查 |
+| 1个失控规则 (1₃s/2₂s/R₄s/4₁s/10x) | 🔴 冻结 | 冻结相关样品结果 |
+| 2+ 规则同时触发 | 🔴🔴 严重 | 冻结 + 强制 CAPA |
+| 1₂s + 1₃s | 🔴🔴 严重 | 冻结 + 强制 CAPA |

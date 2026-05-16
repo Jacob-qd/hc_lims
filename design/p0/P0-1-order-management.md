@@ -179,3 +179,83 @@ interface OrderChange {
 | D1 | 委托列表页 (OrdersPage) + 创建 Modal + 数据模型 |
 | D2 | 委托详情 Drawer + 变更记录 + Mock 数据 |
 | D3 | 批量导入 + 统计卡片 + 路由注册 + 测试 |
+
+---
+
+## 5. Review 修正 (v1.1)
+
+### 5.1 补充 User Story
+
+#### US6 — 快速委托（高频场景）
+> 作为**业务员**，我每天要接 20+ 委托电话。从老客户创建委托应在 30 秒内完成：选择客户 → 选择检测套餐 → 输入样品数量 → 完成。
+
+#### US7 — 委托进度透明
+> 作为**客户**，我看到委托单上应显示每个样品的实时状态（待收样/检测中/已完成），以及预估完成时间倒计时。超期委托应有红色警告。
+
+#### US8 — 从模板创建委托
+> 作为**业务员**，每月固定客户（如市政水务）的委托内容完全相同，我应能从模板一键创建，无需重复填写。
+
+#### US9 — 委托变更审批
+> 作为**实验室主管**，已派工的委托如需变更（追加检测项目），必须经过我审批。系统自动判断变更是否需要审批。
+
+### 5.2 补充字段
+
+```typescript
+interface Order {
+  // ... 原有字段 ...
+  customerPoNo?: string;         // 🆕 客户采购单号（对账必需）
+  samplingAddress?: string;      // 🆕 采样地址（环境监测必需）
+  isRush: boolean;               // 🆕 是否加急（独立于 urgency，影响收费）
+  rushFee?: number;              // 🆕 加急附加费
+  billingStatus: 'unbilled' | 'billed' | 'paid';  // 🆕 计费状态
+  submittedAt?: string;          // 🆕 提交时间
+  receivedAt?: string;           // 🆕 收样时间
+  completedAt?: string;          // 🆕 完成时间
+  assignedLabId?: string;        // 🆕 客户指定实验室
+  templateId?: string;           // 🆕 从模板创建时关联
+}
+
+// 🆕 检测套餐/方案
+interface TestPackage {
+  id: string;
+  name: string;                  // "地表水24项" "饮用水106项"
+  category: string;              // 水质/土壤/空气/食品
+  testItems: { itemId: string; methodId: string; price: number }[];
+  estimatedTAT: number;          // 预估天数
+  totalPrice: number;
+}
+
+// 🆕 委托模板
+interface OrderTemplate {
+  id: string;
+  name: string;                  // "市政水务月度检测"
+  customerId: string;
+  testPackageId: string;
+  sampleCount: number;
+  isDefault: boolean;            // 该客户的默认模板
+}
+```
+
+### 5.3 状态机修正
+
+```
+draft → submitted → tech_review → accepted → received → in_progress
+                                    ↘ rejected (退回修改)
+                         ↘ on_hold (客户要求暂停)
+in_progress → partial_complete → completed → archived(invoiced)
+                            ↘ cancelled (客户取消)
+```
+
+### 5.4 SLA 可视化
+
+列表页增加 SLA 倒计时列：
+- 🟢 正常（> 剩余 3 天）
+- 🟡 预警（剩余 1-3 天）
+- 🔴 超期（已过截止日期）
+
+### 5.5 快速委托入口
+
+列表页顶部增加醒目的"🔍 快速委托"按钮：
+1. 选择客户（搜索/最近）→ 自动带出历史检测套餐
+2. 选择套餐 → 输入样品数量
+3. 确认委托 → 30 秒完成

@@ -227,8 +227,111 @@ interface CalculationEngine {
 
 | 天 | 内容 |
 |:--:|------|
-| D1 | ELN 模板数据模型 + 模板列表页 + 创建/编辑模板 Modal |
-| D2 | 模板设计器（拖拽字段 + 条件显示 + 字段属性配置） |
-| D3 | 计算引擎（公式解析 + 修约 + 判定）+ 自动带入逻辑 |
-| D4 | 增强 TaskResultEntry 为 ELN 执行页 + SOP 步骤引导 |
-| D5 | 设备数据回填逻辑 + 模板版本管理 + 测试 |
+| D1 | ELN 模板数据模型 + 模板列表页 + 模板不可变快照机制 |
+| D2 | 模板设计器（字段配置 + 条件联动 + 字段属性配置） |
+| D3 | 计算引擎（math.js 安全沙箱 + GB/T 8170 修约 + 判定）|
+| D4 | 增强 TaskResultEntry 为 ELN 执行页 + SOP 步骤引导 + 历史复制 |
+| D5 | 设备数据回填 + 模板导入导出 + 版本管理 + 测试 |
+
+---
+
+## 5. Review 修正 (v1.1)
+
+### 5.1 补充 User Story
+
+#### US6 — 从历史复制实验（最高频场景）
+> 作为**实验员**，90% 的实验是重复性工作。打开任务后，我应能一键"复用上次记录"，系统自动填入上次的参数（消解温度、试剂、稀释倍数），我只需修改本次的特殊值。
+
+#### US7 — 结果合理性校验
+> 作为**实验员**，系统应在每个计算结果旁显示历史正常范围。如本次 COD=125 mg/L 但历史范围是 15-35 mg/L，系统应红色高亮提示"结果异常，建议重测"。
+
+#### US8 — SOP 智能跳过
+> 作为**实验员**，如果 SOP 步骤 3 是"如样品澄清则跳过过滤"，系统应根据我前一步填写的"样品外观=澄清"自动跳过该步骤。
+
+#### US9 — 跨实验室模板共享
+> 作为**方法管理员**，我创建的 COD 检测模板应能导出为 JSON 文件，分享给环境实验室导入使用，保持方法一致性。
+
+#### US10 — 模板试运行
+> 作为**方法管理员**，新模板发布前，我需要在"试运行模式"下模拟填写，验证公式和判定逻辑是否正确，不影响生产数据。
+
+### 5.2 公式引擎重构
+
+采用 **math.js** 安全沙箱替代字符串解析：
+
+```typescript
+import { create, all } from 'mathjs';
+
+const math = create(all);
+// 限制可用函数（安全沙箱）
+const safeEvaluate = (formula: string, vars: Record<string, number>): number => {
+  return math.evaluate(formula, vars);
+};
+
+// 使用示例
+const result = safeEvaluate('(absorbance - blank) * K * dilution', {
+  absorbance: 0.321, blank: 0.001, K: 80.0, dilution: 1
+}); // → 25.6
+```
+
+### 5.3 修约规则 (GB/T 8170-2008)
+
+```typescript
+// 修约规则引擎
+function gb8170Round(value: number, rule: RoundingRule): number {
+  if (rule.method === 'decimal_places') {
+    // 四舍六入五成双
+    const factor = Math.pow(10, rule.value);
+    const scaled = value * factor;
+    const floor = Math.floor(scaled);
+    const remainder = scaled - floor;
+    
+    if (remainder < 0.5) return floor / factor;
+    if (remainder > 0.5) return (floor + 1) / factor;
+    // remainder === 0.5: 五成双
+    return (floor % 2 === 0 ? floor : floor + 1) / factor;
+  }
+  if (rule.method === 'significant_figures') {
+    const magnitude = Math.floor(Math.log10(Math.abs(value))) + 1;
+    return gb8170Round(value, { method: 'decimal_places', value: rule.value - magnitude });
+  }
+  return value;
+}
+```
+
+### 5.4 模板不可变快照
+
+```typescript
+interface TemplateSnapshot {
+  id: string;
+  templateId: string;
+  version: string;               // "v2.1"
+  snapshot: ELNTemplate;         // 完整模板定义的不可变副本
+  publishedAt: string;
+  publishedBy: string;
+  isActive: boolean;             // 只有最新版本为 active
+}
+
+// ELN 记录绑定快照版本
+interface ELNRecord {
+  templateId: string;
+  templateVersion: string;       // 永远指向创建时的版本
+  templateSnapshotId: string;    // 不可变快照引用
+}
+```
+
+### 5.5 历史范围对比
+
+每个计算结果旁显示历史统计：
+```
+COD: 25.6 mg/L  [历史: 18.2-32.5 mg/L, 均值 24.3] ✅ 正常
+COD: 125.0 mg/L [历史: 18.2-32.5 mg/L, 均值 24.3] 🔴 异常！建议重测
+```
+
+计算逻辑：
+```typescript
+function getHistoricalRange(methodId: string, testItem: string): { min: number; max: number; mean: number; count: number } {
+  // 查询过去 90 天该方法的检测结果
+  // 排除已标记为异常的结果
+  // 返回 P2.5-P97.5 范围
+}
+```
