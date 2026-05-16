@@ -1,0 +1,1093 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for pages/InstrumentsPage.tsx</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">pages</a> InstrumentsPage.tsx</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>0/92</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/62</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/46</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>0/78</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line low'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a>
+<a name='L127'></a><a href='#L127'>127</a>
+<a name='L128'></a><a href='#L128'>128</a>
+<a name='L129'></a><a href='#L129'>129</a>
+<a name='L130'></a><a href='#L130'>130</a>
+<a name='L131'></a><a href='#L131'>131</a>
+<a name='L132'></a><a href='#L132'>132</a>
+<a name='L133'></a><a href='#L133'>133</a>
+<a name='L134'></a><a href='#L134'>134</a>
+<a name='L135'></a><a href='#L135'>135</a>
+<a name='L136'></a><a href='#L136'>136</a>
+<a name='L137'></a><a href='#L137'>137</a>
+<a name='L138'></a><a href='#L138'>138</a>
+<a name='L139'></a><a href='#L139'>139</a>
+<a name='L140'></a><a href='#L140'>140</a>
+<a name='L141'></a><a href='#L141'>141</a>
+<a name='L142'></a><a href='#L142'>142</a>
+<a name='L143'></a><a href='#L143'>143</a>
+<a name='L144'></a><a href='#L144'>144</a>
+<a name='L145'></a><a href='#L145'>145</a>
+<a name='L146'></a><a href='#L146'>146</a>
+<a name='L147'></a><a href='#L147'>147</a>
+<a name='L148'></a><a href='#L148'>148</a>
+<a name='L149'></a><a href='#L149'>149</a>
+<a name='L150'></a><a href='#L150'>150</a>
+<a name='L151'></a><a href='#L151'>151</a>
+<a name='L152'></a><a href='#L152'>152</a>
+<a name='L153'></a><a href='#L153'>153</a>
+<a name='L154'></a><a href='#L154'>154</a>
+<a name='L155'></a><a href='#L155'>155</a>
+<a name='L156'></a><a href='#L156'>156</a>
+<a name='L157'></a><a href='#L157'>157</a>
+<a name='L158'></a><a href='#L158'>158</a>
+<a name='L159'></a><a href='#L159'>159</a>
+<a name='L160'></a><a href='#L160'>160</a>
+<a name='L161'></a><a href='#L161'>161</a>
+<a name='L162'></a><a href='#L162'>162</a>
+<a name='L163'></a><a href='#L163'>163</a>
+<a name='L164'></a><a href='#L164'>164</a>
+<a name='L165'></a><a href='#L165'>165</a>
+<a name='L166'></a><a href='#L166'>166</a>
+<a name='L167'></a><a href='#L167'>167</a>
+<a name='L168'></a><a href='#L168'>168</a>
+<a name='L169'></a><a href='#L169'>169</a>
+<a name='L170'></a><a href='#L170'>170</a>
+<a name='L171'></a><a href='#L171'>171</a>
+<a name='L172'></a><a href='#L172'>172</a>
+<a name='L173'></a><a href='#L173'>173</a>
+<a name='L174'></a><a href='#L174'>174</a>
+<a name='L175'></a><a href='#L175'>175</a>
+<a name='L176'></a><a href='#L176'>176</a>
+<a name='L177'></a><a href='#L177'>177</a>
+<a name='L178'></a><a href='#L178'>178</a>
+<a name='L179'></a><a href='#L179'>179</a>
+<a name='L180'></a><a href='#L180'>180</a>
+<a name='L181'></a><a href='#L181'>181</a>
+<a name='L182'></a><a href='#L182'>182</a>
+<a name='L183'></a><a href='#L183'>183</a>
+<a name='L184'></a><a href='#L184'>184</a>
+<a name='L185'></a><a href='#L185'>185</a>
+<a name='L186'></a><a href='#L186'>186</a>
+<a name='L187'></a><a href='#L187'>187</a>
+<a name='L188'></a><a href='#L188'>188</a>
+<a name='L189'></a><a href='#L189'>189</a>
+<a name='L190'></a><a href='#L190'>190</a>
+<a name='L191'></a><a href='#L191'>191</a>
+<a name='L192'></a><a href='#L192'>192</a>
+<a name='L193'></a><a href='#L193'>193</a>
+<a name='L194'></a><a href='#L194'>194</a>
+<a name='L195'></a><a href='#L195'>195</a>
+<a name='L196'></a><a href='#L196'>196</a>
+<a name='L197'></a><a href='#L197'>197</a>
+<a name='L198'></a><a href='#L198'>198</a>
+<a name='L199'></a><a href='#L199'>199</a>
+<a name='L200'></a><a href='#L200'>200</a>
+<a name='L201'></a><a href='#L201'>201</a>
+<a name='L202'></a><a href='#L202'>202</a>
+<a name='L203'></a><a href='#L203'>203</a>
+<a name='L204'></a><a href='#L204'>204</a>
+<a name='L205'></a><a href='#L205'>205</a>
+<a name='L206'></a><a href='#L206'>206</a>
+<a name='L207'></a><a href='#L207'>207</a>
+<a name='L208'></a><a href='#L208'>208</a>
+<a name='L209'></a><a href='#L209'>209</a>
+<a name='L210'></a><a href='#L210'>210</a>
+<a name='L211'></a><a href='#L211'>211</a>
+<a name='L212'></a><a href='#L212'>212</a>
+<a name='L213'></a><a href='#L213'>213</a>
+<a name='L214'></a><a href='#L214'>214</a>
+<a name='L215'></a><a href='#L215'>215</a>
+<a name='L216'></a><a href='#L216'>216</a>
+<a name='L217'></a><a href='#L217'>217</a>
+<a name='L218'></a><a href='#L218'>218</a>
+<a name='L219'></a><a href='#L219'>219</a>
+<a name='L220'></a><a href='#L220'>220</a>
+<a name='L221'></a><a href='#L221'>221</a>
+<a name='L222'></a><a href='#L222'>222</a>
+<a name='L223'></a><a href='#L223'>223</a>
+<a name='L224'></a><a href='#L224'>224</a>
+<a name='L225'></a><a href='#L225'>225</a>
+<a name='L226'></a><a href='#L226'>226</a>
+<a name='L227'></a><a href='#L227'>227</a>
+<a name='L228'></a><a href='#L228'>228</a>
+<a name='L229'></a><a href='#L229'>229</a>
+<a name='L230'></a><a href='#L230'>230</a>
+<a name='L231'></a><a href='#L231'>231</a>
+<a name='L232'></a><a href='#L232'>232</a>
+<a name='L233'></a><a href='#L233'>233</a>
+<a name='L234'></a><a href='#L234'>234</a>
+<a name='L235'></a><a href='#L235'>235</a>
+<a name='L236'></a><a href='#L236'>236</a>
+<a name='L237'></a><a href='#L237'>237</a>
+<a name='L238'></a><a href='#L238'>238</a>
+<a name='L239'></a><a href='#L239'>239</a>
+<a name='L240'></a><a href='#L240'>240</a>
+<a name='L241'></a><a href='#L241'>241</a>
+<a name='L242'></a><a href='#L242'>242</a>
+<a name='L243'></a><a href='#L243'>243</a>
+<a name='L244'></a><a href='#L244'>244</a>
+<a name='L245'></a><a href='#L245'>245</a>
+<a name='L246'></a><a href='#L246'>246</a>
+<a name='L247'></a><a href='#L247'>247</a>
+<a name='L248'></a><a href='#L248'>248</a>
+<a name='L249'></a><a href='#L249'>249</a>
+<a name='L250'></a><a href='#L250'>250</a>
+<a name='L251'></a><a href='#L251'>251</a>
+<a name='L252'></a><a href='#L252'>252</a>
+<a name='L253'></a><a href='#L253'>253</a>
+<a name='L254'></a><a href='#L254'>254</a>
+<a name='L255'></a><a href='#L255'>255</a>
+<a name='L256'></a><a href='#L256'>256</a>
+<a name='L257'></a><a href='#L257'>257</a>
+<a name='L258'></a><a href='#L258'>258</a>
+<a name='L259'></a><a href='#L259'>259</a>
+<a name='L260'></a><a href='#L260'>260</a>
+<a name='L261'></a><a href='#L261'>261</a>
+<a name='L262'></a><a href='#L262'>262</a>
+<a name='L263'></a><a href='#L263'>263</a>
+<a name='L264'></a><a href='#L264'>264</a>
+<a name='L265'></a><a href='#L265'>265</a>
+<a name='L266'></a><a href='#L266'>266</a>
+<a name='L267'></a><a href='#L267'>267</a>
+<a name='L268'></a><a href='#L268'>268</a>
+<a name='L269'></a><a href='#L269'>269</a>
+<a name='L270'></a><a href='#L270'>270</a>
+<a name='L271'></a><a href='#L271'>271</a>
+<a name='L272'></a><a href='#L272'>272</a>
+<a name='L273'></a><a href='#L273'>273</a>
+<a name='L274'></a><a href='#L274'>274</a>
+<a name='L275'></a><a href='#L275'>275</a>
+<a name='L276'></a><a href='#L276'>276</a>
+<a name='L277'></a><a href='#L277'>277</a>
+<a name='L278'></a><a href='#L278'>278</a>
+<a name='L279'></a><a href='#L279'>279</a>
+<a name='L280'></a><a href='#L280'>280</a>
+<a name='L281'></a><a href='#L281'>281</a>
+<a name='L282'></a><a href='#L282'>282</a>
+<a name='L283'></a><a href='#L283'>283</a>
+<a name='L284'></a><a href='#L284'>284</a>
+<a name='L285'></a><a href='#L285'>285</a>
+<a name='L286'></a><a href='#L286'>286</a>
+<a name='L287'></a><a href='#L287'>287</a>
+<a name='L288'></a><a href='#L288'>288</a>
+<a name='L289'></a><a href='#L289'>289</a>
+<a name='L290'></a><a href='#L290'>290</a>
+<a name='L291'></a><a href='#L291'>291</a>
+<a name='L292'></a><a href='#L292'>292</a>
+<a name='L293'></a><a href='#L293'>293</a>
+<a name='L294'></a><a href='#L294'>294</a>
+<a name='L295'></a><a href='#L295'>295</a>
+<a name='L296'></a><a href='#L296'>296</a>
+<a name='L297'></a><a href='#L297'>297</a>
+<a name='L298'></a><a href='#L298'>298</a>
+<a name='L299'></a><a href='#L299'>299</a>
+<a name='L300'></a><a href='#L300'>300</a>
+<a name='L301'></a><a href='#L301'>301</a>
+<a name='L302'></a><a href='#L302'>302</a>
+<a name='L303'></a><a href='#L303'>303</a>
+<a name='L304'></a><a href='#L304'>304</a>
+<a name='L305'></a><a href='#L305'>305</a>
+<a name='L306'></a><a href='#L306'>306</a>
+<a name='L307'></a><a href='#L307'>307</a>
+<a name='L308'></a><a href='#L308'>308</a>
+<a name='L309'></a><a href='#L309'>309</a>
+<a name='L310'></a><a href='#L310'>310</a>
+<a name='L311'></a><a href='#L311'>311</a>
+<a name='L312'></a><a href='#L312'>312</a>
+<a name='L313'></a><a href='#L313'>313</a>
+<a name='L314'></a><a href='#L314'>314</a>
+<a name='L315'></a><a href='#L315'>315</a>
+<a name='L316'></a><a href='#L316'>316</a>
+<a name='L317'></a><a href='#L317'>317</a>
+<a name='L318'></a><a href='#L318'>318</a>
+<a name='L319'></a><a href='#L319'>319</a>
+<a name='L320'></a><a href='#L320'>320</a>
+<a name='L321'></a><a href='#L321'>321</a>
+<a name='L322'></a><a href='#L322'>322</a>
+<a name='L323'></a><a href='#L323'>323</a>
+<a name='L324'></a><a href='#L324'>324</a>
+<a name='L325'></a><a href='#L325'>325</a>
+<a name='L326'></a><a href='#L326'>326</a>
+<a name='L327'></a><a href='#L327'>327</a>
+<a name='L328'></a><a href='#L328'>328</a>
+<a name='L329'></a><a href='#L329'>329</a>
+<a name='L330'></a><a href='#L330'>330</a>
+<a name='L331'></a><a href='#L331'>331</a>
+<a name='L332'></a><a href='#L332'>332</a>
+<a name='L333'></a><a href='#L333'>333</a>
+<a name='L334'></a><a href='#L334'>334</a>
+<a name='L335'></a><a href='#L335'>335</a>
+<a name='L336'></a><a href='#L336'>336</a>
+<a name='L337'></a><a href='#L337'>337</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useEffect, useState } from 'react';
+import {
+  Card, Table, Tag, Button, Input, Select, Row, Col,
+  Space, Typography, Drawer, Tabs, Descriptions, Timeline, Badge, Statistic,
+  Modal, Form, message, Tooltip, Progress, Divider,
+} from 'antd';
+import {
+  PlusOutlined, SearchOutlined, EditOutlined,
+  EyeOutlined,
+} from '@ant-design/icons';
+import type { ColumnsType } from 'antd/es/table';
+import { Pie } from '@ant-design/plots';
+import dayjs from 'dayjs';
+&nbsp;
+const { Title, Text } = <span class="cstat-no" title="statement not covered" >Typography;</span>
+const { Option } = <span class="cstat-no" title="statement not covered" >Select;</span>
+&nbsp;
+interface Instrument {
+  id: string; name: string; model: string; serialNo: string;
+  manufacturer: string; location: string; responsiblePerson: string;
+  purchaseDate: string; inUseDate: string;
+  status: 'running' | 'idle' | 'maintenance' | 'calibration_due' | 'offline';
+  statusLabel: string; connectionStatus: 'online' | 'offline';
+  utilization: number; calibrationDue: string; maintenanceDate: string;
+  department: string; description?: string;
+}
+&nbsp;
+const statusColorMap: Record&lt;string, string&gt; = <span class="cstat-no" title="statement not covered" >{</span>
+  running: '#52c41a', idle: '#1677ff', maintenance: '#faad14',
+  calibration_due: '#ff4d4f', offline: '#d9d9d9',
+};
+&nbsp;
+const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >InstrumentDetail: React.FC&lt;{ instrument: Instrument | null; visible: boolean; onClose: () =&gt; void }&gt; = ({</span> instrument, visible, onClose }) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  if (!instrument) <span class="cstat-no" title="statement not covered" >return null;</span></span>
+<span class="cstat-no" title="statement not covered" >  return (</span>
+    &lt;Drawer title={`${instrument.name} - 详情`} open={visible} onClose={onClose} width={560}&gt;
+      &lt;Descriptions column={2} size="small" bordered&gt;
+        &lt;Descriptions.Item label="仪器名称" span={2}&gt;{instrument.name}&lt;/Descriptions.Item&gt;
+        &lt;Descriptions.Item label="型号"&gt;{instrument.model}&lt;/Descriptions.Item&gt;
+        &lt;Descriptions.Item label="序列号"&gt;{instrument.serialNo}&lt;/Descriptions.Item&gt;
+        &lt;Descriptions.Item label="生产厂家" span={2}&gt;{instrument.manufacturer}&lt;/Descriptions.Item&gt;
+        &lt;Descriptions.Item label="所在位置"&gt;{instrument.location}&lt;/Descriptions.Item&gt;
+        &lt;Descriptions.Item label="所属部门"&gt;{instrument.department}&lt;/Descriptions.Item&gt;
+        &lt;Descriptions.Item label="负责人"&gt;{instrument.responsiblePerson}&lt;/Descriptions.Item&gt;
+        &lt;Descriptions.Item label="连接状态"&gt;
+          &lt;Tag color={instrument.connectionStatus === 'online' ? 'green' : 'red'}&gt;{instrument.connectionStatus === 'online' ? '在线' : '离线'}&lt;/Tag&gt;
+        &lt;/Descriptions.Item&gt;
+        &lt;Descriptions.Item label="购置日期"&gt;{instrument.purchaseDate}&lt;/Descriptions.Item&gt;
+        &lt;Descriptions.Item label="启用日期"&gt;{instrument.inUseDate}&lt;/Descriptions.Item&gt;
+        &lt;Descriptions.Item label="校准到期日"&gt;
+          &lt;Text type={dayjs(instrument.calibrationDue).isBefore(dayjs()) ? 'danger' : undefined}&gt;{instrument.calibrationDue}&lt;/Text&gt;
+        &lt;/Descriptions.Item&gt;
+        &lt;Descriptions.Item label="最近维护"&gt;{instrument.maintenanceDate}&lt;/Descriptions.Item&gt;
+        &lt;Descriptions.Item label="利用率"&gt;
+          &lt;Progress percent={instrument.utilization} size="small" /&gt;
+        &lt;/Descriptions.Item&gt;
+      &lt;/Descriptions&gt;
+      &lt;Divider /&gt;
+      &lt;Tabs items={[
+        { key: 'calibrations', label: '校准记录', children: (
+          &lt;Table dataSource={[
+            {date:'2023-08-15',item:'波长准确度',result:'合格',cert:'CAL20230815-001',valid:'2024-08-15',agency:'中国计量科学研究院'},
+            {date:'2022-08-15',item:'波长准确度',result:'合格',cert:'CAL20220815-001',valid:'2023-08-15',agency:'中国计量科学研究院'},
+          ]} rowKey="cert" pagination={false} size="small" columns={[
+            {title:'校准日期',dataIndex:'date'},{title:'校准项目',dataIndex:'item'},{title:'结果',dataIndex:'result',<span class="fstat-no" title="function not covered" >render:(r</span>:string) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Tag color={r==='合格'?'green':'red'}&gt;{r}&lt;/Tag&gt;},</span>
+            {title:'证书编号',dataIndex:'cert'},{title:'有效期至',dataIndex:'valid'},{title:'校准机构',dataIndex:'agency'},
+          ]} /&gt;
+        )},
+        { key: 'maintenances', label: '维护记录', children: (
+          &lt;Table dataSource={[
+            {date:'2024-05-10',type:'定期维护',content:'更换密封垫、清洗进样口',person:'张伟',status:'completed'},
+            {date:'2024-04-10',type:'定期维护',content:'更换进样垫',person:'张伟',status:'completed'},
+          ]} rowKey="date" pagination={false} size="small" columns={[
+            {title:'日期',dataIndex:'date'},{title:'类型',dataIndex:'type'},{title:'内容',dataIndex:'content'},
+            {title:'负责人',dataIndex:'person'},{title:'状态',dataIndex:'status',<span class="fstat-no" title="function not covered" >render:(s</span>:string) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Tag color={s==='completed'?'green':'orange'}&gt;{s==='completed'?'已完成':'进行中'}&lt;/Tag&gt;},</span>
+          ]} /&gt;
+        )},
+        { key: 'verification', label: '期间核查', children: (
+          &lt;div&gt;
+            &lt;Space style={{ marginBottom: 12 }}&gt;
+              &lt;Button size="small" type="primary" <span class="fstat-no" title="function not covered" >onClick={() =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >                Modal.confirm({ title: '新增期间核查', content: (</span>
+                  &lt;Form layout="vertical"&gt;
+                    &lt;Form.Item label="核查项目"&gt;&lt;Select defaultValue="wavelength" style={{width:300}}&gt;
+                      &lt;Option value="wavelength"&gt;波长准确度&lt;/Option&gt;
+                      &lt;Option value="repeatability"&gt;重复性&lt;/Option&gt;
+                      &lt;Option value="sensitivity"&gt;灵敏度&lt;/Option&gt;
+                      &lt;Option value="resolution"&gt;分辨率&lt;/Option&gt;
+                    &lt;/Select&gt;&lt;/Form.Item&gt;
+                    &lt;Form.Item label="核查结果"&gt;&lt;Select defaultValue="pass" style={{width:300}}&gt;
+                      &lt;Option value="pass"&gt;合格&lt;/Option&gt;
+                      &lt;Option value="fail"&gt;不合格&lt;/Option&gt;
+                    &lt;/Select&gt;&lt;/Form.Item&gt;
+                    &lt;Form.Item label="备注"&gt;&lt;Input.TextArea rows={2} /&gt;&lt;/Form.Item&gt;
+                  &lt;/Form&gt;
+                ), <span class="fstat-no" title="function not covered" >onOk: () =&gt; <span class="cstat-no" title="statement not covered" >m</span>essage.success('期间核查记录已保存'), })</span>;
+              }}&gt;新增核查&lt;/Button&gt;
+              &lt;Button size="small" <span class="fstat-no" title="function not covered" >onClick={() =&gt; <span class="cstat-no" title="statement not covered" >m</span>essage.info('核查计划: 每季度一次, 下次核查: 2026-08-15')}</span>&gt;核查计划&lt;/Button&gt;
+            &lt;/Space&gt;
+            &lt;Table dataSource={[
+              { date:'2026-05-15', item:'波长准确度', result:'合格', operator:'张伟', nextDate:'2026-08-15' },
+              { date:'2026-02-15', item:'重复性', result:'合格', operator:'张伟', nextDate:'2026-05-15' },
+              { date:'2025-11-15', item:'灵敏度', result:'合格', operator:'张伟', nextDate:'2026-02-15' },
+            ]} rowKey="date" pagination={false} size="small" columns={[
+              { title:'核查日期', dataIndex:'date' },
+              { title:'核查项目', dataIndex:'item' },
+              { title:'结果', dataIndex:'result', <span class="fstat-no" title="function not covered" >render:(r</span>:string) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Tag color={r==='合格'?'green':'red'}&gt;{r}&lt;/Tag&gt; },</span>
+              { title:'核查人', dataIndex:'operator' },
+              { title:'下次核查', dataIndex:'nextDate' },
+            ]} /&gt;
+          &lt;/div&gt;
+        )},
+        { key: 'monitoring', label: '实时监控', children: (
+          &lt;div&gt;
+            &lt;Row gutter={[8,8]} style={{ marginBottom: 12 }}&gt;
+              &lt;Col span={8}&gt;&lt;Card size="small"&gt;&lt;Statistic title="流速" value="1.2" suffix="mL/min" valueStyle={{fontSize:20}} /&gt;&lt;/Card&gt;&lt;/Col&gt;
+              &lt;Col span={8}&gt;&lt;Card size="small"&gt;&lt;Statistic title="柱温" value="35" suffix="°C" valueStyle={{fontSize:20}} /&gt;&lt;/Card&gt;&lt;/Col&gt;
+              &lt;Col span={8}&gt;&lt;Card size="small"&gt;&lt;Statistic title="压力" value="8.5" suffix="MPa" valueStyle={{fontSize:20,color:'#1677ff'}} /&gt;&lt;/Card&gt;&lt;/Col&gt;
+            &lt;/Row&gt;
+            &lt;Row gutter={[8,8]}&gt;
+              &lt;Col span={8}&gt;&lt;Card size="small"&gt;&lt;Statistic title="波长" value="254" suffix="nm" valueStyle={{fontSize:20}} /&gt;&lt;/Card&gt;&lt;/Col&gt;
+              &lt;Col span={8}&gt;&lt;Card size="small"&gt;&lt;Statistic title="运行时长" value="2h15m" valueStyle={{fontSize:20}} /&gt;&lt;/Card&gt;&lt;/Col&gt;
+              &lt;Col span={8}&gt;&lt;Card size="small"&gt;&lt;Statistic title="当前样品" value="S-001" valueStyle={{fontSize:20}} /&gt;&lt;/Card&gt;&lt;/Col&gt;
+            &lt;/Row&gt;
+            &lt;div style={{marginTop:12,padding:8,background:'#fafafa',borderRadius:4}}&gt;
+              &lt;Text strong&gt;压力趋势&lt;/Text&gt;
+              &lt;svg viewBox="0 0 300 100" style={{width:'100%',height:100,marginTop:4}}&gt;
+                &lt;rect x={0} y={0} width={300} height={100} fill="#f5f5f5" rx={4} /&gt;
+                &lt;path d={Array.from({length:30}<span class="fstat-no" title="function not covered" >,(_</span>,i)=&gt;<span class="cstat-no" title="statement not covered" >`${i===0?'M':'L'}${i*10},${80-Math.sin(i*0.5)*15-Math.random()*5}`).</span>join('')} stroke="#1677ff" strokeWidth={2} fill="none" /&gt;
+                &lt;text x={0} y={95} fontSize={10} fill="#999"&gt;0&lt;/text&gt;
+                &lt;text x={290} y={95} fontSize={10} fill="#999" textAnchor="end"&gt;30min&lt;/text&gt;
+                &lt;line x1={0} y1={30} x2={300} y2={30} stroke="#ff4d4f" strokeWidth={1} strokeDasharray="4,2" /&gt;
+                &lt;text x={300} y={28} fontSize={9} fill="#ff4d4f" textAnchor="end"&gt;上限 10MPa&lt;/text&gt;
+              &lt;/svg&gt;
+              &lt;Text type="secondary" style={{fontSize:11}}&gt;数据模拟 · 每30秒更新一次&lt;/Text&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        )},
+        { key: 'usage', label: '使用记录', children: &lt;Card size="small"&gt;&lt;Text strong&gt;利用率趋势 (近30天)&lt;/Text&gt;&lt;svg viewBox="0 0 400 180" style={{width:'100%',height:200,marginTop:8}}&gt;
+              &lt;rect x={40} y={10} width={340} height={140} fill="#fafafa" rx={4} /&gt;
+              {[50,95,140].<span class="fstat-no" title="function not covered" >map(y</span> =&gt; <span class="cstat-no" title="statement not covered" >&lt;line key={y} x1={40} y1={y} x2={380} y2={y} stroke="#f0f0f0" /&gt;)}</span>
+              &lt;path d={[65,55,75,60,80,70,85,65,78,72,82,68,88,75,92,78,85,80,90,76,86,70,82,74,88,72].<span class="fstat-no" title="function not covered" >map((v</span>,i)=&gt;<span class="cstat-no" title="statement not covered" >`${i===0?'M':'L'}${40+i*14},${150-v}`).</span>join('')} stroke="#1677ff" strokeWidth={2} fill="none" /&gt;
+              &lt;text x={50} y={165} textAnchor="middle" fontSize={10} fill="#999"&gt;05-01&lt;/text&gt;
+              &lt;text x={200} y={165} textAnchor="middle" fontSize={10} fill="#999"&gt;05-15&lt;/text&gt;
+              &lt;text x={350} y={165} textAnchor="middle" fontSize="10" fill="#999"&gt;05-30&lt;/text&gt;
+            &lt;/svg&gt;&lt;/Card&gt; },
+        { key: 'methods', label: '关联方法', children: (
+          &lt;Table dataSource={[
+            {method:'COD测定法',standard:'HJ 828-2017',type:'化学法',version:'V2.1',status:'已批准'},
+            {method:'BOD5测定法',standard:'HJ 505-2009',type:'化学法',version:'V1.3',status:'已批准'},
+          ]} rowKey="method" pagination={false} size="small" columns={[
+            {title:'方法名称',dataIndex:'method'},{title:'标准编号',dataIndex:'standard'},
+            {title:'方法类型',dataIndex:'type'},{title:'版本',dataIndex:'version'},
+            {title:'状态',dataIndex:'status',<span class="fstat-no" title="function not covered" >render:(s</span>:string)=&gt;<span class="cstat-no" title="statement not covered" >&lt;Tag color={s==='已批准'?'green':'orange'}&gt;{s}&lt;/Tag&gt;},</span>
+          ]} /&gt;
+        )},
+        { key: 'certification', label: '仪器认证', children: (
+          &lt;div&gt;
+            &lt;Space style={{marginBottom:12}}&gt;
+              &lt;Button size="small" type="primary" <span class="fstat-no" title="function not covered" >onClick={()=&gt;<span class="cstat-no" title="statement not covered" >m</span>essage.success('IQ确认流程已启动')}</span>&gt;IQ 安装确认&lt;/Button&gt;
+              &lt;Button size="small" <span class="fstat-no" title="function not covered" >onClick={()=&gt;<span class="cstat-no" title="statement not covered" >m</span>essage.success('OQ确认流程已启动')}</span>&gt;OQ 运行确认&lt;/Button&gt;
+              &lt;Button size="small" <span class="fstat-no" title="function not covered" >onClick={()=&gt;<span class="cstat-no" title="statement not covered" >m</span>essage.success('PQ确认流程已启动')}</span>&gt;PQ 性能确认&lt;/Button&gt;
+            &lt;/Space&gt;
+            &lt;Table dataSource={[
+              {stage:'IQ',date:'2024-01-15',result:'通过',certNo:'IQ-2024-001',agency:'厂家工程师'},
+              {stage:'OQ',date:'2024-01-20',result:'通过',certNo:'OQ-2024-001',agency:'厂家工程师'},
+              {stage:'PQ',date:'2024-02-01',result:'通过',certNo:'PQ-2024-001',agency:'质量部'},
+            ]} rowKey="certNo" pagination={false} size="small" columns={[
+              {title:'阶段',dataIndex:'stage',<span class="fstat-no" title="function not covered" >render:(s</span>:string)=&gt;{
+                const m:{[k:string]:{c:string;l:string}}=<span class="cstat-no" title="statement not covered" >{IQ:{c:'blue',l:'安装确认'},OQ:{c:'orange',l:'运行确认'},PQ:{c:'green',l:'性能确认'}};</span>
+<span class="cstat-no" title="statement not covered" >                return &lt;Tag color={m[s]?.c}&gt;{m[s]?.l||s}&lt;/Tag&gt;;</span>
+              }},{title:'日期',dataIndex:'date'},{title:'结果',dataIndex:'result',<span class="fstat-no" title="function not covered" >render:(r</span>:string)=&gt;<span class="cstat-no" title="statement not covered" >&lt;Tag color={r==='通过'?'green':'red'}&gt;{r}&lt;/Tag&gt;},</span>
+              {title:'证书编号',dataIndex:'certNo'},{title:'执行方',dataIndex:'agency'},
+            ]} /&gt;
+          &lt;/div&gt;
+        )},
+      ]} /&gt;
+    &lt;/Drawer&gt;
+  );
+};
+&nbsp;
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >InstrumentsPage: React.FC = () =&gt; {</span></span>
+  const [instruments, <span class="cstat-no" title="statement not covered" >setInstruments] = useState&lt;Instrument[]&gt;([]);</span>
+  const [loading, <span class="cstat-no" title="statement not covered" >setLoading] = useState(true);</span>
+  const [searchText, <span class="cstat-no" title="statement not covered" >setSearchText] = useState('');</span>
+  const [statusFilter, <span class="cstat-no" title="statement not covered" >setStatusFilter] = useState&lt;string&gt;('all');</span>
+  const [selectedInstrument, <span class="cstat-no" title="statement not covered" >setSelectedInstrument] = useState&lt;Instrument | null&gt;(null);</span>
+  const [drawerVisible, <span class="cstat-no" title="statement not covered" >setDrawerVisible] = useState(false);</span>
+  const [modalVisible, <span class="cstat-no" title="statement not covered" >setModalVisible] = useState(false);</span>
+  const [form] = <span class="cstat-no" title="statement not covered" >Form.useForm();</span>
+&nbsp;
+  const fetchInstruments = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async () =&gt; {</span></span>
+<span class="cstat-no" title="statement not covered" >    setLoading(true);</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+      const params = <span class="cstat-no" title="statement not covered" >new URLSearchParams();</span>
+<span class="cstat-no" title="statement not covered" >      if (statusFilter !== 'all') <span class="cstat-no" title="statement not covered" >params.set('status', statusFilter);</span></span>
+<span class="cstat-no" title="statement not covered" >      if (searchText) <span class="cstat-no" title="statement not covered" >params.set('keyword', searchText);</span></span>
+      const res = <span class="cstat-no" title="statement not covered" >await fetch(`/api/v1/instruments?${params}`);</span>
+      const json = <span class="cstat-no" title="statement not covered" >await res.json();</span>
+<span class="cstat-no" title="statement not covered" >      setInstruments(json.data.list);</span>
+    } catch { <span class="cstat-no" title="statement not covered" >message.error('加载仪器列表失败'); }</span>
+    finally { <span class="cstat-no" title="statement not covered" >setLoading(false); }</span>
+  };
+&nbsp;
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  useEffect(() =&gt; {</span> <span class="cstat-no" title="statement not covered" >fetchInstruments(); }, [</span>statusFilter, searchText]);</span>
+&nbsp;
+  const stats = <span class="cstat-no" title="statement not covered" >{</span>
+    total: instruments.length,
+    running: instruments.<span class="fstat-no" title="function not covered" >filter(i</span> =&gt; <span class="cstat-no" title="statement not covered" >i.status === 'running').</span>length,
+    maintenance: instruments.<span class="fstat-no" title="function not covered" >filter(i</span> =&gt; <span class="cstat-no" title="statement not covered" >i.status === 'maintenance' || i.status === 'calibration_due').</span>length,
+    idle: instruments.<span class="fstat-no" title="function not covered" >filter(i</span> =&gt; <span class="cstat-no" title="statement not covered" >i.status === 'idle').</span>length,
+  };
+&nbsp;
+  const distributionData = <span class="cstat-no" title="statement not covered" >[</span>
+    { type: '运行中', value: instruments.<span class="fstat-no" title="function not covered" >filter(i</span> =&gt; <span class="cstat-no" title="statement not covered" >i.status === 'running').</span>length },
+    { type: '空闲', value: instruments.<span class="fstat-no" title="function not covered" >filter(i</span> =&gt; <span class="cstat-no" title="statement not covered" >i.status === 'idle').</span>length },
+    { type: '维护中', value: instruments.<span class="fstat-no" title="function not covered" >filter(i</span> =&gt; <span class="cstat-no" title="statement not covered" >i.status === 'maintenance').</span>length },
+    { type: '校准逾期', value: instruments.<span class="fstat-no" title="function not covered" >filter(i</span> =&gt; <span class="cstat-no" title="statement not covered" >i.status === 'calibration_due').</span>length },
+    { type: '离线', value: instruments.<span class="fstat-no" title="function not covered" >filter(i</span> =&gt; <span class="cstat-no" title="statement not covered" >i.status === 'offline').</span>length },
+  ].<span class="fstat-no" title="function not covered" >filter(d</span> =&gt; <span class="cstat-no" title="statement not covered" >d.value &gt; 0);</span>
+&nbsp;
+  const columns: ColumnsType&lt;Instrument&gt; = <span class="cstat-no" title="statement not covered" >[</span>
+    { title: '仪器编号', dataIndex: 'id', key: 'id', width: 90, <span class="fstat-no" title="function not covered" >render: (i</span>d: string) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Text code&gt;{id.toUpperCase()}&lt;/Text&gt; },</span>
+    { title: '仪器名称', dataIndex: 'name', key: 'name', <span class="fstat-no" title="function not covered" >render: (n</span>ame: string, r: Instrument) =&gt; <span class="cstat-no" title="statement not covered" >&lt;a <span class="fstat-no" title="function not covered" >onClick={() =&gt; {</span> <span class="cstat-no" title="statement not covered" >setSelectedInstrument(r); <span class="cstat-no" title="statement not covered" >s</span>etDrawerVisible(true); }}&gt;{n</span>ame}&lt;/a&gt; },</span>
+    { title: '型号', dataIndex: 'model', key: 'model', responsive: ['lg' as const] },
+    { title: '所在位置', dataIndex: 'location', key: 'location', responsive: ['lg' as const] },
+    { title: '负责人', dataIndex: 'responsiblePerson', key: 'responsiblePerson', width: 80 },
+    { title: '状态', dataIndex: 'status', key: 'status', width: 90, <span class="fstat-no" title="function not covered" >render: (_</span>: string, r: Instrument) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Tag color={statusColorMap[r.status]}&gt;{r.statusLabel}&lt;/Tag&gt; },</span>
+    { title: '连接状态', dataIndex: 'connectionStatus', key: 'connectionStatus', width: 80, responsive: ['md' as const], <span class="fstat-no" title="function not covered" >render: (s</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Badge status={s === 'online' ? 'success' : 'default'} text={s === 'online' ? '在线' : '离线'} /&gt; },</span>
+    { title: '校准到期', dataIndex: 'calibrationDue', key: 'calibrationDue', width: 100, <span class="fstat-no" title="function not covered" >render: (d</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Text type={dayjs(d).isBefore(dayjs()) ? 'danger' : undefined}&gt;{d}&lt;/Text&gt; },</span>
+    { title: '利用率', dataIndex: 'utilization', key: 'utilization', width: 100, <span class="fstat-no" title="function not covered" >render: (v</span>: number) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Progress percent={v} size="small" /&gt; },</span>
+    { title: '操作', key: 'action', width: 100, <span class="fstat-no" title="function not covered" >render: (_</span>: any, r: Instrument) =&gt; (
+<span class="cstat-no" title="statement not covered" >      &lt;Space&gt;</span>
+        &lt;Tooltip title="查看详情"&gt;&lt;Button type="link" size="small" icon={&lt;EyeOutlined /&gt;} <span class="fstat-no" title="function not covered" >onClick={() =&gt; {</span> <span class="cstat-no" title="statement not covered" >setSelectedInstrument(r); <span class="cstat-no" title="statement not covered" >s</span>etDrawerVisible(true); }} /&gt;&lt;</span>/Tooltip&gt;
+        &lt;Tooltip title="编辑"&gt;&lt;Button type="link" size="small" icon={&lt;EditOutlined /&gt;} /&gt;&lt;/Tooltip&gt;
+      &lt;/Space&gt;
+    )},
+  ];
+&nbsp;
+  const handleCreate = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async (v</span>alues: any) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+      const res = <span class="cstat-no" title="statement not covered" >await fetch('/api/v1/instruments', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(values) });</span>
+      const json = <span class="cstat-no" title="statement not covered" >await res.json();</span>
+<span class="cstat-no" title="statement not covered" >      if (json.code === 200) { <span class="cstat-no" title="statement not covered" >message.success('创建成功'); <span class="cstat-no" title="statement not covered" >s</span>etModalVisible(false); <span class="cstat-no" title="statement not covered" >f</span>orm.resetFields(); <span class="cstat-no" title="statement not covered" >f</span>etchInstruments(); }</span></span>
+      else <span class="cstat-no" title="statement not covered" >message.error(json.message);</span>
+    } catch { <span class="cstat-no" title="statement not covered" >message.error('创建失败'); }</span>
+  };
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  return (</span>
+    &lt;div&gt;
+      {/* Header */}
+      &lt;Row justify="space-between" align="middle" style={{ marginBottom: 16 }}&gt;
+        &lt;Col&gt;&lt;Title level={4} style={{ margin: 0 }}&gt;仪器管理&lt;/Title&gt;&lt;/Col&gt;
+        &lt;Col&gt;&lt;Button type="primary" icon={&lt;PlusOutlined /&gt;} <span class="fstat-no" title="function not covered" >onClick={() =&gt; <span class="cstat-no" title="statement not covered" >s</span>etModalVisible(true)}</span>&gt;新建仪器&lt;/Button&gt;&lt;/Col&gt;
+      &lt;/Row&gt;
+&nbsp;
+      {/* KPI Cards */}
+      &lt;Row gutter={[16, 16]} style={{ marginBottom: 16 }}&gt;
+        &lt;Col xs={12} sm={6}&gt;&lt;Card&gt;&lt;Statistic title="仪器总数" value={stats.total} suffix="台" /&gt;&lt;/Card&gt;&lt;/Col&gt;
+        &lt;Col xs={12} sm={6}&gt;&lt;Card&gt;&lt;Statistic title="运行中" value={stats.running} valueStyle={{ color: '#52c41a' }} suffix="台" /&gt;&lt;/Card&gt;&lt;/Col&gt;
+        &lt;Col xs={12} sm={6}&gt;&lt;Card&gt;&lt;Statistic title="维护/校准到期" value={stats.maintenance} valueStyle={{ color: '#faad14' }} suffix="台" /&gt;&lt;/Card&gt;&lt;/Col&gt;
+        &lt;Col xs={12} sm={6}&gt;&lt;Card&gt;&lt;Statistic title="空闲" value={stats.idle} valueStyle={{ color: '#1677ff' }} suffix="台" /&gt;&lt;/Card&gt;&lt;/Col&gt;
+      &lt;/Row&gt;
+&nbsp;
+      {/* Filter + Chart Row */}
+      &lt;Row gutter={16}&gt;
+        &lt;Col xs={24} lg={16}&gt;
+          &lt;Card&gt;
+            &lt;Space style={{ marginBottom: 16 }}&gt;
+              &lt;Input placeholder="搜索名称/型号/编号" prefix={&lt;SearchOutlined /&gt;} value={searchText} <span class="fstat-no" title="function not covered" >onChange={e</span> =&gt; <span class="cstat-no" title="statement not covered" >setSearchText(e.target.value)}</span> allowClear style={{ width: 240 }} /&gt;
+              &lt;Select value={statusFilter} onChange={setStatusFilter} style={{ width: 130 }}&gt;
+                &lt;Select.Option value="all"&gt;全部状态&lt;/Select.Option&gt;
+                {Object.entries(statusColorMap).<span class="fstat-no" title="function not covered" >map(([</span>k, v]) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Select.Option key={k} value={k}&gt;&lt;Tag color={v}&gt;{k === 'running' ? '运行中' : k === 'idle' ? '空闲' : k === 'maintenance' ? '维护中' : k === 'calibration_due' ? '校准逾期' : '离线'}&lt;/Tag&gt;&lt;/Select.Option&gt;)}</span>
+              &lt;/Select&gt;
+            &lt;/Space&gt;
+            &lt;Table columns={columns} dataSource={instruments} rowKey="id" loading={loading} pagination={{ pageSize: 10, <span class="fstat-no" title="function not covered" >showTotal: t</span> =&gt; <span class="cstat-no" title="statement not covered" >`共 ${t} 台` }}</span> size="middle" /&gt;
+          &lt;/Card&gt;
+          &lt;Card title="维护日历 (近30天)" size="small" style={{marginTop:16}}&gt;
+            &lt;Space direction="vertical" style={{width:'100%'}}&gt;
+              {[{date:'05-10',inst:'液相色谱仪',type:'定期维护',status:'completed'},{date:'05-15',inst:'原子吸收光谱仪',type:'定期维护',status:'completed'},{date:'05-20',inst:'ICP-MS质谱仪',type:'故障维修',status:'in_progress'},{date:'05-25',inst:'气相色谱仪',type:'校准',status:'scheduled'}].<span class="fstat-no" title="function not covered" >map(m</span> =&gt;
+<span class="cstat-no" title="statement not covered" >                &lt;Card key={m.date+m.inst} size="small" style={{marginBottom:4}}&gt;</span>
+                  &lt;Row align="middle"&gt;&lt;Col span={4}&gt;&lt;Tag&gt;{m.date}&lt;/Tag&gt;&lt;/Col&gt;&lt;Col span={6}&gt;&lt;Text strong&gt;{m.inst}&lt;/Text&gt;&lt;/Col&gt;&lt;Col span={6}&gt;&lt;Tag color={m.status==='completed'?'green':m.status==='in_progress'?'orange':'blue'}&gt;{m.type}&lt;/Tag&gt;&lt;/Col&gt;&lt;Col span={4}&gt;&lt;Badge status={m.status==='completed'?'success':m.status==='in_progress'?'processing':'default'} text={m.status==='completed'?'已完成':m.status==='in_progress'?'进行中':'已计划'} /&gt;&lt;/Col&gt;&lt;Col span={4}&gt;&lt;Button type="link" size="small"&gt;详情&lt;/Button&gt;&lt;/Col&gt;&lt;/Row&gt;
+                &lt;/Card&gt;
+              )}
+            &lt;/Space&gt;
+          &lt;/Card&gt;
+        &lt;/Col&gt;
+        &lt;Col xs={24} lg={8}&gt;
+          &lt;Card title="仪器状态分布" style={{ marginBottom: 16 }}&gt;
+            {distributionData.length &gt; 0 ? (
+              &lt;Pie
+                data={distributionData}
+                angleField="value" colorField="type"
+                radius={0.8} label={{ type: 'outer', content: '{name} {percentage}' }}
+                color={['#52c41a', '#1677ff', '#faad14', '#ff4d4f', '#d9d9d9']}
+                height={220}
+              /&gt;
+            ) : &lt;Text type="secondary"&gt;暂无数据&lt;/Text&gt;}
+          &lt;/Card&gt;
+          &lt;Card title="最近告警与事件" size="small"&gt;
+            &lt;Timeline items={[
+              { color: 'red', children: &lt;&gt;&lt;Text strong&gt;ICP-001 维护中&lt;/Text&gt;&lt;br /&gt;&lt;Text type="secondary"&gt;预计恢复：2024-05-22 14:00&lt;/Text&gt;&lt;/&gt; },
+              { color: 'orange', children: &lt;&gt;&lt;Text strong&gt;电子天平 校准逾期&lt;/Text&gt;&lt;br /&gt;&lt;Text type="secondary"&gt;校准到期：2024-05-01&lt;/Text&gt;&lt;/&gt; },
+              { color: 'green', children: &lt;&gt;&lt;Text strong&gt;液相色谱仪 维护完成&lt;/Text&gt;&lt;br /&gt;&lt;Text type="secondary"&gt;2024-05-10 定期维护&lt;/Text&gt;&lt;/&gt; },
+            ]} /&gt;
+          &lt;/Card&gt;
+        &lt;/Col&gt;
+      &lt;/Row&gt;
+&nbsp;
+      {/* Detail Drawer */}
+      &lt;InstrumentDetail instrument={selectedInstrument} visible={drawerVisible} <span class="fstat-no" title="function not covered" >onClose={() =&gt; {</span> <span class="cstat-no" title="statement not covered" >setDrawerVisible(false); <span class="cstat-no" title="statement not covered" >s</span>etSelectedInstrument(null); }} /&gt;</span>
+&nbsp;
+      {/* Create Modal */}
+      &lt;Modal title="新建仪器档案" open={modalVisible} <span class="fstat-no" title="function not covered" >onOk={() =&gt; <span class="cstat-no" title="statement not covered" >f</span>orm.submit()}</span> <span class="fstat-no" title="function not covered" >onCancel={() =&gt; {</span> <span class="cstat-no" title="statement not covered" >setModalVisible(false); <span class="cstat-no" title="statement not covered" >f</span>orm.resetFields(); }} w</span>idth={600}&gt;
+        &lt;Form form={form} layout="vertical" onFinish={handleCreate}&gt;
+          &lt;Row gutter={16}&gt;
+            &lt;Col span={12}&gt;&lt;Form.Item name="name" label="仪器名称" rules={[{ required: true }]}&gt;&lt;Input /&gt;&lt;/Form.Item&gt;&lt;/Col&gt;
+            &lt;Col span={12}&gt;&lt;Form.Item name="model" label="型号" rules={[{ required: true }]}&gt;&lt;Input /&gt;&lt;/Form.Item&gt;&lt;/Col&gt;
+          &lt;/Row&gt;
+          &lt;Row gutter={16}&gt;
+            &lt;Col span={12}&gt;&lt;Form.Item name="serialNo" label="编号"&gt;&lt;Input /&gt;&lt;/Form.Item&gt;&lt;/Col&gt;
+            &lt;Col span={12}&gt;&lt;Form.Item name="manufacturer" label="生产厂商"&gt;&lt;Input /&gt;&lt;/Form.Item&gt;&lt;/Col&gt;
+          &lt;/Row&gt;
+          &lt;Row gutter={16}&gt;
+            &lt;Col span={12}&gt;&lt;Form.Item name="department" label="所属部门"&gt;&lt;Input /&gt;&lt;/Form.Item&gt;&lt;/Col&gt;
+            &lt;Col span={12}&gt;&lt;Form.Item name="location" label="安装位置"&gt;&lt;Input /&gt;&lt;/Form.Item&gt;&lt;/Col&gt;
+          &lt;/Row&gt;
+          &lt;Row gutter={16}&gt;
+            &lt;Col span={12}&gt;&lt;Form.Item name="responsiblePerson" label="责任人"&gt;&lt;Input /&gt;&lt;/Form.Item&gt;&lt;/Col&gt;
+            &lt;Col span={12}&gt;&lt;Form.Item name="status" label="状态" initialValue="idle"&gt;&lt;Select&gt;&lt;Select.Option value="idle"&gt;空闲&lt;/Select.Option&gt;&lt;Select.Option value="running"&gt;运行中&lt;/Select.Option&gt;&lt;/Select&gt;&lt;/Form.Item&gt;&lt;/Col&gt;
+          &lt;/Row&gt;
+        &lt;/Form&gt;
+      &lt;/Modal&gt;
+    &lt;/div&gt;
+  );
+};
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-05-16T16:31:52.803Z
+            </div>
+        <script src="../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../sorter.js"></script>
+        <script src="../block-navigation.js"></script>
+    </body>
+</html>
+    

@@ -1,0 +1,436 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for pages/SettingsPage.tsx</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">pages</a> SettingsPage.tsx</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>0/20</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/14</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/9</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>0/16</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line low'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React from 'react';
+import { useLabTypeStore } from '../stores/labTypeStore';
+import { Card, Tabs, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Switch, Input, Form, Tree } from 'antd';
+import { PlusOutlined, SettingOutlined, SafetyOutlined, UserOutlined, KeyOutlined } from '@ant-design/icons';
+&nbsp;
+const { Title, Text } = <span class="cstat-no" title="statement not covered" >Typography;</span>
+&nbsp;
+const roles = <span class="cstat-no" title="statement not covered" >[</span>
+  { key: 'admin', name: '系统管理员', type: '系统角色', users: 3, desc: '系统全部权限' },
+  { key: 'qa', name: '质量主管', type: '系统角色', users: 2, desc: '质量控制、审核管理' },
+  { key: 'analyst', name: '检测员', type: '业务角色', users: 12, desc: '检测任务执行、结果录入' },
+  { key: 'instrument_mgr', name: '仪器管理员', type: '业务角色', users: 2, desc: '仪器台账、校准维护' },
+  { key: 'report_reviewer', name: '报告审核员', type: '业务角色', users: 4, desc: '报告审核、批准签发' },
+];
+&nbsp;
+const users = <span class="cstat-no" title="statement not covered" >[</span>
+  { id: 'u1', name: '张伟', dept: '检测一部', role: '检测员', lab: '理化实验室', lastLogin: '2024-05-21 09:15', mfa: true, status: 'active' },
+  { id: 'u2', name: '李明', dept: '仪器管理部', role: '仪器管理员', lab: '仪器分析室', lastLogin: '2024-05-21 08:30', mfa: false, status: 'active' },
+  { id: 'u3', name: '王强', dept: '质量管理部', role: '质量主管', lab: '中心实验室', lastLogin: '2024-05-20 17:00', mfa: true, status: 'active' },
+  { id: 'u4', name: '李思', dept: '检测一部', role: '报告审核员', lab: '理化实验室', lastLogin: '2024-05-19 16:45', mfa: true, status: 'active' },
+];
+&nbsp;
+const permissions = <span class="cstat-no" title="statement not covered" >['样品管理', '检测管理', '报告管理', '质量控制', '仪器管理', '库存管理', '方法管理', '系统管理'];</span>
+const actions = <span class="cstat-no" title="statement not covered" >['查看', '新增', '编辑', '删除', '审批', '导出'];</span>
+&nbsp;
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >SettingsPage: React.FC = () =&gt; {</span></span>
+  const { labType, <span class="cstat-no" title="statement not covered" >setLabType } = useLabTypeStore();</span>
+&nbsp;
+  const permColumns = <span class="cstat-no" title="statement not covered" >[</span>
+    { title: '模块', dataIndex: 'module', key: 'module', fixed: 'left' as const },
+    ...actions.<span class="fstat-no" title="function not covered" >map(a</span> =&gt; (<span class="cstat-no" title="statement not covered" >{ title: a, dataIndex: a, key: a, width: 60, <span class="fstat-no" title="function not covered" >render: (v</span>: boolean) =&gt; <span class="cstat-no" title="statement not covered" >v ? &lt;Tag color="green"&gt;✓&lt;/Tag&gt; : &lt;Tag color="red"&gt;✗&lt;/Tag&gt; })</span>),</span>
+  ];
+&nbsp;
+  const permData = <span class="cstat-no" title="statement not covered" >permissions.<span class="fstat-no" title="function not covered" >map(m</span> =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+    module: m, key: m, 查看: true, 新增: m !== '系统管理', 编辑: m !== '系统管理', 删除: m === '样品管理', 审批: ['报告管理', '质量控制'].includes(m), 导出: true,
+  }));
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  return (</span>
+    &lt;div&gt;
+      &lt;Title level={4} style={{ marginBottom: 16 }}&gt;系统管理&lt;/Title&gt;
+&nbsp;
+      &lt;Row gutter={[16, 16]} style={{ marginBottom: 16 }}&gt;
+        &lt;Col xs={12} sm={6}&gt;&lt;Card&gt;&lt;Statistic title="用户总数" value={users.length + 4} prefix={&lt;UserOutlined /&gt;} /&gt;&lt;/Card&gt;&lt;/Col&gt;
+        &lt;Col xs={12} sm={6}&gt;&lt;Card&gt;&lt;Statistic title="启用角色" value={roles.length} prefix={&lt;SafetyOutlined /&gt;} /&gt;&lt;/Card&gt;&lt;/Col&gt;
+        &lt;Col xs={12} sm={6}&gt;&lt;Card&gt;&lt;Statistic title="流程模板" value={6} prefix={&lt;SettingOutlined /&gt;} /&gt;&lt;/Card&gt;&lt;/Col&gt;
+        &lt;Col xs={12} sm={6}&gt;&lt;Card&gt;&lt;Statistic title="集成接口" value={3} prefix={&lt;KeyOutlined /&gt;} /&gt;&lt;/Card&gt;&lt;/Col&gt;
+      &lt;/Row&gt;
+&nbsp;
+      &lt;Tabs defaultActiveKey="users" items={[
+        { key: 'users', label: '用户管理', children: (
+          &lt;Row gutter={16}&gt;
+            &lt;Col span={6}&gt;
+              &lt;Card title="组织结构" size="small"&gt;
+                &lt;Tree
+                  defaultExpandAll
+                  treeData={[
+                    { title: '红创科技', key: '0', children: [
+                      { title: '检测一部', key: '0-1', children: [
+                        { title: '理化实验室', key: '0-1-1' },
+                        { title: '环境监测室', key: '0-1-2' },
+                      ]},
+                      { title: '检测二部', key: '0-2', children: [
+                        { title: '无机分析室', key: '0-2-1' },
+                        { title: '质谱分析室', key: '0-2-2' },
+                      ]},
+                      { title: '仪器管理部', key: '0-3', children: [
+                        { title: '仪器分析室', key: '0-3-1' },
+                      ]},
+                      { title: '质量管理部', key: '0-4' },
+                    ]},
+                  ]}
+                /&gt;
+              &lt;/Card&gt;
+            &lt;/Col&gt;
+            &lt;Col span={18}&gt;
+              &lt;Card&gt;
+                &lt;Space style={{ marginBottom: 16 }}&gt;&lt;Button type="primary" icon={&lt;PlusOutlined /&gt;}&gt;新增用户&lt;/Button&gt;&lt;/Space&gt;
+                &lt;Table dataSource={users} rowKey="id" size="middle" pagination={false} columns={[
+                  { title: '用户名', dataIndex: 'name' },
+                  { title: '所属部门', dataIndex: 'dept' },
+                  { title: '角色', dataIndex: 'role', <span class="fstat-no" title="function not covered" >render: (r</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Tag&gt;{r}&lt;/Tag&gt; },</span>
+                  { title: '实验室', dataIndex: 'lab' },
+                  { title: '最后登录', dataIndex: 'lastLogin' },
+                  { title: 'MFA', dataIndex: 'mfa', <span class="fstat-no" title="function not covered" >render: (v</span>: boolean) =&gt; <span class="cstat-no" title="statement not covered" >v ? &lt;Tag color="green"&gt;已启用&lt;/Tag&gt; : &lt;Tag color="red"&gt;未启用&lt;/Tag&gt; },</span>
+                  { title: '状态', dataIndex: 'status', <span class="fstat-no" title="function not covered" >render: () =&gt; <span class="cstat-no" title="statement not covered" >&lt;</span>Tag color="green"&gt;正常&lt;/Tag&gt; },</span>
+                ]} /&gt;
+              &lt;/Card&gt;
+            &lt;/Col&gt;
+          &lt;/Row&gt;
+        )},
+        { key: 'roles', label: '角色权限', children: (
+          &lt;Card title="权限配置矩阵"&gt;
+            &lt;Table columns={permColumns as any} dataSource={permData} pagination={false} size="small" bordered /&gt;
+          &lt;/Card&gt;
+        )},
+        { key: 'config', label: '系统配置', children: (
+          &lt;Space direction="vertical" style={{ width: '100%' }} size="middle"&gt;
+            &lt;Card title="实验室类型" size="small"&gt;
+              &lt;Space&gt;
+                &lt;Button type={labType === 'commercial' ? 'primary' : 'default'} <span class="fstat-no" title="function not covered" >onClick={() =&gt; {</span> <span class="cstat-no" title="statement not covered" >if (labType !== 'commercial') <span class="cstat-no" title="statement not covered" >setLabType('commercial'); }}&gt;�</span></span>� 检测实验室版&lt;/Button&gt;
+                &lt;Button type={labType === 'research' ? 'primary' : 'default'} <span class="fstat-no" title="function not covered" >onClick={() =&gt; {</span> <span class="cstat-no" title="statement not covered" >if (labType !== 'research') <span class="cstat-no" title="statement not covered" >setLabType('research'); }}&gt;�</span></span>� 高校科研版&lt;/Button&gt;
+                &lt;Tag style={{ marginLeft: 16 }}&gt;{labType === 'commercial' ? 'CNAS/CMA 检测流程' : '课题组管理 + ELN + 仪器共享'}&lt;/Tag&gt;
+              &lt;/Space&gt;
+            &lt;/Card&gt;
+            &lt;Card title="编号规则" size="small"&gt;
+              &lt;Form layout="inline"&gt;&lt;Form.Item label="样品编号"&gt;&lt;Input value="SMP+日期+序号" /&gt;&lt;/Form.Item&gt;&lt;Form.Item label="报告编号"&gt;&lt;Input value="RPT+日期+序号" /&gt;&lt;/Form.Item&gt;&lt;Form.Item label="任务编号"&gt;&lt;Input value="T+日期+序号" /&gt;&lt;/Form.Item&gt;&lt;/Form&gt;
+            &lt;/Card&gt;
+            &lt;Card title="电子签名设置" size="small"&gt;
+              &lt;Space direction="vertical"&gt;&lt;Switch checkedChildren="启用" unCheckedChildren="关闭" defaultChecked /&gt; &lt;Text type="secondary"&gt;签名需密码验证，记录时间戳和IP地址&lt;/Text&gt;&lt;/Space&gt;
+            &lt;/Card&gt;
+          &lt;/Space&gt;
+        )},
+      ]} /&gt;
+    &lt;/div&gt;
+  );
+};
+&nbsp;
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-05-16T16:31:52.803Z
+            </div>
+        <script src="../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../sorter.js"></script>
+        <script src="../block-navigation.js"></script>
+    </body>
+</html>
+    

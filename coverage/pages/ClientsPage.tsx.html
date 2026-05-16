@@ -1,0 +1,349 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for pages/ClientsPage.tsx</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">pages</a> ClientsPage.tsx</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>0/26</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/2</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/14</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>0/21</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line low'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React from 'react';
+import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Tabs } from 'antd';
+import { PlusOutlined, SearchOutlined, EyeOutlined, FileTextOutlined, ExperimentOutlined, TeamOutlined } from '@ant-design/icons';
+import { useState } from 'react';
+&nbsp;
+const { Title, Text } = <span class="cstat-no" title="statement not covered" >Typography;</span>
+&nbsp;
+const clients = <span class="cstat-no" title="statement not covered" >[</span>
+  { id: 'c1', name: '绿源环保科技有限公司', type: '企业', industry: '环保', contact: '王经理', phone: '138-0001-1234', status: 'active', samples: 248, credit: 'A' },
+  { id: 'c2', name: '博克水务集团', type: '企业', industry: '水务', contact: '李主任', phone: '139-0002-5678', status: 'active', samples: 196, credit: 'A' },
+  { id: 'c3', name: '清源化工有限公司', type: '企业', industry: '化工', contact: '赵总', phone: '137-0003-9012', status: 'active', samples: 128, credit: 'B' },
+  { id: 'c4', name: '蓝天环境监测站', type: '政府', industry: '环保', contact: '刘站长', phone: '136-0004-3456', status: 'active', samples: 96, credit: 'A' },
+  { id: 'c5', name: '宏达食品有限公司', type: '企业', industry: '食品', contact: '陈经理', phone: '135-0005-7890', status: 'pending', samples: 78, credit: 'B' },
+  { id: 'c6', name: '新能科技有限公司', type: '企业', industry: '能源', contact: '周主管', phone: '134-0006-2345', status: 'active', samples: 65, credit: 'A' },
+  { id: 'c7', name: '康源医药集团', type: '企业', industry: '医药', contact: '孙经理', phone: '133-0007-6789', status: 'suspended', samples: 54, credit: 'C' },
+];
+&nbsp;
+const typeColor: Record&lt;string, string&gt; = <span class="cstat-no" title="statement not covered" >{ 企业: '#1677ff', 政府: '#52c41a', 个人: '#d9d9d9' };</span>
+const statusColor: Record&lt;string, string&gt; = <span class="cstat-no" title="statement not covered" >{ active: '#52c41a', pending: '#faad14', suspended: '#ff4d4f' };</span>
+const statusLabel: Record&lt;string, string&gt; = <span class="cstat-no" title="statement not covered" >{ active: '合作中', pending: '暂停', suspended: '终止' };</span>
+const creditColor: Record&lt;string, string&gt; = <span class="cstat-no" title="statement not covered" >{ A: '#52c41a', B: '#faad14', C: '#ff4d4f' };</span>
+&nbsp;
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >ClientsPage: React.FC = () =&gt; {</span></span>
+  const [drawerVisible, <span class="cstat-no" title="statement not covered" >setDrawerVisible] = useState(false);</span>
+  const [selected, <span class="cstat-no" title="statement not covered" >setSelected] = useState&lt;any&gt;(null);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  return (</span>
+    &lt;div&gt;
+      &lt;Row justify="space-between" align="middle" style={{ marginBottom: 16 }}&gt;
+        &lt;Col&gt;&lt;Title level={4} style={{ margin: 0 }}&gt;客户管理&lt;/Title&gt;&lt;/Col&gt;
+        &lt;Col&gt;&lt;Button type="primary" icon={&lt;PlusOutlined /&gt;}&gt;新增客户&lt;/Button&gt;&lt;/Col&gt;
+      &lt;/Row&gt;
+&nbsp;
+      &lt;Row gutter={[16, 16]} style={{ marginBottom: 16 }}&gt;
+        &lt;Col xs={12} sm={6}&gt;&lt;Card&gt;&lt;Statistic title="客户总数" value={clients.length} /&gt;&lt;/Card&gt;&lt;/Col&gt;
+        &lt;Col xs={12} sm={6}&gt;&lt;Card&gt;&lt;Statistic title="活跃客户" value={clients.<span class="fstat-no" title="function not covered" >filter(c</span> =&gt; <span class="cstat-no" title="statement not covered" >c.status === 'active').</span>length} valueStyle={{ color: '#52c41a' }} /&gt;&lt;/Card&gt;&lt;/Col&gt;
+        &lt;Col xs={12} sm={6}&gt;&lt;Card&gt;&lt;Statistic title="本月新增" value={2} valueStyle={{ color: '#1677ff' }} /&gt;&lt;/Card&gt;&lt;/Col&gt;
+        &lt;Col xs={12} sm={6}&gt;&lt;Card&gt;&lt;Statistic title="即将到期合同" value={3} valueStyle={{ color: '#faad14' }} /&gt;&lt;/Card&gt;&lt;/Col&gt;
+      &lt;/Row&gt;
+&nbsp;
+      &lt;Card&gt;
+        &lt;Space style={{ marginBottom: 16 }}&gt;
+          &lt;Input placeholder="搜索客户名称" prefix={&lt;SearchOutlined /&gt;} style={{ width: 200 }} allowClear /&gt;
+          &lt;Select placeholder="客户类型" style={{ width: 120 }} allowClear&gt;
+            {['企业', '政府', '个人'].<span class="fstat-no" title="function not covered" >map(t</span> =&gt; <span class="cstat-no" title="statement not covered" >&lt;Select.Option key={t}&gt;{t}&lt;/Select.Option&gt;)}</span>
+          &lt;/Select&gt;
+          &lt;Select placeholder="合作状态" style={{ width: 120 }} allowClear&gt;
+            {['active', 'pending', 'suspended'].<span class="fstat-no" title="function not covered" >map(s</span> =&gt; <span class="cstat-no" title="statement not covered" >&lt;Select.Option key={s}&gt;{statusLabel[s]}&lt;/Select.Option&gt;)}</span>
+          &lt;/Select&gt;
+        &lt;/Space&gt;
+        &lt;Table dataSource={clients} rowKey="id" columns={[
+          { title: '客户编号', dataIndex: 'id', key: 'id', <span class="fstat-no" title="function not covered" >render: (i</span>d: string) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Text code&gt;{id.toUpperCase()}&lt;/Text&gt; },</span>
+          { title: '客户名称', dataIndex: 'name', key: 'name', <span class="fstat-no" title="function not covered" >render: (n</span>ame: string, r: any) =&gt; <span class="cstat-no" title="statement not covered" >&lt;a <span class="fstat-no" title="function not covered" >onClick={() =&gt; {</span> <span class="cstat-no" title="statement not covered" >setSelected(r); <span class="cstat-no" title="statement not covered" >s</span>etDrawerVisible(true); }}&gt;{n</span>ame}&lt;/a&gt; },</span>
+          { title: '类型', dataIndex: 'type', key: 'type', <span class="fstat-no" title="function not covered" >render: (t</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Tag color={typeColor[t]}&gt;{t}&lt;/Tag&gt; },</span>
+          { title: '行业', dataIndex: 'industry', key: 'industry' },
+          { title: '联系人', dataIndex: 'contact', key: 'contact' },
+          { title: '联系电话', dataIndex: 'phone', key: 'phone' },
+          { title: '合作状态', dataIndex: 'status', key: 'status', <span class="fstat-no" title="function not covered" >render: (s</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Tag color={statusColor[s]}&gt;{statusLabel[s]}&lt;/Tag&gt; },</span>
+          { title: '累计样品', dataIndex: 'samples', key: 'samples' },
+          { title: '信用等级', dataIndex: 'credit', key: 'credit', <span class="fstat-no" title="function not covered" >render: (c</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Tag color={creditColor[c]}&gt;{c}&lt;/Tag&gt; },</span>
+          { title: '操作', key: 'action', <span class="fstat-no" title="function not covered" >render: (_</span>: any, r: any) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Button type="link" size="small" icon={&lt;EyeOutlined /&gt;} <span class="fstat-no" title="function not covered" >onClick={() =&gt; {</span> <span class="cstat-no" title="statement not covered" >setSelected(r); <span class="cstat-no" title="statement not covered" >s</span>etDrawerVisible(true); }}&gt;查</span>看&lt;/Button&gt; },</span>
+        ]} pagination={{ pageSize: 10 }} size="middle" /&gt;
+      &lt;/Card&gt;
+&nbsp;
+      &lt;Drawer title={selected?.name} open={drawerVisible} <span class="fstat-no" title="function not covered" >onClose={() =&gt; {</span> <span class="cstat-no" title="statement not covered" >setDrawerVisible(false); <span class="cstat-no" title="statement not covered" >s</span>etSelected(null); }} w</span>idth={400}&gt;
+        {selected &amp;&amp; (
+          &lt;&gt;
+          &lt;Descriptions column={1} bordered size="small"&gt;
+            &lt;Descriptions.Item label="客户名称"&gt;{selected.name}&lt;/Descriptions.Item&gt;
+            &lt;Descriptions.Item label="类型"&gt;&lt;Tag color={typeColor[selected.type]}&gt;{selected.type}&lt;/Tag&gt;&lt;/Descriptions.Item&gt;
+            &lt;Descriptions.Item label="行业"&gt;{selected.industry}&lt;/Descriptions.Item&gt;
+            &lt;Descriptions.Item label="联系人"&gt;{selected.contact}&lt;/Descriptions.Item&gt;
+            &lt;Descriptions.Item label="电话"&gt;{selected.phone}&lt;/Descriptions.Item&gt;
+            &lt;Descriptions.Item label="合作状态"&gt;&lt;Tag color={statusColor[selected.status]}&gt;{statusLabel[selected.status]}&lt;/Tag&gt;&lt;/Descriptions.Item&gt;
+            &lt;Descriptions.Item label="信用等级"&gt;&lt;Tag color={creditColor[selected.credit]}&gt;{selected.credit}&lt;/Tag&gt;&lt;/Descriptions.Item&gt;
+            &lt;Descriptions.Item label="累计样品"&gt;{selected.samples}&lt;/Descriptions.Item&gt;
+          &lt;/Descriptions&gt;
+          &lt;Tabs style={{marginTop:16}} items={[
+            {key:'projects', label:&lt;span&gt;&lt;ExperimentOutlined /&gt; 委托项目&lt;/span&gt;, children:&lt;Table dataSource={[{no:'PROJ-2025-001',name:'地表水监测',amount:'¥150,000',status:'进行中'}]} rowKey="no" pagination={false} size="small" columns={[{title:'项目编号',dataIndex:'no'},{title:'名称',dataIndex:'name'},{title:'金额',dataIndex:'amount'},{title:'状态',dataIndex:'status',<span class="fstat-no" title="function not covered" >render:(s</span>:string)=&gt; <span class="cstat-no" title="statement not covered" >&lt;Tag color="green"&gt;{s}&lt;/Tag&gt;}]} /&gt;}</span>,
+            {key:'samples', label:&lt;span&gt;&lt;FileTextOutlined /&gt; 历史样品&lt;/span&gt;, children:&lt;Table dataSource={[{no:'SMP20240521001',name:'地表水样品',date:'2024-05-21',status:'检测中'}]} rowKey="no" pagination={false} size="small" columns={[{title:'编号',dataIndex:'no'},{title:'名称',dataIndex:'name'},{title:'日期',dataIndex:'date'},{title:'状态',dataIndex:'status'}]} /&gt;},
+            {key:'reports', label:&lt;span&gt;&lt;TeamOutlined /&gt; 历史报告&lt;/span&gt;, children:&lt;Text type="secondary"&gt;暂无报告记录&lt;/Text&gt;},
+          ]} /&gt;
+          &lt;/&gt;
+        )}
+      &lt;/Drawer&gt;
+    &lt;/div&gt;
+  );
+};
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-05-16T16:31:52.803Z
+            </div>
+        <script src="../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../sorter.js"></script>
+        <script src="../block-navigation.js"></script>
+    </body>
+</html>
+    

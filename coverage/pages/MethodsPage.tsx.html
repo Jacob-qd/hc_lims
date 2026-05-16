@@ -1,0 +1,412 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for pages/MethodsPage.tsx</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">pages</a> MethodsPage.tsx</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>0/50</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/25</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/27</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>0/32</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line low'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useEffect, useState } from 'react';
+import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Tabs, Modal, Form, message, Timeline, Progress } from 'antd';
+import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined } from '@ant-design/icons';
+&nbsp;
+const { Title, Text } = <span class="cstat-no" title="statement not covered" >Typography;</span>
+const statusColors: Record&lt;string, string&gt; = <span class="cstat-no" title="statement not covered" >{ active: '#52c41a', revision: '#faad14', archived: '#d9d9d9', draft: '#1677ff' };</span>
+&nbsp;
+const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >SopView: React.FC&lt;{method: any}&gt; = ({</span>method}) =&gt; <span class="cstat-no" title="statement not covered" >&lt;div&gt;方法: {method?.code} ({method?.name})&lt;/div&gt;;</span></span>
+&nbsp;
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >MethodsPage: React.FC = () =&gt; {</span></span>
+  const [methods, <span class="cstat-no" title="statement not covered" >setMethods] = useState&lt;any[]&gt;([]);</span>
+  const [loading, <span class="cstat-no" title="statement not covered" >setLoading] = useState(true);</span>
+  const [search, <span class="cstat-no" title="statement not covered" >setSearch] = useState('');</span>
+  const [selected, <span class="cstat-no" title="statement not covered" >setSelected] = useState&lt;any&gt;(null);</span>
+  const [drawer, <span class="cstat-no" title="statement not covered" >setDrawer] = useState(false);</span>
+  const [createModal, <span class="cstat-no" title="statement not covered" >setCreateModal] = useState(false);</span>
+  const [form] = <span class="cstat-no" title="statement not covered" >Form.useForm();</span>
+&nbsp;
+  const fetchMethods = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async () =&gt; {</span></span>
+<span class="cstat-no" title="statement not covered" >    setLoading(true);</span>
+    const res = <span class="cstat-no" title="statement not covered" >await window.fetch('/api/v1/methods').<span class="fstat-no" title="function not covered" >then(r</span> =&gt; <span class="cstat-no" title="statement not covered" >r.json())</span>;</span>
+<span class="cstat-no" title="statement not covered" >    setMethods(res.data.list); <span class="cstat-no" title="statement not covered" >s</span>etLoading(false);</span>
+  };
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  useEffect(() =&gt; {</span> <span class="cstat-no" title="statement not covered" >fetchMethods(); }, [</span>]);</span>
+&nbsp;
+  const filtered = <span class="cstat-no" title="statement not covered" >methods.<span class="fstat-no" title="function not covered" >filter((m</span>: any) =&gt; <span class="cstat-no" title="statement not covered" >m.name.includes(search) || m.code.includes(search) || m.analyte.includes(search))</span>;</span>
+  const stats = <span class="cstat-no" title="statement not covered" >{ active: methods.<span class="fstat-no" title="function not covered" >filter((m</span>: any) =&gt; <span class="cstat-no" title="statement not covered" >m.status === 'active').</span>length, revision: methods.<span class="fstat-no" title="function not covered" >filter((m</span>: any) =&gt; <span class="cstat-no" title="statement not covered" >m.status === 'revision').</span>length, archived: methods.<span class="fstat-no" title="function not covered" >filter((m</span>: any) =&gt; <span class="cstat-no" title="statement not covered" >m.status === 'archived').</span>length };</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  return (</span>
+    &lt;div&gt;
+      &lt;Row justify="space-between" style={{ marginBottom: 16 }}&gt;&lt;Col&gt;&lt;Title level={4}&gt;方法管理&lt;/Title&gt;&lt;/Col&gt;
+        &lt;Col&gt;&lt;Space&gt;
+          &lt;Button icon={&lt;PlusOutlined /&gt;} <span class="fstat-no" title="function not covered" >onClick={() =&gt; <span class="cstat-no" title="statement not covered" >s</span>etCreateModal(true)}</span>&gt;新建方法&lt;/Button&gt;
+          &lt;Button <span class="fstat-no" title="function not covered" >onClick={() =&gt; <span class="cstat-no" title="statement not covered" >m</span>essage.info('版本发布功能')}</span>&gt;版本发布&lt;/Button&gt;
+          &lt;Button <span class="fstat-no" title="function not covered" >onClick={() =&gt; <span class="cstat-no" title="statement not covered" >m</span>essage.info('关联SOP功能')}</span>&gt;关联SOP&lt;/Button&gt;
+        &lt;/Space&gt;&lt;/Col&gt;
+      &lt;/Row&gt;
+      &lt;Row gutter={[16, 16]} style={{ marginBottom: 16 }}&gt;
+        &lt;Col xs={6}&gt;&lt;Card size="small"&gt;&lt;Statistic title="生效方法" value={stats.active} valueStyle={{ color: '#52c41a' }} /&gt;&lt;/Card&gt;&lt;/Col&gt;
+        &lt;Col xs={6}&gt;&lt;Card size="small"&gt;&lt;Statistic title="修订中" value={stats.revision} valueStyle={{ color: '#faad14' }} /&gt;&lt;/Card&gt;&lt;/Col&gt;
+        &lt;Col xs={6}&gt;&lt;Card size="small"&gt;&lt;Statistic title="归档版本" value={stats.archived} /&gt;&lt;/Card&gt;&lt;/Col&gt;
+        &lt;Col xs={6}&gt;&lt;Card size="small"&gt;&lt;Statistic title="验证任务" value={3} valueStyle={{ color: '#1677ff' }} /&gt;&lt;/Card&gt;&lt;/Col&gt;
+      &lt;/Row&gt;
+      &lt;Card&gt;
+        &lt;Space style={{ marginBottom: 16 }}&gt;
+          &lt;Input placeholder="搜索方法名称/编号/分析项目" prefix={&lt;SearchOutlined /&gt;} value={search} <span class="fstat-no" title="function not covered" >onChange={e</span> =&gt; <span class="cstat-no" title="statement not covered" >setSearch(e.target.value)}</span> style={{ width: 320 }} allowClear /&gt;
+          &lt;Select placeholder="状态" style={{ width: 120 }} allowClear&gt;
+            {Object.entries(statusColors).<span class="fstat-no" title="function not covered" >map(([</span>k, v]) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Select.Option key={k}&gt;&lt;Tag color={v}&gt;{k==='active'?'生效':k==='revision'?'修订中':k==='archived'?'已归档':'草稿'}&lt;/Tag&gt;&lt;/Select.Option&gt;)}</span>
+          &lt;/Select&gt;
+        &lt;/Space&gt;
+        &lt;Table dataSource={filtered} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} columns={[
+          { title: '方法编号', dataIndex: 'code', <span class="fstat-no" title="function not covered" >render: (c</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Text code&gt;{c}&lt;/Text&gt; },</span>
+          { title: '方法名称', dataIndex: 'name', <span class="fstat-no" title="function not covered" >render: (n</span>: string, r: any) =&gt; <span class="cstat-no" title="statement not covered" >&lt;a <span class="fstat-no" title="function not covered" >onClick={() =&gt; {</span> <span class="cstat-no" title="statement not covered" >setSelected(r); <span class="cstat-no" title="statement not covered" >s</span>etDrawer(true); }}&gt;{n</span>}&lt;/a&gt; },</span>
+          { title: '分析项目', dataIndex: 'analyte' },
+          { title: '版本', dataIndex: 'version' },
+          { title: '样品基质', dataIndex: 'matrix' },
+          { title: '适用仪器', dataIndex: 'instrument' },
+          { title: '检出限', dataIndex: 'detectionLimit' },
+          { title: '生效日期', dataIndex: 'effectiveDate' },
+          { title: '负责人', dataIndex: 'responsible' },
+          { title: '状态', dataIndex: 'status', <span class="fstat-no" title="function not covered" >render: (s</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Tag color={statusColors[s]}&gt;{s==='active'?'生效':s==='revision'?'修订中':s==='archived'?'已归档':'草稿'}&lt;/Tag&gt; },</span>
+          { title: '操作', <span class="fstat-no" title="function not covered" >render: (_</span>: any, r: any) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Space&gt;&lt;Button type="link" size="small" icon={&lt;EyeOutlined /&gt;} <span class="fstat-no" title="function not covered" >onClick={() =&gt; {</span> <span class="cstat-no" title="statement not covered" >setSelected(r); <span class="cstat-no" title="statement not covered" >s</span>etDrawer(true); }}&gt;详</span>情&lt;/Button&gt;&lt;Button type="link" size="small" icon={&lt;EditOutlined /&gt;} <span class="fstat-no" title="function not covered" >onClick={() =&gt; <span class="cstat-no" title="statement not covered" >m</span>essage.info('编辑方法: '+r.code)}</span>&gt;编辑&lt;/Button&gt;&lt;Button type="link" size="small" <span class="fstat-no" title="function not covered" >onClick={() =&gt; <span class="cstat-no" title="statement not covered" >m</span>essage.success('已复制方法: '+r.code)}</span>&gt;复制&lt;/Button&gt;&lt;/Space&gt; },</span>
+        ]} size="middle" /&gt;
+      &lt;/Card&gt;
+&nbsp;
+      &lt;Drawer title={`${selected?.code} ${selected?.name}`} open={drawer} <span class="fstat-no" title="function not covered" >onClose={() =&gt; {</span> <span class="cstat-no" title="statement not covered" >setDrawer(false); <span class="cstat-no" title="statement not covered" >s</span>etSelected(null); }} w</span>idth={520}&gt;
+        {selected &amp;&amp; (&lt;&gt;
+          &lt;Descriptions column={2} bordered size="small"&gt;
+            &lt;Descriptions.Item label="方法编号" span={2}&gt;{selected.code}&lt;/Descriptions.Item&gt;
+            &lt;Descriptions.Item label="名称" span={2}&gt;{selected.name}&lt;/Descriptions.Item&gt;
+            &lt;Descriptions.Item label="版本"&gt;{selected.version}&lt;/Descriptions.Item&gt;
+            &lt;Descriptions.Item label="状态"&gt;&lt;Tag color={statusColors[selected.status]}&gt;{selected.statusLabel}&lt;/Tag&gt;&lt;/Descriptions.Item&gt;
+            &lt;Descriptions.Item label="分析项目"&gt;{selected.analyte}&lt;/Descriptions.Item&gt;
+            &lt;Descriptions.Item label="样品基质"&gt;{selected.matrix}&lt;/Descriptions.Item&gt;
+            &lt;Descriptions.Item label="适用仪器"&gt;{selected.instrument}&lt;/Descriptions.Item&gt;
+            &lt;Descriptions.Item label="检出限"&gt;{selected.detectionLimit}&lt;/Descriptions.Item&gt;
+            &lt;Descriptions.Item label="生效日期"&gt;{selected.effectiveDate}&lt;/Descriptions.Item&gt;
+            &lt;Descriptions.Item label="负责人"&gt;{selected.responsible}&lt;/Descriptions.Item&gt;
+          &lt;/Descriptions&gt;
+          &lt;Tabs style={{ marginTop: 16 }} items={[
+            { key: 'sop', label: 'SOP文档', children: &lt;SopView method={selected} /&gt; },
+            { key: 'versions', label: '版本历史', children: &lt;Timeline items={[
+              { color: 'green', children: &lt;&gt;{selected.version} 当前版本&lt;br /&gt;{selected.effectiveDate} 生效&lt;/&gt; },
+              { color: 'blue', children: &lt;&gt;v1.0 初版&lt;br /&gt;2023-01-01 发布&lt;/&gt; },
+            ]} /&gt; },
+            { key: 'validation', label: '验证记录', children: &lt;div&gt;&lt;Progress type="circle" percent={75} size={80} /&gt;&lt;br /&gt;&lt;Space direction="vertical" style={{marginTop:16, width:'100%'}}&gt;
+              {[{item:'准确度',status:'passed'},{item:'精密度',status:'passed'},{item:'线性范围',status:'passed'},{item:'检出限',status:'passed'},{item:'定量限',status:'testing'},{item:'回收率',status:'pending'}].<span class="fstat-no" title="function not covered" >map(v</span> =&gt;
+<span class="cstat-no" title="statement not covered" >                &lt;Card key={v.item} size="small" style={{marginBottom:4}}&gt;</span>
+                  &lt;Row justify="space-between"&gt;&lt;Col&gt;&lt;Text&gt;{v.item}&lt;/Text&gt;&lt;/Col&gt;&lt;Col&gt;&lt;Tag color={v.status==='passed'?'green':v.status==='testing'?'orange':'default'}&gt;{v.status==='passed'?'已验证':v.status==='testing'?'验证中':'待验证'}&lt;/Tag&gt;&lt;/Col&gt;&lt;/Row&gt;
+                &lt;/Card&gt;
+              )}
+            &lt;/Space&gt;&lt;/div&gt; },
+          ]} /&gt;
+        &lt;/&gt;)}
+      &lt;/Drawer&gt;
+&nbsp;
+      &lt;Modal title="新建方法" open={createModal} <span class="fstat-no" title="function not covered" >onOk={() =&gt; <span class="cstat-no" title="statement not covered" >f</span>orm.submit()}</span> <span class="fstat-no" title="function not covered" >onCancel={() =&gt; {</span> <span class="cstat-no" title="statement not covered" >setCreateModal(false); <span class="cstat-no" title="statement not covered" >f</span>orm.resetFields(); }}&gt;</span>
+        &lt;Form form={form} layout="vertical" <span class="fstat-no" title="function not covered" >onFinish={() =&gt; {</span> <span class="cstat-no" title="statement not covered" >message.success('方法创建成功'); <span class="cstat-no" title="statement not covered" >s</span>etCreateModal(false); }}&gt;</span>
+          &lt;Form.Item name="code" label="方法编号"&gt;&lt;Input /&gt;&lt;/Form.Item&gt;
+          &lt;Form.Item name="name" label="方法名称" rules={[{ required: true }]}&gt;&lt;Input /&gt;&lt;/Form.Item&gt;
+          &lt;Form.Item name="analyte" label="分析项目"&gt;&lt;Input /&gt;&lt;/Form.Item&gt;
+          &lt;Form.Item name="matrix" label="样品基质"&gt;&lt;Input /&gt;&lt;/Form.Item&gt;
+          &lt;Form.Item name="instrument" label="适用仪器"&gt;&lt;Input /&gt;&lt;/Form.Item&gt;
+          &lt;Form.Item name="detectionLimit" label="检出限"&gt;&lt;Input /&gt;&lt;/Form.Item&gt;
+        &lt;/Form&gt;
+      &lt;/Modal&gt;
+    &lt;/div&gt;
+  );
+};
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-05-16T16:31:52.803Z
+            </div>
+        <script src="../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../sorter.js"></script>
+        <script src="../block-navigation.js"></script>
+    </body>
+</html>
+    

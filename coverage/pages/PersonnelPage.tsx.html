@@ -1,0 +1,445 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for pages/PersonnelPage.tsx</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">pages</a> PersonnelPage.tsx</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>0/57</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/39</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/33</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>0/41</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line low'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useEffect, useState } from 'react';
+import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Tabs, Drawer, Descriptions, Timeline, Badge } from 'antd';
+import { SearchOutlined, EyeOutlined } from '@ant-design/icons';
+&nbsp;
+const { Title, Text } = <span class="cstat-no" title="statement not covered" >Typography;</span>
+const certColors: Record&lt;string, string&gt; = <span class="cstat-no" title="statement not covered" >{ active: '#52c41a', warning: '#faad14', expired: '#ff4d4f' };</span>
+const certLabels: Record&lt;string, string&gt; = <span class="cstat-no" title="statement not covered" >{ active: '正常', warning: '即将过期', expired: '已过期' };</span>
+const roleColors: Record&lt;string, string&gt; = <span class="cstat-no" title="statement not covered" >{ PI: '#ff4d4f', 博士后: '#1677ff', 博士生: '#52c41a', 硕士生: '#faad14', 检测员: '#1677ff', 仪器管理员: '#722ed1', 质量主管: '#eb2f96', 报告审核员: '#13c2c2' };</span>
+&nbsp;
+export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >PersonnelPage: React.FC = () =&gt; {</span></span>
+  const [personnel, <span class="cstat-no" title="statement not covered" >setPersonnel] = useState&lt;any[]&gt;([]);</span>
+  const [trainings, <span class="cstat-no" title="statement not covered" >setTrainings] = useState&lt;any[]&gt;([]);</span>
+  const [certs, <span class="cstat-no" title="statement not covered" >setCerts] = useState&lt;any[]&gt;([]);</span>
+  const [loading, <span class="cstat-no" title="statement not covered" >setLoading] = useState(true);</span>
+  const [search, <span class="cstat-no" title="statement not covered" >setSearch] = useState('');</span>
+  const [selected, <span class="cstat-no" title="statement not covered" >setSelected] = useState&lt;any&gt;(null);</span>
+  const [drawer, <span class="cstat-no" title="statement not covered" >setDrawer] = useState(false);</span>
+&nbsp;
+  const fetchData = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async () =&gt; {</span></span>
+<span class="cstat-no" title="statement not covered" >    setLoading(true);</span>
+    const [pr, tr, cr] = <span class="cstat-no" title="statement not covered" >await Promise.all([</span>
+      fetch('/api/v1/personnel').<span class="fstat-no" title="function not covered" >then(r</span> =&gt; <span class="cstat-no" title="statement not covered" >r.json())</span>,
+      fetch('/api/v1/personnel/training').<span class="fstat-no" title="function not covered" >then(r</span> =&gt; <span class="cstat-no" title="statement not covered" >r.json())</span>,
+      fetch('/api/v1/personnel/certificates').<span class="fstat-no" title="function not covered" >then(r</span> =&gt; <span class="cstat-no" title="statement not covered" >r.json())</span>,
+    ]);
+<span class="cstat-no" title="statement not covered" >    setPersonnel(pr.data.list); <span class="cstat-no" title="statement not covered" >s</span>etTrainings(tr.data.list); <span class="cstat-no" title="statement not covered" >s</span>etCerts(cr.data.list); <span class="cstat-no" title="statement not covered" >s</span>etLoading(false);</span>
+  };
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  useEffect(() =&gt; {</span> <span class="cstat-no" title="statement not covered" >fetchData(); }, [</span>]);</span>
+&nbsp;
+  const filtered = <span class="cstat-no" title="statement not covered" >personnel.<span class="fstat-no" title="function not covered" >filter((p</span>: any) =&gt; <span class="cstat-no" title="statement not covered" >p.name.includes(search) || p.dept.includes(search) || p.position.includes(search))</span>;</span>
+  const stats = <span class="cstat-no" title="statement not covered" >{ total: personnel.length, active: personnel.<span class="fstat-no" title="function not covered" >filter((p</span>: any) =&gt; <span class="cstat-no" title="statement not covered" >p.certStatus === 'active').</span>length, warning: personnel.<span class="fstat-no" title="function not covered" >filter((p</span>: any) =&gt; <span class="cstat-no" title="statement not covered" >p.certStatus === 'warning').</span>length, expired: personnel.<span class="fstat-no" title="function not covered" >filter((p</span>: any) =&gt; <span class="cstat-no" title="statement not covered" >p.certStatus === 'expired').</span>length };</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  return (</span>
+    &lt;div&gt;
+      &lt;Title level={4} style={{ marginBottom: 16 }}&gt;人员与培训&lt;/Title&gt;
+      &lt;Row gutter={[16, 16]} style={{ marginBottom: 16 }}&gt;
+        &lt;Col xs={6}&gt;&lt;Card size="small"&gt;&lt;Statistic title="总人数" value={stats.total} /&gt;&lt;/Card&gt;&lt;/Col&gt;
+        &lt;Col xs={6}&gt;&lt;Card size="small"&gt;&lt;Statistic title="在岗" value={stats.active} valueStyle={{ color: '#52c41a' }} /&gt;&lt;/Card&gt;&lt;/Col&gt;
+        &lt;Col xs={6}&gt;&lt;Card size="small"&gt;&lt;Statistic title="资质到期预警" value={stats.warning} valueStyle={{ color: '#faad14' }} /&gt;&lt;/Card&gt;&lt;/Col&gt;
+        &lt;Col xs={6}&gt;&lt;Card size="small"&gt;&lt;Statistic title="已过期" value={stats.expired} valueStyle={{ color: '#ff4d4f' }} /&gt;&lt;/Card&gt;&lt;/Col&gt;
+      &lt;/Row&gt;
+      &lt;Tabs defaultActiveKey="personnel" items={[
+        { key: 'personnel', label: '人员档案', children: (
+          &lt;Card&gt;&lt;Space style={{ marginBottom: 16 }}&gt;
+            &lt;Input placeholder="搜索姓名/部门/岗位" prefix={&lt;SearchOutlined /&gt;} value={search} <span class="fstat-no" title="function not covered" >onChange={e</span> =&gt; <span class="cstat-no" title="statement not covered" >setSearch(e.target.value)}</span> style={{ width: 260 }} allowClear /&gt;
+            &lt;Select placeholder="资质状态" style={{ width: 130 }} allowClear&gt;
+              {Object.entries(certColors).<span class="fstat-no" title="function not covered" >map(([</span>k, v]) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Select.Option key={k} value={k}&gt;&lt;Badge color={v} /&gt;{certLabels[k]}&lt;/Select.Option&gt;)}</span>
+            &lt;/Select&gt;
+          &lt;/Space&gt;
+          &lt;Table dataSource={filtered} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} columns={[
+            { title: '姓名', dataIndex: 'name', <span class="fstat-no" title="function not covered" >render: (n</span>: string, r: any) =&gt; <span class="cstat-no" title="statement not covered" >&lt;a <span class="fstat-no" title="function not covered" >onClick={() =&gt; {</span> <span class="cstat-no" title="statement not covered" >setSelected(r); <span class="cstat-no" title="statement not covered" >s</span>etDrawer(true); }}&gt;{n</span>}&lt;/a&gt; },</span>
+            { title: '工号', dataIndex: 'empNo', <span class="fstat-no" title="function not covered" >render: (e</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Text code&gt;{e}&lt;/Text&gt; },</span>
+            { title: '部门', dataIndex: 'dept' },
+            { title: '岗位', dataIndex: 'position' },
+            { title: '角色', dataIndex: 'role', <span class="fstat-no" title="function not covered" >render: (r</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Tag color={roleColors[r] || '#1677ff'}&gt;{r}&lt;/Tag&gt; },</span>
+            { title: '实验室', dataIndex: 'lab' },
+            { title: '入职日期', dataIndex: 'joinDate' },
+            { title: '资质状态', dataIndex: 'certStatus', <span class="fstat-no" title="function not covered" >render: (s</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Tag color={certColors[s]}&gt;{certLabels[s]}&lt;/Tag&gt; },</span>
+            { title: '操作', <span class="fstat-no" title="function not covered" >render: (_</span>: any, r: any) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Button type="link" size="small" icon={&lt;EyeOutlined /&gt;} <span class="fstat-no" title="function not covered" >onClick={() =&gt; {</span> <span class="cstat-no" title="statement not covered" >setSelected(r); <span class="cstat-no" title="statement not covered" >s</span>etDrawer(true); }} /&gt; </span>},</span>
+          ]} size="middle" /&gt;&lt;/Card&gt;
+        )},
+        { key: 'training', label: '培训管理', children: (
+          &lt;Card&gt;&lt;Table dataSource={trainings} rowKey="id" columns={[
+            { title: '培训名称', dataIndex: 'name' },
+            { title: '培训对象', dataIndex: 'target' },
+            { title: '部门', dataIndex: 'dept' },
+            { title: '计划日期', dataIndex: 'planDate' },
+            { title: '实际日期', dataIndex: 'actualDate' },
+            { title: '参与人数', dataIndex: 'participants', <span class="fstat-no" title="function not covered" >render: (p</span>: number) =&gt; <span class="cstat-no" title="statement not covered" >p || '-' },</span>
+            { title: '通过率', dataIndex: 'passRate', <span class="fstat-no" title="function not covered" >render: (r</span>: number) =&gt; <span class="cstat-no" title="statement not covered" >r ? `${r}%` : '-' },</span>
+            { title: '状态', dataIndex: 'status', <span class="fstat-no" title="function not covered" >render: (s</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Tag color={s==='completed'?'green':s==='in_progress'?'blue':'default'}&gt;{s==='completed'?'已完成':s==='in_progress'?'进行中':'已计划'}&lt;/Tag&gt; },</span>
+          ]} pagination={false} size="middle" /&gt;&lt;/Card&gt;
+        )},
+        { key: 'certificates', label: '资质管理', children: (
+          &lt;Row gutter={16}&gt;
+            &lt;Col span={16}&gt;&lt;Card title="资质证书台账"&gt;
+              &lt;Table dataSource={certs} rowKey="id" pagination={false} size="small" columns={[
+                { title: '证书编号', dataIndex: 'no', <span class="fstat-no" title="function not covered" >render: (n</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Text code&gt;{n}&lt;/Text&gt; },</span>
+                { title: '持证人', dataIndex: 'holder' },
+                { title: '证书类型', dataIndex: 'type' },
+                { title: '发证机构', dataIndex: 'issuer' },
+                { title: '有效期', dataIndex: 'expiryDate', <span class="fstat-no" title="function not covered" >render: (d</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Text type={new Date(d) &lt; new Date() ? 'danger' : undefined}&gt;{d}&lt;/Text&gt; },</span>
+                { title: '状态', dataIndex: 'status', <span class="fstat-no" title="function not covered" >render: (s</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Badge status={s==='active'?'success':s==='expiring'?'warning':'error'} text={s==='active'?'有效':s==='expiring'?'即将过期':'已过期'} /&gt; },</span>
+              ]} /&gt;&lt;/Card&gt;
+            &lt;/Col&gt;
+            &lt;Col span={8}&gt;
+              &lt;Card title="到期预警面板"&gt;
+                {certs.<span class="fstat-no" title="function not covered" >filter(c</span> =&gt; <span class="cstat-no" title="statement not covered" >c.status !== 'active').<span class="fstat-no" title="function not covered" ></span>map(c</span> =&gt; <span class="cstat-no" title="statement not covered" >&lt;Card key={c.id} size="small" style={{ marginBottom: 8 }}&gt;</span>
+                  &lt;Text strong&gt;{c.holder}&lt;/Text&gt;&lt;br /&gt;
+                  &lt;Text type="secondary"&gt;{c.type}&lt;/Text&gt;&lt;br /&gt;
+                  &lt;Text type="danger"&gt;到期: {c.expiryDate}&lt;/Text&gt;
+                &lt;/Card&gt;)}
+                {certs.<span class="fstat-no" title="function not covered" >filter(c</span> =&gt; <span class="cstat-no" title="statement not covered" >c.status === 'active').</span>length === certs.length &amp;&amp; &lt;Text type="secondary"&gt;暂无到期预警&lt;/Text&gt;}
+              &lt;/Card&gt;
+            &lt;/Col&gt;
+          &lt;/Row&gt;
+        )},
+      ]} /&gt;
+&nbsp;
+      &lt;Drawer title={selected?.name} open={drawer} <span class="fstat-no" title="function not covered" >onClose={() =&gt; {</span> <span class="cstat-no" title="statement not covered" >setDrawer(false); <span class="cstat-no" title="statement not covered" >s</span>etSelected(null); }} w</span>idth={480}&gt;
+        {selected &amp;&amp; (&lt;&gt;
+          &lt;Descriptions column={2} bordered size="small"&gt;
+            &lt;Descriptions.Item label="姓名"&gt;{selected.name}&lt;/Descriptions.Item&gt;
+            &lt;Descriptions.Item label="工号"&gt;{selected.empNo}&lt;/Descriptions.Item&gt;
+            &lt;Descriptions.Item label="部门"&gt;{selected.dept}&lt;/Descriptions.Item&gt;
+            &lt;Descriptions.Item label="岗位"&gt;{selected.position}&lt;/Descriptions.Item&gt;
+            &lt;Descriptions.Item label="角色"&gt;&lt;Tag color={roleColors[selected.role]}&gt;{selected.role}&lt;/Tag&gt;&lt;/Descriptions.Item&gt;
+            &lt;Descriptions.Item label="实验室"&gt;{selected.lab}&lt;/Descriptions.Item&gt;
+            &lt;Descriptions.Item label="入职日期"&gt;{selected.joinDate}&lt;/Descriptions.Item&gt;
+            &lt;Descriptions.Item label="资质状态"&gt;&lt;Tag color={certColors[selected.certStatus]}&gt;{certLabels[selected.certStatus]}&lt;/Tag&gt;&lt;/Descriptions.Item&gt;
+          &lt;/Descriptions&gt;
+          &lt;Tabs style={{ marginTop: 16 }} items={[
+            { key: 'certs', label: '资质证书', children: &lt;Table dataSource={certs.<span class="fstat-no" title="function not covered" >filter(c</span> =&gt; <span class="cstat-no" title="statement not covered" >c.holder === selected.name)}</span> rowKey="id" pagination={false} size="small" columns={[{title:'证书',dataIndex:'type'},{title:'有效期',dataIndex:'expiryDate'},{title:'状态',dataIndex:'status',<span class="fstat-no" title="function not covered" >render:(s</span>:string)=&gt; <span class="cstat-no" title="statement not covered" >&lt;Badge status={s==='active'?'success':'error'} /&gt;}]} /&gt; </span>},
+            { key: 'training', label: '培训记录', children: &lt;Timeline items={trainings.<span class="fstat-no" title="function not covered" >filter(t</span> =&gt; <span class="cstat-no" title="statement not covered" >t.dept === selected.dept || t.dept === '全部').<span class="fstat-no" title="function not covered" ></span>map(t</span> =&gt; (<span class="cstat-no" title="statement not covered" >{ color: t.status === 'completed' ? 'green' : 'blue', children: &lt;&gt;{t.name}&lt;br /&gt;&lt;Text type="secondary"&gt;{t.actualDate || t.planDate}&lt;/Text&gt;&lt;/&gt; }))}</span> /&gt; },
+          ]} /&gt;
+        &lt;/&gt;)}
+      &lt;/Drawer&gt;
+    &lt;/div&gt;
+  );
+};
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-05-16T16:31:52.803Z
+            </div>
+        <script src="../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../sorter.js"></script>
+        <script src="../block-navigation.js"></script>
+    </body>
+</html>
+    
