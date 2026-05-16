@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, cleanup } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { RouteGuard } from '../components/RouteGuard';
@@ -22,6 +22,7 @@ describe('RouteGuard', () => {
   beforeEach(() => {
     useAuthStore.setState({ isAuthenticated: false, isLoading: false, user: null });
   });
+  afterEach(() => { cleanup(); });
 
   it('未认证时返回null', () => {
     const { container } = renderWithRouter(
@@ -79,6 +80,7 @@ describe('RouteGuard', () => {
 });
 
 describe('BreadcrumbNav', () => {
+  afterEach(() => { cleanup(); });
   it('渲染首页面包屑', () => {
     renderWithRouter(<BreadcrumbNav />, ['/dashboard']);
     expect(screen.getByText('首页')).toBeTruthy();
@@ -96,6 +98,7 @@ describe('BreadcrumbNav', () => {
 });
 
 describe('BatchActions', () => {
+  afterEach(() => { cleanup(); });
   it('未选择时显示导入导出', () => {
     renderWithRouter(<BatchActions selectedCount={0} onBatchExport={() => {}} onBatchImport={() => {}} />);
     expect(screen.getByText('导入')).toBeTruthy();
@@ -125,6 +128,7 @@ describe('BatchActions', () => {
 });
 
 describe('BarcodeLabel', () => {
+  afterEach(() => { cleanup(); });
   it('BarcodePreview渲染不崩溃', () => {
     const { container } = renderWithRouter(<BarcodePreview code="SMP202405210001" label="测试样品" />);
     expect(container.querySelector('svg')).toBeTruthy();
@@ -153,6 +157,7 @@ describe('BarcodeLabel', () => {
 });
 
 describe('CustomWorkspace', () => {
+  afterEach(() => { cleanup(); });
   it('渲染自定义工作台', () => {
     renderWithRouter(
       <CustomWorkspace open={true} onClose={() => {}} onSave={() => {}} initialVisible={['kpi', 'recent_samples']} />
@@ -172,6 +177,7 @@ describe('CustomWorkspace', () => {
 });
 
 describe('SignaturePad', () => {
+  afterEach(() => { cleanup(); });
   it('渲染签名弹窗', () => {
     renderWithRouter(
       <SignaturePad visible={true} onClose={() => {}} onSign={() => {}} type="编制" userName="张伟" userRole="检测员" />
