@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { useAuthStore } from '../stores/authStore';
 import { useThemeStore } from '../stores/themeStore';
 import { useI18nStore } from '../stores/i18nStore';
@@ -49,9 +49,16 @@ describe('AuthStore', () => {
 });
 
 describe('ThemeStore', () => {
+  let reloadMock: ReturnType<typeof vi.fn>;
+
   beforeEach(() => {
     localStorage.removeItem('hc_lims_theme');
     useThemeStore.setState({ theme: 'light', mode: 'light' });
+    reloadMock = vi.fn();
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: { ...window.location, reload: reloadMock },
+    });
   });
 
   it('默认主题为light', () => {
@@ -60,25 +67,22 @@ describe('ThemeStore', () => {
   });
 
   it('toggle切换主题', () => {
-    const reloadSpy = vi.spyOn(window.location, 'reload').mockImplementation(() => {});
     useThemeStore.getState().toggle();
     expect(useThemeStore.getState().theme).toBe('dark');
     expect(localStorage.getItem('hc_lims_theme')).toBe('dark');
-    reloadSpy.mockRestore();
+    expect(reloadMock).toHaveBeenCalled();
   });
 
   it('toggleTheme切换主题', () => {
-    const reloadSpy = vi.spyOn(window.location, 'reload').mockImplementation(() => {});
     useThemeStore.getState().toggleTheme();
     expect(useThemeStore.getState().theme).toBe('dark');
-    reloadSpy.mockRestore();
+    expect(reloadMock).toHaveBeenCalled();
   });
 
   it('setMode设置主题', () => {
-    const reloadSpy = vi.spyOn(window.location, 'reload').mockImplementation(() => {});
     useThemeStore.getState().setMode('dark');
     expect(useThemeStore.getState().mode).toBe('dark');
-    reloadSpy.mockRestore();
+    expect(reloadMock).toHaveBeenCalled();
   });
 
   it('getConfig返回正确的算法', () => {
@@ -185,9 +189,16 @@ describe('PermissionStore', () => {
 });
 
 describe('LabTypeStore', () => {
+  let reloadMock: ReturnType<typeof vi.fn>;
+
   beforeEach(() => {
     localStorage.removeItem('hc_lims_lab_type');
     useLabTypeStore.setState({ labType: 'commercial' });
+    reloadMock = vi.fn();
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: { ...window.location, reload: reloadMock },
+    });
   });
 
   it('默认类型为commercial', () => {
@@ -197,25 +208,21 @@ describe('LabTypeStore', () => {
   });
 
   it('setLabType切换类型', () => {
-    const reloadSpy = vi.spyOn(window.location, 'reload').mockImplementation(() => {});
     useLabTypeStore.getState().setLabType('research');
     expect(useLabTypeStore.getState().labType).toBe('research');
     expect(localStorage.getItem('hc_lims_lab_type')).toBe('research');
-    reloadSpy.mockRestore();
+    expect(reloadMock).toHaveBeenCalled();
   });
 
   it('isResearch在research模式下为true', () => {
-    const reloadSpy = vi.spyOn(window.location, 'reload').mockImplementation(() => {});
     useLabTypeStore.getState().setLabType('research');
     expect(useLabTypeStore.getState().isResearch()).toBe(true);
     expect(useLabTypeStore.getState().isCommercial()).toBe(false);
-    reloadSpy.mockRestore();
+    expect(reloadMock).toHaveBeenCalled();
   });
 
   it('localStorage读取初始值', () => {
     localStorage.setItem('hc_lims_lab_type', 'research');
-    // Create a fresh store by reading from localStorage... we need to re-import
-    // But Zustand stores are singletons. Let's just verify the logic directly.
     const stored = localStorage.getItem('hc_lims_lab_type');
     expect(stored).toBe('research');
   });
