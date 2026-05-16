@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>11/11</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>2/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/3</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -120,7 +120,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -135,22 +135,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -160,7 +158,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -172,7 +172,7 @@ import { Breadcrumb } from 'antd';
 import { useLocation, Link } from 'react-router-dom';
 import { HomeOutlined } from '@ant-design/icons';
 &nbsp;
-const breadcrumbNameMap: Record&lt;string, string&gt; = <span class="cstat-no" title="statement not covered" >{</span>
+const breadcrumbNameMap: Record&lt;string, string&gt; = {
   '/dashboard': '首页',
   '/samples': '样品管理',
   '/tasks': '检测管理',
@@ -187,20 +187,20 @@ const breadcrumbNameMap: Record&lt;string, string&gt; = <span class="cstat-no" t
   '/settings': '系统设置',
 };
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >BreadcrumbNav: React.FC = () =&gt; {</span></span>
-  const <span class="cstat-no" title="statement not covered" >location = useLocation();</span>
-  const pathSnippets = <span class="cstat-no" title="statement not covered" >location.pathname.split('/').<span class="fstat-no" title="function not covered" >filter((i</span>) =&gt; <span class="cstat-no" title="statement not covered" >i);</span></span>
+export const BreadcrumbNav: React.FC = () =&gt; {
+  const location = useLocation();
+  const pathSnippets = location.pathname.split('/').filter((i) =&gt; i);
 &nbsp;
-  const extraBreadcrumbItems = <span class="cstat-no" title="statement not covered" >pathSnippets.<span class="fstat-no" title="function not covered" >map((_</span>, index) =&gt; {</span>
-    const url = <span class="cstat-no" title="statement not covered" >`/${pathSnippets.slice(0, index + 1).join('/')}`;</span>
-    const name = <span class="cstat-no" title="statement not covered" >breadcrumbNameMap[url] || url;</span>
-<span class="cstat-no" title="statement not covered" >    return {</span>
+  const extraBreadcrumbItems = pathSnippets.map((_, index) =&gt; {
+    const url = `/${pathSnippets.slice(0, index + 1).join('/')}`;
+    const name = breadcrumbNameMap[url] || <span class="branch-1 cbranch-no" title="branch not covered" >url;</span>
+    return {
       key: url,
-      title: index === pathSnippets.length - 1 ? name : &lt;Link to={url}&gt;{name}&lt;/Link&gt;,
+      title: index === pathSnippets.length - 1 ? name : <span class="branch-1 cbranch-no" title="branch not covered" >&lt;Link to={url}&gt;{name}&lt;/Link&gt;,</span>
     };
   });
 &nbsp;
-  const breadcrumbItems = <span class="cstat-no" title="statement not covered" >[</span>
+  const breadcrumbItems = [
     {
       title: (
         &lt;Link to="/dashboard"&gt;
@@ -212,7 +212,7 @@ export const <span class="cstat-no" title="statement not covered" ><span class="
     ...extraBreadcrumbItems,
   ];
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return (</span>
+  return (
     &lt;Breadcrumb
       items={breadcrumbItems}
       style={{ margin: '16px 0' }}
@@ -226,7 +226,7 @@ export const <span class="cstat-no" title="statement not covered" ><span class="
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-05-16T16:31:52.803Z
+                at 2026-05-16T17:14:20.038Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

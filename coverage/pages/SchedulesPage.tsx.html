@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/9</span>
+                <span class='fraction'>9/9</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>6/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/5</span>
+                <span class='fraction'>5/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/9</span>
+                <span class='fraction'>9/9</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -135,19 +135,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -158,8 +156,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -168,21 +168,21 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -203,9 +203,9 @@
 import { Card, Table, Tag, Row, Col, Typography, Badge, Space, Tabs, Progress } from 'antd';
 // import { CalendarOutlined } from '@ant-design/icons';
 &nbsp;
-const { Title, Text } = <span class="cstat-no" title="statement not covered" >Typography;</span>
+const { Title, Text } = Typography;
 &nbsp;
-const scheduleData = <span class="cstat-no" title="statement not covered" >[</span>
+const scheduleData = [
   { time: '08:00-10:00', instrument: '液相色谱仪', task: 'TK-2025-001 pH值检测', analyst: '张伟', lab: '色谱室101', progress: 100 },
   { time: '08:30-11:00', instrument: '气相色谱仪', task: 'TK-2025-003 氨氮检测', analyst: '李明', lab: '色谱室202', progress: 45 },
   { time: '09:00-12:00', instrument: '原子吸收光谱仪', task: 'TK-2025-004 重金属(Pb)检测', analyst: '郑丽', lab: '光谱室201', progress: 70 },
@@ -213,7 +213,7 @@ const scheduleData = <span class="cstat-no" title="statement not covered" >[</sp
   { time: '14:00-17:00', instrument: 'ICP-MS质谱仪', task: '维护中', analyst: '-', lab: '质谱室301', progress: 0 },
 ];
 &nbsp;
-const weeklyData = <span class="cstat-no" title="statement not covered" >[</span>
+const weeklyData = [
   { date: '05-19(一)', instruments: [
     { name: '液相色谱仪', morning: 'TK-001 pH值', afternoon: 'TK-002 COD', status: 'running' },
     { name: '气相色谱仪', morning: '空闲', afternoon: 'TK-003 氨氮', status: 'idle' },
@@ -226,8 +226,8 @@ const weeklyData = <span class="cstat-no" title="statement not covered" >[</span
   ]},
 ];
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >SchedulesPage: React.FC = () =&gt; {</span></span>
-<span class="cstat-no" title="statement not covered" >  return (</span>
+export const SchedulesPage: React.FC = () =&gt; {
+  return (
     &lt;div&gt;
       &lt;Title level={4} style={{ marginBottom: 16 }}&gt;排期管理&lt;/Title&gt;
 &nbsp;
@@ -236,21 +236,21 @@ export const <span class="cstat-no" title="statement not covered" ><span class="
           &lt;Card&gt;
             &lt;Table dataSource={scheduleData} rowKey="time" pagination={false} columns={[
               { title: '时间', dataIndex: 'time' },
-              { title: '仪器', dataIndex: 'instrument', <span class="fstat-no" title="function not covered" >render: (v</span>: string) =&gt; <span class="cstat-no" title="statement not covered" >&lt;Text strong&gt;{v}&lt;/Text&gt; },</span>
+              { title: '仪器', dataIndex: 'instrument', render: (v: string) =&gt; &lt;Text strong&gt;{v}&lt;/Text&gt; },
               { title: '任务', dataIndex: 'task' },
               { title: '分析员', dataIndex: 'analyst' },
               { title: '实验室', dataIndex: 'lab' },
-              { title: '进度', dataIndex: 'progress', <span class="fstat-no" title="function not covered" >render: (p</span>: number) =&gt; <span class="cstat-no" title="statement not covered" >p &gt; 0 ? &lt;Progress percent={p} size="small" /&gt; : &lt;Tag color="orange"&gt;维护中&lt;/Tag&gt; },</span>
+              { title: '进度', dataIndex: 'progress', render: (p: number) =&gt; p &gt; 0 ? &lt;Progress percent={p} size="small" /&gt; : &lt;Tag color="orange"&gt;维护中&lt;/Tag&gt; },
             ]} size="middle" /&gt;
           &lt;/Card&gt;
         )},
         { key: 'weekly', label: '周视图', children: (
           &lt;Row gutter={16}&gt;
-            {weeklyData.<span class="fstat-no" title="function not covered" >map(d</span>ay =&gt; (
-<span class="cstat-no" title="statement not covered" >              &lt;Col span={12} key={day.date} style={{ marginBottom: 16 }}&gt;</span>
+            {weeklyData.map(day =&gt; (
+              &lt;Col span={12} key={day.date} style={{ marginBottom: 16 }}&gt;
                 &lt;Card title={day.date} size="small"&gt;
-                  {day.instruments.<span class="fstat-no" title="function not covered" >map(i</span>nst =&gt; (
-<span class="cstat-no" title="statement not covered" >                    &lt;Card key={inst.name} size="small" style={{ marginBottom: 8 }}&gt;</span>
+                  {day.instruments.map(inst =&gt; (
+                    &lt;Card key={inst.name} size="small" style={{ marginBottom: 8 }}&gt;
                       &lt;Space direction="vertical" style={{ width: '100%' }}&gt;
                         &lt;Space&gt;&lt;Badge status={inst.status === 'running' ? 'processing' : inst.status === 'maintenance' ? 'warning' : 'default'} /&gt;&lt;Text strong&gt;{inst.name}&lt;/Text&gt;&lt;/Space&gt;
                         &lt;Text type="secondary"&gt;上午: {inst.morning}&lt;/Text&gt;
@@ -274,7 +274,7 @@ export const <span class="cstat-no" title="statement not covered" ><span class="
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-05-16T16:31:52.803Z
+                at 2026-05-16T17:14:20.038Z
             </div>
         <script src="../prettify.js"></script>
         <script>

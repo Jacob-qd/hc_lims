@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">53.33% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/15</span>
+                <span class='fraction'>8/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>2/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">33.33% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>2/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">61.53% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/13</span>
+                <span class='fraction'>8/13</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -127,7 +127,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -136,7 +136,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -147,23 +147,23 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -187,7 +187,7 @@
 import { Drawer, Card, Row, Col, Switch, Tag, Button, Typography, message } from 'antd';
 import { SettingOutlined, SaveOutlined, DragOutlined } from '@ant-design/icons';
 &nbsp;
-const { Text } = <span class="cstat-no" title="statement not covered" >Typography;</span>
+const { Text } = Typography;
 &nbsp;
 interface Widget {
   key: string;
@@ -196,7 +196,7 @@ interface Widget {
   defaultVisible: boolean;
 }
 &nbsp;
-const allWidgets: Widget[] = <span class="cstat-no" title="statement not covered" >[</span>
+const allWidgets: Widget[] = [
   { key: 'kpi', label: 'KPI 卡片', desc: '样品总数/待检测/逾期/已完成', defaultVisible: true },
   { key: 'recent_samples', label: '最近样品', desc: '最近5条样品记录', defaultVisible: true },
   { key: 'task_queue', label: '任务队列', desc: '各状态任务数量', defaultVisible: true },
@@ -207,23 +207,23 @@ const allWidgets: Widget[] = <span class="cstat-no" title="statement not covered
   { key: 'quick_actions', label: '快速操作', desc: '常用功能入口', defaultVisible: true },
 ];
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >CustomWorkspace: React.FC&lt;{ open: boolean; onClose: () =&gt; void; onSave: (visible: string[]) =&gt; void; initialVisible: string[] }&gt; = ({</span> open, onClose, onSave, initialVisible }) =&gt; {</span>
-  const [visible, <span class="cstat-no" title="statement not covered" >setVisible] = useState&lt;string[]&gt;(initialVisible);</span>
-  const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >toggle = (k</span>ey: string, checked: boolean) =&gt; {</span>
+export const CustomWorkspace: React.FC&lt;{ open: boolean; onClose: () =&gt; void; onSave: (visible: string[]) =&gt; void; initialVisible: string[] }&gt; = ({ open, onClose, onSave, initialVisible }) =&gt; {
+  const [visible, setVisible] = useState&lt;string[]&gt;(initialVisible);
+  const <span class="fstat-no" title="function not covered" >toggle = (k</span>ey: string, checked: boolean) =&gt; {
 <span class="cstat-no" title="statement not covered" >    if (checked) <span class="cstat-no" title="statement not covered" >setVisible([...visible, key]);</span></span>
     else <span class="cstat-no" title="statement not covered" >setVisible(visible.<span class="fstat-no" title="function not covered" >filter(k</span> =&gt; <span class="cstat-no" title="statement not covered" >k !== key))</span>;</span>
   };
 &nbsp;
-  const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >handleSave = () =&gt; {</span></span>
+  const <span class="fstat-no" title="function not covered" >handleSave = () =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    onSave(visible);</span>
 <span class="cstat-no" title="statement not covered" >    message.success('工作台布局已保存');</span>
   };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return (</span>
+  return (
     &lt;Drawer title={&lt;span&gt;&lt;SettingOutlined /&gt; 自定义工作台&lt;/span&gt;} open={open} onClose={onClose} width={420} extra={&lt;Button type="primary" icon={&lt;SaveOutlined /&gt;} onClick={handleSave}&gt;保存布局&lt;/Button&gt;}&gt;
       &lt;Text type="secondary" style={{ display: 'block', marginBottom: 16 }}&gt;选择要在首页显示的组件，拖拽可调整顺序（长按拖拽手柄）&lt;/Text&gt;
-      {allWidgets.<span class="fstat-no" title="function not covered" >map((w</span>) =&gt; (
-<span class="cstat-no" title="statement not covered" >        &lt;Card key={w.key} size="small" style={{ marginBottom: 8 }} hoverable&gt;</span>
+      {allWidgets.map((w) =&gt; (
+        &lt;Card key={w.key} size="small" style={{ marginBottom: 8 }} hoverable&gt;
           &lt;Row align="middle" justify="space-between"&gt;
             &lt;Col span={2}&gt;&lt;DragOutlined style={{ color: '#d9d9d9', cursor: 'grab' }} /&gt;&lt;/Col&gt;
             &lt;Col span={14}&gt;
@@ -250,7 +250,7 @@ export const <span class="cstat-no" title="statement not covered" ><span class="
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-05-16T16:31:52.803Z
+                at 2026-05-16T17:14:20.038Z
             </div>
         <script src="../prettify.js"></script>
         <script>

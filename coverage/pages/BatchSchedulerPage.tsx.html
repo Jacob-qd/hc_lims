@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">69.23% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/13</span>
+                <span class='fraction'>9/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/12</span>
+                <span class='fraction'>9/12</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">60% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>6/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">69.23% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/13</span>
+                <span class='fraction'>9/13</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -126,26 +126,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -159,18 +152,25 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -185,10 +185,10 @@
 import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, message, Modal, Form, Select, TimePicker } from 'antd';
 import { ClockCircleOutlined, PlusOutlined, PlayCircleOutlined, PauseCircleOutlined, HistoryOutlined } from '@ant-design/icons';
 &nbsp;
-const { Title } = <span class="cstat-no" title="statement not covered" >Typography;</span>
+const { Title } = Typography;
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >BatchSchedulerPage: React.FC = () =&gt; {</span></span>
-  const [<span class="cstat-no" title="statement not covered" >tasks] = useState([</span>
+export const BatchSchedulerPage: React.FC = () =&gt; {
+  const [tasks] = useState([
     { id:'t1', name:'月度样品统计报表', type:'报表', cron:'0 8 1 * *', schedule:'每月1日 08:00', lastRun:'2026-05-01 08:00', status:'running' },
     { id:'t2', name:'质控月度报告', type:'报表', cron:'0 8 1 * *', schedule:'每月1日 08:00', lastRun:'2026-05-01 08:00', status:'running' },
     { id:'t3', name:'每日备份', type:'备份', cron:'0 3 * * *', schedule:'每日 03:00', lastRun:'2026-05-15 03:00', status:'running' },
@@ -197,7 +197,7 @@ export const <span class="cstat-no" title="statement not covered" ><span class="
     { id:'t6', name:'数据归档(30天前)', type:'归档', cron:'0 2 * * 0', schedule:'每周日 02:00', lastRun:'2026-05-11 02:00', status:'running' },
   ]);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return (</span>
+  return (
     &lt;div style={{ padding: 24 }}&gt;
       &lt;Row justify="space-between" align="middle" style={{ marginBottom: 16 }}&gt;
         &lt;Col&gt;&lt;Title level={4} style={{ margin: 0 }}&gt;&lt;ClockCircleOutlined /&gt; 批处理调度&lt;/Title&gt;&lt;/Col&gt;
@@ -217,19 +217,19 @@ export const <span class="cstat-no" title="statement not covered" ><span class="
 &nbsp;
       &lt;Row gutter={[16,16]} style={{ marginBottom: 16 }}&gt;
         &lt;Col span={6}&gt;&lt;Card size="small"&gt;&lt;Statistic title="总任务数" value={tasks.length} /&gt;&lt;/Card&gt;&lt;/Col&gt;
-        &lt;Col span={6}&gt;&lt;Card size="small"&gt;&lt;Statistic title="运行中" value={tasks.<span class="fstat-no" title="function not covered" >filter(t</span>=&gt;<span class="cstat-no" title="statement not covered" >t.status==='running').</span>length} valueStyle={{color:'#52c41a'}} /&gt;&lt;/Card&gt;&lt;/Col&gt;
-        &lt;Col span={6}&gt;&lt;Card size="small"&gt;&lt;Statistic title="已暂停" value={tasks.<span class="fstat-no" title="function not covered" >filter(t</span>=&gt;<span class="cstat-no" title="statement not covered" >t.status==='paused').</span>length} valueStyle={{color:'#faad14'}} /&gt;&lt;/Card&gt;&lt;/Col&gt;
-        &lt;Col span={6}&gt;&lt;Card size="small"&gt;&lt;Statistic title="最近运行" value={tasks[0]?.lastRun?.split(' ')[1] || '-'} /&gt;&lt;/Card&gt;&lt;/Col&gt;
+        &lt;Col span={6}&gt;&lt;Card size="small"&gt;&lt;Statistic title="运行中" value={tasks.filter(t=&gt;t.status==='running').length} valueStyle={{color:'#52c41a'}} /&gt;&lt;/Card&gt;&lt;/Col&gt;
+        &lt;Col span={6}&gt;&lt;Card size="small"&gt;&lt;Statistic title="已暂停" value={tasks.filter(t=&gt;t.status==='paused').length} valueStyle={{color:'#faad14'}} /&gt;&lt;/Card&gt;&lt;/Col&gt;
+        &lt;Col span={6}&gt;&lt;Card size="small"&gt;&lt;Statistic title="最近运行" value={tasks[0]?.lastRun?.split(' ')[1] || <span class="branch-1 cbranch-no" title="branch not covered" >'-'} /&gt;&lt;</span>/Card&gt;&lt;/Col&gt;
       &lt;/Row&gt;
 &nbsp;
       &lt;Card&gt;
         &lt;Table dataSource={tasks} rowKey="id" pagination={false} columns={[
-          { title:'任务名称', dataIndex:'name' }, { title:'类型', dataIndex:'type', <span class="fstat-no" title="function not covered" >render:(s</span>:string)=&gt;<span class="cstat-no" title="statement not covered" >&lt;Tag&gt;{s}&lt;/Tag&gt; },</span>
+          { title:'任务名称', dataIndex:'name' }, { title:'类型', dataIndex:'type', render:(s:string)=&gt;&lt;Tag&gt;{s}&lt;/Tag&gt; },
           { title:'调度表达式', dataIndex:'cron' }, { title:'执行时间', dataIndex:'schedule' },
           { title:'上次执行', dataIndex:'lastRun' },
-          { title:'状态', dataIndex:'status', <span class="fstat-no" title="function not covered" >render:(s</span>:string)=&gt;<span class="cstat-no" title="statement not covered" >&lt;Tag color={s==='running'?'green':'orange'}&gt;{s==='running'?'运行中':'已暂停'}&lt;/Tag&gt; },</span>
-          { title:'操作', <span class="fstat-no" title="function not covered" >render:(_</span>:any,r:any)=&gt;(
-<span class="cstat-no" title="statement not covered" >            &lt;Space&gt;</span>
+          { title:'状态', dataIndex:'status', render:(s:string)=&gt;&lt;Tag color={s==='running'?'green':'orange'}&gt;{s==='running'?'运行中':'已暂停'}&lt;/Tag&gt; },
+          { title:'操作', render:(_:any,r:any)=&gt;(
+            &lt;Space&gt;
               &lt;Button size="small" icon={r.status==='running'?&lt;PauseCircleOutlined /&gt;:&lt;PlayCircleOutlined /&gt;}
 <span class="fstat-no" title="function not covered" >                onClick={()=&gt;<span class="cstat-no" title="statement not covered" >m</span>essage.success(r.status==='running'?'已暂停':'已恢复')}</span>&gt;{r.status==='running'?'暂停':'恢复'}&lt;/Button&gt;
               &lt;Button size="small" icon={&lt;HistoryOutlined /&gt;} <span class="fstat-no" title="function not covered" >onClick={()=&gt;<span class="cstat-no" title="statement not covered" >m</span>essage.info('执行记录: 最近7次均成功')}</span>&gt;历史&lt;/Button&gt;
@@ -247,7 +247,7 @@ export const <span class="cstat-no" title="statement not covered" ><span class="
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-05-16T16:31:52.803Z
+                at 2026-05-16T17:14:20.038Z
             </div>
         <script src="../prettify.js"></script>
         <script>

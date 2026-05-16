@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/16</span>
+                <span class='fraction'>8/16</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">53.33% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/15</span>
+                <span class='fraction'>8/15</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -203,18 +203,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -222,7 +214,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -230,13 +222,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -244,8 +230,22 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -337,10 +337,10 @@ import { Line, Pie, Bar } from '@ant-design/plots';
 import { SettingOutlined, BarChartOutlined, PieChartOutlined, LineChartOutlined, TableOutlined, SaveOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 &nbsp;
 &nbsp;
-const { Title, Text } = <span class="cstat-no" title="statement not covered" >Typography;</span>
-const { RangePicker } = <span class="cstat-no" title="statement not covered" >DatePicker;</span>
+const { Title, Text } = Typography;
+const { RangePicker } = DatePicker;
 &nbsp;
-const trendData = <span class="cstat-no" title="statement not covered" >[</span>
+const trendData = [
   { month: '1月', samples: 420, reports: 380, tat: 3.2 },
   { month: '2月', samples: 380, reports: 350, tat: 3.5 },
   { month: '3月', samples: 510, reports: 480, tat: 2.8 },
@@ -348,7 +348,7 @@ const trendData = <span class="cstat-no" title="statement not covered" >[</span>
   { month: '5月', samples: 560, reports: 520, tat: 2.6 },
 ];
 &nbsp;
-const topClients = <span class="cstat-no" title="statement not covered" >[</span>
+const topClients = [
   { name: '绿源环保', samples: 248, reports: 220, revenue: '¥496,000' },
   { name: '博克水务', samples: 196, reports: 185, revenue: '¥392,000' },
   { name: '清源化工', samples: 128, reports: 115, revenue: '¥256,000' },
@@ -356,7 +356,7 @@ const topClients = <span class="cstat-no" title="statement not covered" >[</span
   { name: '宏达食品', samples: 78, reports: 72, revenue: '¥156,000' },
 ];
 &nbsp;
-const labWorkload = <span class="cstat-no" title="statement not covered" >[</span>
+const labWorkload = [
   { lab: '理化实验室', samples: 420, tasks: 380, completion: 92 },
   { lab: '仪器分析室', samples: 280, tasks: 260, completion: 88 },
   { lab: '无机分析室', samples: 190, tasks: 175, completion: 85 },
@@ -364,13 +364,13 @@ const labWorkload = <span class="cstat-no" title="statement not covered" >[</spa
   { lab: '微生物实验室', samples: 85, tasks: 80, completion: 94 },
 ];
 &nbsp;
-const sampleTypeDist = <span class="cstat-no" title="statement not covered" >[</span>
+const sampleTypeDist = [
   { type: '环境水', count: 480 }, { type: '土壤', count: 279 },
   { type: '废水', count: 196 }, { type: '空气', count: 152 },
   { type: '饮用水', count: 76 }, { type: '其他', count: 65 },
 ];
 &nbsp;
-const testItemDist = <span class="cstat-no" title="statement not covered" >[</span>
+const testItemDist = [
   { item: '化学需氧量(COD)', count: 356 },
   { item: '氨氮', count: 289 },
   { item: 'pH值', count: 245 },
@@ -379,7 +379,7 @@ const testItemDist = <span class="cstat-no" title="statement not covered" >[</sp
   { item: '悬浮物(SS)', count: 145 },
 ];
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >StatisticsPage: React.FC = () =&gt; {</span></span>
+export const <span class="fstat-no" title="function not covered" >StatisticsPage: React.FC = () =&gt; {</span>
   const [designerOpen, <span class="cstat-no" title="statement not covered" >setDesignerOpen] = useState(false);</span>
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;div&gt;
@@ -472,7 +472,7 @@ export const <span class="cstat-no" title="statement not covered" ><span class="
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-05-16T16:31:52.803Z
+                at 2026-05-16T17:14:20.038Z
             </div>
         <script src="../prettify.js"></script>
         <script>
