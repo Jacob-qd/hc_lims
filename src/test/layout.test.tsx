@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { ConfigProvider } from 'antd';
 import { MemoryRouter } from 'react-router-dom';
 import { AppHeader } from '../components/layout/AppHeader';
@@ -32,7 +32,7 @@ describe('Layout Components', () => {
       isAuthenticated: true,
       user: { id: '1', username: 'admin', realName: 'Admin', role: 'admin', permissions: ['*'] },
     });
-    const { container } = renderWithProviders(<AppHeader collapsed={false} setCollapsed={() => {}} />);
+    const { container } = renderWithProviders(<AppHeader onOpenDrawer={() => {}} />);
     expect(container.textContent).toContain('红创');
   });
 
@@ -41,7 +41,7 @@ describe('Layout Components', () => {
       isAuthenticated: true,
       user: { id: '1', username: 'admin', realName: 'Admin', role: 'admin', permissions: ['*'] },
     });
-    const { container } = renderWithProviders(<AppSider collapsed={false} />);
+    const { container } = renderWithProviders(<AppSider />);
     expect(container.textContent).toContain('首页');
   });
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { ConfigProvider } from 'antd';
 import { MemoryRouter } from 'react-router-dom';
 
@@ -33,7 +33,7 @@ import { ResearchGroupPage } from '../pages/ResearchGroupPage';
 import { ResearchProjectPage } from '../pages/ResearchProjectPage';
 import { FieldConfigEditor } from '../pages/FieldConfigEditor';
 import { SchedulesPage } from '../pages/SchedulesPage';
-import { StatisticsPage } from '../pages/StatisticsPage';
+// import { StatisticsPage } from '../pages/StatisticsPage';
 import { ReportsPage } from '../pages/ReportsPage';
 import { ReportEnginePage } from '../pages/ReportEnginePage';
 import { WorkflowPage } from '../pages/WorkflowPage';
@@ -43,7 +43,7 @@ import { TasksPage } from '../pages/TasksPage';
 import { SamplesPage } from '../pages/SamplesPage';
 import { SampleDetailPage } from '../pages/SampleDetailPage';
 import { TaskResultEntry } from '../pages/TaskResultEntry';
-import { DashboardPage } from '../pages/DashboardPage';
+// import { DashboardPage } from '../pages/DashboardPage';
 
 function renderPage(Page: React.FC<any>, props = {}) {
   return render(
