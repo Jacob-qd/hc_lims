@@ -117,8 +117,16 @@ const mockClients = [
   { id: "c6", name: "康源医药集团", shortName: "康源医药", type: "企业", industry: "医药", contact: "孙经理", phone: "133-0007-6789", email: "sun@kyyy.com", credit: "C", status: "suspended", source: "线上渠道", samples: 54, contracts: 1, createdAt: "2025-03-12", updatedAt: "2026-02-01" },
 ];
 
-let _mockQuotations: any[] = [];
-let _mockOrders: any[] = [];
+let _mockQuotations: any[] = [
+  { id: 'q1', no: 'Q-2026-001', customerId: 'c1', customerName: '绿源环保科技有限公司', items: [{ key: 'i1', testItem: 'COD', method: '重铬酸钾法', unit: 'mg/L', unitPrice: 80, quantity: 10 }, { key: 'i2', testItem: 'NH3N', method: '纳氏试剂法', unit: 'mg/L', unitPrice: 100, quantity: 10 }], totalAmount: 1800, validUntil: '2026-06-30', status: 'confirmed', remark: '年度例行检测', createdAt: '2026-05-01' },
+  { id: 'q2', no: 'Q-2026-002', customerId: 'c2', customerName: '博克水务集团', items: [{ key: 'i3', testItem: 'pH', method: '玻璃电极法', unit: '-', unitPrice: 40, quantity: 50 }], totalAmount: 2000, validUntil: '2026-06-15', status: 'sent', remark: '', createdAt: '2026-05-10' },
+  { id: 'q3', no: 'Q-2026-003', customerId: 'c3', customerName: '清源化工有限公司', items: [{ key: 'i4', testItem: 'TN', method: '碱性过硫酸钾法', unit: 'mg/L', unitPrice: 110, quantity: 5 }, { key: 'i5', testItem: 'TP', method: '钼酸铵法', unit: 'mg/L', unitPrice: 90, quantity: 5 }], totalAmount: 1000, validUntil: '2026-05-30', status: 'draft', remark: '预报价', createdAt: '2026-05-15' },
+];
+let _mockOrders: any[] = [
+  { id: 'o1', no: 'ORD-2026-001', customerId: 'c1', customerName: '绿源环保科技有限公司', quotationId: 'q1', projectName: '地表水例行监测', sampleCount: 12, totalAmount: 1800, paidAmount: 1800, status: 'completed', paymentStatus: 'paid', samples: ['SMP202601001', 'SMP202601002'], remark: '季度检测', createdAt: '2026-05-02', updatedAt: '2026-05-10' },
+  { id: 'o2', no: 'ORD-2026-002', customerId: 'c2', customerName: '博克水务集团', quotationId: 'q2', projectName: '出厂水全项检测', sampleCount: 24, totalAmount: 5000, paidAmount: 2500, status: 'testing', paymentStatus: 'partial', samples: ['SMP202602001'], remark: '', createdAt: '2026-05-12', updatedAt: '2026-05-14' },
+  { id: 'o3', no: 'ORD-2026-003', customerId: 'c4', customerName: '蓝天环境监测站', projectName: '空气质量监测', sampleCount: 8, totalAmount: 3200, paidAmount: 0, status: 'pending', paymentStatus: 'unpaid', samples: [], remark: '月度监测任务', createdAt: '2026-05-16', updatedAt: '2026-05-16' },
+];
 
 const clientsHandlers = [
   http.get(apiUrl('/clients'), () => HttpResponse.json({ code: 200, data: { list: mockClients, total: mockClients.length } })),
