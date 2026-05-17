@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Card, Steps, Button, Form, Select, DatePicker, Input, Space,
-  Typography, Spin, message, Tag, Table, Row, Col, Statistic, Empty,
+  Typography, message, Tag, Table, Row, Col,
   Tooltip, Alert, Divider,
 } from 'antd';
 import {
@@ -48,10 +48,6 @@ export const AIReportPage: React.FC = () => {
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState('');
 
-  useEffect(() => {
-    fetchReports();
-  }, []);
-
   const fetchReports = () => {
     setLoading(true);
     fetch('/api/v1/ai/reports')
@@ -63,6 +59,10 @@ export const AIReportPage: React.FC = () => {
       .finally(() => setLoading(false));
   };
 
+  useEffect(() => {
+    fetchReports(); // eslint-disable-line react-hooks/set-state-in-effect
+  }, []);
+
   const handleGenerate = async () => {
     const values = await form.validateFields();
     setGenerating(true);
@@ -72,7 +72,7 @@ export const AIReportPage: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           dataSource: values.dataSource,
-          timeRange: values.timeRange.map((d: any) => d.format('YYYY-MM-DD')),
+          timeRange: values.timeRange.map((d: { format: (fmt: string) => string }) => d.format('YYYY-MM-DD')),
           reportType: values.reportType,
         }),
       });
@@ -131,13 +131,13 @@ export const AIReportPage: React.FC = () => {
     { title: '报告名称', dataIndex: 'name', key: 'name', ellipsis: true },
     { title: '数据源', dataIndex: 'dataSource', key: 'dataSource', render: (v: string) => dataSourceOptions.find(o => o.value === v)?.label || v },
     { title: '类型', dataIndex: 'reportType', key: 'reportType', render: (v: string) => reportTypeOptions.find(o => o.value === v)?.label || v },
-    { title: '时间范围', key: 'timeRange', render: (_: any, r: AIReport) => `${r.timeRange[0]} ~ ${r.timeRange[1]}` },
+    { title: '时间范围', key: 'timeRange', render: (_: unknown, r: AIReport) => `${r.timeRange[0]} ~ ${r.timeRange[1]}` },
     { title: '状态', dataIndex: 'status', key: 'status', render: (v: string) => <Tag color={statusColor[v]}>{statusLabel[v]}</Tag> },
     { title: '创建时间', dataIndex: 'createdAt', key: 'createdAt' },
     {
       title: '操作',
       key: 'action',
-      render: (_: any, r: AIReport) => (
+      render: (_: unknown, r: AIReport) => (
         <Space>
           <Tooltip title="预览">
             <Button type="text" size="small" icon={<EyeOutlined />} onClick={() => { setPreviewReport(r); setEditContent(r.generatedContent); setCurrentStep(2); }} />

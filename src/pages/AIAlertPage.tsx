@@ -131,7 +131,8 @@ export const AIAlertPage: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData(); // eslint-disable-line react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterStatus, filterType]);
 
   const handleAck = (id: string) => {
