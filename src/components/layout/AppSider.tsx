@@ -11,6 +11,7 @@ import {
   TrophyOutlined, ShopOutlined, ProfileOutlined, ApartmentOutlined,
   FundOutlined, CalendarOutlined, SafetyOutlined,
   EnvironmentOutlined, GlobalOutlined, LogoutOutlined,
+  CheckCircleOutlined,
 } from '@ant-design/icons';
 
 const { Sider } = Layout;
@@ -43,6 +44,10 @@ const allMenuItems = [
     { key: '/query', icon: <FileSearchOutlined />, label: '综合查询', roles: ['admin'] },
     { key: '/statistics', icon: <BarChartOutlined />, label: '数据分析', roles: ['admin', 'lab_tech', 'reviewer'] },
     { key: '/settings', icon: <SettingOutlined />, label: '系统管理', roles: ['admin'] },
+  ]},
+  { key: 'workflow', icon: <ApartmentOutlined />, label: '工作流引擎', roles: ['admin', 'lab_tech', 'reviewer'], children: [
+    { key: '/workflow', icon: <ApartmentOutlined />, label: '流程管理', roles: ['admin', 'lab_tech', 'reviewer'] },
+    { key: '/workflow/tasks', icon: <CheckCircleOutlined />, label: '任务中心', roles: ['admin', 'lab_tech', 'reviewer'] },
   ]},
   { key: 'divider2', type: 'divider' as const, roles: ['admin'] },
   { key: 'research', icon: <ApartmentOutlined />, label: '🔬 高校科研版', roles: ['admin'], children: [
@@ -129,7 +134,7 @@ export const AppSider: React.FC = () => {
       {!collapsed && (
         <div style={{ padding: '12px 16px', borderBottom: '1px solid #f0f0f0' }}>
           <Space>
-            <Avatar src={user?.avatar || undefined} icon={<UserOutlined />} size={32} />
+            <Avatar src={user?.avatar} icon={<UserOutlined />} size={32} />
             <div style={{ lineHeight: 1.3 }}>
               <Text strong style={{ fontSize: 13, display: 'block' }}>{user?.realName || '用户'}</Text>
               <Tag color="blue" style={{ fontSize: 10, lineHeight: '16px' }}>

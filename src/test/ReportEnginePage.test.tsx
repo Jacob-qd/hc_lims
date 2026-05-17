@@ -4,13 +4,6 @@ import { BrowserRouter } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { ReportEnginePage } from '../pages/ReportEnginePage';
 
-vi.mock('@ant-design/plots', () => ({
-  Line: () => <div data-testid="mock-line" />,
-  Bar: () => <div data-testid="mock-bar" />,
-  Pie: () => <div data-testid="mock-pie" />,
-  Area: () => <div data-testid="mock-area" />,
-}));
-
 function mockFetchResponse(data: any) {
   return { ok: true, status: 200, json: async () => data } as Response;
 }
@@ -115,27 +108,6 @@ describe('ReportEnginePage', () => {
           },
         });
       }
-      if (url.includes('/api/v1/reports/generated')) {
-        return mockFetchResponse({
-          code: 200,
-          data: {
-            list: [
-              {
-                id: 'gen1',
-                reportId: 'tmpl1',
-                reportName: '月度报表',
-                format: 'PDF',
-                fileName: '月度报表_20250101.pdf',
-                fileSize: '1.2MB',
-                generatedAt: '2025-01-01 08:05',
-                generatedBy: '系统',
-                status: 'ready',
-              },
-            ],
-            total: 1,
-          },
-        });
-      }
       if (url.includes('/api/v1/reports/executions/tmpl1')) {
         return mockFetchResponse({ code: 200, data: { executionId: 'ex2' } });
       }
@@ -150,13 +122,13 @@ describe('ReportEnginePage', () => {
   it('renders and loads templates', async () => {
     render(<BrowserRouter><ConfigProvider><ReportEnginePage /></ConfigProvider></BrowserRouter>
     );
-    await waitFor(() => expect(screen.getAllByText('月度报表').length).toBeGreaterThanOrEqual(1));
+    await waitFor(() => expect(screen.getByText('月度报表')).toBeInTheDocument());
   });
 
   it('switches to charts tab and previews', async () => {
     render(<BrowserRouter><ConfigProvider><ReportEnginePage /></ConfigProvider></BrowserRouter>
     );
-    await waitFor(() => expect(screen.getAllByText('月度报表').length).toBeGreaterThanOrEqual(1));
+    await waitFor(() => expect(screen.getByText('月度报表')).toBeInTheDocument());
     fireEvent.click(screen.getByText('图表组件库'));
     await waitFor(() => expect(screen.getAllByText('柱状图').length).toBeGreaterThanOrEqual(1));
     fireEvent.click(screen.getAllByText('预览')[0]);
@@ -166,7 +138,7 @@ describe('ReportEnginePage', () => {
   it('switches to schedules tab and toggles', async () => {
     render(<BrowserRouter><ConfigProvider><ReportEnginePage /></ConfigProvider></BrowserRouter>
     );
-    await waitFor(() => expect(screen.getAllByText('月度报表').length).toBeGreaterThanOrEqual(1));
+    await waitFor(() => expect(screen.getByText('月度报表')).toBeInTheDocument());
     fireEvent.click(screen.getByText('调度任务'));
     await waitFor(() => expect(screen.getByText('定时配置')).toBeInTheDocument());
     const enabledTag = screen.getByText('启用');
@@ -176,7 +148,7 @@ describe('ReportEnginePage', () => {
   it('opens create modal and navigates steps', async () => {
     render(<BrowserRouter><ConfigProvider><ReportEnginePage /></ConfigProvider></BrowserRouter>
     );
-    await waitFor(() => expect(screen.getAllByText('月度报表').length).toBeGreaterThanOrEqual(1));
+    await waitFor(() => expect(screen.getByText('月度报表')).toBeInTheDocument());
     fireEvent.click(screen.getByText('新建报表'));
     await waitFor(() => expect(document.body.textContent).toContain('基础信息'));
     fireEvent.click(screen.getByText('下一步'));
@@ -192,7 +164,7 @@ describe('ReportEnginePage', () => {
   it('clicks run template', async () => {
     render(<BrowserRouter><ConfigProvider><ReportEnginePage /></ConfigProvider></BrowserRouter>
     );
-    await waitFor(() => expect(screen.getAllByText('月度报表').length).toBeGreaterThanOrEqual(1));
+    await waitFor(() => expect(screen.getByText('月度报表')).toBeInTheDocument());
     fireEvent.click(screen.getAllByText('运行')[0]);
   });
 });

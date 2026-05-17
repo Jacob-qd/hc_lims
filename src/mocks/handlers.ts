@@ -59,7 +59,6 @@ import {
   mockChartComponents,
   mockReportSchedules,
   mockReportExecutions,
-  mockGeneratedReports,
   mockDictTypes,
   mockDictItems,
   mockContracts,
@@ -69,6 +68,8 @@ import {
   mockTurnaroundTrendReal,
   mockWorkflowDefinitions,
   mockWorkflowInstances,
+  type WorkflowDefinition,
+  type WorkflowInstance,
 } from './data';
 
 const apiUrl = (path: string) => `/api/v1${path}`;
@@ -1537,36 +1538,6 @@ export const handlers = [
   http.get(apiUrl('/reports/data-sources'), () => {
     return HttpResponse.json({ code: 200, message: 'success', data: { list: mockDataSources } });
   }),
-  http.get(apiUrl('/reports/generated'), () => {
-    return HttpResponse.json({ code: 200, message: 'success', data: { list: mockGeneratedReports, total: mockGeneratedReports.length } });
-  }),
-  http.get(apiUrl('/reports/generated/:id/download'), ({ params }) => {
-    const report = mockGeneratedReports.find(r => r.id === params.id);
-    if (!report) return HttpResponse.json({ code: 404, message: '报表不存在' }, { status: 404 });
-    const blob = new Blob([`Mock report content for ${report.reportName}`], { type: 'application/octet-stream' });
-    return new HttpResponse(blob, {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/octet-stream',
-        'Content-Disposition': `attachment; filename="${report.fileName}"`,
-      },
-    });
-  }),
-  http.post(apiUrl('/reports/distribute'), async ({ request }) => {
-    const body = (await request.json()) as any;
-    const { reportId, recipients, subject } = body;
-    return HttpResponse.json({
-      code: 200,
-      message: 'success',
-      data: {
-        reportId,
-        sentAt: new Date().toISOString().replace('T', ' ').slice(0, 19),
-        recipients,
-        subject: subject || '报表分发',
-        status: 'sent',
-      },
-    });
-  }),
 
   // ============================================
   // Dictionary Handlers
@@ -1666,20 +1637,31 @@ export const handlers = [
     if (idx >= 0) mockContracts.splice(idx, 1);
     return HttpResponse.json({ code: 200, message: 'success' });
   }),
-  ...mobileSamplingHandlers,
-  ...clientsHandlers,
-  ...quotationsHandlers,
-  ...ordersHandlers,
 
-  // ===== Workflow Engine =====
-  http.get(apiUrl('/workflow/definitions'), () => {
-    return HttpResponse.json({ code: 200, message: 'success', data: { list: mockWorkflowDefinitions, total: mockWorkflowDefinitions.length } });
+  // ============================================
+  // Workflow Engine Handlers
+  // ============================================
+  http.get(apiUrl('/workflow/definitions'), ({ request }) => {
+    const url = new URL(request.url);
+    const status = url.searchParams.get('status');
+    const keyword = url.searchParams.get('keyword');
+    let list = [...mockWorkflowDefinitions];
+    if (status && status !== 'all') list = list.filter(d => d.status === status);
+    if (keyword) {
+      const kw = keyword.toLowerCase();
+      list = list.filter(d => d.name.toLowerCase().includes(kw) || d.type.toLowerCase().includes(kw));
+    }
+    return HttpResponse.json({ code: 200, message: 'success', data: { list, total: list.length } });
   }),
   http.post(apiUrl('/workflow/definitions'), async ({ request }) => {
     const body = (await request.json()) as any;
-    const newDef = {
-      id: `wf${Date.now()}`,
-      ...body,
+    const newDef: WorkflowDefinition = {
+      id: 'wf' + Date.now(),
+      name: body.name || '未命名流程',
+      type: body.type || '通用',
+      description: body.description || '',
+      nodes: body.nodes || [],
+      edges: body.edges || [],
       status: 'draft',
       version: 1,
       usedCount: 0,
@@ -1693,7 +1675,7 @@ export const handlers = [
   http.put(apiUrl('/workflow/definitions/:id'), async ({ params, request }) => {
     const body = (await request.json()) as any;
     const idx = mockWorkflowDefinitions.findIndex(d => d.id === params.id);
-    if (idx === -1) return HttpResponse.json({ code: 404, message: '流程模板不存在' }, { status: 404 });
+    if (idx === -1) return HttpResponse.json({ code: 404, message: '流程定义不存在' }, { status: 404 });
     mockWorkflowDefinitions[idx] = { ...mockWorkflowDefinitions[idx], ...body, updatedAt: new Date().toISOString().replace('T', ' ').slice(0, 19) };
     return HttpResponse.json({ code: 200, message: 'success', data: mockWorkflowDefinitions[idx] });
   }),
@@ -1704,46 +1686,214 @@ export const handlers = [
   }),
   http.post(apiUrl('/workflow/definitions/:id/deploy'), ({ params }) => {
     const idx = mockWorkflowDefinitions.findIndex(d => d.id === params.id);
-    if (idx === -1) return HttpResponse.json({ code: 404, message: '流程模板不存在' }, { status: 404 });
-    mockWorkflowDefinitions[idx] = { ...mockWorkflowDefinitions[idx], status: 'deployed' as const, updatedAt: new Date().toISOString().replace('T', ' ').slice(0, 19) };
+    if (idx === -1) return HttpResponse.json({ code: 404, message: '流程定义不存在' }, { status: 404 });
+    mockWorkflowDefinitions[idx].status = 'deployed';
+    mockWorkflowDefinitions[idx].version += 1;
+    mockWorkflowDefinitions[idx].updatedAt = new Date().toISOString().replace('T', ' ').slice(0, 19);
     return HttpResponse.json({ code: 200, message: '部署成功', data: mockWorkflowDefinitions[idx] });
   }),
   http.post(apiUrl('/workflow/definitions/:id/undeploy'), ({ params }) => {
     const idx = mockWorkflowDefinitions.findIndex(d => d.id === params.id);
-    if (idx === -1) return HttpResponse.json({ code: 404, message: '流程模板不存在' }, { status: 404 });
-    mockWorkflowDefinitions[idx] = { ...mockWorkflowDefinitions[idx], status: 'disabled' as const, updatedAt: new Date().toISOString().replace('T', ' ').slice(0, 19) };
+    if (idx === -1) return HttpResponse.json({ code: 404, message: '流程定义不存在' }, { status: 404 });
+    mockWorkflowDefinitions[idx].status = 'disabled';
+    mockWorkflowDefinitions[idx].updatedAt = new Date().toISOString().replace('T', ' ').slice(0, 19);
     return HttpResponse.json({ code: 200, message: '停用成功', data: mockWorkflowDefinitions[idx] });
   }),
-
-  // Workflow instances
-  http.get(apiUrl('/workflow/instances'), () => {
-    return HttpResponse.json({ code: 200, message: 'success', data: { list: mockWorkflowInstances, total: mockWorkflowInstances.length } });
+  http.get(apiUrl('/workflow/instances'), ({ request }) => {
+    const url = new URL(request.url);
+    const status = url.searchParams.get('status');
+    const defId = url.searchParams.get('defId');
+    let list = [...mockWorkflowInstances];
+    if (status && status !== 'all') list = list.filter(i => i.status === status);
+    if (defId) list = list.filter(i => i.defId === defId);
+    return HttpResponse.json({ code: 200, message: 'success', data: { list, total: list.length } });
   }),
-  http.post(apiUrl('/workflow/instances/:id/urge'), ({ params }) => {
+  http.get(apiUrl('/workflow/instances/:id'), ({ params }) => {
     const inst = mockWorkflowInstances.find(i => i.id === params.id);
-    if (!inst) return HttpResponse.json({ code: 404, message: '实例不存在' }, { status: 404 });
-    inst.history.push({
-      id: `h${Date.now()}`,
-      nodeId: inst.currentNodes[0] || '',
-      nodeName: inst.currentNodeNames[0] || '',
-      action: 'urge',
-      operator: '管理员',
-      comment: '催办通知',
+    if (!inst) return HttpResponse.json({ code: 404, message: '流程实例不存在' }, { status: 404 });
+    return HttpResponse.json({ code: 200, message: 'success', data: inst });
+  }),
+  http.post(apiUrl('/workflow/instances'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const def = mockWorkflowDefinitions.find(d => d.id === body.defId);
+    const newInst: WorkflowInstance = {
+      id: 'wi' + Date.now(),
+      defId: body.defId,
+      defName: def?.name || '未知流程',
+      defVersion: def?.version || 1,
+      businessType: body.businessType || '通用',
+      businessId: body.businessId || '',
+      businessSummary: body.businessSummary || '',
+      status: 'running',
+      currentNodes: def?.nodes.filter(n => n.type === 'start').map(n => n.id) || [],
+      currentNodeNames: def?.nodes.filter(n => n.type === 'start').map(n => n.name) || [],
+      assignees: [],
+      variables: body.variables || {},
+      startedBy: '当前用户',
+      startedAt: new Date().toISOString().replace('T', ' ').slice(0, 19),
+      history: [{ id: 'h' + Date.now(), nodeId: 'start', nodeName: '开始', action: 'start', operator: '系统', timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19) }],
+    };
+    mockWorkflowInstances.push(newInst);
+    return HttpResponse.json({ code: 200, message: 'success', data: newInst });
+  }),
+  http.post(apiUrl('/workflow/instances/:id/terminate'), async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    const idx = mockWorkflowInstances.findIndex(i => i.id === params.id);
+    if (idx === -1) return HttpResponse.json({ code: 404, message: '流程实例不存在' }, { status: 404 });
+    mockWorkflowInstances[idx].status = 'terminated';
+    mockWorkflowInstances[idx].completedAt = new Date().toISOString().replace('T', ' ').slice(0, 19);
+    mockWorkflowInstances[idx].history.push({
+      id: 'h' + Date.now(),
+      nodeId: mockWorkflowInstances[idx].currentNodes[0] || '',
+      nodeName: mockWorkflowInstances[idx].currentNodeNames[0] || '',
+      action: 'terminated',
+      operator: '当前用户',
+      comment: body.reason || '',
       timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
     });
-    return HttpResponse.json({ code: 200, message: '催办通知已发送', data: inst });
+    return HttpResponse.json({ code: 200, message: '流程已终止', data: mockWorkflowInstances[idx] });
+  }),
+  http.post(apiUrl('/workflow/instances/:id/urge'), ({ params }) => {
+    const idx = mockWorkflowInstances.findIndex(i => i.id === params.id);
+    if (idx === -1) return HttpResponse.json({ code: 404, message: '流程实例不存在' }, { status: 404 });
+    mockWorkflowInstances[idx].history.push({
+      id: 'h' + Date.now(),
+      nodeId: mockWorkflowInstances[idx].currentNodes[0] || '',
+      nodeName: mockWorkflowInstances[idx].currentNodeNames[0] || '',
+      action: 'urge',
+      operator: '当前用户',
+      timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+    });
+    return HttpResponse.json({ code: 200, message: '催办成功', data: mockWorkflowInstances[idx] });
   }),
   http.post(apiUrl('/workflow/instances/:id/transfer'), async ({ params, request }) => {
     const body = (await request.json()) as any;
-    const inst = mockWorkflowInstances.find(i => i.id === params.id);
-    if (!inst) return HttpResponse.json({ code: 404, message: '实例不存在' }, { status: 404 });
+    const idx = mockWorkflowInstances.findIndex(i => i.id === params.id);
+    if (idx === -1) return HttpResponse.json({ code: 404, message: '流程实例不存在' }, { status: 404 });
+    mockWorkflowInstances[idx].assignees = [body.assignee];
+    mockWorkflowInstances[idx].history.push({
+      id: 'h' + Date.now(),
+      nodeId: mockWorkflowInstances[idx].currentNodes[0] || '',
+      nodeName: mockWorkflowInstances[idx].currentNodeNames[0] || '',
+      action: 'transfer',
+      operator: '当前用户',
+      comment: `转交给 ${body.assignee}`,
+      timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+    });
+    return HttpResponse.json({ code: 200, message: '转交成功', data: mockWorkflowInstances[idx] });
+  }),
+
+  // Workflow Tasks (待办/已办/抄送)
+  http.get(apiUrl('/workflow/tasks'), ({ request }) => {
+    const url = new URL(request.url);
+    const assignee = url.searchParams.get('assignee');
+    const status = url.searchParams.get('status');
+    const type = url.searchParams.get('type'); // pending | done | cc
+    let tasks: any[] = [];
+    mockWorkflowInstances.forEach(inst => {
+      if (inst.status !== 'running') return;
+      inst.currentNodes.forEach((nodeId, idx) => {
+        const def = mockWorkflowDefinitions.find(d => d.id === inst.defId);
+        const node = def?.nodes.find(n => n.id === nodeId);
+        if (!node) return;
+        const taskAssignee = inst.assignees[idx] || node.config?.approverRole || '未分配';
+        const isCc = node.type === 'cc';
+        const taskType = isCc ? 'cc' : 'pending';
+        if (type === 'cc' && !isCc) return;
+        if (type === 'pending' && isCc) return;
+        if (assignee && taskAssignee !== assignee && !isCc) return;
+        tasks.push({
+          id: `${inst.id}_${nodeId}`,
+          instanceId: inst.id,
+          defName: inst.defName,
+          nodeId,
+          nodeName: node.name,
+          businessSummary: inst.businessSummary,
+          assignee: taskAssignee,
+          status: 'pending',
+          createdAt: inst.startedAt,
+          deadline: node.config?.timeoutHours ? new Date(Date.now() + node.config.timeoutHours * 3600000).toISOString().replace('T', ' ').slice(0, 19) : undefined,
+          type: taskType,
+        });
+      });
+    });
+    if (status) tasks = tasks.filter(t => t.status === status);
+    return HttpResponse.json({ code: 200, message: 'success', data: { list: tasks, total: tasks.length } });
+  }),
+  http.post(apiUrl('/workflow/tasks/:id/approve'), async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    const [instId, nodeId] = (params.id as string).split('_');
+    const idx = mockWorkflowInstances.findIndex(i => i.id === instId);
+    if (idx === -1) return HttpResponse.json({ code: 404, message: '任务不存在' }, { status: 404 });
+    const inst = mockWorkflowInstances[idx];
+    inst.history.push({
+      id: 'h' + Date.now(),
+      nodeId,
+      nodeName: inst.currentNodeNames[0] || '',
+      action: 'approved',
+      operator: '当前用户',
+      comment: body.comment || '',
+      timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+    });
+    // Simple progression: find next node via edges
+    const def = mockWorkflowDefinitions.find(d => d.id === inst.defId);
+    const edges = def?.edges.filter(e => e.source === nodeId) || [];
+    if (edges.length > 0) {
+      const nextNodeId = edges[0].target;
+      const nextNode = def?.nodes.find(n => n.id === nextNodeId);
+      inst.currentNodes = [nextNodeId];
+      inst.currentNodeNames = [nextNode?.name || ''];
+      if (nextNode?.type === 'end') {
+        inst.status = 'completed';
+        inst.completedAt = new Date().toISOString().replace('T', ' ').slice(0, 19);
+      }
+    } else {
+      inst.status = 'completed';
+      inst.completedAt = new Date().toISOString().replace('T', ' ').slice(0, 19);
+    }
+    return HttpResponse.json({ code: 200, message: '审批通过', data: inst });
+  }),
+  http.post(apiUrl('/workflow/tasks/:id/reject'), async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    const [instId, nodeId] = (params.id as string).split('_');
+    const idx = mockWorkflowInstances.findIndex(i => i.id === instId);
+    if (idx === -1) return HttpResponse.json({ code: 404, message: '任务不存在' }, { status: 404 });
+    const inst = mockWorkflowInstances[idx];
+    inst.history.push({
+      id: 'h' + Date.now(),
+      nodeId,
+      nodeName: inst.currentNodeNames[0] || '',
+      action: 'rejected',
+      operator: '当前用户',
+      comment: body.comment || '',
+      timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+    });
+    // Reject: go back to previous node if configured, else terminate
+    const def = mockWorkflowDefinitions.find(d => d.id === inst.defId);
+    const backEdge = def?.edges.find(e => e.target === nodeId && e.condition === '驳回');
+    if (backEdge) {
+      const prevNode = def?.nodes.find(n => n.id === backEdge.source);
+      inst.currentNodes = [backEdge.source];
+      inst.currentNodeNames = [prevNode?.name || ''];
+    } else {
+      inst.status = 'terminated';
+      inst.completedAt = new Date().toISOString().replace('T', ' ').slice(0, 19);
+    }
+    return HttpResponse.json({ code: 200, message: '已驳回', data: inst });
+  }),
+  http.post(apiUrl('/workflow/tasks/:id/transfer'), async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    const [instId, nodeId] = (params.id as string).split('_');
+    const idx = mockWorkflowInstances.findIndex(i => i.id === instId);
+    if (idx === -1) return HttpResponse.json({ code: 404, message: '任务不存在' }, { status: 404 });
+    const inst = mockWorkflowInstances[idx];
     inst.assignees = [body.assignee];
     inst.history.push({
-      id: `h${Date.now()}`,
-      nodeId: inst.currentNodes[0] || '',
+      id: 'h' + Date.now(),
+      nodeId,
       nodeName: inst.currentNodeNames[0] || '',
       action: 'transfer',
-      operator: '管理员',
+      operator: '当前用户',
       comment: `转交给 ${body.assignee}`,
       timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
     });
@@ -1837,5 +1987,10 @@ export const handlers = [
     if (idx >= 0) mockCourses.splice(idx, 1);
     return HttpResponse.json({ code: 200 });
   }),
+
+  ...mobileSamplingHandlers,
+  ...clientsHandlers,
+  ...quotationsHandlers,
+  ...ordersHandlers,
 ];
 

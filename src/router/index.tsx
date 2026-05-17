@@ -38,9 +38,8 @@ const ProfilePage = lazy(() => import('../pages/ProfilePage').then(m => ({ defau
 const COCPage = lazy(() => import('../pages/COCPage').then(m => ({ default: m.COCPage })));
 const BackupPage = lazy(() => import('../pages/BackupPage').then(m => ({ default: m.BackupPage })));
 const WorkflowPage = lazy(() => import('../pages/WorkflowPage').then(m => ({ default: m.WorkflowPage })));
+const TaskCenterPage = lazy(() => import('../pages/TaskCenterPage').then(m => ({ default: m.TaskCenterPage })));
 const ReportEnginePage = lazy(() => import('../pages/ReportEnginePage').then(m => ({ default: m.ReportEnginePage })));
-const AIAssistantPage = lazy(() => import('../pages/AIAssistantPage').then(m => ({ default: m.AIAssistantPage })));
-const AIPredictionPage = lazy(() => import('../pages/AIPredictionPage').then(m => ({ default: m.AIPredictionPage })));
 const FieldConfigEditor = lazy(() => import('../pages/FieldConfigEditor').then(m => ({ default: m.FieldConfigEditor })));
 const CompliancePage = lazy(() => import('../pages/CompliancePage').then(m => ({ default: m.CompliancePage })));
 const MonitorPage = lazy(() => import('../pages/MonitorPage').then(m => ({ default: m.MonitorPage })));
@@ -117,9 +116,8 @@ export const router = createBrowserRouter([
       { path: 'coc', element: <COCPage /> },
       { path: 'backup', element: <BackupPage /> },
       { path: 'workflow', element: <WorkflowPage /> },
+      { path: 'workflow/tasks', element: <TaskCenterPage /> },
       { path: 'reports/engine', element: <ReportEnginePage /> },
-      { path: 'ai-assistant', element: <AIAssistantPage /> },
-      { path: 'ai-prediction', element: <AIPredictionPage /> },
       { path: 'settings/field-configs', element: <FieldConfigEditor /> },
       { path: 'compliance', element: <CompliancePage /> },
       { path: 'monitor', element: <MonitorPage /> },

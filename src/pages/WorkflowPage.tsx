@@ -6,7 +6,8 @@ import {
   PlusOutlined, ApartmentOutlined, CheckCircleOutlined,
   PlayCircleOutlined, PauseCircleOutlined, DeleteOutlined, EditOutlined,
   EyeOutlined, SendOutlined, SwapOutlined, StopOutlined,
-  GatewayOutlined, MailOutlined, FlagOutlined, CheckSquareOutlined
+  GatewayOutlined, MailOutlined, FlagOutlined, CheckSquareOutlined,
+  TeamOutlined, ClockCircleOutlined, FileTextOutlined
 } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
@@ -16,7 +17,7 @@ const { Option } = Select;
 const api = (path: string) => `/api/v1${path}`;
 
 // ===================== Types =====================
-type NodeType = 'start' | 'approval' | 'condition' | 'cc' | 'end';
+type NodeType = 'start' | 'approval' | 'countersign' | 'condition' | 'parallel' | 'cc' | 'delay' | 'subprocess' | 'end';
 type WFStatus = 'draft' | 'deployed' | 'disabled';
 type InstStatus = 'running' | 'completed' | 'terminated' | 'suspended';
 
@@ -85,8 +86,12 @@ interface WFInstance {
 const NODE_TYPES: { type: NodeType; label: string; color: string; icon: React.ReactNode }[] = [
   { type: 'start', label: '开始', color: '#52c41a', icon: <FlagOutlined /> },
   { type: 'approval', label: '审批', color: '#1890ff', icon: <CheckSquareOutlined /> },
+  { type: 'countersign', label: '会签', color: '#722ed1', icon: <TeamOutlined /> },
   { type: 'condition', label: '条件分支', color: '#faad14', icon: <GatewayOutlined /> },
+  { type: 'parallel', label: '并行', color: '#eb2f96', icon: <ApartmentOutlined /> },
   { type: 'cc', label: '抄送', color: '#13c2c2', icon: <MailOutlined /> },
+  { type: 'delay', label: '延时', color: '#fa8c16', icon: <ClockCircleOutlined /> },
+  { type: 'subprocess', label: '子流程', color: '#2f54eb', icon: <FileTextOutlined /> },
   { type: 'end', label: '结束', color: '#ff4d4f', icon: <CheckCircleOutlined /> },
 ];
 
@@ -449,6 +454,92 @@ const FlowDesigner: React.FC<{
               </Form.Item>
             )}
 
+            {selectedNode.type === 'countersign' && (
+              <>
+                <Form.Item name="approverType" label="审批人类型">
+                  <Select placeholder="选择审批人类型">
+                    <Option value="user">指定用户</Option>
+                    <Option value="role">指定角色</Option>
+                  </Select>
+                </Form.Item>
+                <Form.Item name="approverRole" label="审批角色">
+                  <Select placeholder="选择角色" allowClear>
+                    <Option value="lab_manager">实验室主管</Option>
+                    <Option value="reviewer">复核员</Option>
+                    <Option value="quality_manager">质量负责人</Option>
+                    <Option value="dept_manager">部门经理</Option>
+                  </Select>
+                </Form.Item>
+                <Form.Item name="passRatio" label="通过比例 (%)">
+                  <Input type="number" placeholder="如: 80 表示超过80%通过" />
+                </Form.Item>
+                <Form.Item name="timeoutHours" label="超时时间（小时）">
+                  <Input type="number" placeholder="24" />
+                </Form.Item>
+                <Form.Item name="timeoutAction" label="超时处理">
+                  <Select placeholder="选择超时处理策略">
+                    <Option value="remind">提醒</Option>
+                    <Option value="escalate">升级</Option>
+                    <Option value="auto_approve">自动通过</Option>
+                    <Option value="auto_reject">自动驳回</Option>
+                  </Select>
+                </Form.Item>
+              </>
+            )}
+
+            {selectedNode.type === 'parallel' && (
+              <>
+                <Form.Item name="parallelCount" label="并行分支数">
+                  <Input type="number" placeholder="2" />
+                </Form.Item>
+                <Form.Item name="joinMode" label="汇聚模式">
+                  <Select placeholder="选择汇聚模式">
+                    <Option value="all">全部完成</Option>
+                    <Option value="any">任一完成</Option>
+                  </Select>
+                </Form.Item>
+              </>
+            )}
+
+            {selectedNode.type === 'delay' && (
+              <>
+                <Form.Item name="delayType" label="延时类型">
+                  <Select placeholder="选择延时类型">
+                    <Option value="fixed">固定时长</Option>
+                    <Option value="cron">定时触发</Option>
+                  </Select>
+                </Form.Item>
+                <Form.Item name="delayValue" label="延时值">
+                  <Input placeholder="如: 24h 或 0 9 * * *" />
+                </Form.Item>
+                <Form.Item name="autoAction" label="到期自动执行">
+                  <Select placeholder="选择到期动作">
+                    <Option value="pass">自动通过</Option>
+                    <Option value="notify">仅通知</Option>
+                  </Select>
+                </Form.Item>
+              </>
+            )}
+
+            {selectedNode.type === 'subprocess' && (
+              <>
+                <Form.Item name="subprocessId" label="子流程">
+                  <Select placeholder="选择子流程">
+                    <Option value="wf1">样品检测流程</Option>
+                    <Option value="wf2">报告审核流程</Option>
+                    <Option value="wf3">采购审批流程</Option>
+                  </Select>
+                </Form.Item>
+                <Form.Item name="inheritVars" label="继承变量">
+                  <Select mode="multiple" placeholder="选择要继承的变量">
+                    <Option value="sampleId">样品ID</Option>
+                    <Option value="reportId">报告ID</Option>
+                    <Option value="amount">金额</Option>
+                  </Select>
+                </Form.Item>
+              </>
+            )}
+
             {selectedNode.type === 'cc' && (
               <Form.Item name="recipients" label="接收人">
                 <Select mode="multiple" placeholder="选择接收人">
@@ -507,8 +598,20 @@ const FlowDesigner: React.FC<{
             {selectedNode.config?.approverType && (
               <Descriptions.Item label="审批人">{selectedNode.config.approverRole || selectedNode.config.approverType}</Descriptions.Item>
             )}
+            {selectedNode.config?.passRatio && (
+              <Descriptions.Item label="通过比例">{selectedNode.config.passRatio}%</Descriptions.Item>
+            )}
             {selectedNode.config?.expression && (
               <Descriptions.Item label="条件">{selectedNode.config.expression}</Descriptions.Item>
+            )}
+            {selectedNode.config?.delayType && (
+              <Descriptions.Item label="延时">{selectedNode.config.delayValue}</Descriptions.Item>
+            )}
+            {selectedNode.config?.subprocessId && (
+              <Descriptions.Item label="子流程">{selectedNode.config.subprocessId}</Descriptions.Item>
+            )}
+            {selectedNode.config?.parallelCount && (
+              <Descriptions.Item label="并行数">{selectedNode.config.parallelCount}</Descriptions.Item>
             )}
           </Descriptions>
         </div>
