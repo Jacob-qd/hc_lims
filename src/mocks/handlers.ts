@@ -136,6 +136,77 @@ const clientsHandlers = [
     if (idx >= 0) mockClients.splice(idx, 1);
     return HttpResponse.json({ code: 200, message: 'success' });
   }),
+
+  // AI Assistant
+  http.post(apiUrl('/ai/chat'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const msg = body.message || '';
+    let reply = '';
+    if (msg.includes('不合格')) reply = '本周不合格样品共 3 批次，主要集中在重金属检测（2 批次）和微生物检测（1 批次）。';
+    else if (msg.includes('报告')) reply = '上周共生成检测报告 156 份，其中 148 份已通过审核，8 份正在审核中。';
+    else if (msg.includes('质控')) reply = '近 30 天质控合格率 98.7%，其中有 2 次警告（铅标准品漂移）。';
+    else if (msg.includes('预测')) reply = '基于当前排程，预计平均检测周期为 4.2 天，较上周缩短 0.5 天。';
+    else reply = '收到您的问题：' + msg + '\n\n我是HC-LIMS AI助手，可以帮您查询样品状态、分析数据趋势、生成报告建议等。';
+    return HttpResponse.json({ code: 200, data: { reply, suggestions: ['查看详细报告', '导出数据', '设置预警'] } });
+  }),
+
+  // AI Anomaly Dashboard
+  http.get(apiUrl('/ai/anomaly/dashboard'), () => {
+    const alerts = [
+      { id: 'a1', level: 'critical', title: '铅标准品超标', description: '质控样 Pb 浓度 12.5 mg/L，超出控制限（10.0 mg/L）', source: '质控管理', occurredAt: '2025-08-15 09:30:00', status: 'active', suggestedAction: '重新配制标准品并校准仪器' },
+      { id: 'a2', level: 'warning', title: '检测周期延长', description: '近 3 天平均检测周期 5.8 天，超出目标值 5.0 天', source: '任务管理', occurredAt: '2025-08-14 16:00:00', status: 'active', suggestedAction: '检查任务分配和仪器负载' },
+      { id: 'a3', level: 'info', title: '新设备校准到期', description: 'ICP-MS 年度校准将于 2025-09-01 到期', source: '仪器管理', occurredAt: '2025-08-13 10:00:00', status: 'resolved', suggestedAction: '已预约校准服务' },
+    ];
+    const predictions = Array.from({ length: 7 }, (_, i) => {
+      const date = new Date(); date.setDate(date.getDate() + i + 1);
+      return { date: date.toISOString().slice(0, 10), predicted: 4.2 + Math.random() * 0.8 - 0.4, lower: 3.5, upper: 5.0 };
+    });
+    return HttpResponse.json({ code: 200, data: { riskScore: 62, alerts, predictions } });
+  }),
+
+  // ELN Templates
+  http.get(apiUrl('/eln/templates'), () => HttpResponse.json({ code: 200, data: { list: [
+    { id: 't1', name: '水质检测原始记录', category: '环境检测', fields: [
+      { id: 'f1', label: '样品编号', type: 'text', required: true },
+      { id: 'f2', label: '检测项目', type: 'select', required: true, options: ['pH', 'COD', '重金属', '微生物'] },
+      { id: 'f3', label: '检测结果', type: 'table', required: true },
+      { id: 'f4', label: '检测方法', type: 'select', required: true, options: ['GB/T 5750', 'HJ 828'] },
+    ]},
+    { id: 't2', name: '食品微生物检验记录', category: '食品检测', fields: [
+      { id: 'f5', label: '样品名称', type: 'text', required: true },
+      { id: 'f6', label: '培养条件', type: 'text', required: true },
+      { id: 'f7', label: '菌落计数', type: 'table', required: true },
+    ]},
+  ]}})),
+
+  // Achievements
+  http.get(apiUrl('/achievements/statistics'), () => HttpResponse.json({ code: 200, data: {
+    total: 12, paperCount: 5, patentCount: 3, awardCount: 2, completionCount: 2, totalCitations: 186,
+  }})),
+  http.post(apiUrl('/achievements'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    return HttpResponse.json({ code: 200, data: { id: 'ach' + Date.now(), ...body } });
+  }),
+  http.delete(apiUrl('/achievements/:id'), () => HttpResponse.json({ code: 200 })),
+
+  // Teaching CRUD
+  http.post(apiUrl('/teaching/courses'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const course = { id: 'c' + Date.now(), ...body, status: 'active', statusLabel: '开课中' };
+    mockCourses.push(course);
+    return HttpResponse.json({ code: 200, data: course });
+  }),
+  http.put(apiUrl('/teaching/courses/:id'), async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    const idx = mockCourses.findIndex(c => c.id === params.id);
+    if (idx >= 0) mockCourses[idx] = { ...mockCourses[idx], ...body };
+    return HttpResponse.json({ code: 200, data: mockCourses[idx] });
+  }),
+  http.delete(apiUrl('/teaching/courses/:id'), ({ params }) => {
+    const idx = mockCourses.findIndex(c => c.id === params.id);
+    if (idx >= 0) mockCourses.splice(idx, 1);
+    return HttpResponse.json({ code: 200 });
+  }),
 ];
 
 const quotationsHandlers = [
@@ -152,6 +223,77 @@ const quotationsHandlers = [
     if (idx >= 0) _mockQuotations[idx] = { ..._mockQuotations[idx], ...body };
     return HttpResponse.json({ code: 200, message: 'success' });
   }),
+
+  // AI Assistant
+  http.post(apiUrl('/ai/chat'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const msg = body.message || '';
+    let reply = '';
+    if (msg.includes('不合格')) reply = '本周不合格样品共 3 批次，主要集中在重金属检测（2 批次）和微生物检测（1 批次）。';
+    else if (msg.includes('报告')) reply = '上周共生成检测报告 156 份，其中 148 份已通过审核，8 份正在审核中。';
+    else if (msg.includes('质控')) reply = '近 30 天质控合格率 98.7%，其中有 2 次警告（铅标准品漂移）。';
+    else if (msg.includes('预测')) reply = '基于当前排程，预计平均检测周期为 4.2 天，较上周缩短 0.5 天。';
+    else reply = '收到您的问题：' + msg + '\n\n我是HC-LIMS AI助手，可以帮您查询样品状态、分析数据趋势、生成报告建议等。';
+    return HttpResponse.json({ code: 200, data: { reply, suggestions: ['查看详细报告', '导出数据', '设置预警'] } });
+  }),
+
+  // AI Anomaly Dashboard
+  http.get(apiUrl('/ai/anomaly/dashboard'), () => {
+    const alerts = [
+      { id: 'a1', level: 'critical', title: '铅标准品超标', description: '质控样 Pb 浓度 12.5 mg/L，超出控制限（10.0 mg/L）', source: '质控管理', occurredAt: '2025-08-15 09:30:00', status: 'active', suggestedAction: '重新配制标准品并校准仪器' },
+      { id: 'a2', level: 'warning', title: '检测周期延长', description: '近 3 天平均检测周期 5.8 天，超出目标值 5.0 天', source: '任务管理', occurredAt: '2025-08-14 16:00:00', status: 'active', suggestedAction: '检查任务分配和仪器负载' },
+      { id: 'a3', level: 'info', title: '新设备校准到期', description: 'ICP-MS 年度校准将于 2025-09-01 到期', source: '仪器管理', occurredAt: '2025-08-13 10:00:00', status: 'resolved', suggestedAction: '已预约校准服务' },
+    ];
+    const predictions = Array.from({ length: 7 }, (_, i) => {
+      const date = new Date(); date.setDate(date.getDate() + i + 1);
+      return { date: date.toISOString().slice(0, 10), predicted: 4.2 + Math.random() * 0.8 - 0.4, lower: 3.5, upper: 5.0 };
+    });
+    return HttpResponse.json({ code: 200, data: { riskScore: 62, alerts, predictions } });
+  }),
+
+  // ELN Templates
+  http.get(apiUrl('/eln/templates'), () => HttpResponse.json({ code: 200, data: { list: [
+    { id: 't1', name: '水质检测原始记录', category: '环境检测', fields: [
+      { id: 'f1', label: '样品编号', type: 'text', required: true },
+      { id: 'f2', label: '检测项目', type: 'select', required: true, options: ['pH', 'COD', '重金属', '微生物'] },
+      { id: 'f3', label: '检测结果', type: 'table', required: true },
+      { id: 'f4', label: '检测方法', type: 'select', required: true, options: ['GB/T 5750', 'HJ 828'] },
+    ]},
+    { id: 't2', name: '食品微生物检验记录', category: '食品检测', fields: [
+      { id: 'f5', label: '样品名称', type: 'text', required: true },
+      { id: 'f6', label: '培养条件', type: 'text', required: true },
+      { id: 'f7', label: '菌落计数', type: 'table', required: true },
+    ]},
+  ]}})),
+
+  // Achievements
+  http.get(apiUrl('/achievements/statistics'), () => HttpResponse.json({ code: 200, data: {
+    total: 12, paperCount: 5, patentCount: 3, awardCount: 2, completionCount: 2, totalCitations: 186,
+  }})),
+  http.post(apiUrl('/achievements'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    return HttpResponse.json({ code: 200, data: { id: 'ach' + Date.now(), ...body } });
+  }),
+  http.delete(apiUrl('/achievements/:id'), () => HttpResponse.json({ code: 200 })),
+
+  // Teaching CRUD
+  http.post(apiUrl('/teaching/courses'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const course = { id: 'c' + Date.now(), ...body, status: 'active', statusLabel: '开课中' };
+    mockCourses.push(course);
+    return HttpResponse.json({ code: 200, data: course });
+  }),
+  http.put(apiUrl('/teaching/courses/:id'), async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    const idx = mockCourses.findIndex(c => c.id === params.id);
+    if (idx >= 0) mockCourses[idx] = { ...mockCourses[idx], ...body };
+    return HttpResponse.json({ code: 200, data: mockCourses[idx] });
+  }),
+  http.delete(apiUrl('/teaching/courses/:id'), ({ params }) => {
+    const idx = mockCourses.findIndex(c => c.id === params.id);
+    if (idx >= 0) mockCourses.splice(idx, 1);
+    return HttpResponse.json({ code: 200 });
+  }),
 ];
 
 const ordersHandlers = [
@@ -161,6 +303,77 @@ const ordersHandlers = [
     const newOrder = { id: `o${Date.now()}`, no: `ORD-${new Date().getFullYear()}-${String(_mockOrders.length + 1).padStart(3, '0')}`, ...body, paidAmount: 0, samples: [], createdAt: new Date().toISOString().slice(0, 10), updatedAt: new Date().toISOString().slice(0, 10) };
     _mockOrders.push(newOrder);
     return HttpResponse.json({ code: 200, message: 'success', data: newOrder });
+  }),
+
+  // AI Assistant
+  http.post(apiUrl('/ai/chat'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const msg = body.message || '';
+    let reply = '';
+    if (msg.includes('不合格')) reply = '本周不合格样品共 3 批次，主要集中在重金属检测（2 批次）和微生物检测（1 批次）。';
+    else if (msg.includes('报告')) reply = '上周共生成检测报告 156 份，其中 148 份已通过审核，8 份正在审核中。';
+    else if (msg.includes('质控')) reply = '近 30 天质控合格率 98.7%，其中有 2 次警告（铅标准品漂移）。';
+    else if (msg.includes('预测')) reply = '基于当前排程，预计平均检测周期为 4.2 天，较上周缩短 0.5 天。';
+    else reply = '收到您的问题：' + msg + '\n\n我是HC-LIMS AI助手，可以帮您查询样品状态、分析数据趋势、生成报告建议等。';
+    return HttpResponse.json({ code: 200, data: { reply, suggestions: ['查看详细报告', '导出数据', '设置预警'] } });
+  }),
+
+  // AI Anomaly Dashboard
+  http.get(apiUrl('/ai/anomaly/dashboard'), () => {
+    const alerts = [
+      { id: 'a1', level: 'critical', title: '铅标准品超标', description: '质控样 Pb 浓度 12.5 mg/L，超出控制限（10.0 mg/L）', source: '质控管理', occurredAt: '2025-08-15 09:30:00', status: 'active', suggestedAction: '重新配制标准品并校准仪器' },
+      { id: 'a2', level: 'warning', title: '检测周期延长', description: '近 3 天平均检测周期 5.8 天，超出目标值 5.0 天', source: '任务管理', occurredAt: '2025-08-14 16:00:00', status: 'active', suggestedAction: '检查任务分配和仪器负载' },
+      { id: 'a3', level: 'info', title: '新设备校准到期', description: 'ICP-MS 年度校准将于 2025-09-01 到期', source: '仪器管理', occurredAt: '2025-08-13 10:00:00', status: 'resolved', suggestedAction: '已预约校准服务' },
+    ];
+    const predictions = Array.from({ length: 7 }, (_, i) => {
+      const date = new Date(); date.setDate(date.getDate() + i + 1);
+      return { date: date.toISOString().slice(0, 10), predicted: 4.2 + Math.random() * 0.8 - 0.4, lower: 3.5, upper: 5.0 };
+    });
+    return HttpResponse.json({ code: 200, data: { riskScore: 62, alerts, predictions } });
+  }),
+
+  // ELN Templates
+  http.get(apiUrl('/eln/templates'), () => HttpResponse.json({ code: 200, data: { list: [
+    { id: 't1', name: '水质检测原始记录', category: '环境检测', fields: [
+      { id: 'f1', label: '样品编号', type: 'text', required: true },
+      { id: 'f2', label: '检测项目', type: 'select', required: true, options: ['pH', 'COD', '重金属', '微生物'] },
+      { id: 'f3', label: '检测结果', type: 'table', required: true },
+      { id: 'f4', label: '检测方法', type: 'select', required: true, options: ['GB/T 5750', 'HJ 828'] },
+    ]},
+    { id: 't2', name: '食品微生物检验记录', category: '食品检测', fields: [
+      { id: 'f5', label: '样品名称', type: 'text', required: true },
+      { id: 'f6', label: '培养条件', type: 'text', required: true },
+      { id: 'f7', label: '菌落计数', type: 'table', required: true },
+    ]},
+  ]}})),
+
+  // Achievements
+  http.get(apiUrl('/achievements/statistics'), () => HttpResponse.json({ code: 200, data: {
+    total: 12, paperCount: 5, patentCount: 3, awardCount: 2, completionCount: 2, totalCitations: 186,
+  }})),
+  http.post(apiUrl('/achievements'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    return HttpResponse.json({ code: 200, data: { id: 'ach' + Date.now(), ...body } });
+  }),
+  http.delete(apiUrl('/achievements/:id'), () => HttpResponse.json({ code: 200 })),
+
+  // Teaching CRUD
+  http.post(apiUrl('/teaching/courses'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const course = { id: 'c' + Date.now(), ...body, status: 'active', statusLabel: '开课中' };
+    mockCourses.push(course);
+    return HttpResponse.json({ code: 200, data: course });
+  }),
+  http.put(apiUrl('/teaching/courses/:id'), async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    const idx = mockCourses.findIndex(c => c.id === params.id);
+    if (idx >= 0) mockCourses[idx] = { ...mockCourses[idx], ...body };
+    return HttpResponse.json({ code: 200, data: mockCourses[idx] });
+  }),
+  http.delete(apiUrl('/teaching/courses/:id'), ({ params }) => {
+    const idx = mockCourses.findIndex(c => c.id === params.id);
+    if (idx >= 0) mockCourses.splice(idx, 1);
+    return HttpResponse.json({ code: 200 });
   }),
 ];
 const mobileSamplingHandlers = [
@@ -193,6 +406,77 @@ const mobileSamplingHandlers = [
   }),
   http.post(apiUrl('/mobile/field-samples/:id/sync'), () => {
     return HttpResponse.json({ code: 200, message: '同步成功' });
+  }),
+
+  // AI Assistant
+  http.post(apiUrl('/ai/chat'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const msg = body.message || '';
+    let reply = '';
+    if (msg.includes('不合格')) reply = '本周不合格样品共 3 批次，主要集中在重金属检测（2 批次）和微生物检测（1 批次）。';
+    else if (msg.includes('报告')) reply = '上周共生成检测报告 156 份，其中 148 份已通过审核，8 份正在审核中。';
+    else if (msg.includes('质控')) reply = '近 30 天质控合格率 98.7%，其中有 2 次警告（铅标准品漂移）。';
+    else if (msg.includes('预测')) reply = '基于当前排程，预计平均检测周期为 4.2 天，较上周缩短 0.5 天。';
+    else reply = '收到您的问题：' + msg + '\n\n我是HC-LIMS AI助手，可以帮您查询样品状态、分析数据趋势、生成报告建议等。';
+    return HttpResponse.json({ code: 200, data: { reply, suggestions: ['查看详细报告', '导出数据', '设置预警'] } });
+  }),
+
+  // AI Anomaly Dashboard
+  http.get(apiUrl('/ai/anomaly/dashboard'), () => {
+    const alerts = [
+      { id: 'a1', level: 'critical', title: '铅标准品超标', description: '质控样 Pb 浓度 12.5 mg/L，超出控制限（10.0 mg/L）', source: '质控管理', occurredAt: '2025-08-15 09:30:00', status: 'active', suggestedAction: '重新配制标准品并校准仪器' },
+      { id: 'a2', level: 'warning', title: '检测周期延长', description: '近 3 天平均检测周期 5.8 天，超出目标值 5.0 天', source: '任务管理', occurredAt: '2025-08-14 16:00:00', status: 'active', suggestedAction: '检查任务分配和仪器负载' },
+      { id: 'a3', level: 'info', title: '新设备校准到期', description: 'ICP-MS 年度校准将于 2025-09-01 到期', source: '仪器管理', occurredAt: '2025-08-13 10:00:00', status: 'resolved', suggestedAction: '已预约校准服务' },
+    ];
+    const predictions = Array.from({ length: 7 }, (_, i) => {
+      const date = new Date(); date.setDate(date.getDate() + i + 1);
+      return { date: date.toISOString().slice(0, 10), predicted: 4.2 + Math.random() * 0.8 - 0.4, lower: 3.5, upper: 5.0 };
+    });
+    return HttpResponse.json({ code: 200, data: { riskScore: 62, alerts, predictions } });
+  }),
+
+  // ELN Templates
+  http.get(apiUrl('/eln/templates'), () => HttpResponse.json({ code: 200, data: { list: [
+    { id: 't1', name: '水质检测原始记录', category: '环境检测', fields: [
+      { id: 'f1', label: '样品编号', type: 'text', required: true },
+      { id: 'f2', label: '检测项目', type: 'select', required: true, options: ['pH', 'COD', '重金属', '微生物'] },
+      { id: 'f3', label: '检测结果', type: 'table', required: true },
+      { id: 'f4', label: '检测方法', type: 'select', required: true, options: ['GB/T 5750', 'HJ 828'] },
+    ]},
+    { id: 't2', name: '食品微生物检验记录', category: '食品检测', fields: [
+      { id: 'f5', label: '样品名称', type: 'text', required: true },
+      { id: 'f6', label: '培养条件', type: 'text', required: true },
+      { id: 'f7', label: '菌落计数', type: 'table', required: true },
+    ]},
+  ]}})),
+
+  // Achievements
+  http.get(apiUrl('/achievements/statistics'), () => HttpResponse.json({ code: 200, data: {
+    total: 12, paperCount: 5, patentCount: 3, awardCount: 2, completionCount: 2, totalCitations: 186,
+  }})),
+  http.post(apiUrl('/achievements'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    return HttpResponse.json({ code: 200, data: { id: 'ach' + Date.now(), ...body } });
+  }),
+  http.delete(apiUrl('/achievements/:id'), () => HttpResponse.json({ code: 200 })),
+
+  // Teaching CRUD
+  http.post(apiUrl('/teaching/courses'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const course = { id: 'c' + Date.now(), ...body, status: 'active', statusLabel: '开课中' };
+    mockCourses.push(course);
+    return HttpResponse.json({ code: 200, data: course });
+  }),
+  http.put(apiUrl('/teaching/courses/:id'), async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    const idx = mockCourses.findIndex(c => c.id === params.id);
+    if (idx >= 0) mockCourses[idx] = { ...mockCourses[idx], ...body };
+    return HttpResponse.json({ code: 200, data: mockCourses[idx] });
+  }),
+  http.delete(apiUrl('/teaching/courses/:id'), ({ params }) => {
+    const idx = mockCourses.findIndex(c => c.id === params.id);
+    if (idx >= 0) mockCourses.splice(idx, 1);
+    return HttpResponse.json({ code: 200 });
   }),
 ];
 export const handlers = [
@@ -1450,6 +1734,77 @@ export const handlers = [
       timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
     });
     return HttpResponse.json({ code: 200, message: '流程已终止', data: inst });
+  }),
+
+  // AI Assistant
+  http.post(apiUrl('/ai/chat'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const msg = body.message || '';
+    let reply = '';
+    if (msg.includes('不合格')) reply = '本周不合格样品共 3 批次，主要集中在重金属检测（2 批次）和微生物检测（1 批次）。';
+    else if (msg.includes('报告')) reply = '上周共生成检测报告 156 份，其中 148 份已通过审核，8 份正在审核中。';
+    else if (msg.includes('质控')) reply = '近 30 天质控合格率 98.7%，其中有 2 次警告（铅标准品漂移）。';
+    else if (msg.includes('预测')) reply = '基于当前排程，预计平均检测周期为 4.2 天，较上周缩短 0.5 天。';
+    else reply = '收到您的问题：' + msg + '\n\n我是HC-LIMS AI助手，可以帮您查询样品状态、分析数据趋势、生成报告建议等。';
+    return HttpResponse.json({ code: 200, data: { reply, suggestions: ['查看详细报告', '导出数据', '设置预警'] } });
+  }),
+
+  // AI Anomaly Dashboard
+  http.get(apiUrl('/ai/anomaly/dashboard'), () => {
+    const alerts = [
+      { id: 'a1', level: 'critical', title: '铅标准品超标', description: '质控样 Pb 浓度 12.5 mg/L，超出控制限（10.0 mg/L）', source: '质控管理', occurredAt: '2025-08-15 09:30:00', status: 'active', suggestedAction: '重新配制标准品并校准仪器' },
+      { id: 'a2', level: 'warning', title: '检测周期延长', description: '近 3 天平均检测周期 5.8 天，超出目标值 5.0 天', source: '任务管理', occurredAt: '2025-08-14 16:00:00', status: 'active', suggestedAction: '检查任务分配和仪器负载' },
+      { id: 'a3', level: 'info', title: '新设备校准到期', description: 'ICP-MS 年度校准将于 2025-09-01 到期', source: '仪器管理', occurredAt: '2025-08-13 10:00:00', status: 'resolved', suggestedAction: '已预约校准服务' },
+    ];
+    const predictions = Array.from({ length: 7 }, (_, i) => {
+      const date = new Date(); date.setDate(date.getDate() + i + 1);
+      return { date: date.toISOString().slice(0, 10), predicted: 4.2 + Math.random() * 0.8 - 0.4, lower: 3.5, upper: 5.0 };
+    });
+    return HttpResponse.json({ code: 200, data: { riskScore: 62, alerts, predictions } });
+  }),
+
+  // ELN Templates
+  http.get(apiUrl('/eln/templates'), () => HttpResponse.json({ code: 200, data: { list: [
+    { id: 't1', name: '水质检测原始记录', category: '环境检测', fields: [
+      { id: 'f1', label: '样品编号', type: 'text', required: true },
+      { id: 'f2', label: '检测项目', type: 'select', required: true, options: ['pH', 'COD', '重金属', '微生物'] },
+      { id: 'f3', label: '检测结果', type: 'table', required: true },
+      { id: 'f4', label: '检测方法', type: 'select', required: true, options: ['GB/T 5750', 'HJ 828'] },
+    ]},
+    { id: 't2', name: '食品微生物检验记录', category: '食品检测', fields: [
+      { id: 'f5', label: '样品名称', type: 'text', required: true },
+      { id: 'f6', label: '培养条件', type: 'text', required: true },
+      { id: 'f7', label: '菌落计数', type: 'table', required: true },
+    ]},
+  ]}})),
+
+  // Achievements
+  http.get(apiUrl('/achievements/statistics'), () => HttpResponse.json({ code: 200, data: {
+    total: 12, paperCount: 5, patentCount: 3, awardCount: 2, completionCount: 2, totalCitations: 186,
+  }})),
+  http.post(apiUrl('/achievements'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    return HttpResponse.json({ code: 200, data: { id: 'ach' + Date.now(), ...body } });
+  }),
+  http.delete(apiUrl('/achievements/:id'), () => HttpResponse.json({ code: 200 })),
+
+  // Teaching CRUD
+  http.post(apiUrl('/teaching/courses'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const course = { id: 'c' + Date.now(), ...body, status: 'active', statusLabel: '开课中' };
+    mockCourses.push(course);
+    return HttpResponse.json({ code: 200, data: course });
+  }),
+  http.put(apiUrl('/teaching/courses/:id'), async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    const idx = mockCourses.findIndex(c => c.id === params.id);
+    if (idx >= 0) mockCourses[idx] = { ...mockCourses[idx], ...body };
+    return HttpResponse.json({ code: 200, data: mockCourses[idx] });
+  }),
+  http.delete(apiUrl('/teaching/courses/:id'), ({ params }) => {
+    const idx = mockCourses.findIndex(c => c.id === params.id);
+    if (idx >= 0) mockCourses.splice(idx, 1);
+    return HttpResponse.json({ code: 200 });
   }),
 ];
 
