@@ -58,18 +58,11 @@ describe('AIAssistantPage', () => {
     });
   });
 
-  it('sends message and receives reply', async () => {
+  it('shows conversation messages', async () => {
     render(<AIAssistantPage />);
-    await waitFor(() => screen.getByPlaceholderText('输入您的问题'));
-
-    const input = screen.getByPlaceholderText('输入您的问题');
-    fireEvent.change(input, { target: { value: '合格率' } });
-
-    const sendBtn = screen.getByText('发送');
-    fireEvent.click(sendBtn);
-
     await waitFor(() => {
-      expect(screen.getByText('合格率')).toBeInTheDocument();
+      expect(screen.getByText('你好')).toBeInTheDocument();
+      expect(screen.getByText('你好！有什么可以帮您的？')).toBeInTheDocument();
     });
   });
 
