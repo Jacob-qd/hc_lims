@@ -7,7 +7,7 @@ import {
   SendOutlined, RobotOutlined, UserOutlined, BulbOutlined,
   DeleteOutlined, ClockCircleOutlined,
 } from '@ant-design/icons';
-import type { ColumnsType } from 'antd/es/table';
+
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;

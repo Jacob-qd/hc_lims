@@ -11,6 +11,7 @@ import {
   TrophyOutlined, ShopOutlined, ProfileOutlined, ApartmentOutlined,
   FundOutlined, CalendarOutlined, SafetyOutlined,
   EnvironmentOutlined, GlobalOutlined, LogoutOutlined,
+  RobotOutlined, BellOutlined,
 } from '@ant-design/icons';
 
 const { Sider } = Layout;
@@ -59,6 +60,11 @@ const allMenuItems = [
     { key: '/mobile/sampling', icon: <EnvironmentOutlined />, label: '移动采样', roles: ['sampler'] },
     { key: '/samples', icon: <InboxOutlined />, label: '我的样品', roles: ['sampler'] },
     { key: '/coc', icon: <SafetyCertificateOutlined />, label: 'COC监管链', roles: ['sampler'] },
+  ]},
+  { key: 'ai', icon: <RobotOutlined />, label: '🔮 AI 智能助手', roles: ['admin', 'lab_tech', 'reviewer'], children: [
+    { key: '/ai/assistant', icon: <RobotOutlined />, label: 'AI 数据分析助手', roles: ['admin', 'lab_tech', 'reviewer'] },
+    { key: '/ai/report', icon: <FileTextOutlined />, label: '智能报告生成器', roles: ['admin', 'lab_tech', 'reviewer'] },
+    { key: '/ai/alerts', icon: <BellOutlined />, label: '异常预警看板', roles: ['admin', 'lab_tech', 'reviewer'] },
   ]},
   // 客户专用菜单
   { key: 'client-menu', icon: <GlobalOutlined />, label: '客户服务', roles: ['client'], children: [

@@ -44,6 +44,9 @@ const LEVEL2_PAGES = [
   { path: '/dict', name: '数据字典' },
   { path: '/profile', name: '个人中心' },
   { path: '/settings/field-configs', name: '自定义字段' },
+  { path: '/ai/assistant', name: 'AI数据分析助手' },
+  { path: '/ai/report', name: '智能报告生成器' },
+  { path: '/ai/alerts', name: '异常预警看板' },
 ];
 
 const ALL_PAGES = [...LEVEL1_PAGES, ...LEVEL2_PAGES];

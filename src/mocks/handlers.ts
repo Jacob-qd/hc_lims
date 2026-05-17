@@ -1368,7 +1368,7 @@ export const handlers = [
   http.post(apiUrl('/ai/chat'), async ({ request }) => {
     const body = (await request.json()) as any;
     const { message } = body;
-    let reply = { content: '抱歉，我暂时无法理解这个问题。请尝试询问关于合格率、统计、仪器、客户、报告或趋势的问题。', type: 'text' as const, data: undefined };
+    let reply: { content: string; type: 'text' | 'table'; data?: any[] } = { content: '抱歉，我暂时无法理解这个问题。请尝试询问关于合格率、统计、仪器、客户、报告或趋势的问题。', type: 'text', data: undefined };
     for (const [key, template] of Object.entries(mockAIReplyTemplates)) {
       if (message.includes(key)) {
         reply = template;
