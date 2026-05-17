@@ -20,6 +20,15 @@ const roleMeta: Record<string, { icon: React.ReactNode; color: string; desc: str
   client: { icon: <TeamOutlined />, color: '#13c2c2', desc: '委托查询、报告下载、进度追踪', defaultPage: '/portal' },
 };
 
+/** 各角色默认登录凭证 */
+const roleCreds: Record<string, { username: string; password: string }> = {
+  admin: { username: 'admin', password: 'admin123' },
+  lab_tech: { username: 'tech', password: '123456' },
+  reviewer: { username: 'reviewer', password: '123456' },
+  sampler: { username: 'sampler', password: '123456' },
+  client: { username: 'client', password: '123456' },
+};
+
 /** 实验室背景浮动画布 */
 const LabBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -167,7 +176,7 @@ export const LoginPage: React.FC = () => {
 
   // 选择角色时同步到表单
   useEffect(() => {
-    form.setFieldsValue({ role: selectedRole });
+    form.setFieldsValue({ role: selectedRole, username: roleCreds[selectedRole].username, password: roleCreds[selectedRole].password });
   }, [selectedRole, form]);
 
   const handleSubmit = async (values: { username: string; password: string; role: string }) => {
@@ -287,7 +296,7 @@ export const LoginPage: React.FC = () => {
             size="large"
             onFinish={handleSubmit}
             autoComplete="off"
-            initialValues={{ role: selectedRole, username: 'admin', password: 'admin123' }}
+            initialValues={{ role: 'admin', username: roleCreds.admin.username, password: roleCreds.admin.password }}
           >
             <Form.Item name="role" hidden>
               <Input />
