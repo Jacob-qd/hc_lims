@@ -11,6 +11,7 @@ import {
   TrophyOutlined, ShopOutlined, ProfileOutlined, ApartmentOutlined,
   FundOutlined, CalendarOutlined, SafetyOutlined,
   EnvironmentOutlined, GlobalOutlined, LogoutOutlined,
+  RobotOutlined, BulbOutlined, BellOutlined,
 } from '@ant-design/icons';
 
 const { Sider } = Layout;
@@ -45,6 +46,11 @@ const allMenuItems = [
     { key: '/settings', icon: <SettingOutlined />, label: '系统管理', roles: ['admin'] },
   ]},
   { key: 'divider2', type: 'divider' as const, roles: ['admin'] },
+  { key: 'ai', icon: <RobotOutlined />, label: '🤖 AI 智能助手', roles: ['admin'], children: [
+    { key: '/ai/assistant', icon: <BulbOutlined />, label: 'AI 数据分析助手', roles: ['admin'] },
+    { key: '/ai/report', icon: <FileTextOutlined />, label: '智能报告生成器', roles: ['admin'] },
+    { key: '/ai/alerts', icon: <BellOutlined />, label: '异常预警看板', roles: ['admin'] },
+  ]},
   { key: 'research', icon: <ApartmentOutlined />, label: '🔬 高校科研版', roles: ['admin'], children: [
     { key: '/research/groups', icon: <TeamOutlined />, label: '课题组管理', roles: ['admin'] },
     { key: '/research/projects', icon: <FundOutlined />, label: '研究项目管理', roles: ['admin'] },

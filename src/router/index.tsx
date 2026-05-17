@@ -49,6 +49,9 @@ const OrdersPage = lazy(() => import('../pages/OrdersPage').then(m => ({ default
 const MobilePage = lazy(() => import('../pages/MobilePage').then(m => ({ default: m.MobilePage })));
 const MobileSamplingPage = lazy(() => import('../pages/MobileSamplingPage').then(m => ({ default: m.MobileSamplingPage })));
 const MobileTaskListPage = lazy(() => import('../pages/MobileTaskListPage').then(m => ({ default: m.MobileTaskListPage })));
+const AIAssistantPage = lazy(() => import('../pages/AIAssistantPage').then(m => ({ default: m.AIAssistantPage })));
+const AIReportPage = lazy(() => import('../pages/AIReportPage').then(m => ({ default: m.AIReportPage })));
+const AIAlertPage = lazy(() => import('../pages/AIAlertPage').then(m => ({ default: m.AIAlertPage })));
 
 export const router = createBrowserRouter([
   {
@@ -121,6 +124,9 @@ export const router = createBrowserRouter([
       { path: 'monitor', element: <MonitorPage /> },
       { path: 'scheduler', element: <BatchSchedulerPage /> },
       { path: 'certificates', element: <CertificatePage /> },
+      { path: 'ai/assistant', element: <AIAssistantPage /> },
+      { path: 'ai/report', element: <AIReportPage /> },
+      { path: 'ai/alerts', element: <AIAlertPage /> },
       { path: '*', element: <Navigate to="/dashboard" replace /> },
     ],
   },

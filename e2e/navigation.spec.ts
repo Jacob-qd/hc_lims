@@ -28,6 +28,13 @@ const LEVEL1_PAGES = [
   { path: '/scheduler', name: '批处理调度' },
 ];
 
+// AI 功能页面
+const AI_PAGES = [
+  { path: '/ai/assistant', name: 'AI数据分析助手' },
+  { path: '/ai/report', name: '智能报告生成器' },
+  { path: '/ai/alerts', name: '异常预警看板' },
+];
+
 // 二级页面（子路由）
 const LEVEL2_PAGES = [
   { path: '/research/groups', name: '课题组管理' },
@@ -46,7 +53,7 @@ const LEVEL2_PAGES = [
   { path: '/settings/field-configs', name: '自定义字段' },
 ];
 
-const ALL_PAGES = [...LEVEL1_PAGES, ...LEVEL2_PAGES];
+const ALL_PAGES = [...LEVEL1_PAGES, ...LEVEL2_PAGES, ...AI_PAGES];
 
 /** 收集页面 JS 错误 */
 async function collectErrors(page: Page): Promise<string[]> {
