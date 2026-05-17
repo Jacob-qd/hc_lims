@@ -59,6 +59,7 @@ import {
   mockChartComponents,
   mockReportSchedules,
   mockReportExecutions,
+  mockGeneratedReports,
   mockDictTypes,
   mockDictItems,
   mockContracts,
@@ -1535,6 +1536,36 @@ export const handlers = [
   }),
   http.get(apiUrl('/reports/data-sources'), () => {
     return HttpResponse.json({ code: 200, message: 'success', data: { list: mockDataSources } });
+  }),
+  http.get(apiUrl('/reports/generated'), () => {
+    return HttpResponse.json({ code: 200, message: 'success', data: { list: mockGeneratedReports, total: mockGeneratedReports.length } });
+  }),
+  http.get(apiUrl('/reports/generated/:id/download'), ({ params }) => {
+    const report = mockGeneratedReports.find(r => r.id === params.id);
+    if (!report) return HttpResponse.json({ code: 404, message: '报表不存在' }, { status: 404 });
+    const blob = new Blob([`Mock report content for ${report.reportName}`], { type: 'application/octet-stream' });
+    return new HttpResponse(blob, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/octet-stream',
+        'Content-Disposition': `attachment; filename="${report.fileName}"`,
+      },
+    });
+  }),
+  http.post(apiUrl('/reports/distribute'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const { reportId, recipients, subject } = body;
+    return HttpResponse.json({
+      code: 200,
+      message: 'success',
+      data: {
+        reportId,
+        sentAt: new Date().toISOString().replace('T', ' ').slice(0, 19),
+        recipients,
+        subject: subject || '报表分发',
+        status: 'sent',
+      },
+    });
   }),
 
   // ============================================
