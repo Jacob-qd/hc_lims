@@ -64,7 +64,7 @@ describe('MobileTaskListPage - 移动端任务列表', () => {
 
   it('存在刷新按钮', async () => {
     render(<BrowserRouter><ConfigProvider><MobileTaskListPage /></ConfigProvider></BrowserRouter>);
-    await waitFor(() => expect(screen.getByText('刷新')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/刷\s*新/)).toBeInTheDocument());
   });
 
   it('点击任务卡片不抛异常', async () => {

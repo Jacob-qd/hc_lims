@@ -39,6 +39,6 @@ describe('AppLayout', () => {
       </MemoryRouter>
     );
     await waitFor(() => expect(screen.getByText('红创 LIMS')).toBeInTheDocument());
-    expect(screen.getByText('测试用户')).toBeInTheDocument();
+    expect(screen.getAllByText('测试用户').length).toBeGreaterThanOrEqual(1);
   });
 });

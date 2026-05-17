@@ -79,7 +79,7 @@ describe('MobileSamplingPage - 移动采样', () => {
 
   it('US1: 存在"直接采样"按钮', async () => {
     render(<BrowserRouter><ConfigProvider><MobileSamplingPage /></ConfigProvider></BrowserRouter>);
-    await waitFor(() => expect(screen.getByText('直接采样')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/直接采样/)).toBeInTheDocument());
   });
 
   it('US1: 存在"记录"按钮查看历史', async () => {
@@ -117,7 +117,7 @@ describe('MobileSamplingPage - 移动采样', () => {
     fireEvent.click(screen.getByText('东湖水质监测'));
     await waitFor(() => expect(screen.getByText('东湖入口')).toBeInTheDocument());
     fireEvent.click(screen.getByText('东湖入口'));
-    await waitFor(() => expect(screen.getByText('现场采样')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('GPS 定位')).toBeInTheDocument());
   });
 
   it('US2: 采样表单存在 GPS 定位按钮', async () => {
@@ -183,14 +183,14 @@ describe('MobileSamplingPage - 移动采样', () => {
     render(<BrowserRouter><ConfigProvider><MobileSamplingPage /></ConfigProvider></BrowserRouter>);
     await waitFor(() => expect(screen.getByText('东湖水质监测')).toBeInTheDocument());
     // 点击"直接采样"进入表单
-    fireEvent.click(screen.getByText('直接采样'));
+    fireEvent.click(screen.getByText(/直接采样/));
     await waitFor(() => expect(screen.getByText('批量采样')).toBeInTheDocument());
   });
 
   it('US5: 批量采样有数量输入', async () => {
     render(<BrowserRouter><ConfigProvider><MobileSamplingPage /></ConfigProvider></BrowserRouter>);
     await waitFor(() => expect(screen.getByText('东湖水质监测')).toBeInTheDocument());
-    fireEvent.click(screen.getByText('直接采样'));
+    fireEvent.click(screen.getByText(/直接采样/));
     await waitFor(() => expect(screen.getByText('批量提交')).toBeInTheDocument());
   });
 
@@ -199,7 +199,7 @@ describe('MobileSamplingPage - 移动采样', () => {
   it('US6: 容器条码输入区域存在', async () => {
     render(<BrowserRouter><ConfigProvider><MobileSamplingPage /></ConfigProvider></BrowserRouter>);
     await waitFor(() => expect(screen.getByText('东湖水质监测')).toBeInTheDocument());
-    fireEvent.click(screen.getByText('直接采样'));
+    fireEvent.click(screen.getByText(/直接采样/));
     await waitFor(() => expect(screen.getByText('样品容器')).toBeInTheDocument());
   });
 

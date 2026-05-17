@@ -84,7 +84,7 @@ export const SamplesPage: React.FC = () => {
       fetch(`/api/v1/samples/${sample.id}/flow-history`).then(r => r.json()),
     ]).then(([detailRes, flowRes]) => {
       if (detailRes.code === 200) setDetailData(detailRes.data);
-      if (flowRes.code === 200) setFlowHistory(flowRes.data);
+      if (flowRes.code === 200) setFlowHistory(Array.isArray(flowRes.data) ? flowRes.data : []);
     });
   };
 

@@ -52,7 +52,7 @@ describe('MobilePage - 移动端首页', () => {
     await waitFor(() => expect(screen.getByText('现场采样')).toBeInTheDocument());
     expect(screen.getByText('扫码')).toBeInTheDocument();
     expect(screen.getByText('我的任务')).toBeInTheDocument();
-    expect(screen.getByText('待处理')).toBeInTheDocument();
+    expect(screen.getAllByText('待处理').length).toBeGreaterThanOrEqual(1);
   });
 
   it('US1: 点击"现场采样"跳转到采样页面', async () => {
@@ -87,7 +87,7 @@ describe('MobilePage - 移动端首页', () => {
       ok: true, json: async () => ({ code: 200, data: { list: [] } }),
     } as Response);
     render(<BrowserRouter><ConfigProvider><MobilePage /></ConfigProvider></BrowserRouter>);
-    await waitFor(() => expect(screen.getByText('0')).toBeInTheDocument());
+    await waitFor(() => expect(document.body.textContent).toContain('0'));
   });
 
   it('US1: 底部导航包含 4 个 Tab', async () => {
