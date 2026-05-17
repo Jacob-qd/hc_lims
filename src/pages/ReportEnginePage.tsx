@@ -67,57 +67,11 @@ interface ReportExecution {
   triggerType: 'manual' | 'scheduled';
 }
 
-const dataSourceOptions = [
-  { value: 'samples', label: '样品数据' },
-  { value: 'tasks', label: '检测任务' },
-  { value: 'instruments', label: '仪器设备' },
-  { value: 'quality', label: '质量控制' },
-  { value: 'reports', label: '检测报告' },
-  { value: 'personnel', label: '人员信息' },
-];
-
-const fieldOptions: Record<string, { value: string; label: string }[]> = {
-  samples: [
-    { value: 'sampleNo', label: '样品编号' },
-    { value: 'name', label: '样品名称' },
-    { value: 'typeLabel', label: '样品类型' },
-    { value: 'customerName', label: '客户' },
-    { value: 'statusLabel', label: '状态' },
-    { value: 'createdAt', label: '创建时间' },
-  ],
-  tasks: [
-    { value: 'taskNo', label: '任务编号' },
-    { value: 'sampleName', label: '样品名称' },
-    { value: 'testItem', label: '检测项目' },
-    { value: 'analystName', label: '检测员' },
-    { value: 'statusLabel', label: '状态' },
-    { value: 'progress', label: '进度' },
-  ],
-  instruments: [
-    { value: 'name', label: '仪器名称' },
-    { value: 'model', label: '型号' },
-    { value: 'statusLabel', label: '状态' },
-    { value: 'utilization', label: '利用率' },
-  ],
-  quality: [
-    { value: 'batch', label: '批次' },
-    { value: 'analyte', label: '分析物' },
-    { value: 'measured', label: '测定值' },
-    { value: 'deviation', label: '偏差' },
-  ],
-  reports: [
-    { value: 'reportNo', label: '报告编号' },
-    { value: 'title', label: '标题' },
-    { value: 'customerName', label: '客户' },
-    { value: 'statusLabel', label: '状态' },
-  ],
-  personnel: [
-    { value: 'name', label: '姓名' },
-    { value: 'dept', label: '部门' },
-    { value: 'position', label: '职位' },
-    { value: 'certStatusLabel', label: '资质状态' },
-  ],
-};
+interface DataSource {
+  key: string;
+  name: string;
+  fields: string[];
+}
 
 const chartTypeOptions = [
   { value: 'line', label: '折线图', icon: <LineChartOutlined /> },
@@ -134,6 +88,7 @@ export const ReportEnginePage: React.FC = () => {
   const [charts, setCharts] = useState<ChartComponent[]>([]);
   const [schedules, setSchedules] = useState<ReportSchedule[]>([]);
   const [executions, setExecutions] = useState<ReportExecution[]>([]);
+  const [dataSources, setDataSources] = useState<DataSource[]>([]);
   const [loading, setLoading] = useState(false);
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -156,16 +111,18 @@ export const ReportEnginePage: React.FC = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [tRes, cRes, sRes, eRes] = await Promise.all([
+      const [tRes, cRes, sRes, eRes, dRes] = await Promise.all([
         fetch('/api/v1/reports/templates').then(r => r.json()),
         fetch('/api/v1/reports/charts').then(r => r.json()),
         fetch('/api/v1/reports/schedules').then(r => r.json()),
         fetch('/api/v1/reports/executions').then(r => r.json()),
+        fetch('/api/v1/reports/data-sources').then(r => r.json()),
       ]);
       if (tRes.code === 200) setTemplates(tRes.data.list);
       if (cRes.code === 200) setCharts(cRes.data.list);
       if (sRes.code === 200) setSchedules(sRes.data.list);
       if (eRes.code === 200) setExecutions(eRes.data.list);
+      if (dRes.code === 200) setDataSources(dRes.data.list || []);
     } catch (e) {
       message.error('加载数据失败');
     } finally {
@@ -280,11 +237,24 @@ export const ReportEnginePage: React.FC = () => {
     }
   };
 
+  const getDataSourceOptions = () => dataSources.map(ds => ({ value: ds.key, label: ds.name }));
+  const getFieldOptions = (dsKey?: string) => {
+    const ds = dataSources.find(d => d.key === dsKey);
+    if (!ds) return [];
+    return ds.fields.map((f: string) => ({ value: f, label: f }));
+  };
+  const getDataSourceLabel = (key: string) => dataSources.find(ds => ds.key === key)?.name || key;
+
+  const handleDownload = (fileName?: string) => {
+    if (!fileName) return;
+    message.success(`开始下载: ${fileName}`);
+  };
+
   const addField = () => {
     const values = fieldForm.getFieldsValue();
     if (!values.fieldKey) return;
     const ds = form.getFieldValue('dataSource');
-    const opts = fieldOptions[ds] || [];
+    const opts = getFieldOptions(ds);
     const opt = opts.find((o: any) => o.value === values.fieldKey);
     setSelectedFields(prev => [...prev, {
       fieldKey: values.fieldKey,
@@ -367,7 +337,7 @@ export const ReportEnginePage: React.FC = () => {
   const templateColumns = [
     { title: '报表名称', dataIndex: 'name', key: 'name' },
     { title: '类型', dataIndex: 'type', key: 'type', render: (t: string) => <Tag color={t === 'scheduled' ? 'blue' : 'orange'}>{t === 'scheduled' ? '定时' : '手动'}</Tag> },
-    { title: '数据源', dataIndex: 'dataSource', key: 'dataSource', render: (v: string) => dataSourceOptions.find(o => o.value === v)?.label || v },
+    { title: '数据源', dataIndex: 'dataSource', key: 'dataSource', render: (v: string) => getDataSourceLabel(v) },
     { title: '输出格式', dataIndex: 'outputFormat', key: 'outputFormat', render: (v: string[]) => <Space>{v.map(f => <Tag key={f}>{f}</Tag>)}</Space> },
     { title: '状态', dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={s === 'active' ? 'green' : 'default'}>{s === 'active' ? '已启用' : '草稿'}</Tag> },
     { title: '下次执行', dataIndex: 'nextRunTime', key: 'nextRunTime', render: (v: string) => v || '-' },
@@ -376,7 +346,7 @@ export const ReportEnginePage: React.FC = () => {
         <Space size="small">
           <Button type="link" size="small" icon={<PlayCircleOutlined />} onClick={() => handleRun(record)}>运行</Button>
           <Button type="link" size="small" icon={<EditOutlined />} onClick={() => openEditModal(record)}>编辑</Button>
-          <Button type="link" size="small" icon={<DownloadOutlined />}>下载</Button>
+          <Button type="link" size="small" icon={<DownloadOutlined />} onClick={() => message.info('请先生成报表')}>下载</Button>
           <Popconfirm title="确认删除?" onConfirm={() => handleDelete(record.id)}>
             <Button type="link" size="small" danger icon={<DeleteOutlined />}>删除</Button>
           </Popconfirm>
@@ -396,7 +366,7 @@ export const ReportEnginePage: React.FC = () => {
     {
       title: '操作', key: 'action', render: (_: any, record: ReportExecution) => (
         <Space size="small">
-          {record.outputFile && <Button type="link" size="small" icon={<DownloadOutlined />}>下载</Button>}
+          {record.outputFile && <Button type="link" size="small" icon={<DownloadOutlined />} onClick={() => handleDownload(record.outputFile)}>下载</Button>}
           {record.status === 'failed' && (
             <Button type="link" size="small" onClick={() => { setLogContent(record.errorMessage || '未知错误'); setLogModalVisible(true); }}>查看日志</Button>
           )}
@@ -447,7 +417,7 @@ export const ReportEnginePage: React.FC = () => {
               </Radio.Group>
             </Form.Item>
             <Form.Item name="dataSource" label="数据源" rules={[{ required: true }]}>
-              <Select placeholder="选择数据源" options={dataSourceOptions} />
+              <Select placeholder="选择数据源" options={getDataSourceOptions()} />
             </Form.Item>
             <Form.Item noStyle shouldUpdate={(prev, cur) => prev.type !== cur.type}>
               {({ getFieldValue }) =>
@@ -470,7 +440,7 @@ export const ReportEnginePage: React.FC = () => {
               <Form.Item name="fieldKey" label="字段" style={{ minWidth: 160 }}>
                 <Select
                   placeholder="选择字段"
-                  options={fieldOptions[form.getFieldValue('dataSource')] || []}
+                  options={getFieldOptions(form.getFieldValue('dataSource'))}
                 />
               </Form.Item>
               <Form.Item name="alias" label="别名" style={{ minWidth: 120 }}>
@@ -509,7 +479,7 @@ export const ReportEnginePage: React.FC = () => {
           <div>
             <Form form={filterForm} layout="inline" style={{ marginBottom: 16 }}>
               <Form.Item name="field" label="字段" style={{ minWidth: 140 }}>
-                <Select placeholder="选择字段" options={fieldOptions[form.getFieldValue('dataSource')] || []} />
+                <Select placeholder="选择字段" options={getFieldOptions(form.getFieldValue('dataSource'))} />
               </Form.Item>
               <Form.Item name="operator" label="操作符" style={{ minWidth: 100 }}>
                 <Select placeholder="选择" options={[
@@ -560,13 +530,13 @@ export const ReportEnginePage: React.FC = () => {
               </Radio.Group>
             </Form.Item>
             <Form.Item name="xAxis" label="X轴字段">
-              <Select placeholder="选择X轴字段" allowClear options={fieldOptions[form.getFieldValue('dataSource')] || []} />
+              <Select placeholder="选择X轴字段" allowClear options={getFieldOptions(form.getFieldValue('dataSource'))} />
             </Form.Item>
             <Form.Item name="yAxis" label="Y轴字段">
-              <Select placeholder="选择Y轴字段" allowClear options={fieldOptions[form.getFieldValue('dataSource')] || []} />
+              <Select placeholder="选择Y轴字段" allowClear options={getFieldOptions(form.getFieldValue('dataSource'))} />
             </Form.Item>
             <Form.Item name="colorField" label="颜色字段">
-              <Select placeholder="选择颜色字段" allowClear options={fieldOptions[form.getFieldValue('dataSource')] || []} />
+              <Select placeholder="选择颜色字段" allowClear options={getFieldOptions(form.getFieldValue('dataSource'))} />
             </Form.Item>
             <Form.Item name="legend" valuePropName="checked" initialValue={true}>
               <Checkbox>显示图例</Checkbox>
@@ -622,7 +592,7 @@ export const ReportEnginePage: React.FC = () => {
         <Col span={6}><Card size="small"><Statistic title="报表模板" value={templates.length} /></Card></Col>
         <Col span={6}><Card size="small"><Statistic title="定时报表" value={templates.filter(r => r.type === 'scheduled').length} prefix={<ClockCircleOutlined />} /></Card></Col>
         <Col span={6}><Card size="small"><Statistic title="图表组件" value={charts.length} prefix={<BarChartOutlined />} /></Card></Col>
-        <Col span={6}><Card size="small"><Statistic title="数据源" value={6} prefix={<FileTextOutlined />} /></Card></Col>
+        <Col span={6}><Card size="small"><Statistic title="数据源" value={dataSources.length} prefix={<FileTextOutlined />} /></Card></Col>
       </Row>
 
       <Tabs activeKey={activeTab} onChange={setActiveTab} items={[
@@ -650,7 +620,7 @@ export const ReportEnginePage: React.FC = () => {
                         <Button type="link" size="small" icon={<SettingOutlined />}>配置</Button>,
                       ]}
                     >
-                      <Text type="secondary" style={{ fontSize: 12 }}>数据源: {dataSourceOptions.find(o => o.value === chart.dataSource)?.label || chart.dataSource}</Text>
+                      <Text type="secondary" style={{ fontSize: 12 }}>数据源: {getDataSourceLabel(chart.dataSource)}</Text>
                       <Divider style={{ margin: '8px 0' }} />
                       {renderSimpleChart(chart)}
                     </Card>

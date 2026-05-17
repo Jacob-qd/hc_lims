@@ -31,19 +31,14 @@ interface Contract {
 const statusColors: Record<string, string> = { active: 'green', expiring: 'orange', expired: 'default' };
 const statusLabels: Record<string, string> = { active: '执行中', expiring: '即将到期', expired: '已到期' };
 
-const customers = [
-  { id: 'c1', name: '绿源环保科技有限公司' },
-  { id: 'c2', name: '博克水务有限公司' },
-  { id: 'c3', name: '红创检测认证集团' },
-  { id: 'c4', name: '清源化工有限公司' },
-  { id: 'c5', name: '蓝天环境监测站' },
-  { id: 'c6', name: '宏达食品有限公司' },
-  { id: 'c7', name: '新能科技有限公司' },
-  { id: 'c8', name: '康源医药集团' },
-];
+interface Customer {
+  id: string;
+  name: string;
+}
 
 export const ContractsPage: React.FC = () => {
   const [contracts, setContracts] = useState<Contract[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -52,6 +47,22 @@ export const ContractsPage: React.FC = () => {
   const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form] = Form.useForm();
+
+  const fetchCustomers = async () => {
+    try {
+      const res = await fetch('/api/v1/clients');
+      const data = await res.json();
+      if (data.code === 200) {
+        setCustomers(data.data.list.map((c: any) => ({ id: c.id, name: c.name })));
+      }
+    } catch (e) {
+      // silently fail
+    }
+  };
+
+  useEffect(() => {
+    fetchCustomers();
+  }, []);
 
   const fetchData = async () => {
     setLoading(true);
@@ -93,8 +104,10 @@ export const ContractsPage: React.FC = () => {
   const handleSave = async () => {
     try {
       const values = await form.validateFields();
+      const customer = customers.find(c => c.id === values.customerId);
       const payload = {
         ...values,
+        customerName: customer?.name || values.customerName || '',
         startDate: values.startDate?.format('YYYY-MM-DD'),
         endDate: values.endDate?.format('YYYY-MM-DD'),
         signDate: values.signDate?.format('YYYY-MM-DD'),

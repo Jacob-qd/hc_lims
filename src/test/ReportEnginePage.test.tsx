@@ -102,8 +102,8 @@ describe('ReportEnginePage', () => {
           code: 200,
           data: {
             list: [
-              { id: 'ds1', name: '样品数据', type: 'table', source: 'samples' },
-              { id: 'ds2', name: '任务数据', type: 'table', source: 'tasks' },
+              { key: 'samples', name: '样品数据', fields: ['sampleNo', 'name', 'typeLabel'] },
+              { key: 'tasks', name: '任务数据', fields: ['taskNo', 'sampleName', 'testItem'] },
             ],
           },
         });

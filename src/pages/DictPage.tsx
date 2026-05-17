@@ -127,6 +127,16 @@ export const DictPage: React.FC = () => {
     }
   };
 
+  const handleTypeDelete = async (id: string) => {
+    const res = await fetch(`/api/v1/dict-types/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (data.code === 200) {
+      message.success('删除成功');
+      if (activeType === id) setActiveType('');
+      fetchData();
+    }
+  };
+
   const handleItemDelete = async (id: string) => {
     const res = await fetch(`/api/v1/dict-items/${id}`, { method: 'DELETE' });
     const data = await res.json();
@@ -171,12 +181,20 @@ export const DictPage: React.FC = () => {
         }
       >
         {currentType && (
-          <div style={{ marginBottom: 16 }}>
-            <Tag color="blue">编码: {currentType.code}</Tag>
-            <Tag>描述: {currentType.description || '-'}</Tag>
-            <Tag color={currentType.status === 'active' ? 'green' : 'default'}>
-              {currentType.status === 'active' ? '启用' : '禁用'}
-            </Tag>
+          <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Space>
+              <Tag color="blue">编码: {currentType.code}</Tag>
+              <Tag>描述: {currentType.description || '-'}</Tag>
+              <Tag color={currentType.status === 'active' ? 'green' : 'default'}>
+                {currentType.status === 'active' ? '启用' : '禁用'}
+              </Tag>
+            </Space>
+            <Space>
+              <Button size="small" icon={<EditOutlined />} onClick={() => openTypeModal('edit', currentType)}>编辑类型</Button>
+              <Popconfirm title="确认删除该字典类型? 将同时删除所有字典项" onConfirm={() => handleTypeDelete(currentType.id)}>
+                <Button size="small" danger icon={<DeleteOutlined />}>删除类型</Button>
+              </Popconfirm>
+            </Space>
           </div>
         )}
         <Table
@@ -208,8 +226,8 @@ export const DictPage: React.FC = () => {
           <Form.Item name="sort" label="排序" initialValue={1}>
             <InputNumber min={1} style={{ width: '100%' }} />
           </Form.Item>
-          <Form.Item name="status" label="状态" initialValue="active">
-            <Switch checkedChildren="启用" unCheckedChildren="禁用" defaultChecked />
+          <Form.Item name="status" label="状态" initialValue="active" valuePropName="checked" getValueFromEvent={(c: boolean) => c ? 'active' : 'inactive'} getValueProps={(v: string) => ({ checked: v === 'active' })}>
+            <Switch checkedChildren="启用" unCheckedChildren="禁用" />
           </Form.Item>
         </Form>
       </Modal>
