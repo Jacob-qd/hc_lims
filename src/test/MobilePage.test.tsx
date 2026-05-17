@@ -50,9 +50,9 @@ describe('MobilePage - 移动端首页', () => {
   it('US1: 显示快捷操作入口（现场采样、扫码、任务、待处理）', async () => {
     render(<BrowserRouter><ConfigProvider><MobilePage /></ConfigProvider></BrowserRouter>);
     await waitFor(() => expect(screen.getByText('现场采样')).toBeInTheDocument());
-    expect(screen.getByText('扫码')).toBeInTheDocument();
+    expect(screen.getByText('扫码签收')).toBeInTheDocument();
     expect(screen.getByText('我的任务')).toBeInTheDocument();
-    expect(screen.getAllByText('待处理').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText('结果录入')).toBeInTheDocument();
   });
 
   it('US1: 点击"现场采样"跳转到采样页面', async () => {

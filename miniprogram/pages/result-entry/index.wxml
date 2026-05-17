@@ -1,0 +1,50 @@
+<view class="container">
+  <view class="header">
+    <text class="title">结果录入</text>
+  </view>
+
+  <view wx:if="{{!selectedTask}}">
+    <view wx:for="{{tasks}}" wx:key="id" class="task-card" bindtap="selectTask" data-id="{{item.id}}">
+      <view class="task-header">
+        <text class="task-name">{{item.sampleName}}</text>
+        <text class="status">{{item.statusLabel}}</text>
+      </view>
+      <text class="task-meta">{{item.testItem}} | {{item.method}}</text>
+      <text class="task-no">{{item.taskNo}}</text>
+    </view>
+    <view wx:if="{{tasks.length === 0}}" class="empty">暂无待录入任务</view>
+  </view>
+
+  <view wx:if="{{selectedTask}}" class="form-card">
+    <view class="task-info">
+      <text class="form-title">{{selectedTask.sampleName}}</text>
+      <text class="form-meta">检测项: {{selectedTask.testItem}}</text>
+      <text class="form-meta">方法: {{selectedTask.method}}</text>
+    </view>
+
+    <view class="form-item">
+      <text class="label">检测结果 *</text>
+      <input type="digit" placeholder="如: 7.25" value="{{form.resultValue}}" bindinput="onInput" data-field="resultValue" />
+    </view>
+
+    <view class="form-item">
+      <text class="label">单位</text>
+      <picker bindchange="onUnitChange" value="{{unitIndex}}" range="{{units}}">
+        <view class="picker">{{form.unit || '请选择单位'}}</view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="label">检出限</text>
+      <input type="digit" placeholder="检出限" value="{{form.detectionLimit}}" bindinput="onInput" data-field="detectionLimit" />
+    </view>
+
+    <view class="form-item">
+      <text class="label">备注</text>
+      <textarea placeholder="特殊情况说明..." value="{{form.remark}}" bindinput="onInput" data-field="remark" />
+    </view>
+
+    <button type="primary" loading="{{submitting}}" bindtap="submit">保存结果</button>
+    <button style="margin-top: 16rpx;" bindtap="cancel">取消</button>
+  </view>
+</view>

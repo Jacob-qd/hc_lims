@@ -1,0 +1,18 @@
+<view class="container">
+  <view class="header">
+    <text class="title">报告查看</text>
+  </view>
+
+  <input class="search" placeholder="搜索报告编号/标题/客户" value="{{keyword}}" bindinput="onSearch" />
+
+  <view wx:for="{{reports}}" wx:key="id" class="report-card" bindtap="viewDetail" data-id="{{item.id}}">
+    <view class="report-header">
+      <text class="report-title">{{item.title}}</text>
+      <text class="status {{item.status}}">{{item.statusLabel}}</text>
+    </view>
+    <text class="report-no">{{item.reportNo}}</text>
+    <text class="report-customer">{{item.customerName}}</text>
+  </view>
+
+  <view wx:if="{{reports.length === 0}}" class="empty">暂无报告</view>
+</view>

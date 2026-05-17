@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import {
   Card, Button, Typography, Space, message, Tag, List, Empty,
-  Input, Row, Col, Modal,
+  Input, Row, Col,
 } from 'antd';
 import {
   ScanOutlined, ArrowLeftOutlined, CheckCircleOutlined,
-  QrcodeOutlined, InboxOutlined, EnvironmentOutlined,
+  QrcodeOutlined, InboxOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
@@ -29,7 +29,7 @@ export const MobileScanReceiptPage: React.FC = () => {
   const [scanned, setScanned] = useState<ScannedSample[]>([]);
   const [recent, setRecent] = useState<ScannedSample[]>([]);
   const [loading, setLoading] = useState(false);
-  const [scanModal, setScanModal] = useState(false);
+  const [, setScanModal] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('mobile_scan_history');
