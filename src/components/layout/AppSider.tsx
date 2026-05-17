@@ -32,6 +32,8 @@ const menuItems = [
   { key: 'business', icon: <TeamOutlined />, label: '商务管理', children: [
     { key: '/clients', icon: <TeamOutlined />, label: '客户管理' },
     { key: '/contracts', icon: <BankOutlined />, label: '合同管理' },
+    { key: '/quotations', icon: <FileTextOutlined />, label: '报价管理' },
+    { key: '/orders', icon: <ExperimentOutlined />, label: '委托单管理' },
   ]},
   { key: 'admin', icon: <SettingOutlined />, label: '运营管理', children: [
     { key: '/personnel', icon: <UserOutlined />, label: '人员与培训' },

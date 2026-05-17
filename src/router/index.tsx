@@ -44,8 +44,11 @@ const CompliancePage = lazy(() => import('../pages/CompliancePage').then(m => ({
 const MonitorPage = lazy(() => import('../pages/MonitorPage').then(m => ({ default: m.MonitorPage })));
 const BatchSchedulerPage = lazy(() => import('../pages/BatchSchedulerPage').then(m => ({ default: m.BatchSchedulerPage })));
 const CertificatePage = lazy(() => import('../pages/CertificatePage').then(m => ({ default: m.CertificatePage })));
+const QuotationsPage = lazy(() => import('../pages/QuotationsPage').then(m => ({ default: m.QuotationsPage })));
+const OrdersPage = lazy(() => import('../pages/OrdersPage').then(m => ({ default: m.OrdersPage })));
 const MobilePage = lazy(() => import('../pages/MobilePage').then(m => ({ default: m.MobilePage })));
 const MobileSamplingPage = lazy(() => import('../pages/MobileSamplingPage').then(m => ({ default: m.MobileSamplingPage })));
+const MobileTaskListPage = lazy(() => import('../pages/MobileTaskListPage').then(m => ({ default: m.MobileTaskListPage })));
 
 export const router = createBrowserRouter([
   {
@@ -55,6 +58,10 @@ export const router = createBrowserRouter([
   {
     path: '/mobile/sampling',
     element: <RouteGuard requireAuth={false}><MobileSamplingPage /></RouteGuard>,
+  },
+  {
+    path: '/mobile/tasks',
+    element: <RouteGuard requireAuth={false}><MobileTaskListPage /></RouteGuard>,
   },
   {
     path: '/login',
@@ -80,6 +87,8 @@ export const router = createBrowserRouter([
       { path: 'schedules', element: <SchedulesPage /> },
       { path: 'clients', element: <ClientsPage /> },
       { path: 'contracts', element: <ContractsPage /> },
+      { path: 'quotations', element: <QuotationsPage /> },
+      { path: 'orders', element: <OrdersPage /> },
       { path: 'quality', element: <QualityPage /> },
       { path: 'instruments', element: <InstrumentsPage /> },
       { path: 'statistics', element: <StatisticsPage /> },

@@ -1,88 +1,212 @@
-import React from 'react';
-import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Tabs } from 'antd';
-import { PlusOutlined, SearchOutlined, EyeOutlined, FileTextOutlined, ExperimentOutlined, TeamOutlined } from '@ant-design/icons';
-import { useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import {
+  Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space,
+  Input, Select, Drawer, Descriptions, Tabs, Modal, Form, message, Popconfirm,
+} from 'antd';
+import {
+  PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined, DeleteOutlined,
+  FileTextOutlined, ExperimentOutlined, TeamOutlined,
+} from '@ant-design/icons';
 
 const { Title, Text } = Typography;
-
-const clients = [
-  { id: 'c1', name: '绿源环保科技有限公司', type: '企业', industry: '环保', contact: '王经理', phone: '138-0001-1234', status: 'active', samples: 248, credit: 'A' },
-  { id: 'c2', name: '博克水务集团', type: '企业', industry: '水务', contact: '李主任', phone: '139-0002-5678', status: 'active', samples: 196, credit: 'A' },
-  { id: 'c3', name: '清源化工有限公司', type: '企业', industry: '化工', contact: '赵总', phone: '137-0003-9012', status: 'active', samples: 128, credit: 'B' },
-  { id: 'c4', name: '蓝天环境监测站', type: '政府', industry: '环保', contact: '刘站长', phone: '136-0004-3456', status: 'active', samples: 96, credit: 'A' },
-  { id: 'c5', name: '宏达食品有限公司', type: '企业', industry: '食品', contact: '陈经理', phone: '135-0005-7890', status: 'pending', samples: 78, credit: 'B' },
-  { id: 'c6', name: '新能科技有限公司', type: '企业', industry: '能源', contact: '周主管', phone: '134-0006-2345', status: 'active', samples: 65, credit: 'A' },
-  { id: 'c7', name: '康源医药集团', type: '企业', industry: '医药', contact: '孙经理', phone: '133-0007-6789', status: 'suspended', samples: 54, credit: 'C' },
-];
+const { Option } = Select;
 
 const typeColor: Record<string, string> = { 企业: '#1677ff', 政府: '#52c41a', 个人: '#d9d9d9' };
 const statusColor: Record<string, string> = { active: '#52c41a', pending: '#faad14', suspended: '#ff4d4f' };
 const statusLabel: Record<string, string> = { active: '合作中', pending: '暂停', suspended: '终止' };
 const creditColor: Record<string, string> = { A: '#52c41a', B: '#faad14', C: '#ff4d4f' };
 
+const api = (p: string) => `/api/v1${p}`;
+
+interface Client {
+  id: string; name: string; shortName?: string;
+  type: string; industry: string;
+  contact: string; phone: string; email?: string; address?: string;
+  credit: string; status: string; source: string;
+  samples: number; contracts: number;
+  createdAt: string; updatedAt: string;
+}
+
 export const ClientsPage: React.FC = () => {
+  const [clients, setClients] = useState<Client[]>([]);
+  const [loading, setLoading] = useState(false);
   const [drawerVisible, setDrawerVisible] = useState(false);
-  const [selected, setSelected] = useState<any>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editingClient, setEditingClient] = useState<Client | null>(null);
+  const [selected, setSelected] = useState<Client | null>(null);
+  const [search, setSearch] = useState('');
+  const [form] = Form.useForm();
+
+  const loadClients = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(api('/clients'));
+      const json = await res.json();
+      if (json.code === 200) setClients(json.data?.list || []);
+    } catch { message.error('加载客户列表失败'); }
+    finally { setLoading(false); }
+  }, []);
+
+  useEffect(() => { loadClients(); }, [loadClients]);
+
+  const filtered = clients.filter(c =>
+    !search || c.name.includes(search) || c.contact.includes(search) || c.phone.includes(search)
+  );
+
+  const stats = {
+    total: clients.length,
+    active: clients.filter(c => c.status === 'active').length,
+    newThisMonth: clients.filter(c => c.createdAt?.startsWith('2026-05')).length,
+    expiringContracts: clients.filter(c => c.status === 'active').length,
+  };
+
+  const openCreate = () => {
+    setEditingClient(null);
+    form.resetFields();
+    setModalVisible(true);
+  };
+
+  const openEdit = (client: Client) => {
+    setEditingClient(client);
+    form.setFieldsValue(client);
+    setModalVisible(true);
+  };
+
+  const handleSave = async (values: any) => {
+    const isEdit = !!editingClient;
+    const url = isEdit ? api(`/clients/${editingClient!.id}`) : api('/clients');
+    const method = isEdit ? 'PUT' : 'POST';
+    try {
+      const res = await fetch(url, {
+        method, headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+      });
+      const json = await res.json();
+      if (json.code === 200) {
+        message.success(isEdit ? '客户信息已更新' : '客户已创建');
+        setModalVisible(false);
+        loadClients();
+      }
+    } catch { message.error('保存失败'); }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await fetch(api(`/clients/${id}`), { method: 'DELETE' });
+      const json = await res.json();
+      if (json.code === 200) {
+        message.success('客户已删除');
+        loadClients();
+      }
+    } catch { message.error('删除失败'); }
+  };
+
+  const columns = [
+    { title: '客户名称', dataIndex: 'name', key: 'name', render: (n: string, r: Client) =>
+      <a onClick={() => { setSelected(r); setDrawerVisible(true); }}>{n}</a>
+    },
+    { title: '类型', dataIndex: 'type', render: (t: string) => <Tag color={typeColor[t]}>{t}</Tag> },
+    { title: '行业', dataIndex: 'industry' },
+    { title: '联系人', dataIndex: 'contact' },
+    { title: '电话', dataIndex: 'phone' },
+    { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={statusColor[s]}>{statusLabel[s]}</Tag> },
+    { title: '信用', dataIndex: 'credit', render: (c: string) => <Tag color={creditColor[c]}>{c}</Tag> },
+    { title: '样品数', dataIndex: 'samples' },
+    { title: '操作', render: (_: any, r: Client) => (
+      <Space size="small">
+        <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawerVisible(true); }}>查看</Button>
+        <Button type="link" size="small" icon={<EditOutlined />} onClick={() => openEdit(r)}>编辑</Button>
+        <Popconfirm title="确认删除此客户？" onConfirm={() => handleDelete(r.id)}>
+          <Button type="link" size="small" danger icon={<DeleteOutlined />}>删除</Button>
+        </Popconfirm>
+      </Space>
+    )},
+  ];
 
   return (
     <div>
       <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
         <Col><Title level={4} style={{ margin: 0 }}>客户管理</Title></Col>
-        <Col><Button type="primary" icon={<PlusOutlined />}>新增客户</Button></Col>
+        <Col><Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>新增客户</Button></Col>
       </Row>
 
       <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-        <Col xs={12} sm={6}><Card><Statistic title="客户总数" value={clients.length} /></Card></Col>
-        <Col xs={12} sm={6}><Card><Statistic title="活跃客户" value={clients.filter(c => c.status === 'active').length} valueStyle={{ color: '#52c41a' }} /></Card></Col>
-        <Col xs={12} sm={6}><Card><Statistic title="本月新增" value={2} valueStyle={{ color: '#1677ff' }} /></Card></Col>
-        <Col xs={12} sm={6}><Card><Statistic title="即将到期合同" value={3} valueStyle={{ color: '#faad14' }} /></Card></Col>
+        <Col xs={12} sm={6}><Card><Statistic title="客户总数" value={stats.total} /></Card></Col>
+        <Col xs={12} sm={6}><Card><Statistic title="活跃客户" value={stats.active} valueStyle={{ color: '#52c41a' }} /></Card></Col>
+        <Col xs={12} sm={6}><Card><Statistic title="本月新增" value={stats.newThisMonth} valueStyle={{ color: '#1677ff' }} /></Card></Col>
+        <Col xs={12} sm={6}><Card><Statistic title="活跃合同" value={stats.expiringContracts} valueStyle={{ color: '#faad14' }} /></Card></Col>
       </Row>
 
       <Card>
         <Space style={{ marginBottom: 16 }}>
-          <Input placeholder="搜索客户名称" prefix={<SearchOutlined />} style={{ width: 200 }} allowClear />
-          <Select placeholder="客户类型" style={{ width: 120 }} allowClear>
-            {['企业', '政府', '个人'].map(t => <Select.Option key={t}>{t}</Select.Option>)}
+          <Input placeholder="搜索名称/联系人/电话" prefix={<SearchOutlined />} value={search}
+            onChange={e => setSearch(e.target.value)} style={{ width: 240 }} allowClear />
+          <Select placeholder="类型" style={{ width: 100 }} allowClear>
+            {['企业','政府','个人'].map(t => <Option key={t}>{t}</Option>)}
           </Select>
-          <Select placeholder="合作状态" style={{ width: 120 }} allowClear>
-            {['active', 'pending', 'suspended'].map(s => <Select.Option key={s}>{statusLabel[s]}</Select.Option>)}
+          <Select placeholder="状态" style={{ width: 100 }} allowClear>
+            {['active','pending','suspended'].map(s => <Option key={s}>{statusLabel[s]}</Option>)}
           </Select>
         </Space>
-        <Table dataSource={clients} rowKey="id" columns={[
-          { title: '客户编号', dataIndex: 'id', key: 'id', render: (id: string) => <Text code>{id.toUpperCase()}</Text> },
-          { title: '客户名称', dataIndex: 'name', key: 'name', render: (name: string, r: any) => <a onClick={() => { setSelected(r); setDrawerVisible(true); }}>{name}</a> },
-          { title: '类型', dataIndex: 'type', key: 'type', render: (t: string) => <Tag color={typeColor[t]}>{t}</Tag> },
-          { title: '行业', dataIndex: 'industry', key: 'industry' },
-          { title: '联系人', dataIndex: 'contact', key: 'contact' },
-          { title: '联系电话', dataIndex: 'phone', key: 'phone' },
-          { title: '合作状态', dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={statusColor[s]}>{statusLabel[s]}</Tag> },
-          { title: '累计样品', dataIndex: 'samples', key: 'samples' },
-          { title: '信用等级', dataIndex: 'credit', key: 'credit', render: (c: string) => <Tag color={creditColor[c]}>{c}</Tag> },
-          { title: '操作', key: 'action', render: (_: any, r: any) => <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawerVisible(true); }}>查看</Button> },
-        ]} pagination={{ pageSize: 10 }} size="middle" />
+        <Table dataSource={filtered} rowKey="id" loading={loading} columns={columns} pagination={{ pageSize: 10 }} size="middle" />
       </Card>
 
-      <Drawer title={selected?.name} open={drawerVisible} onClose={() => { setDrawerVisible(false); setSelected(null); }} width={400}>
+      {/* Detail Drawer */}
+      <Drawer title={selected?.name} open={drawerVisible} onClose={() => { setDrawerVisible(false); setSelected(null); }} width={420}>
         {selected && (
           <>
-          <Descriptions column={1} bordered size="small">
-            <Descriptions.Item label="客户名称">{selected.name}</Descriptions.Item>
-            <Descriptions.Item label="类型"><Tag color={typeColor[selected.type]}>{selected.type}</Tag></Descriptions.Item>
-            <Descriptions.Item label="行业">{selected.industry}</Descriptions.Item>
-            <Descriptions.Item label="联系人">{selected.contact}</Descriptions.Item>
-            <Descriptions.Item label="电话">{selected.phone}</Descriptions.Item>
-            <Descriptions.Item label="合作状态"><Tag color={statusColor[selected.status]}>{statusLabel[selected.status]}</Tag></Descriptions.Item>
-            <Descriptions.Item label="信用等级"><Tag color={creditColor[selected.credit]}>{selected.credit}</Tag></Descriptions.Item>
-            <Descriptions.Item label="累计样品">{selected.samples}</Descriptions.Item>
-          </Descriptions>
-          <Tabs style={{marginTop:16}} items={[
-            {key:'projects', label:<span><ExperimentOutlined /> 委托项目</span>, children:<Table dataSource={[{no:'PROJ-2025-001',name:'地表水监测',amount:'¥150,000',status:'进行中'}]} rowKey="no" pagination={false} size="small" columns={[{title:'项目编号',dataIndex:'no'},{title:'名称',dataIndex:'name'},{title:'金额',dataIndex:'amount'},{title:'状态',dataIndex:'status',render:(s:string)=> <Tag color="green">{s}</Tag>}]} />},
-            {key:'samples', label:<span><FileTextOutlined /> 历史样品</span>, children:<Table dataSource={[{no:'SMP20240521001',name:'地表水样品',date:'2024-05-21',status:'检测中'}]} rowKey="no" pagination={false} size="small" columns={[{title:'编号',dataIndex:'no'},{title:'名称',dataIndex:'name'},{title:'日期',dataIndex:'date'},{title:'状态',dataIndex:'status'}]} />},
-            {key:'reports', label:<span><TeamOutlined /> 历史报告</span>, children:<Text type="secondary">暂无报告记录</Text>},
-          ]} />
+            <Descriptions column={1} bordered size="small">
+              <Descriptions.Item label="客户名称">{selected.name}</Descriptions.Item>
+              <Descriptions.Item label="简称">{selected.shortName || '-'}</Descriptions.Item>
+              <Descriptions.Item label="类型"><Tag color={typeColor[selected.type]}>{selected.type}</Tag></Descriptions.Item>
+              <Descriptions.Item label="行业">{selected.industry}</Descriptions.Item>
+              <Descriptions.Item label="联系人">{selected.contact}</Descriptions.Item>
+              <Descriptions.Item label="电话">{selected.phone}</Descriptions.Item>
+              <Descriptions.Item label="邮箱">{selected.email || '-'}</Descriptions.Item>
+              <Descriptions.Item label="地址">{selected.address || '-'}</Descriptions.Item>
+              <Descriptions.Item label="来源">{selected.source || '-'}</Descriptions.Item>
+              <Descriptions.Item label="信用"><Tag color={creditColor[selected.credit]}>{selected.credit}</Tag></Descriptions.Item>
+              <Descriptions.Item label="状态"><Tag color={statusColor[selected.status]}>{statusLabel[selected.status]}</Tag></Descriptions.Item>
+            </Descriptions>
+            <Tabs style={{ marginTop: 16 }} items={[
+              { key: 'contracts', label: <span><FileTextOutlined /> 合同</span>, children: <Text type="secondary">合同列表（待集成）</Text> },
+              { key: 'orders', label: <span><ExperimentOutlined /> 委托单</span>, children: <Text type="secondary">委托记录（待集成）</Text> },
+              { key: 'samples', label: <span><TeamOutlined /> 历史样品</span>, children: <Text type="secondary">样品记录（待集成）</Text> },
+            ]} />
           </>
         )}
       </Drawer>
+
+      {/* Create/Edit Modal */}
+      <Modal
+        title={editingClient ? '编辑客户' : '新增客户'}
+        open={modalVisible}
+        onOk={() => form.submit()}
+        onCancel={() => setModalVisible(false)}
+        width={560}
+      >
+        <Form form={form} layout="vertical" onFinish={handleSave} initialValues={{ type: '企业', credit: 'B', status: 'active', source: '自行开发' }}>
+          <Row gutter={16}>
+            <Col span={12}><Form.Item name="name" label="客户名称" rules={[{ required: true }]}><Input /></Form.Item></Col>
+            <Col span={12}><Form.Item name="shortName" label="简称"><Input /></Form.Item></Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={8}><Form.Item name="type" label="类型"><Select>{['企业','政府','个人'].map(t => <Option key={t}>{t}</Option>)}</Select></Form.Item></Col>
+            <Col span={8}><Form.Item name="industry" label="行业"><Input /></Form.Item></Col>
+            <Col span={8}><Form.Item name="source" label="客户来源"><Select>{['自行开发','客户推荐','展会','线上渠道','其他'].map(s => <Option key={s}>{s}</Option>)}</Select></Form.Item></Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={8}><Form.Item name="contact" label="联系人" rules={[{ required: true }]}><Input /></Form.Item></Col>
+            <Col span={8}><Form.Item name="phone" label="电话" rules={[{ required: true }]}><Input /></Form.Item></Col>
+            <Col span={8}><Form.Item name="email" label="邮箱"><Input /></Form.Item></Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}><Form.Item name="address" label="地址"><Input /></Form.Item></Col>
+            <Col span={6}><Form.Item name="credit" label="信用等级"><Select>{['A','B','C'].map(c => <Option key={c}>{c}</Option>)}</Select></Form.Item></Col>
+            <Col span={6}><Form.Item name="status" label="状态"><Select>{['active','pending','suspended'].map(s => <Option key={s}>{statusLabel[s]}</Option>)}</Select></Form.Item></Col>
+          </Row>
+        </Form>
+      </Modal>
     </div>
   );
 };

@@ -102,6 +102,65 @@ const mockFieldSamples: any[] = [
   },
 ];
 
+const mockClients = [
+  { id: "c1", name: "绿源环保科技有限公司", shortName: "绿源环保", type: "企业", industry: "环保", contact: "王经理", phone: "138-0001-1234", email: "wang@lyep.com", address: "杭州市西湖区文一路88号", credit: "A", status: "active", source: "自行开发", samples: 248, contracts: 3, createdAt: "2024-01-15", updatedAt: "2026-05-01" },
+  { id: "c2", name: "博克水务集团", shortName: "博克水务", type: "企业", industry: "水务", contact: "李主任", phone: "139-0002-5678", email: "li@bksw.com", address: "上海市浦东新区张江路100号", credit: "A", status: "active", source: "客户推荐", samples: 196, contracts: 5, createdAt: "2024-03-01", updatedAt: "2026-04-28" },
+  { id: "c3", name: "清源化工有限公司", shortName: "清源化工", type: "企业", industry: "化工", contact: "赵总", phone: "137-0003-9012", email: "zhao@qyhg.cn", credit: "B", status: "active", source: "展会", samples: 128, contracts: 2, createdAt: "2024-06-10", updatedAt: "2026-05-05" },
+  { id: "c4", name: "蓝天环境监测站", shortName: "蓝天监测", type: "政府", industry: "环保", contact: "刘站长", phone: "136-0004-3456", email: "liu@lthj.gov.cn", credit: "A", status: "active", source: "招投标", samples: 96, contracts: 1, createdAt: "2024-08-20", updatedAt: "2026-03-15" },
+  { id: "c5", name: "宏达食品有限公司", shortName: "宏达食品", type: "企业", industry: "食品", contact: "陈经理", phone: "135-0005-7890", email: "chen@hdship.com", credit: "B", status: "active", source: "自行开发", samples: 78, contracts: 2, createdAt: "2025-01-05", updatedAt: "2026-04-20" },
+  { id: "c6", name: "康源医药集团", shortName: "康源医药", type: "企业", industry: "医药", contact: "孙经理", phone: "133-0007-6789", email: "sun@kyyy.com", credit: "C", status: "suspended", source: "线上渠道", samples: 54, contracts: 1, createdAt: "2025-03-12", updatedAt: "2026-02-01" },
+];
+
+let _mockQuotations: any[] = [];
+let _mockOrders: any[] = [];
+
+const clientsHandlers = [
+  http.get(apiUrl('/clients'), () => HttpResponse.json({ code: 200, data: { list: mockClients, total: mockClients.length } })),
+  http.post(apiUrl('/clients'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const newClient = { id: `c${Date.now()}`, ...body, samples: 0, contracts: 0, createdAt: new Date().toISOString().slice(0, 10), updatedAt: new Date().toISOString().slice(0, 10) };
+    mockClients.push(newClient);
+    return HttpResponse.json({ code: 200, message: 'success', data: newClient });
+  }),
+  http.put(apiUrl('/clients/:id'), async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    const idx = mockClients.findIndex((c: any) => c.id === params.id);
+    if (idx === -1) return HttpResponse.json({ code: 404, message: '客户不存在' }, { status: 404 });
+    mockClients[idx] = { ...mockClients[idx], ...body, updatedAt: new Date().toISOString().slice(0, 10) };
+    return HttpResponse.json({ code: 200, message: 'success', data: mockClients[idx] });
+  }),
+  http.delete(apiUrl('/clients/:id'), ({ params }) => {
+    const idx = mockClients.findIndex((c: any) => c.id === params.id);
+    if (idx >= 0) mockClients.splice(idx, 1);
+    return HttpResponse.json({ code: 200, message: 'success' });
+  }),
+];
+
+const quotationsHandlers = [
+  http.get(apiUrl('/quotations'), () => HttpResponse.json({ code: 200, data: { list: _mockQuotations, total: _mockQuotations.length } })),
+  http.post(apiUrl('/quotations'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const newQ = { id: `q${Date.now()}`, no: `Q-${new Date().getFullYear()}-${String(_mockQuotations.length + 1).padStart(3, '0')}`, ...body, createdAt: new Date().toISOString().slice(0, 10) };
+    _mockQuotations.push(newQ);
+    return HttpResponse.json({ code: 200, message: 'success', data: newQ });
+  }),
+  http.put(apiUrl('/quotations/:id'), async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    const idx = _mockQuotations.findIndex((q: any) => q.id === params.id);
+    if (idx >= 0) _mockQuotations[idx] = { ..._mockQuotations[idx], ...body };
+    return HttpResponse.json({ code: 200, message: 'success' });
+  }),
+];
+
+const ordersHandlers = [
+  http.get(apiUrl('/orders'), () => HttpResponse.json({ code: 200, data: { list: _mockOrders, total: _mockOrders.length } })),
+  http.post(apiUrl('/orders'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const newOrder = { id: `o${Date.now()}`, no: `ORD-${new Date().getFullYear()}-${String(_mockOrders.length + 1).padStart(3, '0')}`, ...body, paidAmount: 0, samples: [], createdAt: new Date().toISOString().slice(0, 10), updatedAt: new Date().toISOString().slice(0, 10) };
+    _mockOrders.push(newOrder);
+    return HttpResponse.json({ code: 200, message: 'success', data: newOrder });
+  }),
+];
 const mobileSamplingHandlers = [
   http.get(apiUrl('/mobile/sampling-tasks'), ({ request }) => {
     const userId = new URL(request.url).searchParams.get('userId') || '';
@@ -1291,5 +1350,8 @@ export const handlers = [
     return HttpResponse.json({ code: 200, message: 'success' });
   }),
   ...mobileSamplingHandlers,
+  ...clientsHandlers,
+  ...quotationsHandlers,
+  ...ordersHandlers,
 ];
 
