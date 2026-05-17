@@ -54,7 +54,7 @@ interface Alert {
 
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation(['dashboard', 'common']);
+  const { t } = useTranslation(['common', 'dashboard']);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [workspaceOpen, setWorkspaceOpen] = useState(false);
   const [visibleWidgets, setVisibleWidgets] = useState<string[]>(

@@ -164,7 +164,7 @@ export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const login = useAuthStore((s) => s.login);
   const [form] = Form.useForm();
-  const { t } = useTranslation(['login', 'common']);
+  const { t } = useTranslation(['common', 'login']);
 
   useEffect(() => {
     form.setFieldsValue({ role: selectedRole, username: roleCreds[selectedRole].username, password: roleCreds[selectedRole].password });
