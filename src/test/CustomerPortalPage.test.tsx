@@ -1,34 +1,17 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, waitFor } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
+import { render, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { CustomerPortalPage } from '../pages/CustomerPortalPage';
 
 describe('CustomerPortalPage', () => {
-  let fetchSpy: ReturnType<typeof vi.spyOn>;
-
-  beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({ code: 200, data: [], message: 'success' }),
-    } as Response);
+  it('renders and shows orders', () => {
+    const { container } = render(<BrowserRouter><ConfigProvider><CustomerPortalPage /></ConfigProvider></BrowserRouter>);
+    expect(container.textContent).toContain('在线委托');
   });
 
-  afterEach(() => {
-    fetchSpy.mockRestore();
-  });
-
-  it('renders without crashing', async () => {
-    render(
-      <BrowserRouter>
-        <ConfigProvider>
-          <CustomerPortalPage />
-        </ConfigProvider>
-      </BrowserRouter>
-    );
-    await waitFor(() => {
-      expect(document.body.textContent).toBeTruthy();
-    }, { timeout: 2000 });
+  it('shows orders table', () => {
+    const { container } = render(<BrowserRouter><ConfigProvider><CustomerPortalPage /></ConfigProvider></BrowserRouter>);
+    expect(container.textContent).toContain('WT-2025-001');
   });
 });

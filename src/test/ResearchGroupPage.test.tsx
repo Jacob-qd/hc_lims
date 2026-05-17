@@ -1,34 +1,17 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { render, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { ResearchGroupPage } from '../pages/ResearchGroupPage';
 
 describe('ResearchGroupPage', () => {
-  let fetchSpy: ReturnType<typeof vi.spyOn>;
-
-  beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({ code: 200, data: [], message: 'success' }),
-    } as Response);
+  it('renders and shows groups', () => {
+    const { container } = render(<BrowserRouter><ConfigProvider><ResearchGroupPage /></ConfigProvider></BrowserRouter>);
+    expect(container.textContent).toContain('环境分析课题组');
   });
 
-  afterEach(() => {
-    fetchSpy.mockRestore();
-  });
-
-  it('renders without crashing', async () => {
-    render(
-      <BrowserRouter>
-        <ConfigProvider>
-          <ResearchGroupPage />
-        </ConfigProvider>
-      </BrowserRouter>
-    );
-    await waitFor(() => {
-      expect(document.body.textContent).toBeTruthy();
-    }, { timeout: 2000 });
+  it('renders stats', () => {
+    const { container } = render(<BrowserRouter><ConfigProvider><ResearchGroupPage /></ConfigProvider></BrowserRouter>);
+    expect(container.textContent).toContain('PI');
   });
 });
