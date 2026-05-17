@@ -62,8 +62,8 @@ export const CustomerPortalPage: React.FC = () => {
   
   const [activeTab, setActiveTab] = useState('home');
   const [trackNo, setTrackNo] = useState('');
-  const [trackResult, setTrackResult] = useState<unknown>(null);
-  const [orderDetail, setOrderDetail] = useState<unknown>(null);
+  const [trackResult, setTrackResult] = useState<LooseAny>(null);
+  const [orderDetail, setOrderDetail] = useState<LooseAny>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [newOrderForm] = Form.useForm();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -223,7 +223,7 @@ export const CustomerPortalPage: React.FC = () => {
                     },
                     {
                       title: '操作', width: 120,
-                      render: (_: string, r: Record<string, unknown>) => (
+                      render: (_: string, r: Record<string, LooseAny>) => (
                         <Button type="link" size="small" icon={<EyeOutlined />}
                           onClick={() => { setOrderDetail(r); setDetailOpen(true); }}>
                           详情

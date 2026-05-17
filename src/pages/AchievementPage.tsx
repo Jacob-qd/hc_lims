@@ -71,7 +71,7 @@ export const AchievementPage: React.FC = () => {
           { title: 'DOI', dataIndex: 'doi', render: (d: string) => <Text code style={{ fontSize: 11 }}>{d}</Text> },
           { title: '关联项目', dataIndex: 'project' },
           { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={s === 'published' ? 'green' : 'orange'}>{s === 'published' ? '已发表' : '审核中'}</Tag> },
-          { title: '操作', render: (_: unknown, r: Publication) => (
+          { title: '操作', render: (_: LooseAny, r: Publication) => (
             <Space><Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawer(true); }} />
             <Tooltip title="导出数据"><Button type="link" size="small" icon={<DownloadOutlined />} /></Tooltip></Space>
           )},
@@ -93,7 +93,7 @@ export const AchievementPage: React.FC = () => {
             { key: 'data', label: '关联实验数据', children: (
               <Table dataSource={[{exp:'二维材料表面改性测试',date:'2024-05-20',type:'XPS/AFM数据'},{exp:'标准曲线测定',date:'2024-05-15',type:'光谱数据'}]} rowKey="exp" pagination={false} size="small" columns={[
                 {title:'实验名称',dataIndex:'exp'},{title:'日期',dataIndex:'date'},{title:'数据类型',dataIndex:'type'},
-                {title:'操作',render:(_:unknown, r: ExperimentData) => <Button type="link" size="small" icon={<DownloadOutlined />} onClick={() => exportCSV([{实验名称:r.exp,日期:r.date,数据类型:r.type}], r.exp)}>导出</Button>},
+                {title:'操作',render:(_:LooseAny, r: ExperimentData) => <Button type="link" size="small" icon={<DownloadOutlined />} onClick={() => exportCSV([{实验名称:r.exp,日期:r.date,数据类型:r.type}], r.exp)}>导出</Button>},
               ]} />
             )},
             { key: 'export', label: '数据导出', children: (

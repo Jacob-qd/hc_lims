@@ -93,7 +93,7 @@ const mockSamplingTasks = [
   },
 ];
 
-const mockFieldSamples: Record<string, unknown>[] = [
+const mockFieldSamples: LooseAny[] = [
   {
     id: 'fs1', sampleNo: 'FS-20260517-001', taskId: 'st1', pointId: 'sp1',
     name: '东湖入口-1', sampleType: '地表水',
@@ -113,26 +113,26 @@ const mockClients = [
   { id: "c6", name: "康源医药集团", shortName: "康源医药", type: "企业", industry: "医药", contact: "孙经理", phone: "133-0007-6789", email: "sun@kyyy.com", credit: "C", status: "suspended", source: "线上渠道", samples: 54, contracts: 1, createdAt: "2025-03-12", updatedAt: "2026-02-01" },
 ];
 
-const _mockQuotations: Record<string, unknown>[] = [];
-const _mockOrders: Record<string, unknown>[] = [];
+const _mockQuotations: LooseAny[] = [];
+const _mockOrders: LooseAny[] = [];
 
 const clientsHandlers = [
   http.get(apiUrl('/clients'), () => HttpResponse.json({ code: 200, data: { list: mockClients, total: mockClients.length } })),
   http.post(apiUrl('/clients'), async ({ request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const newClient = { id: `c${Date.now()}`, ...body, samples: 0, contracts: 0, createdAt: new Date().toISOString().slice(0, 10), updatedAt: new Date().toISOString().slice(0, 10) };
     mockClients.push(newClient);
     return HttpResponse.json({ code: 200, message: 'success', data: newClient });
   }),
   http.put(apiUrl('/clients/:id'), async ({ params, request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
-    const idx = mockClients.findIndex((c: Record<string, unknown>) => c.id === params.id);
+    const body = (await request.json()) as LooseAny;
+    const idx = mockClients.findIndex((c: LooseAny) => c.id === params.id);
     if (idx === -1) return HttpResponse.json({ code: 404, message: '客户不存在' }, { status: 404 });
     mockClients[idx] = { ...mockClients[idx], ...body, updatedAt: new Date().toISOString().slice(0, 10) };
     return HttpResponse.json({ code: 200, message: 'success', data: mockClients[idx] });
   }),
   http.delete(apiUrl('/clients/:id'), ({ params }) => {
-    const idx = mockClients.findIndex((c: Record<string, unknown>) => c.id === params.id);
+    const idx = mockClients.findIndex((c: LooseAny) => c.id === params.id);
     if (idx >= 0) mockClients.splice(idx, 1);
     return HttpResponse.json({ code: 200, message: 'success' });
   }),
@@ -141,14 +141,14 @@ const clientsHandlers = [
 const quotationsHandlers = [
   http.get(apiUrl('/quotations'), () => HttpResponse.json({ code: 200, data: { list: _mockQuotations, total: _mockQuotations.length } })),
   http.post(apiUrl('/quotations'), async ({ request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const newQ = { id: `q${Date.now()}`, no: `Q-${new Date().getFullYear()}-${String(_mockQuotations.length + 1).padStart(3, '0')}`, ...body, createdAt: new Date().toISOString().slice(0, 10) };
     _mockQuotations.push(newQ);
     return HttpResponse.json({ code: 200, message: 'success', data: newQ });
   }),
   http.put(apiUrl('/quotations/:id'), async ({ params, request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
-    const idx = _mockQuotations.findIndex((q: Record<string, unknown>) => q.id === params.id);
+    const body = (await request.json()) as LooseAny;
+    const idx = _mockQuotations.findIndex((q: LooseAny) => q.id === params.id);
     if (idx >= 0) _mockQuotations[idx] = { ..._mockQuotations[idx], ...body };
     return HttpResponse.json({ code: 200, message: 'success' });
   }),
@@ -157,7 +157,7 @@ const quotationsHandlers = [
 const ordersHandlers = [
   http.get(apiUrl('/orders'), () => HttpResponse.json({ code: 200, data: { list: _mockOrders, total: _mockOrders.length } })),
   http.post(apiUrl('/orders'), async ({ request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const newOrder = { id: `o${Date.now()}`, no: `ORD-${new Date().getFullYear()}-${String(_mockOrders.length + 1).padStart(3, '0')}`, ...body, paidAmount: 0, samples: [], createdAt: new Date().toISOString().slice(0, 10), updatedAt: new Date().toISOString().slice(0, 10) };
     _mockOrders.push(newOrder);
     return HttpResponse.json({ code: 200, message: 'success', data: newOrder });
@@ -180,7 +180,7 @@ const mobileSamplingHandlers = [
     return HttpResponse.json({ code: 200, data: { list: mockFieldSamples, total: mockFieldSamples.length } });
   }),
   http.post(apiUrl('/mobile/field-samples'), async ({ request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const newSample = {
       id: `fs-${Date.now()}`,
       sampleNo: `FS-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${String(mockFieldSamples.length + 1).padStart(3,'0')}`,
@@ -324,7 +324,7 @@ export const handlers = [
   }),
 
   http.get(apiUrl('/samples/:id/detail'), ({ params }) => {
-    const detail = (mockSampleDetail as unknown)[params.id as string];
+    const detail = (mockSampleDetail as LooseAny)[params.id as string];
     if (!detail) {
       return HttpResponse.json({ code: 404, message: '样品详情不存在', data: null }, { status: 404 });
     }
@@ -332,7 +332,7 @@ export const handlers = [
   }),
 
   http.post(apiUrl('/samples'), async ({ request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const sampleNo = `SMP${new Date().toISOString().slice(0, 10).replace(/-/g, '')}${String(mockSamples.length + 1).padStart(3, '0')}`;
     const newSample = {
       id: `s${mockSamples.length + 1}`,
@@ -345,7 +345,7 @@ export const handlers = [
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    mockSamples.push(newSample as unknown);
+    mockSamples.push(newSample as LooseAny);
     // Auto-create COC chain
     const cocId = `coc${Date.now()}`;
     const samplingTime = (body.samplingTime as string) || new Date().toISOString();
@@ -370,7 +370,7 @@ export const handlers = [
       }],
       createdAt: new Date().toISOString(),
     };
-    mockCOCChains.push(cocChain as unknown);
+    mockCOCChains.push(cocChain as LooseAny);
     return HttpResponse.json({ code: 200, message: 'success', data: newSample });
   }),
 
@@ -399,14 +399,14 @@ export const handlers = [
   }),
 
   http.post(apiUrl('/tasks'), async ({ request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
-    const task: Record<string, unknown> = { id: 'tk' + Date.now(), taskNo: 'TK-2025-' + String(mockTasks.length + 1).padStart(3, '0'), ...body, createdAt: new Date().toISOString().slice(0, 10), updatedAt: new Date().toISOString().slice(0, 10) };
+    const body = (await request.json()) as LooseAny;
+    const task: LooseAny = { id: 'tk' + Date.now(), taskNo: 'TK-2025-' + String(mockTasks.length + 1).padStart(3, '0'), ...body, createdAt: new Date().toISOString().slice(0, 10), updatedAt: new Date().toISOString().slice(0, 10) };
     mockTasks.push(task);
     return HttpResponse.json({ code: 200, data: task, message: '创建成功' });
   }),
 
   http.post(apiUrl('/tasks/:id/assign'), async ({ params, request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const task = mockTasks.find(t => t.id === params.id);
     if (task) { task.analystId = body.analystId; task.analystName = body.analystName; task.instrumentId = body.instrumentId; task.instrumentName = body.instrumentName; task.plannedStart = body.plannedStart; task.plannedEnd = body.plannedEnd; task.status = 'pending'; task.statusLabel = '待检测'; }
     return HttpResponse.json({ code: 200, message: '分配成功' });
@@ -453,13 +453,13 @@ export const handlers = [
   }),
 
   http.put(apiUrl('/reports/:id'), async ({ request, params }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const idx = mockReports.findIndex((r) => r.id === params.id);
     if (idx === -1) {
       return HttpResponse.json({ code: 404, message: '报告不存在', data: null }, { status: 404 });
     }
     const updated = { ...mockReports[idx], ...body, updatedAt: new Date().toISOString().replace('T', ' ').slice(0, 19) };
-    mockReports[idx] = updated as unknown;
+    mockReports[idx] = updated as LooseAny;
     return HttpResponse.json({ code: 200, message: 'success', data: updated });
   }),
 
@@ -469,7 +469,7 @@ export const handlers = [
   }),
 
   http.post(apiUrl('/reports/:id/review'), async ({ request, params }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const report = mockReports.find((r) => r.id === params.id);
     if (!report) {
       return HttpResponse.json({ code: 404, message: '报告不存在', data: null }, { status: 404 });
@@ -479,12 +479,12 @@ export const handlers = [
       ...body,
       reviewedAt: new Date().toISOString().replace('T', ' ').slice(0, 19),
     };
-    report.reviews.push(newReview as unknown);
+    report.reviews.push(newReview as LooseAny);
     return HttpResponse.json({ code: 200, message: 'success', data: newReview });
   }),
 
   http.post(apiUrl('/reports/:id/sign'), async ({ request, params }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const report = mockReports.find((r) => r.id === params.id);
     if (!report) {
       return HttpResponse.json({ code: 404, message: '报告不存在', data: null }, { status: 404 });
@@ -494,12 +494,12 @@ export const handlers = [
       ...body,
       signedAt: new Date().toISOString().replace('T', ' ').slice(0, 19),
     };
-    report.signatures.push(newSig as unknown);
+    report.signatures.push(newSig as LooseAny);
     return HttpResponse.json({ code: 200, message: 'success', data: newSig });
   }),
 
   http.post(apiUrl('/reports/:id/annotations'), async ({ request, params }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const report = mockReports.find((r) => r.id === params.id);
     if (!report) {
       return HttpResponse.json({ code: 404, message: '报告不存在', data: null }, { status: 404 });
@@ -511,7 +511,7 @@ export const handlers = [
       status: 'open',
       replies: [],
     };
-    report.annotations.push(newAnn as unknown);
+    report.annotations.push(newAnn as LooseAny);
     return HttpResponse.json({ code: 200, message: 'success', data: newAnn });
   }),
 
@@ -591,11 +591,11 @@ export const handlers = [
     if (!instrument) return HttpResponse.json({ code: 404, message: '仪器不存在' });
     const calibrations = mockCalibrationRecords.filter(c => c.instrumentId === params.id);
     const maintenances = mockMaintenanceRecords.filter(m => m.instrumentId === params.id);
-    return HttpResponse.json({ code: 200, data: { ...(instrument as unknown), calibrations, maintenances } });
+    return HttpResponse.json({ code: 200, data: { ...(instrument as LooseAny), calibrations, maintenances } });
   }),
 
   http.post(apiUrl('/instruments'), async ({ request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const newInstrument = { id: `i${mockInstruments.length + 1}`, ...body, connectionStatus: 'online', utilization: 0 };
     mockInstruments.push(newInstrument);
     return HttpResponse.json({ code: 200, data: newInstrument, message: '创建成功' });
@@ -625,7 +625,7 @@ export const handlers = [
   // ===== Research Module Handlers =====
   http.get(apiUrl('/research/projects'), () => HttpResponse.json({ code: 200, data: { list: mockResearchProjects } })),
   http.post(apiUrl('/research/projects'), async ({ request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const item = { id: 'rp' + Date.now(), ...body };
     mockResearchProjects.push(item);
     return HttpResponse.json({ code: 200, data: item, message: '创建成功' });
@@ -633,7 +633,7 @@ export const handlers = [
 
   http.get(apiUrl('/research/eln-entries'), () => HttpResponse.json({ code: 200, data: { list: mockELNEntries } })),
   http.post(apiUrl('/research/eln-entries'), async ({ request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const item = { id: 'eln' + Date.now(), no: 'ELN' + new Date().toISOString().slice(0,10).replace(/-/g,''), status: 'draft', tags: [], ...body };
     mockELNEntries.push(item);
     return HttpResponse.json({ code: 200, data: item, message: '创建成功' });
@@ -646,7 +646,7 @@ export const handlers = [
 
   http.get(apiUrl('/research/reservations'), () => HttpResponse.json({ code: 200, data: { list: mockReservations } })),
   http.post(apiUrl('/research/reservations'), async ({ request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const item = { id: 'res' + Date.now(), status: 'pending', fee: 0, ...body };
     mockReservations.push(item);
     return HttpResponse.json({ code: 200, data: item, message: '预约成功' });
@@ -686,37 +686,37 @@ export const handlers = [
   http.get(apiUrl('/field-configs'), ({ request }) => {
     const url = new URL(request.url);
     const module = url.searchParams.get('module') || 'sample';
-    const data = (mockFieldConfigs as unknown)[module] || [];
+    const data = (mockFieldConfigs as LooseAny)[module] || [];
     return HttpResponse.json({ code: 200, data: { list: data } });
   }),
   http.post(apiUrl('/field-configs'), async ({ request }) => {
-    const body = await request.json() as Record<string, unknown>;
+    const body = await request.json() as LooseAny;
     const module = body.module || 'sample';
-    if (!(mockFieldConfigs as unknown)[module]) (mockFieldConfigs as unknown)[module] = [];
-    const item = { id: 'fc' + Date.now(), sortOrder: ((mockFieldConfigs as unknown)[module]?.length || 0) + 1, active: true, ...body };
-    (mockFieldConfigs as unknown)[module].push(item);
+    if (!(mockFieldConfigs as LooseAny)[module]) (mockFieldConfigs as LooseAny)[module] = [];
+    const item = { id: 'fc' + Date.now(), sortOrder: ((mockFieldConfigs as LooseAny)[module]?.length || 0) + 1, active: true, ...body };
+    (mockFieldConfigs as LooseAny)[module].push(item);
     return HttpResponse.json({ code: 200, data: item, message: '字段创建成功' });
   }),
   http.put(apiUrl('/field-configs/:id'), async ({ params, request }) => {
-    const body = await request.json() as Record<string, unknown>;
+    const body = await request.json() as LooseAny;
     for (const mod of Object.keys(mockFieldConfigs)) {
-      const idx = (mockFieldConfigs as unknown)[mod].findIndex((f: Record<string, unknown>) => f.id === params.id);
-      if (idx >= 0) { (mockFieldConfigs as unknown)[mod][idx] = { ...(mockFieldConfigs as unknown)[mod][idx], ...body }; break; }
+      const idx = (mockFieldConfigs as LooseAny)[mod].findIndex((f: LooseAny) => f.id === params.id);
+      if (idx >= 0) { (mockFieldConfigs as LooseAny)[mod][idx] = { ...(mockFieldConfigs as LooseAny)[mod][idx], ...body }; break; }
     }
     return HttpResponse.json({ code: 200, message: '字段更新成功' });
   }),
   http.delete(apiUrl('/field-configs/:id'), ({ params }) => {
     for (const mod of Object.keys(mockFieldConfigs)) {
-      const idx = (mockFieldConfigs as unknown)[mod].findIndex((f: Record<string, unknown>) => f.id === params.id);
-      if (idx >= 0) { (mockFieldConfigs as unknown)[mod].splice(idx, 1); break; }
+      const idx = (mockFieldConfigs as LooseAny)[mod].findIndex((f: LooseAny) => f.id === params.id);
+      if (idx >= 0) { (mockFieldConfigs as LooseAny)[mod].splice(idx, 1); break; }
     }
     return HttpResponse.json({ code: 200, message: '字段删除成功' });
   }),
   http.put(apiUrl('/field-configs/reorder'), async ({ request }) => {
-    const { module, orderedIds } = await request.json() as Record<string, unknown>;
-    const configs = (mockFieldConfigs as unknown)[module] || [];
+    const { module, orderedIds } = await request.json() as LooseAny;
+    const configs = (mockFieldConfigs as LooseAny)[module] || [];
     orderedIds.forEach((id: string, index: number) => {
-      const f = configs.find((c: Record<string, unknown>) => c.id === id);
+      const f = configs.find((c: LooseAny) => c.id === id);
       if (f) f.sortOrder = index + 1;
     });
     return HttpResponse.json({ code: 200, message: '排序更新成功' });
@@ -724,29 +724,29 @@ export const handlers = [
   http.get(apiUrl('/field-templates'), ({ request }) => {
     const url = new URL(request.url);
     const module = url.searchParams.get('module') || 'sample';
-    return HttpResponse.json({ code: 200, data: { list: mockFieldTemplates.filter((t: Record<string, unknown>) => t.module === module) } });
+    return HttpResponse.json({ code: 200, data: { list: mockFieldTemplates.filter((t: LooseAny) => t.module === module) } });
   }),
   http.post(apiUrl('/field-templates'), async ({ request }) => {
-    const body = await request.json() as Record<string, unknown>;
+    const body = await request.json() as LooseAny;
     const item = { id: 'tmpl' + Date.now(), version: 1, isSnapshot: false, createdAt: new Date().toISOString(), ...body };
     mockFieldTemplates.push(item);
     return HttpResponse.json({ code: 200, data: item, message: '模板创建成功' });
   }),
   http.put(apiUrl('/field-templates/:id'), async ({ params, request }) => {
-    const body = await request.json() as Record<string, unknown>;
-    const idx = mockFieldTemplates.findIndex((t: Record<string, unknown>) => t.id === params.id);
+    const body = await request.json() as LooseAny;
+    const idx = mockFieldTemplates.findIndex((t: LooseAny) => t.id === params.id);
     if (idx >= 0) mockFieldTemplates[idx] = { ...mockFieldTemplates[idx], ...body, version: mockFieldTemplates[idx].version + 1 };
     return HttpResponse.json({ code: 200, message: '模板更新成功' });
   }),
   http.post(apiUrl('/field-templates/:id/clone'), ({ params }) => {
-    const src = mockFieldTemplates.find((t: Record<string, unknown>) => t.id === params.id);
+    const src = mockFieldTemplates.find((t: LooseAny) => t.id === params.id);
     if (!src) return HttpResponse.json({ code: 404, message: '模板不存在' }, { status: 404 });
     const clone = { ...src, id: 'tmpl' + Date.now(), name: src.name + '(副本)', version: 1, isSnapshot: false, parentId: src.id, createdAt: new Date().toISOString() };
     mockFieldTemplates.push(clone);
     return HttpResponse.json({ code: 200, data: clone, message: '模板克隆成功' });
   }),
   http.post(apiUrl('/field-templates/:id/snapshot'), ({ params }) => {
-    const src = mockFieldTemplates.find((t: Record<string, unknown>) => t.id === params.id);
+    const src = mockFieldTemplates.find((t: LooseAny) => t.id === params.id);
     if (!src) return HttpResponse.json({ code: 404, message: '模板不存在' }, { status: 404 });
     const snapshot = { ...src, id: 'snap' + Date.now(), name: src.name + '(v' + src.version + ' 快照)', version: src.version, isSnapshot: true, createdAt: new Date().toISOString() };
     mockFieldTemplates.push(snapshot);
@@ -767,7 +767,7 @@ export const handlers = [
       : HttpResponse.json({ code: 404, message: '该样品暂无COC记录' }, { status: 404 });
   }),
   http.post(apiUrl('/coc/chains/:id/events'), async ({ params, request }) => {
-    const body = await request.json() as Record<string, unknown>;
+    const body = await request.json() as LooseAny;
     const chain = mockCOCChains.find(c => c.id === params.id);
     if (!chain) return HttpResponse.json({ code: 404, message: '链不存在' }, { status: 404 });
     if (chain.status === 'disposed') return HttpResponse.json({ code: 400, message: '样品已处置，不可添加事件' }, { status: 400 });
@@ -781,7 +781,7 @@ export const handlers = [
       metadata: body.metadata || {}, prevEventId: prevId,
       signature: body.signature,
     };
-    events.push(evt as unknown);
+    events.push(evt as LooseAny);
     // Auto verify integrity
     const check = verifyChainIntegrity(events as COCEvent[]);
     Object.assign(chain, { integrity: check.valid, integrityMsg: check.valid ? undefined : check.msg });
@@ -802,7 +802,7 @@ export const handlers = [
     return HttpResponse.json({ code: 200, data: { valid: check.valid, msg: check.msg }, message: check.valid ? '校验通过' : '链完整性异常' });
   }),
   http.post(apiUrl('/coc/transfer'), async ({ request }) => {
-    const body = await request.json() as Record<string, unknown>;
+    const body = await request.json() as LooseAny;
     const chain = mockCOCChains.find(c => c.id === body.chainId);
     if (!chain) return HttpResponse.json({ code: 404, message: '链不存在' }, { status: 404 });
     const events = chain.events || [];
@@ -837,7 +837,7 @@ export const handlers = [
     return HttpResponse.json({ code: 200, data: {}, message: '交接记录创建成功' });
   }),
   http.post(apiUrl('/coc/disposal'), async ({ request }) => {
-    const body = await request.json() as Record<string, unknown>;
+    const body = await request.json() as LooseAny;
     const chain = mockCOCChains.find(c => c.id === body.chainId);
     if (!chain) return HttpResponse.json({ code: 404, message: '链不存在' }, { status: 404 });
     const events = chain.events || [];
@@ -877,10 +877,10 @@ export const handlers = [
 
   http.get(apiUrl('/dynamic-render/:module/:templateId'), ({ params }) => {
     const { module, templateId } = params;
-    const tmpl = mockFieldTemplates.find((t: Record<string, unknown>) => t.id === templateId);
-    const configs = tmpl?.fieldConfigs || (mockFieldConfigs as unknown)[module as string] || [];
-    const groups: Record<string, unknown[]> = {};
-    configs.filter((f: Record<string, unknown>) => f.active !== false).sort((a: Record<string, unknown>, b: Record<string, unknown>) => a.sortOrder - b.sortOrder).forEach((f: Record<string, unknown>) => {
+    const tmpl = mockFieldTemplates.find((t: LooseAny) => t.id === templateId);
+    const configs = tmpl?.fieldConfigs || (mockFieldConfigs as LooseAny)[module as string] || [];
+    const groups: Record<string, LooseAny[]> = {};
+    configs.filter((f: LooseAny) => f.active !== false).sort((a: Record<string, LooseAny>, b: Record<string, LooseAny>) => a.sortOrder - b.sortOrder).forEach((f: LooseAny) => {
       const g = f.groupName || '默认分组';
       if (!groups[g]) groups[g] = [];
       groups[g].push({
@@ -899,14 +899,14 @@ export const handlers = [
 
   // POST /api/v1/signatures - Create a digital signature
   http.post(apiUrl('/signatures'), async ({ request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const { documentId, documentType, meaning, password, meaningStatement } = body;
 
     if (!password || password !== '123456') {
       return HttpResponse.json({ code: 401, message: '签名密码错误', data: null }, { status: 401 });
     }
 
-    const report = mockReports.find((r: Record<string, unknown>) => r.id === documentId);
+    const report = mockReports.find((r: LooseAny) => r.id === documentId);
     if (!report) {
       return HttpResponse.json({ code: 404, message: '文档不存在', data: null }, { status: 404 });
     }
@@ -916,19 +916,19 @@ export const handlers = [
 
     // Find user certificate
     const currentUserId = '3';
-    const cert = mockSm2Certificates.find((c: Record<string, unknown>) => c.userId === currentUserId && c.status === 'active');
+    const cert = mockSm2Certificates.find((c: LooseAny) => c.userId === currentUserId && c.status === 'active');
 
     // Build signature payload
     const sigContent = `${documentHash}|${currentUserId}|${meaning}|${new Date().toISOString()}`;
     const sigValue = mockSm2Sign(sigContent, 'mock-private-key');
 
     // Find previous signature for chain
-    const existingSigs = mockDigitalSignatures.filter((s: Record<string, unknown>) => s.documentId === documentId);
+    const existingSigs = mockDigitalSignatures.filter((s: LooseAny) => s.documentId === documentId);
     const lastSig = existingSigs[existingSigs.length - 1];
 
-    const meaningDef = signatureMeanings.find((m: Record<string, unknown>) => m.value === meaning);
+    const meaningDef = signatureMeanings.find((m: LooseAny) => m.value === meaning);
 
-    const newSig: Record<string, unknown> = {
+    const newSig: LooseAny = {
       id: `dsig-${Date.now()}`,
       documentId,
       documentType: documentType || 'REPORT',
@@ -1000,7 +1000,7 @@ export const handlers = [
 
   // GET /api/v1/signatures/:id - Get signature details
   http.get(apiUrl('/signatures/:id'), ({ params }) => {
-    const sig = mockDigitalSignatures.find((s: Record<string, unknown>) => s.id === params.id);
+    const sig = mockDigitalSignatures.find((s: LooseAny) => s.id === params.id);
     if (!sig) {
       return HttpResponse.json({ code: 404, message: '签名记录不存在', data: null }, { status: 404 });
     }
@@ -1009,38 +1009,38 @@ export const handlers = [
 
   // GET /api/v1/signatures/document/:docId - Get document signatures
   http.get(apiUrl('/signatures/document/:docId'), ({ params }) => {
-    const sigs = mockDigitalSignatures.filter((s: Record<string, unknown>) => s.documentId === params.docId);
+    const sigs = mockDigitalSignatures.filter((s: LooseAny) => s.documentId === params.docId);
     return HttpResponse.json({ code: 200, message: 'success', data: { list: sigs, total: sigs.length } });
   }),
 
   // POST /api/v1/signatures/verify - Verify signature
   http.post(apiUrl('/signatures/verify'), async ({ request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const { documentId } = body;
 
-    const report = mockReports.find((r: Record<string, unknown>) => r.id === documentId);
+    const report = mockReports.find((r: LooseAny) => r.id === documentId);
     if (!report) {
       return HttpResponse.json({ code: 404, message: '文档不存在', data: null }, { status: 404 });
     }
 
-    const sigs = mockDigitalSignatures.filter((s: Record<string, unknown>) => s.documentId === documentId);
+    const sigs = mockDigitalSignatures.filter((s: LooseAny) => s.documentId === documentId);
     const currentHash = computeDocumentHash(report);
-    const allValidSigs = sigs.filter((s: Record<string, unknown>) => s.status === 'valid');
-    const documentIntact = allValidSigs.length === 0 || allValidSigs.some((s: Record<string, unknown>) => s.documentHash === currentHash);
-    const allCertsValid = allValidSigs.every((s: Record<string, unknown>) => {
-      const cert = mockSm2Certificates.find((c: Record<string, unknown>) => c.id === s.signerCertId);
+    const allValidSigs = sigs.filter((s: LooseAny) => s.status === 'valid');
+    const documentIntact = allValidSigs.length === 0 || allValidSigs.some((s: LooseAny) => s.documentHash === currentHash);
+    const allCertsValid = allValidSigs.every((s: LooseAny) => {
+      const cert = mockSm2Certificates.find((c: LooseAny) => c.id === s.signerCertId);
       return cert && cert.status === 'active';
     });
 
-    const result: Record<string, unknown> = {
+    const result: Record<string, LooseAny> = {
       valid: documentIntact && allCertsValid && allValidSigs.length > 0,
       documentIntact,
       signerVerified: allCertsValid,
       certValid: allCertsValid,
       timestampValid: true,
-      signatures: allValidSigs.map((s: Record<string, unknown>) => {
-        const meaningDef = signatureMeanings.find((m: Record<string, unknown>) => m.value === s.meaning);
-        const cert = mockSm2Certificates.find((c: Record<string, unknown>) => c.id === s.signerCertId);
+      signatures: allValidSigs.map((s: LooseAny) => {
+        const meaningDef = signatureMeanings.find((m: LooseAny) => m.value === s.meaning);
+        const cert = mockSm2Certificates.find((c: LooseAny) => c.id === s.signerCertId);
         return {
           signerName: s.signerName,
           meaning: s.meaning,
@@ -1072,22 +1072,22 @@ export const handlers = [
 
   // GET /api/v1/signatures/verify/qr/:docId - Public QR verification (no auth needed)
   http.get(apiUrl('/signatures/verify/qr/:docId'), ({ params }) => {
-    const report = mockReports.find((r: Record<string, unknown>) => r.id === params.docId);
+    const report = mockReports.find((r: LooseAny) => r.id === params.docId);
     if (!report) {
       return HttpResponse.json({ code: 404, message: '报告不存在', data: null }, { status: 404 });
     }
 
-    const sigs = mockDigitalSignatures.filter((s: Record<string, unknown>) => s.documentId === params.docId);
+    const sigs = mockDigitalSignatures.filter((s: LooseAny) => s.documentId === params.docId);
     const currentHash = computeDocumentHash(report);
-    const validSigs = sigs.filter((s: Record<string, unknown>) => s.status === 'valid' && s.documentHash === currentHash);
+    const validSigs = sigs.filter((s: LooseAny) => s.status === 'valid' && s.documentHash === currentHash);
 
-    const result: Record<string, unknown> = {
+    const result: Record<string, LooseAny> = {
       reportNo: report.reportNo,
       title: report.title,
       customerName: report.customerName,
       issuedAt: report.issuedAt,
-      signatures: validSigs.map((s: Record<string, unknown>) => {
-        const meaningDef = signatureMeanings.find((m: Record<string, unknown>) => m.value === s.meaning);
+      signatures: validSigs.map((s: LooseAny) => {
+        const meaningDef = signatureMeanings.find((m: LooseAny) => m.value === s.meaning);
         return {
           signerName: s.signerName,
           meaning: s.meaning,
@@ -1107,8 +1107,8 @@ export const handlers = [
 
   // POST /api/v1/certificates - Import certificate
   http.post(apiUrl('/certificates'), async ({ request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
-    const newCert: Record<string, unknown> = {
+    const body = (await request.json()) as LooseAny;
+    const newCert: LooseAny = {
       id: 'cert-sm2-' + String(mockSm2Certificates.length + 1).padStart(3, '0'),
       userId: body.userId || '3',
       userName: body.userName || '新用户',
@@ -1133,7 +1133,7 @@ export const handlers = [
 
   // GET /api/v1/certificates/:id - Certificate details
   http.get(apiUrl('/certificates/:id'), ({ params }) => {
-    const cert = mockSm2Certificates.find((c: Record<string, unknown>) => c.id === params.id);
+    const cert = mockSm2Certificates.find((c: LooseAny) => c.id === params.id);
     if (!cert) {
       return HttpResponse.json({ code: 404, message: '证书不存在', data: null }, { status: 404 });
     }
@@ -1142,7 +1142,7 @@ export const handlers = [
 
   // POST /api/v1/certificates/:id/revoke - Revoke certificate
   http.post(apiUrl('/certificates/:id/revoke'), ({ params }) => {
-    const cert = mockSm2Certificates.find((c: Record<string, unknown>) => c.id === params.id);
+    const cert = mockSm2Certificates.find((c: LooseAny) => c.id === params.id);
     if (!cert) {
       return HttpResponse.json({ code: 404, message: '证书不存在', data: null }, { status: 404 });
     }
@@ -1177,13 +1177,13 @@ export const handlers = [
     return HttpResponse.json({ code: 200, message: 'success', data: { list: mockReportTemplates, total: mockReportTemplates.length } });
   }),
   http.post(apiUrl('/reports/templates'), async ({ request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const newTemplate = { id: 'tmpl' + Date.now(), ...body, createdAt: new Date().toISOString().replace('T', ' ').slice(0, 19), updatedAt: new Date().toISOString().replace('T', ' ').slice(0, 19) };
     mockReportTemplates.push(newTemplate);
     return HttpResponse.json({ code: 200, message: 'success', data: newTemplate });
   }),
   http.put(apiUrl('/reports/templates/:id'), async ({ params, request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const idx = mockReportTemplates.findIndex(t => t.id === params.id);
     if (idx === -1) return HttpResponse.json({ code: 404, message: '模板不存在' }, { status: 404 });
     mockReportTemplates[idx] = { ...mockReportTemplates[idx], ...body, updatedAt: new Date().toISOString().replace('T', ' ').slice(0, 19) };
@@ -1206,13 +1206,13 @@ export const handlers = [
     return HttpResponse.json({ code: 200, message: 'success', data: { list: mockReportSchedules, total: mockReportSchedules.length } });
   }),
   http.post(apiUrl('/reports/schedules'), async ({ request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const newSchedule = { id: 'sch' + Date.now(), ...body, enabled: true };
     mockReportSchedules.push(newSchedule);
     return HttpResponse.json({ code: 200, message: 'success', data: newSchedule });
   }),
   http.put(apiUrl('/reports/schedules/:id'), async ({ params, request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const idx = mockReportSchedules.findIndex(s => s.id === params.id);
     if (idx === -1) return HttpResponse.json({ code: 404, message: '调度不存在' }, { status: 404 });
     mockReportSchedules[idx] = { ...mockReportSchedules[idx], ...body };
@@ -1227,13 +1227,13 @@ export const handlers = [
     return HttpResponse.json({ code: 200, message: 'success', data: { list: mockReportExecutions, total: mockReportExecutions.length } });
   }),
   http.post(apiUrl('/reports/executions'), async ({ request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const newExec = { id: 'exec' + Date.now(), actualTime: new Date().toISOString().replace('T', ' ').slice(0, 19), ...body };
     mockReportExecutions.unshift(newExec);
     return HttpResponse.json({ code: 200, message: 'success', data: newExec });
   }),
   http.post(apiUrl('/reports/generate'), async ({ request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const reportId = body.reportId || body.templateId;
     const report = mockReportTemplates.find(t => t.id === reportId);
     const newExec = {
@@ -1247,7 +1247,7 @@ export const handlers = [
       outputSize: (Math.random() * 3 + 0.5).toFixed(1) + 'MB',
       triggerType: 'manual',
     };
-    mockReportExecutions.unshift(newExec as unknown);
+    mockReportExecutions.unshift(newExec as LooseAny);
     return HttpResponse.json({ code: 200, message: 'success', data: newExec });
   }),
   http.get(apiUrl('/reports/data-sources'), () => {
@@ -1261,13 +1261,13 @@ export const handlers = [
     return HttpResponse.json({ code: 200, message: 'success', data: { list: mockDictTypes, total: mockDictTypes.length } });
   }),
   http.post(apiUrl('/dict-types'), async ({ request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const newType = { id: 'dt' + Date.now(), ...body };
     mockDictTypes.push(newType);
     return HttpResponse.json({ code: 200, message: 'success', data: newType });
   }),
   http.put(apiUrl('/dict-types/:id'), async ({ params, request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const idx = mockDictTypes.findIndex(t => t.id === params.id);
     if (idx === -1) return HttpResponse.json({ code: 404, message: '字典类型不存在' }, { status: 404 });
     mockDictTypes[idx] = { ...mockDictTypes[idx], ...body };
@@ -1290,13 +1290,13 @@ export const handlers = [
     return HttpResponse.json({ code: 200, message: 'success', data: { list, total: list.length } });
   }),
   http.post(apiUrl('/dict-items'), async ({ request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const newItem = { id: 'di' + Date.now(), ...body };
     mockDictItems.push(newItem);
     return HttpResponse.json({ code: 200, message: 'success', data: newItem });
   }),
   http.put(apiUrl('/dict-items/:id'), async ({ params, request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const idx = mockDictItems.findIndex(i => i.id === params.id);
     if (idx === -1) return HttpResponse.json({ code: 404, message: '字典项不存在' }, { status: 404 });
     mockDictItems[idx] = { ...mockDictItems[idx], ...body };
@@ -1329,7 +1329,7 @@ export const handlers = [
     return HttpResponse.json({ code: 200, message: 'success', data: contract });
   }),
   http.post(apiUrl('/contracts'), async ({ request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const newContract = {
       id: 'ct' + Date.now(),
       no: body.no || `CT-${new Date().getFullYear()}-${String(mockContracts.length + 1).padStart(3, '0')}`,
@@ -1341,7 +1341,7 @@ export const handlers = [
     return HttpResponse.json({ code: 200, message: 'success', data: newContract });
   }),
   http.put(apiUrl('/contracts/:id'), async ({ params, request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const idx = mockContracts.findIndex(c => c.id === params.id);
     if (idx === -1) return HttpResponse.json({ code: 404, message: '合同不存在' }, { status: 404 });
     mockContracts[idx] = { ...mockContracts[idx], ...body, updatedAt: new Date().toISOString().replace('T', ' ').slice(0, 19) };
@@ -1362,7 +1362,7 @@ export const handlers = [
     return HttpResponse.json({ code: 200, message: 'success', data: { list: mockWorkflowDefinitions, total: mockWorkflowDefinitions.length } });
   }),
   http.post(apiUrl('/workflow/definitions'), async ({ request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const newDef = {
       id: `wf${Date.now()}`,
       ...body,
@@ -1377,7 +1377,7 @@ export const handlers = [
     return HttpResponse.json({ code: 200, message: 'success', data: newDef });
   }),
   http.put(apiUrl('/workflow/definitions/:id'), async ({ params, request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const idx = mockWorkflowDefinitions.findIndex(d => d.id === params.id);
     if (idx === -1) return HttpResponse.json({ code: 404, message: '流程模板不存在' }, { status: 404 });
     mockWorkflowDefinitions[idx] = { ...mockWorkflowDefinitions[idx], ...body, updatedAt: new Date().toISOString().replace('T', ' ').slice(0, 19) };
@@ -1420,7 +1420,7 @@ export const handlers = [
     return HttpResponse.json({ code: 200, message: '催办通知已发送', data: inst });
   }),
   http.post(apiUrl('/workflow/instances/:id/transfer'), async ({ params, request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const inst = mockWorkflowInstances.find(i => i.id === params.id);
     if (!inst) return HttpResponse.json({ code: 404, message: '实例不存在' }, { status: 404 });
     inst.assignees = [body.assignee];
@@ -1436,7 +1436,7 @@ export const handlers = [
     return HttpResponse.json({ code: 200, message: '转交成功', data: inst });
   }),
   http.post(apiUrl('/workflow/instances/:id/terminate'), async ({ params, request }) => {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = (await request.json()) as LooseAny;
     const inst = mockWorkflowInstances.find(i => i.id === params.id);
     if (!inst) return HttpResponse.json({ code: 404, message: '实例不存在' }, { status: 404 });
     inst.status = 'terminated';

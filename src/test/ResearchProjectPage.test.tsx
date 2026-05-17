@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { ResearchProjectPage } from '../pages/ResearchProjectPage';
 
-function mockFetchResponse(data: unknown) {
+function mockFetchResponse(data: LooseAny) {
   return { ok: true, status: 200, json: async () => data } as Response;
 }
 
@@ -12,7 +12,7 @@ describe('ResearchProjectPage', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as unknown as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: unknown) => {
+    fetchSpy = vi.spyOn(globalThis as LooseAny as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: LooseAny) => {
       if (url.includes('/api/v1/research/projects')) {
         return mockFetchResponse({ code: 200, data: { list: [
           { id: 'r1', no: 'PROJ-001', name: '水质检测新方法研究', type: '纵向', pi: '王教授', group: '环境分析组', source: '国家自然基金', dept: '环境学院', budget: 500000, used: 100000, startDate: '2024-01', endDate: '2026-12', progress: 45, status: 'active', members: ['张三', '李四'] },

@@ -68,13 +68,13 @@ export const ReportsPage: React.FC = () => {
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState({ draft: 0, pendingTechReview: 0, pendingApproval: 0, issued: 0, total: 0 });
-  const [filters, setFilters] = useState({ keyword: '', status: '', customer: '', dateRange: [null, null] as unknown[] });
+  const [filters, setFilters] = useState({ keyword: '', status: '', customer: '', dateRange: [null, null] as LooseAny[] });
 
   // Detail Drawer
   const [detailOpen, setDetailOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [detailTab, setDetailTab] = useState('info');
-  const [flowHistory, setFlowHistory] = useState<unknown[]>([]);
+  const [flowHistory, setFlowHistory] = useState<LooseAny[]>([]);
 
   // Compilation Mode
   const [compileOpen, setCompileOpen] = useState(false);
@@ -88,7 +88,7 @@ export const ReportsPage: React.FC = () => {
   const [signRoleLabel, setSignRoleLabel] = useState('编制');
 
   // Signature Verification
-  const [verifyResult, setVerifyResult] = useState<unknown>(null);
+  const [verifyResult, setVerifyResult] = useState<LooseAny>(null);
   const [verifyLoading, setVerifyLoading] = useState(false);
   const [, setVerifyOpen] = useState(false);
 
@@ -244,7 +244,7 @@ export const ReportsPage: React.FC = () => {
       onOk: () => {
         setReports(prev => prev.map(r =>
           selectedRowKeys.includes(r.id) && r.status === 'tech_reviewed'
-            ? { ...r, status: 'issued', signatures: [...r.signatures, { role: 'approver', name: '当前用户', signedAt: new Date().toISOString() } as unknown as ReportSignature] }
+            ? { ...r, status: 'issued', signatures: [...r.signatures, { role: 'approver', name: '当前用户', signedAt: new Date().toISOString() } as LooseAny as ReportSignature] }
             : r
         ));
         setSelectedRowKeys([]);
@@ -278,7 +278,7 @@ export const ReportsPage: React.FC = () => {
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
-        setReports(prev => [{ ...merged, cover: merged.cover } as unknown, ...prev]);
+        setReports(prev => [{ ...merged, cover: merged.cover } as LooseAny, ...prev]);
         setSelectedRowKeys([]);
         message.success(`已创建合并报告，包含 ${count} 个样品`);
       },
@@ -377,7 +377,7 @@ export const ReportsPage: React.FC = () => {
             </Button>
           )}
           {record.status === 'draft' && (
-            <Button type="link" size="small" onClick={() => { setSelectedReport(record); handleSubmitForReview(record); }}>
+            <Button type="link" size="small" onClick={() => { setSelectedReport(record); handleSubmitForReview(); }}>
               <SendOutlined /> 提交
             </Button>
           )}
@@ -685,7 +685,7 @@ export const ReportsPage: React.FC = () => {
                         <Empty description="暂无流转记录" />
                       ) : (
                         <Timeline
-                          items={flowHistory.map((h: Record<string, unknown>) => ({
+                          items={flowHistory.map((h: LooseAny) => ({
                             color: 'blue',
                             children: (
                               <div>
@@ -817,7 +817,7 @@ export const ReportsPage: React.FC = () => {
                           >
                             {verifyResult.signatures && verifyResult.signatures.length > 0 && (
                               <Timeline
-                                items={verifyResult.signatures.map((sig: Record<string, unknown>) => ({
+                                items={verifyResult.signatures.map((sig: LooseAny) => ({
                                   color: sig.status === 'valid' ? 'green' : 'red',
                                   children: (
                                     <div>
@@ -1051,7 +1051,7 @@ export const ReportsPage: React.FC = () => {
                               style={{ width: 90 }}
                               onChange={val => {
                                 const next = [...editReport.testResults];
-                                next[idx] = { ...next[idx], judgment: val as unknown };
+                                next[idx] = { ...next[idx], judgment: val as LooseAny };
                                 setEditReport({ ...editReport, testResults: next });
                               }}
                             >

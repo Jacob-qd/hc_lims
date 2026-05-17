@@ -40,6 +40,8 @@ const COCPage = lazy(() => import('../pages/COCPage').then(m => ({ default: m.CO
 const BackupPage = lazy(() => import('../pages/BackupPage').then(m => ({ default: m.BackupPage })));
 const WorkflowPage = lazy(() => import('../pages/WorkflowPage').then(m => ({ default: m.WorkflowPage })));
 const ReportEnginePage = lazy(() => import('../pages/ReportEnginePage').then(m => ({ default: m.ReportEnginePage })));
+const AIAssistantPage = lazy(() => import('../pages/AIAssistantPage').then(m => ({ default: m.AIAssistantPage })));
+const AIPredictionPage = lazy(() => import('../pages/AIPredictionPage').then(m => ({ default: m.AIPredictionPage })));
 const FieldConfigEditor = lazy(() => import('../pages/FieldConfigEditor').then(m => ({ default: m.FieldConfigEditor })));
 const CompliancePage = lazy(() => import('../pages/CompliancePage').then(m => ({ default: m.CompliancePage })));
 const MonitorPage = lazy(() => import('../pages/MonitorPage').then(m => ({ default: m.MonitorPage })));

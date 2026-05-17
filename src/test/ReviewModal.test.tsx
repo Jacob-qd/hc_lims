@@ -9,7 +9,7 @@ const mockReport = {
   reportNo: 'RPT-001',
   title: '水质报告',
   status: 'pending_tech_review',
-} as unknown;
+} as LooseAny;
 
 function renderModal(props: Partial<Parameters<typeof ReviewModal>[0]> = {}) {
   return render(

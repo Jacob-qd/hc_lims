@@ -9,7 +9,7 @@ const mockTasks = [
   { id: 'tk2', taskNo: 'TK-002', sampleId: 's2', sampleNo: 'SMP002', sampleName: '土壤-1', testItem: 'COD', method: 'HJ 828', analystName: '张伟', instrumentName: 'COD消解仪', plannedStart: '2025-01-01', plannedEnd: '2025-01-03', priority: 'normal', priorityLabel: '常规', status: 'pending', statusLabel: '待检测', progress: 0 },
 ];
 
-function mockFetchResponse(data: unknown) {
+function mockFetchResponse(data: LooseAny) {
   return { ok: true, status: 200, json: async () => data } as Response;
 }
 
@@ -17,7 +17,7 @@ describe('TasksPage', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as unknown as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: unknown) => {
+    fetchSpy = vi.spyOn(globalThis as LooseAny as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: LooseAny) => {
       if (url.includes('/api/v1/tasks?')) return mockFetchResponse({ code: 200, data: { list: mockTasks, total: mockTasks.length } });
       if (url.includes('/api/v1/tasks/stats')) return mockFetchResponse({ code: 200, data: { pendingTest: 5, pendingReview: 3, pendingApprove: 2, overdue: 1 } });
       if (url.includes('/api/v1/tasks/tk1/assign')) return mockFetchResponse({ code: 200, message: '分配成功' });

@@ -6,7 +6,7 @@ const { Title } = Typography;
 const dangerColors: Record<string, string> = { 剧毒: '#ff4d4f', 易燃: '#fa8c16', 腐蚀: '#1677ff', 氧化: '#faad14', 一般: '#d9d9d9' };
 
 export const SafetyPage: React.FC = () => {
-  const [chemicals, setChemicals] = useState<unknown[]>([]);
+  const [chemicals, setChemicals] = useState<LooseAny[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [inModal, setInModal] = useState(false);
@@ -15,8 +15,8 @@ export const SafetyPage: React.FC = () => {
     fetch('/api/v1/research/chemicals').then(r => r.json()).then(d => { setChemicals(d.data.list); setLoading(false); });
   }, []);
 
-  const filtered = chemicals.filter((c: Record<string, unknown>) => c.name.includes(search) || c.cas?.includes(search));
-  const stats = { total: chemicals.length, warning: chemicals.filter((c: Record<string, unknown>) => c.status === 'warning').length, normal: chemicals.filter((c: Record<string, unknown>) => c.status === 'normal').length };
+  const filtered = chemicals.filter((c: LooseAny) => c.name.includes(search) || c.cas?.includes(search));
+  const stats = { total: chemicals.length, warning: chemicals.filter((c: LooseAny) => c.status === 'warning').length, normal: chemicals.filter((c: LooseAny) => c.status === 'normal').length };
 
   return (
     <div>

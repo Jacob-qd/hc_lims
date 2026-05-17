@@ -9,7 +9,7 @@ interface ThemeState {
   toggle: () => void;
   toggleTheme: () => void;
   setMode: (mode: ThemeMode) => void;
-  getConfig: () => { algorithm: unknown; token: unknown };
+  getConfig: () => { algorithm: LooseAny; token: LooseAny };
 }
 
 const STORAGE_KEY = 'hc_lims_theme';

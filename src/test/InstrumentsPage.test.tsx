@@ -12,7 +12,7 @@ const mockInstruments = [
   { id: 'i1', name: 'pH计', model: 'PHS-3E', serialNo: 'SN001', manufacturer: '上海雷磁', location: '理化实验室', responsiblePerson: '张伟', purchaseDate: '2023-01-01', inUseDate: '2023-02-01', status: 'running', statusLabel: '运行中', connectionStatus: 'online', utilization: 85, calibrationDue: '2025-12-31', maintenanceDate: '2025-05-01', department: '检测一部', description: '' },
 ];
 
-function mockFetchResponse(data: unknown) {
+function mockFetchResponse(data: LooseAny) {
   return { ok: true, status: 200, json: async () => data } as Response;
 }
 
@@ -20,7 +20,7 @@ describe('InstrumentsPage', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as unknown as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: unknown) => {
+    fetchSpy = vi.spyOn(globalThis as LooseAny as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: LooseAny) => {
       if (url.includes('/api/v1/instruments')) return mockFetchResponse({ code: 200, data: { list: mockInstruments, total: mockInstruments.length } });
       return mockFetchResponse({ code: 200, data: null });
     });

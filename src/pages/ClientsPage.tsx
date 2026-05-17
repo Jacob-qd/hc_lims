@@ -73,7 +73,7 @@ export const ClientsPage: React.FC = () => {
     setModalVisible(true);
   };
 
-  const handleSave = async (values: unknown) => {
+  const handleSave = async (values: LooseAny) => {
     const isEdit = !!editingClient;
     const url = isEdit ? api(`/clients/${editingClient!.id}`) : api('/clients');
     const method = isEdit ? 'PUT' : 'POST';

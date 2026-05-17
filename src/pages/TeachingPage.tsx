@@ -61,7 +61,7 @@ export const TeachingPage: React.FC = () => {
           { title: '学生人数', dataIndex: 'students' },
           { title: '实验数', dataIndex: 'experiments' },
           { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={s === 'active' ? 'green' : 'default'}>{s === 'active' ? '进行中' : '已结束'}</Tag> },
-          { title: '操作', render: (_: unknown, r: Course) => <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawer(true); }} /> },
+          { title: '操作', render: (_: LooseAny, r: Course) => <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawer(true); }} /> },
         ]} pagination={false} size="middle" />
       </Card>
 
@@ -107,7 +107,7 @@ export const TeachingPage: React.FC = () => {
                   {title:'提交日期',dataIndex:'submitDate',render:(d:string) => d || <Text type="secondary">—</Text>},
                   {title:'成绩',dataIndex:'score',render:(s:string,r:ReportRecord) => r.status === '待批阅' ? <Input size="small" style={{width:60}} placeholder="评分" /> : s || <Text type="secondary">—</Text>},
                   {title:'状态',dataIndex:'status',render:(s:string) => <Tag color={s==='已批阅'?'green':s==='待批阅'?'orange':'default'}>{s}</Tag>},
-                  {title:'操作',render:(_:unknown,r:ReportRecord) => r.status === '待批阅' ? <Button size="small" type="primary" onClick={() => message.success('正在批阅: ' + r.student)}>批阅</Button> : <Button size="small" onClick={() => message.info('查看报告: ' + r.student)}>查看</Button>},
+                  {title:'操作',render:(_:LooseAny,r:ReportRecord) => r.status === '待批阅' ? <Button size="small" type="primary" onClick={() => message.success('正在批阅: ' + r.student)}>批阅</Button> : <Button size="small" onClick={() => message.info('查看报告: ' + r.student)}>查看</Button>},
                 ]} />
                 <Button type="primary" style={{marginTop:8}} onClick={() => message.success('批量评分功能')}>批量评分</Button>
               </div>

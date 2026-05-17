@@ -238,7 +238,7 @@ export const InstrumentsPage: React.FC = () => {
     )},
   ];
 
-  const handleCreate = async (values: unknown) => {
+  const handleCreate = async (values: LooseAny) => {
     try {
       const res = await fetch('/api/v1/instruments', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(values) });
       const json = await res.json();

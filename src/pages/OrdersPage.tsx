@@ -35,7 +35,7 @@ const payLabel: Record<string, string> = { unpaid: '未付款', partial: '部分
 export const OrdersPage: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
-  const [customers, setCustomers] = useState<unknown[]>([]);
+  const [customers, setCustomers] = useState<LooseAny[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [detailVisible, setDetailVisible] = useState(false);
   const [selected, setSelected] = useState<Order | null>(null);
@@ -64,7 +64,7 @@ export const OrdersPage: React.FC = () => {
     completed: orders.filter(o => o.status === 'completed').length,
   };
 
-  const handleCreate = async (values: unknown) => {
+  const handleCreate = async (values: LooseAny) => {
     try {
       const res = await fetch(api('/orders'), {
         method: 'POST', headers: { 'Content-Type': 'application/json' },

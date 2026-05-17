@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { ReportsPage } from '../pages/ReportsPage';
 
-function mockFetchResponse(data: unknown) {
+function mockFetchResponse(data: LooseAny) {
   return { ok: true, status: 200, json: async () => data } as Response;
 }
 
@@ -19,7 +19,7 @@ describe('ReportsPage', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as unknown as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: unknown) => {
+    fetchSpy = vi.spyOn(globalThis as LooseAny as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: LooseAny) => {
       if (url.includes('/api/v1/reports') && !url.includes('/flow-history') && !url.includes('/review') && !url.includes('/signatures')) {
         return mockFetchResponse({ code: 200, data: { list: [{ ...baseReport, status: 'draft', statusLabel: '草稿' }], total: 1 } });
       }
@@ -106,7 +106,7 @@ describe('ReportsPage with pending review report', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as unknown as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: unknown) => {
+    fetchSpy = vi.spyOn(globalThis as LooseAny as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: LooseAny) => {
       if (url.includes('/api/v1/reports') && !url.includes('/flow-history') && !url.includes('/review')) {
         return mockFetchResponse({ code: 200, data: { list: [{ ...baseReport, id: 'r2', reportNo: 'RPT-002', status: 'pending_tech_review', statusLabel: '待技术审核' }], total: 1 } });
       }
@@ -140,7 +140,7 @@ describe('ReportsPage with pending approval report', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as unknown as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: unknown) => {
+    fetchSpy = vi.spyOn(globalThis as LooseAny as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: LooseAny) => {
       if (url.includes('/api/v1/reports') && !url.includes('/flow-history')) {
         return mockFetchResponse({ code: 200, data: { list: [{ ...baseReport, id: 'r3', reportNo: 'RPT-003', status: 'pending_approval', statusLabel: '待批准签发' }], total: 1 } });
       }
@@ -166,7 +166,7 @@ describe('ReportsPage with issued report', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as unknown as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: unknown) => {
+    fetchSpy = vi.spyOn(globalThis as LooseAny as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: LooseAny) => {
       if (url.includes('/api/v1/reports') && !url.includes('/flow-history')) {
         return mockFetchResponse({ code: 200, data: { list: [{ ...baseReport, id: 'r4', reportNo: 'RPT-004', status: 'issued', statusLabel: '已签发', signatures: [{ id: 's1', role: 'compiler', roleLabel: '编制人', userId: '1', userName: '张伟', signedAt: '2025-01-01', ipAddress: '127.0.0.1', stampType: 'electronic', reason: '编制完成', passwordVerified: true }] }], total: 1 } });
       }

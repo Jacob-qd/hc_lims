@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { AchievementPage } from '../pages/AchievementPage';
 
-function mockFetchResponse(data: unknown) {
+function mockFetchResponse(data: LooseAny) {
   return { ok: true, status: 200, json: async () => data } as Response;
 }
 
@@ -12,7 +12,7 @@ describe('AchievementPage', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as unknown as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: unknown) => {
+    fetchSpy = vi.spyOn(globalThis as LooseAny as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: LooseAny) => {
       if (url.includes('/api/v1/research/publications')) {
         return mockFetchResponse({ code: 200, data: { list: [
           { id: 'a1', title: '水质检测新方法研究', type: '论文', journal: '环境科学', authors: '张三, 李四', year: 2025, doi: '10.1234/env.2025.001', project: '国家自然基金', status: 'published' },

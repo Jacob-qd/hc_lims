@@ -14,9 +14,9 @@ const { Title, Text } = Typography;
 /** 移动端 H5 首页 - 采样员工作台 */
 export const MobilePage: React.FC = () => {
   const navigate = useNavigate();
-  const [stats, setStats] = useState<unknown>(null);
-  const [tasks, setTasks] = useState<unknown[]>([]);
-  const [fieldSamples, setFieldSamples] = useState<unknown[]>([]);
+  const [stats, setStats] = useState<LooseAny>(null);
+  const [tasks, setTasks] = useState<LooseAny[]>([]);
+  const [fieldSamples, setFieldSamples] = useState<LooseAny[]>([]);
 
   useEffect(() => {
     fetch('/api/v1/dashboard/stats').then(r => r.json()).then(d => {
@@ -33,7 +33,7 @@ export const MobilePage: React.FC = () => {
   const quickActions = [
     { icon: <EnvironmentOutlined />, label: '现场采样', path: '/mobile/sampling', color: '#52c41a', count: 0 },
     { icon: <ScanOutlined />, label: '扫码', path: '/mobile/sampling', color: '#1677ff', count: 0 },
-    { icon: <InboxOutlined />, label: '我的任务', path: '/mobile/tasks', color: '#fa8c16', count: tasks.filter((t: Record<string, unknown>) => t.status === 'pending').length },
+    { icon: <InboxOutlined />, label: '我的任务', path: '/mobile/tasks', color: '#fa8c16', count: tasks.filter((t: LooseAny) => t.status === 'pending').length },
     { icon: <BellOutlined />, label: '待处理', path: '/quality', color: '#ff4d4f', count: stats?.pendingIssues || 0 },
   ];
 
@@ -112,7 +112,7 @@ export const MobilePage: React.FC = () => {
       >
         <List
           dataSource={fieldSamples.slice(0, 3)}
-          renderItem={(s: Record<string, unknown>) => (
+          renderItem={(s: LooseAny) => (
             <List.Item style={{ padding: '8px 0' }}>
               <List.Item.Meta
                 avatar={<EnvironmentOutlined style={{ fontSize: 18, color: '#52c41a' }} />}
@@ -147,13 +147,13 @@ export const MobilePage: React.FC = () => {
       >
         <List
           dataSource={tasks.slice(0, 3)}
-          renderItem={(t: Record<string, unknown>) => (
+          renderItem={(t: LooseAny) => (
             <List.Item
               style={{ cursor: 'pointer', padding: '8px 0' }}
               onClick={() => navigate('/mobile/tasks')}
             >
               <List.Item.Meta
-                avatar={<Badge status={(t.status === 'pending' ? 'warning' : t.status === 'in_progress' ? 'processing' : 'success') as unknown} />}
+                avatar={<Badge status={(t.status === 'pending' ? 'warning' : t.status === 'in_progress' ? 'processing' : 'success') as LooseAny} />}
                 title={<Text style={{ fontSize: 13 }}>{t.sampleName}</Text>}
                 description={
                   <div style={{ fontSize: 11 }}>

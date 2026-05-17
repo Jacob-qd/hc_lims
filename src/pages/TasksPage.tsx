@@ -33,7 +33,7 @@ const priorityColor: Record<string, string> = {
 
 export const TasksPage: React.FC = () => {
   const [tasks, setTasks] = useState<TaskItem[]>([]);
-  const [stats, setStats] = useState<Record<string, unknown>>({});
+  const [stats, setStats] = useState<Record<string, LooseAny>>({});
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -70,7 +70,7 @@ export const TasksPage: React.FC = () => {
     completed: tasks.filter(t => t.status === 'completed' || t.status === 'overdue'),
   };
 
-  const handleAssign = async (values: unknown) => {
+  const handleAssign = async (values: LooseAny) => {
     if (!selectedTask) return;
     try {
       const res = await fetch(`/api/v1/tasks/${selectedTask.id}/assign`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(values) });
@@ -142,7 +142,7 @@ export const TasksPage: React.FC = () => {
               {[{inst:'pH计 PHS-3E', tasks:[{t:'TK-001 pH值',time:'08:00-10:00',p:'high',c:'#ff4d4f'},{t:'TK-005 pH值',time:'14:00-15:30',p:'low',c:'#52c41a'}]},{inst:'COD消解仪 HCA-100', tasks:[{t:'TK-002 COD',time:'10:00-14:00',p:'high',c:'#ff4d4f'}]},{inst:'紫外分光光度计', tasks:[{t:'TK-003 氨氮',time:'08:30-11:00',p:'medium',c:'#faad14'}]},{inst:'原子吸收光谱仪', tasks:[{t:'TK-004 重金属',time:'09:00-12:00',p:'medium',c:'#faad14'}]},{inst:'ICP-MS质谱仪', tasks:[{t:'维护中',time:'全天',p:'',c:'#d9d9d9'}]}].map(inst => (
                 <Card key={inst.inst} size="small" style={{marginBottom:4}}>
                   <Text strong style={{fontSize:12}}>{inst.inst}</Text>
-                  {inst.tasks.map((tk: Record<string, unknown>) => <div key={tk.t} style={{fontSize:11,marginTop:2,padding:'2px 4px',background:tk.c+'20',borderLeft:'3px solid '+tk.c,borderRadius:2}}><Tag color={tk.p==='high'?'red':tk.p==='medium'?'orange':'green'} style={{fontSize:10,lineHeight:'16px',padding:'0 4px',marginRight:4}}>{tk.time}</Tag>{tk.t}</div>)}
+                  {inst.tasks.map((tk: LooseAny) => <div key={tk.t} style={{fontSize:11,marginTop:2,padding:'2px 4px',background:tk.c+'20',borderLeft:'3px solid '+tk.c,borderRadius:2}}><Tag color={tk.p==='high'?'red':tk.p==='medium'?'orange':'green'} style={{fontSize:10,lineHeight:'16px',padding:'0 4px',marginRight:4}}>{tk.time}</Tag>{tk.t}</div>)}
                 </Card>
               ))}
             </Space></Card></Col>

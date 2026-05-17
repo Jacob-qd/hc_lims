@@ -995,7 +995,7 @@ export const fieldTypes = [
   { value: 'reference', label: '关联查询', icon: '🔗' },
 ];
 
-export const mockFieldConfigs: Record<string, unknown[]> = {
+export const mockFieldConfigs: Record<string, LooseAny[]> = {
   sample: [
     { id: 'fc1', module: 'sample', fieldKey: 'sampleName', label: '样品名称', fieldType: 'text', required: true, sortOrder: 1, groupName: '基本信息', active: true },
     { id: 'fc2', module: 'sample', fieldKey: 'sampleType', label: '样品类型', fieldType: 'select', required: true, sortOrder: 2, groupName: '基本信息', options: [{ label: '水质', value: 'water' }, { label: '土壤', value: 'soil' }, { label: '食品', value: 'food' }, { label: '空气', value: 'air' }, { label: '其他', value: 'other' }], active: true },
@@ -1027,7 +1027,7 @@ export const mockFieldTemplates = [
     id: 'tmpl1', name: '水质检测模板', module: 'sample', description: '水质样品字段配置', version: 1,
     appliesTo: { sampleType: ['water'] }, isSnapshot: false,
     fieldConfigs: mockFieldConfigs.sample.filter(f =>
-      !f.conditionRules || f.conditionRules.some((c: Record<string, unknown>) => c.field === 'sampleType' && c.value === 'water')
+      !f.conditionRules || f.conditionRules.some((c: LooseAny) => c.field === 'sampleType' && c.value === 'water')
     ),
     createdBy: '管理员', createdAt: '2026-05-01',
   },
@@ -1035,7 +1035,7 @@ export const mockFieldTemplates = [
     id: 'tmpl2', name: '土壤检测模板', module: 'sample', description: '土壤样品字段配置', version: 1,
     appliesTo: { sampleType: ['soil'] }, isSnapshot: false,
     fieldConfigs: mockFieldConfigs.sample.filter(f =>
-      !f.conditionRules || f.conditionRules.some((c: Record<string, unknown>) => ['soil', 'water'].includes(c.value as string))
+      !f.conditionRules || f.conditionRules.some((c: LooseAny) => ['soil', 'water'].includes(c.value as string))
     ),
     createdBy: '管理员', createdAt: '2026-05-01',
   },
@@ -1063,7 +1063,7 @@ export type COCEventType =
 export interface COCEvent {
   id: string; chainId: string; eventType: COCEventType;
   operatorName: string; occurredAt: string; location?: string;
-  notes?: string; metadata?: Record<string, unknown>;
+  notes?: string; metadata?: Record<string, LooseAny>;
   prevEventId: string | null; signature?: string;
 }
 
@@ -1101,8 +1101,8 @@ export function verifyChainIntegrity(events: COCEvent[]): { valid: boolean; msg:
   return { valid: true, msg: '校验通过' };
 }
 
-const makeEvent = (id: string, chainId: string, type: string, op: string, offsetDays: number, offsetHour: number, prev: string | null, loc: string, note?: string): Record<string, unknown> => ({
-  id, chainId, eventType: type, operatorName: op, occurredAt: d(offsetDays, offsetHour),
+const makeEvent = (id: string, chainId: string, type: string, op: string, offsetDays: number, offsetHour: number, prev: string | null, loc: string, note?: string): COCEvent => ({
+  id, chainId, eventType: type as LooseAny, operatorName: op, occurredAt: d(offsetDays, offsetHour),
   location: loc, notes: note, prevEventId: prev, metadata: {},
 });
 
@@ -1272,7 +1272,7 @@ export function mockSm3Hash(input: string): string {
 
 // SM2 signature simulation (mock)
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function mockSm2Sign(data: string, privateKey: string): string {
+export function mockSm2Sign(data: string, _privateKey: string): string {
   const hash = mockSm3Hash(data);
   // Deterministic prefix based on input
   const prefix = hash.slice(0, 8);
@@ -1485,7 +1485,7 @@ export interface WorkflowNode {
   name: string;
   x: number;
   y: number;
-  config?: Record<string, unknown>;
+  config?: Record<string, LooseAny>;
 }
 
 export interface WorkflowEdge {
@@ -1523,7 +1523,7 @@ export interface WorkflowInstance {
   currentNodes: string[];
   currentNodeNames: string[];
   assignees: string[];
-  variables: Record<string, unknown>;
+  variables: Record<string, LooseAny>;
   startedBy: string;
   startedAt: string;
   completedAt?: string;
@@ -1771,14 +1771,14 @@ export const mockWorkflowInstances: WorkflowInstance[] = [
 ];
 
 // Helper to compute SM3 document hash
-export function computeDocumentHash(document: { id: string; reportNo: string; title: string; customerName: string; testResults: unknown[] }): string {
+export function computeDocumentHash(document: { id: string; reportNo: string; title: string; customerName: string; testResults: LooseAny[] }): string {
   const normalized = JSON.stringify({
     id: document.id,
     reportNo: document.reportNo,
     title: document.title,
     customerName: document.customerName,
     testResultCount: document.testResults.length,
-    sortedResults: document.testResults.map((r: Record<string, unknown>) => ({
+    sortedResults: document.testResults.map((r: LooseAny) => ({
       itemName: r.itemName,
       result: r.result,
       unit: r.unit,
@@ -1819,7 +1819,7 @@ export interface ReportField {
 export interface ReportFilter {
   field: string;
   operator: 'eq' | 'ne' | 'gt' | 'gte' | 'lt' | 'lte' | 'contains' | 'in' | 'between';
-  value: unknown;
+  value: LooseAny;
   logic: 'AND' | 'OR';
 }
 
@@ -1846,7 +1846,7 @@ export interface ChartComponent {
   type: 'line' | 'bar' | 'pie' | 'area' | 'kpi' | 'table';
   dataSource: string;
   config: ChartConfig;
-  previewData: unknown[];
+  previewData: LooseAny[];
   createdAt: string;
 }
 

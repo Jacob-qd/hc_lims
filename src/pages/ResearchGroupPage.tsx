@@ -145,7 +145,7 @@ export const ResearchGroupPage: React.FC = () => {
               { title: '经费余额', dataIndex: 'budget', key: 'budget' },
               { title: '活跃项目', dataIndex: 'projects', key: 'projects' },
               { title: '本月使用', dataIndex: 'instrumentUsage', key: 'instrumentUsage', render: (v: number) => <>{v}次</> },
-              { title: '操作', key: 'action', render: (_: unknown, r: ResearchGroup) => <Button type="link" size="small" onClick={() => { setSelected(r); setDrawerVisible(true); }}>查看</Button> },
+              { title: '操作', key: 'action', render: (_: LooseAny, r: ResearchGroup) => <Button type="link" size="small" onClick={() => { setSelected(r); setDrawerVisible(true); }}>查看</Button> },
             ]} pagination={false} size="middle" />
           </Card>
         </Col>

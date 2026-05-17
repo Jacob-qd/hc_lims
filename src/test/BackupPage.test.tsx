@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { BackupPage } from '../pages/BackupPage';
 
-function mockFetchResponse(data: unknown) {
+function mockFetchResponse(data: LooseAny) {
   return { ok: true, status: 200, json: async () => data } as Response;
 }
 
@@ -12,7 +12,7 @@ describe('BackupPage', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as unknown as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: unknown) => {
+    fetchSpy = vi.spyOn(globalThis as LooseAny as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: LooseAny) => {
       if (url.includes('/api/v1/backups') && !url.includes('/restore') && !url.includes('/verify')) {
         return mockFetchResponse({ code: 200, data: { list: [
           { id: 'b1', name: 'backup_2025_01_01.sql', size: '120MB', type: '自动', date: '2025-01-01 03:00', status: 'completed' },

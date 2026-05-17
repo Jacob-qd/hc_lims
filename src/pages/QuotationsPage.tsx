@@ -47,7 +47,7 @@ export const QuotationsPage: React.FC = () => {
   const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [customers, setCustomers] = useState<unknown[]>([]);
+  const [customers, setCustomers] = useState<LooseAny[]>([]);
   const [form] = Form.useForm();
   const [items, setItems] = useState<QuotationItem[]>([]);
 
@@ -75,7 +75,7 @@ export const QuotationsPage: React.FC = () => {
     setItems(prev => prev.filter(i => i.key !== key));
   };
 
-  const updateItem = (key: string, field: string, value: unknown) => {
+  const updateItem = (key: string, field: string, value: LooseAny) => {
     setItems(prev => prev.map(i => {
       if (i.key !== key) return i;
       const updated = { ...i, [field]: value };
@@ -90,7 +90,7 @@ export const QuotationsPage: React.FC = () => {
 
   const totalAmount = items.reduce((sum, i) => sum + (i.unitPrice * i.quantity), 0);
 
-  const handleSave = async (values: unknown) => {
+  const handleSave = async (values: LooseAny) => {
     if (items.length === 0) { message.warning('请至少添加一个检测项目'); return; }
     const payload = { ...values, items, totalAmount };
     try {

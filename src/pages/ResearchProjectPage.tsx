@@ -55,7 +55,7 @@ export const ResearchProjectPage: React.FC = () => {
 
   const stats = { total: projects.filter((p: ResearchProject) => p.status === 'active' || p.status === 'closing').length, budget: projects.reduce((s: number, p: ResearchProject) => s + p.budget, 0), used: projects.reduce((s: number, p: ResearchProject) => s + p.used, 0), rate: projects.length ? Math.round(projects.reduce((s: number, p: ResearchProject) => s + p.used, 0) / projects.reduce((s: number, p: ResearchProject) => s + p.budget, 0) * 100) : 0 };
 
-  const handleCreate = async (values: Record<string, unknown>) => {
+  const handleCreate = async (values: LooseAny) => {
     const res = await window.fetch('/api/v1/research/projects', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...values, status: 'active', used: 0 }) });
     const json = await res.json();
     if (json.code === 200) { message.success('创建成功'); setModalVisible(false); form.resetFields(); refreshData(); }
@@ -87,7 +87,7 @@ export const ResearchProjectPage: React.FC = () => {
           { title: '经费', dataIndex: 'budget', render: (b: number) => `¥${(b/10000).toFixed(1)}万` },
           { title: '执行率', dataIndex: 'progress', render: (p: number) => <Progress percent={p} size="small" /> },
           { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={statusColors[s]}>{statusLabels[s]}</Tag> },
-          { title: '操作', render: (_: unknown, r: ResearchProject) => <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawerVisible(true); }}>详情</Button> },
+          { title: '操作', render: (_: LooseAny, r: ResearchProject) => <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawerVisible(true); }}>详情</Button> },
         ]} size="middle" />
       </Card>
 

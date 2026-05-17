@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { WorkflowPage } from '../pages/WorkflowPage';
 
-function mockFetchResponse(data: unknown) {
+function mockFetchResponse(data: LooseAny) {
   return { ok: true, status: 200, json: async () => data } as Response;
 }
 
@@ -34,7 +34,7 @@ describe('WorkflowPage', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as unknown as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: unknown) => {
+    fetchSpy = vi.spyOn(globalThis as LooseAny as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: LooseAny) => {
       if (url.includes('/api/v1/workflow/definitions')) return mockFetchResponse({ code: 200, data: { list: [mockDef] } });
       if (url.includes('/api/v1/workflow/instances')) return mockFetchResponse({ code: 200, data: { list: [mockInstance] } });
       if (url.includes('/api/v1/workflow/instances/wi1/urge')) return mockFetchResponse({ code: 200, message: '催办成功' });

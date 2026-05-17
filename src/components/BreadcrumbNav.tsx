@@ -36,7 +36,7 @@ export const BreadcrumbNav: React.FC = () => {
 
   const items = [
     { title: <><HomeOutlined /> <a onClick={() => navigate('/dashboard')}>首页</a></> },
-    ...pathParts.reduce((acc: unknown[], part, i) => {
+    ...pathParts.reduce((acc: LooseAny[], part, i) => {
       const path = '/' + pathParts.slice(0, i + 1).join('/');
       const label = routeLabels[path] || part;
       acc.push({ title: i === pathParts.length - 1 ? label : <a onClick={() => navigate(path)}>{label}</a> });

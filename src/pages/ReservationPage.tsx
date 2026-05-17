@@ -40,7 +40,7 @@ export const ReservationPage: React.FC = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleCreate = async (values: Record<string, unknown>) => {
+  const handleCreate = async (values: LooseAny) => {
     const res = await window.fetch('/api/v1/research/reservations', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(values) });
     const json = await res.json();
     if (json.code === 200) { message.success('预约成功'); setModalVisible(false); form.resetFields(); refreshData(); }

@@ -18,7 +18,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { MobileSamplingPage } from '../pages/MobileSamplingPage';
 
-function mockFetchResponse(data: unknown) {
+function mockFetchResponse(data: LooseAny) {
   return { ok: true, status: 200, json: async () => ({ code: 200, data, message: 'success' }) } as Response;
 }
 
@@ -37,7 +37,7 @@ describe('MobileSamplingPage - 移动采样', () => {
       writable: true,
     });
 
-    fetchSpy = vi.spyOn(globalThis as unknown as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: unknown) => {
+    fetchSpy = vi.spyOn(globalThis as LooseAny as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: LooseAny) => {
       if (url.includes('/mobile/sampling-tasks')) {
         return mockFetchResponse({ list: [
           { id: 'st1', taskNo: 'TASK-001', projectName: '东湖水质监测', sampleType: '地表水', assignedTo: '张三', planDate: '2026-05-17', status: 'in_progress', points: [

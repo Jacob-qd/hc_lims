@@ -25,7 +25,7 @@ type COCEventType =
 interface COCEvent {
   id: string; chainId: string; eventType: COCEventType;
   operatorName: string; occurredAt: string; location?: string;
-  notes?: string; metadata?: Record<string, unknown>;
+  notes?: string; metadata?: Record<string, LooseAny>;
   prevEventId: string | null; signature?: string;
 }
 
@@ -81,7 +81,7 @@ export const COCPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [searchText, setSearchText] = useState('');
   const [newEventType, setNewEventType] = useState<COCEventType>('RECEIPT');
-  const scanInputRef = useRef<unknown>(null);
+  const scanInputRef = useRef<LooseAny>(null);
   const [transferForm] = Form.useForm();
   const [disposalForm] = Form.useForm();
 
@@ -124,7 +124,7 @@ export const COCPage: React.FC = () => {
     }
   };
 
-  const handleTransfer = async (values: unknown) => {
+  const handleTransfer = async (values: LooseAny) => {
     const res = await fetch(api('/coc/transfer'), {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(values),
@@ -139,7 +139,7 @@ export const COCPage: React.FC = () => {
     }
   };
 
-  const handleDisposal = async (values: unknown) => {
+  const handleDisposal = async (values: LooseAny) => {
     if (!selectedChain) return;
     const res = await fetch(api('/coc/disposal'), {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -414,7 +414,7 @@ export const COCPage: React.FC = () => {
           <Divider orientation="left">扫码快速选择</Divider>
           <Form.Item>
             <Input.Search
-              ref={(ref) => { scanInputRef.current = ref as unknown; }}
+              ref={(ref) => { scanInputRef.current = ref as LooseAny; }}
               placeholder="扫描COC编号或样品条码"
               enterButton={<><ScanOutlined /> 扫描</>}
               onSearch={(val) => {
@@ -422,7 +422,6 @@ export const COCPage: React.FC = () => {
                 if (found) {
                   transferForm.setFieldsValue({ chainId: found.id });
                   message.success(`已识别: ${found.cocNumber}`);
-                  // @ts-expect-error ref type is unknown
                   scanInputRef.current?.blur?.();
                 } else {
                   message.error('未找到匹配的COC链');

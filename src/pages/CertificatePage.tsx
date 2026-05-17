@@ -80,7 +80,7 @@ export const CertificatePage: React.FC = () => {
     });
   };
 
-  const handleImport = async (values: unknown) => {
+  const handleImport = async (values: LooseAny) => {
     const payload = {
       userId: values.userId || '3',
       userName: values.userName,

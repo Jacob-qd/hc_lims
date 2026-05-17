@@ -35,10 +35,10 @@ describe('12种字段类型全覆盖', () => {
 
 describe('条件运算符全覆盖', () => {
   const base: FieldConfig = { id:'c', module:'sample', fieldKey:'trigger', label:'触发', fieldType:'text', required:false, sortOrder:1, groupName:'G', active:true };
-  const makeTarget = (op: string, val: unknown): FieldConfig => ({
+  const makeTarget = (op: string, val: LooseAny): FieldConfig => ({
     id:`t_${op}`, module:'sample', fieldKey:`target_${op}`, label:`目标_${op}`, fieldType:'text',
     required:false, sortOrder:2, groupName:'G', active:true,
-    conditionRules: [{ field: 'trigger', operator: op as string, value: val }],
+    conditionRules: [{ field: 'trigger', operator: op as LooseAny, value: val }],
   });
 
   it('eq_等于: 值匹配显示', () => {

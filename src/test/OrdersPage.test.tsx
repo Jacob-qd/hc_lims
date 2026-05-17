@@ -9,7 +9,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { OrdersPage } from '../pages/OrdersPage';
 
-function mockFetchResponse(data: unknown) {
+function mockFetchResponse(data: LooseAny) {
   return { ok: true, status: 200, json: async () => ({ code: 200, data }) } as Response;
 }
 
@@ -17,7 +17,7 @@ describe('OrdersPage - 委托单管理', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as unknown as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: unknown) => {
+    fetchSpy = vi.spyOn(globalThis as LooseAny as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: LooseAny) => {
       if (url.includes('/orders')) return mockFetchResponse({ list: [] });
       if (url.includes('/clients')) return mockFetchResponse({ list: [{ id: 'c1', name: '测试客户' }] });
       return mockFetchResponse({});

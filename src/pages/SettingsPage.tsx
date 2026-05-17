@@ -90,7 +90,7 @@ export const SettingsPage: React.FC = () => {
         )},
         { key: 'roles', label: '角色权限', children: (
           <Card title="权限配置矩阵">
-            <Table columns={permColumns as unknown} dataSource={permData} pagination={false} size="small" bordered />
+            <Table columns={permColumns as LooseAny} dataSource={permData} pagination={false} size="small" bordered />
           </Card>
         )},
         { key: 'config', label: '系统配置', children: (

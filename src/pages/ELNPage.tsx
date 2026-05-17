@@ -53,7 +53,7 @@ export const ELNPage: React.FC = () => {
 
   const filtered = entries.filter((e: ELNEntry) => e.title.includes(searchText) || e.author.includes(searchText));
 
-  const handleCreate = async (values: Record<string, unknown>) => {
+  const handleCreate = async (values: LooseAny) => {
     const res = await window.fetch('/api/v1/research/eln-entries', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(values) });
     const json = await res.json();
     if (json.code === 200) { message.success('创建成功'); setCreateVisible(false); form.resetFields(); refreshData(); }
@@ -104,7 +104,7 @@ export const ELNPage: React.FC = () => {
           { title: '实验日期', dataIndex: 'date' },
           { title: 'Protocol', dataIndex: 'protocol' },
           { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={statusColors[s]}>{statusLabels[s]}</Tag> },
-          { title: '操作', render: (_: unknown, r: ELNEntry) => (
+          { title: '操作', render: (_: LooseAny, r: ELNEntry) => (
             <Space>
               <Button type="link" size="small" icon={<EditOutlined />} onClick={() => openEditor(r)}>编辑</Button>
               {r.status === 'draft' && <Button type="link" size="small" icon={<CheckCircleOutlined />} onClick={() => { setCurrentEntry(r); setSignVisible(true); }}>签名</Button>}

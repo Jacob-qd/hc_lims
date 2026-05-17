@@ -45,7 +45,7 @@ export const BatchSchedulerPage: React.FC = () => {
           { title:'调度表达式', dataIndex:'cron' }, { title:'执行时间', dataIndex:'schedule' },
           { title:'上次执行', dataIndex:'lastRun' },
           { title:'状态', dataIndex:'status', render:(s:string)=><Tag color={s==='running'?'green':'orange'}>{s==='running'?'运行中':'已暂停'}</Tag> },
-          { title:'操作', render:(_: string, r: Record<string, unknown>)=>(
+          { title:'操作', render:(_: string, r: Record<string, LooseAny>)=>(
             <Space>
               <Button size="small" icon={r.status==='running'?<PauseCircleOutlined />:<PlayCircleOutlined />}
                 onClick={()=>message.success(r.status==='running'?'已暂停':'已恢复')}>{r.status==='running'?'暂停':'恢复'}</Button>

@@ -22,10 +22,10 @@ interface ReportTemplate {
   dataSource: string;
   outputFormat: string[];
   status: 'active' | 'draft';
-  fields: unknown[];
-  filters: unknown[];
-  chartConfig?: unknown;
-  outputSettings: unknown;
+  fields: LooseAny[];
+  filters: LooseAny[];
+  chartConfig?: LooseAny;
+  outputSettings: LooseAny;
   cronExpression?: string;
   nextRunTime?: string;
   createdAt: string;
@@ -37,8 +37,8 @@ interface ChartComponent {
   name: string;
   type: string;
   dataSource: string;
-  config: unknown;
-  previewData: unknown[];
+  config: LooseAny;
+  previewData: LooseAny[];
   createdAt: string;
 }
 
@@ -146,8 +146,8 @@ export const ReportEnginePage: React.FC = () => {
   const [chartForm] = Form.useForm();
   const [outputForm] = Form.useForm();
 
-  const [selectedFields, setSelectedFields] = useState<unknown[]>([]);
-  const [filters, setFilters] = useState<unknown[]>([]);
+  const [selectedFields, setSelectedFields] = useState<LooseAny[]>([]);
+  const [filters, setFilters] = useState<LooseAny[]>([]);
 
   const [previewChart, setPreviewChart] = useState<ChartComponent | null>(null);
   const [logModalVisible, setLogModalVisible] = useState(false);
@@ -286,7 +286,7 @@ export const ReportEnginePage: React.FC = () => {
     if (!values.fieldKey) return;
     const ds = form.getFieldValue('dataSource');
     const opts = fieldOptions[ds] || [];
-    const opt = opts.find((o: Record<string, unknown>) => o.value === values.fieldKey);
+    const opt = opts.find((o: LooseAny) => o.value === values.fieldKey);
     setSelectedFields(prev => [...prev, {
       fieldKey: values.fieldKey,
       label: opt?.label || values.fieldKey,
@@ -316,7 +316,7 @@ export const ReportEnginePage: React.FC = () => {
     if (chart.type === 'kpi') {
       return (
         <Row gutter={[8, 8]}>
-          {chart.previewData.map((d: Record<string, unknown>, i: number) => (
+          {chart.previewData.map((d: Record<string, LooseAny>, i: number) => (
             <Col span={12} key={i}>
               <Card size="small">
                 <Statistic title={d.label} value={d.value} suffix={d.unit} />
@@ -328,10 +328,10 @@ export const ReportEnginePage: React.FC = () => {
       );
     }
     if (chart.type === 'pie') {
-      const total = chart.previewData.reduce((s: number, d: Record<string, unknown>) => s + (d.count || 0), 0);
+      const total = chart.previewData.reduce((s: number, d: Record<string, LooseAny>) => s + (d.count || 0), 0);
       return (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-          {chart.previewData.map((d: Record<string, unknown>, i: number) => {
+          {chart.previewData.map((d: Record<string, LooseAny>, i: number) => {
             const pct = total ? Math.round((d.count / total) * 100) : 0;
             const colors = ['#1890ff', '#52c41a', '#faad14', '#f5222d', '#722ed1', '#13c2c2'];
             return (
@@ -344,10 +344,10 @@ export const ReportEnginePage: React.FC = () => {
         </div>
       );
     }
-    const maxVal = Math.max(...chart.previewData.map((d: Record<string, unknown>) => d[Object.keys(d).find(k => k !== 'month' && k !== 'date') || 'count'] || 0));
+    const maxVal = Math.max(...chart.previewData.map((d: LooseAny) => d[Object.keys(d).find(k => k !== 'month' && k !== 'date') || 'count'] || 0));
     return (
       <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 100, paddingTop: 8 }}>
-        {chart.previewData.map((d: Record<string, unknown>, i: number) => {
+        {chart.previewData.map((d: Record<string, LooseAny>, i: number) => {
           const valKey = Object.keys(d).find(k => k !== 'month' && k !== 'date') || 'count';
           const val = d[valKey] || 0;
           const height = maxVal ? (val / maxVal) * 80 : 0;
@@ -422,7 +422,7 @@ export const ReportEnginePage: React.FC = () => {
     {
       title: '操作', key: 'action', render: (_: string, record: ReportSchedule) => (
         <Space size="small">
-          <Button type="link" size="small" icon={<PlayCircleOutlined />} onClick={() => handleRun(templates.find(t => t.id === record.reportId) || { id: record.reportId, name: record.reportName } as unknown)}>立即执行</Button>
+          <Button type="link" size="small" icon={<PlayCircleOutlined />} onClick={() => handleRun(templates.find(t => t.id === record.reportId) || { id: record.reportId, name: record.reportName } as LooseAny)}>立即执行</Button>
           <Popconfirm title="确认删除?" onConfirm={() => handleDeleteSchedule(record.id)}>
             <Button type="link" size="small" danger icon={<DeleteOutlined />}>删除</Button>
           </Popconfirm>
@@ -543,7 +543,7 @@ export const ReportEnginePage: React.FC = () => {
               columns={[
                 { title: '字段', dataIndex: 'field' },
                 { title: '操作符', dataIndex: 'operator' },
-                { title: '值', dataIndex: 'value', render: (v: unknown) => String(v) },
+                { title: '值', dataIndex: 'value', render: (v: LooseAny) => String(v) },
                 { title: '逻辑', dataIndex: 'logic' },
                 { title: '操作', render: (_, __, index) => <Button type="link" danger size="small" onClick={() => removeFilter(index)}>删除</Button> },
               ]}

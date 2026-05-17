@@ -8,7 +8,7 @@ const mockSamples = [
   { id: 's1', sampleNo: 'SMP20240521001', name: '地表水样品-1', type: 'surface_water', typeLabel: '地表水', customerName: '绿源环保', projectName: '地表水监测', samplingLocation: '滨湖公园', samplingTime: '2024-05-21 08:30', receivingTime: '2024-05-21 09:15', receiverName: '张伟', containerInfo: 'PE瓶 1L', storageCondition: '4℃冷藏', priority: 'normal', priorityLabel: '常规', status: 'received', statusLabel: '已接收', flowStatus: 'in_stock', flowStatusLabel: '在库', assignedLabName: '环境实验室' },
 ];
 
-function mockFetchResponse(data: unknown) {
+function mockFetchResponse(data: LooseAny) {
   return { ok: true, status: 200, json: async () => data } as Response;
 }
 
@@ -16,7 +16,7 @@ describe('SamplesPage', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as unknown as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: unknown) => {
+    fetchSpy = vi.spyOn(globalThis as LooseAny as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: LooseAny) => {
       if (url.includes('/api/v1/samples')) return mockFetchResponse({ code: 200, data: { list: mockSamples, total: mockSamples.length } });
       if (url.includes('/api/v1/test-items')) return mockFetchResponse({ code: 200, data: [] });
       if (url.includes('/api/v1/field-configs')) return mockFetchResponse({ code: 200, data: { list: [] } });

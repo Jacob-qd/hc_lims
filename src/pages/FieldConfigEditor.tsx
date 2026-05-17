@@ -45,7 +45,7 @@ export const FieldConfigEditor: React.FC = () => {
   const [editingField, setEditingField] = useState<FieldConfig | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewValues, setPreviewValues] = useState<Record<string, unknown>>({});
+  const [previewValues, setPreviewValues] = useState<Record<string, LooseAny>>({});
   const [form] = Form.useForm();
 
   const fetchConfigs = useCallback(async () => {
@@ -66,7 +66,7 @@ export const FieldConfigEditor: React.FC = () => {
 
   const handleSave = async () => {
     const values = await form.validateFields();
-    const body: Record<string, unknown> = { ...values, module: activeModule };
+    const body: Record<string, LooseAny> = { ...values, module: activeModule };
     if (editingField) body.id = editingField.id;
 
     try {
@@ -304,7 +304,7 @@ export const FieldConfigEditor: React.FC = () => {
       >
         <Form
           layout="vertical"
-          onValuesChange={(changed) => setPreviewValues((prev: Record<string, unknown>) => ({ ...prev, ...changed }))}
+          onValuesChange={(changed) => setPreviewValues((prev: LooseAny) => ({ ...prev, ...changed }))}
         >
           <DynamicFieldRenderer
             configs={configs}

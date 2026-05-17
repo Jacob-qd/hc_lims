@@ -13,7 +13,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { ClientsPage } from '../pages/ClientsPage';
 
-function mockFetchResponse(data: unknown) {
+function mockFetchResponse(data: LooseAny) {
   return { ok: true, status: 200, json: async () => ({ code: 200, data }) } as Response;
 }
 
@@ -21,7 +21,7 @@ describe('ClientsPage - 客户管理', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as unknown as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: unknown) => {
+    fetchSpy = vi.spyOn(globalThis as LooseAny as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: LooseAny) => {
       if (url.includes('/api/v1/clients') && url.endsWith('/clients')) {
         return mockFetchResponse({ list: [
           { id: 'c1', name: '绿源环保科技', type: '企业', industry: '环保', contact: '王经理', phone: '138-0001', credit: 'A', status: 'active', samples: 248, contracts: 3, source: '自行开发', createdAt: '2024-01-15', updatedAt: '2026-05-01' },

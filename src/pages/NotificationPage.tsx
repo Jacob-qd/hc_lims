@@ -15,7 +15,7 @@ const mockNotifications = [
   { id: 'n8', title: '采购申请待审批', desc: 'PR-2025-001 待审批', type: 'info', time: '2024-05-17', module: '库存管理', read: true },
 ];
 
-const typeIcons: Record<string, unknown> = { error: <ExclamationCircleOutlined style={{color:'#ff4d4f'}} />, warning: <WarningOutlined style={{color:'#faad14'}} />, info: <InfoCircleOutlined style={{color:'#1677ff'}} />, success: <CheckCircleOutlined style={{color:'#52c41a'}} /> };
+const typeIcons: Record<string, LooseAny> = { error: <ExclamationCircleOutlined style={{color:'#ff4d4f'}} />, warning: <WarningOutlined style={{color:'#faad14'}} />, info: <InfoCircleOutlined style={{color:'#1677ff'}} />, success: <CheckCircleOutlined style={{color:'#52c41a'}} /> };
 
 export const NotificationPage: React.FC = () => {
   const [notifs, setNotifs] = useState(mockNotifications);

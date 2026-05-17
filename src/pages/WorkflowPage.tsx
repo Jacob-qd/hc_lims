@@ -26,7 +26,7 @@ interface WFNode {
   name: string;
   x: number;
   y: number;
-  config?: Record<string, unknown>;
+  config?: Record<string, LooseAny>;
 }
 
 interface WFEdge {
@@ -74,7 +74,7 @@ interface WFInstance {
   currentNodes: string[];
   currentNodeNames: string[];
   assignees: string[];
-  variables: Record<string, unknown>;
+  variables: Record<string, LooseAny>;
   startedBy: string;
   startedAt: string;
   completedAt?: string;
@@ -781,7 +781,7 @@ export const WorkflowPage: React.FC = () => {
                     {
                       title: '状态',
                       dataIndex: 'status',
-                      render: (s: WFStatus) => <Badge status={statusMap[s].color as unknown} text={statusMap[s].text} />,
+                      render: (s: WFStatus) => <Badge status={statusMap[s].color as LooseAny} text={statusMap[s].text} />,
                     },
                     {
                       title: '操作',
@@ -846,7 +846,7 @@ export const WorkflowPage: React.FC = () => {
                     {
                       title: '状态',
                       dataIndex: 'status',
-                      render: (s: InstStatus) => <Badge status={instStatusMap[s].color as unknown} text={instStatusMap[s].text} />,
+                      render: (s: InstStatus) => <Badge status={instStatusMap[s].color as LooseAny} text={instStatusMap[s].text} />,
                     },
                     {
                       title: '操作',
@@ -972,7 +972,7 @@ export const WorkflowPage: React.FC = () => {
                 <Descriptions.Item label="结束时间">{detailInstance.completedAt}</Descriptions.Item>
               )}
               <Descriptions.Item label="状态">
-                <Badge status={instStatusMap[detailInstance.status].color as unknown} text={instStatusMap[detailInstance.status].text} />
+                <Badge status={instStatusMap[detailInstance.status].color as LooseAny} text={instStatusMap[detailInstance.status].text} />
               </Descriptions.Item>
             </Descriptions>
             <Divider />

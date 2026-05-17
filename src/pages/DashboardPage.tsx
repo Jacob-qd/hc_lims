@@ -62,8 +62,8 @@ export const DashboardPage: React.FC = () => {
   const [instruments, setInstruments] = useState<Instrument[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [recentSamples, setRecentSamples] = useState<Sample[]>([]);
-  const [turnaroundData, setTurnaroundData] = useState<unknown[]>([]);
-  const [typeDistribution, setTypeDistribution] = useState<unknown[]>([]);
+  const [turnaroundData, setTurnaroundData] = useState<LooseAny[]>([]);
+  const [typeDistribution, setTypeDistribution] = useState<LooseAny[]>([]);
 
   useEffect(() => {
     Promise.all([
@@ -116,7 +116,7 @@ export const DashboardPage: React.FC = () => {
   ];
 
   const lineConfig = {
-    data: turnaroundData.flatMap((d: Record<string, unknown>) => [
+    data: turnaroundData.flatMap((d: LooseAny) => [
       { date: d.date, value: d.all, type: '所有样品' },
       { date: d.date, value: d.water, type: '环境水' },
       { date: d.date, value: d.soil, type: '土壤' },
@@ -132,7 +132,7 @@ export const DashboardPage: React.FC = () => {
   };
 
   const pieConfig = {
-    data: typeDistribution.map((d: Record<string, unknown>) => ({ type: d.type, value: d.count })),
+    data: typeDistribution.map((d: LooseAny) => ({ type: d.type, value: d.count })),
     angleField: 'value',
     colorField: 'type',
     radius: 0.8,
@@ -141,7 +141,7 @@ export const DashboardPage: React.FC = () => {
     label: false,
     statistic: {
       title: { content: '总样品数' },
-      content: { content: String(typeDistribution.reduce((sum: number, d: Record<string, unknown>) => sum + d.count, 0)) },
+      content: { content: String(typeDistribution.reduce((sum: number, d: Record<string, LooseAny>) => sum + d.count, 0)) },
     },
     legend: { position: 'right' as const, layout: 'vertical' as const },
   };

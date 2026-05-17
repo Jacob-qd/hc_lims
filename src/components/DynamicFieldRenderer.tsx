@@ -11,7 +11,7 @@ interface DynamicFieldRendererProps {
   configs: FieldConfig[] | FormFieldSchema[];
   values?: DynamicFields;
   onChange?: (values: DynamicFields) => void;
-  form?: unknown; // AntD Form instance
+  form?: LooseAny; // AntD Form instance
   disabled?: boolean;
 }
 
@@ -27,23 +27,23 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
   const groups = useMemo(() => {
     const map: Record<string, FormFieldSchema[]> = {};
     const sorted = [...configs]
-      .filter((f: Record<string, unknown>) => f.active !== false)
-      .sort((a: Record<string, unknown>, b: Record<string, unknown>) => (Number(a.sortOrder) || 0) - (Number(b.sortOrder) || 0));
+      .filter((f: LooseAny) => f.active !== false)
+      .sort((a: Record<string, LooseAny>, b: Record<string, LooseAny>) => (Number(a.sortOrder) || 0) - (Number(b.sortOrder) || 0));
 
     for (const f of sorted) {
-      const g = (f as Record<string, unknown>).groupName || 'default';
+      const g = (f as LooseAny).groupName || 'default';
       if (!map[g]) map[g] = [];
       map[g].push({
-        key: (f as Record<string, unknown>).fieldKey || (f as Record<string, unknown>).key,
+        key: (f as LooseAny).fieldKey || (f as LooseAny).key,
         label: f.label,
-        type: (f as Record<string, unknown>).fieldType || (f as Record<string, unknown>).type,
+        type: (f as LooseAny).fieldType || (f as LooseAny).type,
         required: f.required,
         defaultValue: f.defaultValue,
         placeholder: f.placeholder,
-        validation: (f as Record<string, unknown>).validation,
-        options: (f as Record<string, unknown>).options,
-        showIf: (f as Record<string, unknown>).conditionRules || (f as Record<string, unknown>).showIf,
-        cascading: (f as Record<string, unknown>).cascading,
+        validation: (f as LooseAny).validation,
+        options: (f as LooseAny).options,
+        showIf: (f as LooseAny).conditionRules || (f as LooseAny).showIf,
+        cascading: (f as LooseAny).cascading,
       });
     }
     return map;
@@ -57,7 +57,7 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
       switch (rule.operator) {
         case 'eq': return val === rule.value;
         case 'neq': return val !== rule.value;
-        case 'in': return Array.isArray(rule.value) ? (rule.value as unknown[]).includes(val) : false;
+        case 'in': return Array.isArray(rule.value) ? (rule.value as LooseAny[]).includes(val) : false;
         case 'gt': return typeof val === 'number' && typeof rule.value === 'number' && val > rule.value;
         case 'gte': return typeof val === 'number' && typeof rule.value === 'number' && val >= rule.value;
         case 'lt': return typeof val === 'number' && typeof rule.value === 'number' && val < rule.value;
