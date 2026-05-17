@@ -418,7 +418,7 @@ export const ResearchGroupPage: React.FC = () => {
                 {
                   title: '操作',
                   key: 'action',
-                  render: (_: any, r: ResearchGroup) => (
+                  render: (_: unknown, r: ResearchGroup) => (
                     <Button
                       type="link"
                       size="small"

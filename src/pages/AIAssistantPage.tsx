@@ -7,7 +7,6 @@ import {
   SendOutlined, RobotOutlined, UserOutlined, BulbOutlined,
   DeleteOutlined, ClockCircleOutlined,
 } from '@ant-design/icons';
-import type { ColumnsType } from 'antd/es/table';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -17,7 +16,7 @@ interface AIMessage {
   role: 'user' | 'assistant';
   content: string;
   type: 'text' | 'table' | 'chart';
-  data?: any;
+  data?: unknown;
   timestamp: string;
 }
 
@@ -73,7 +72,7 @@ export const AIAssistantPage: React.FC = () => {
 
     // Optimistically add user message
     const userMsg: AIMessage = {
-      id: 'um' + Date.now(),
+      id: 'um' + Date.now(), // eslint-disable-line react-hooks/purity
       role: 'user',
       content,
       type: 'text',
@@ -301,31 +300,30 @@ export const AIAssistantPage: React.FC = () => {
   );
 };
 
-const TableRenderer: React.FC<{ data: any[] }> = ({ data }) => {
+const TableRenderer: React.FC<{ data: unknown[] }> = ({ data }) => {
   if (!data || data.length === 0) return null;
-  const columns: ColumnsType<any> = Object.keys(data[0]).map(key => ({
-    title: key,
-    dataIndex: key,
-    key,
-  }));
+  const firstRow = data[0] as Record<string, unknown>;
   return (
     <div style={{ overflowX: 'auto', marginTop: 8 }}>
       <table style={{ width: '100%', fontSize: 12, borderCollapse: 'collapse' }}>
         <thead>
           <tr style={{ background: '#fafafa' }}>
-            {Object.keys(data[0]).map(key => (
+            {Object.keys(firstRow).map(key => (
               <th key={key} style={{ padding: '8px 12px', border: '1px solid #f0f0f0', textAlign: 'left', fontWeight: 600 }}>{key}</th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {data.map((row, i) => (
-            <tr key={i}>
-              {Object.values(row).map((val: any, j) => (
-                <td key={j} style={{ padding: '8px 12px', border: '1px solid #f0f0f0' }}>{val}</td>
-              ))}
-            </tr>
-          ))}
+          {data.map((row, i) => {
+            const rowObj = row as Record<string, unknown>;
+            return (
+              <tr key={i}>
+                {Object.values(rowObj).map((val, j) => (
+                  <td key={j} style={{ padding: '8px 12px', border: '1px solid #f0f0f0' }}>{String(val)}</td>
+                ))}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

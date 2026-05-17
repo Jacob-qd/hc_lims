@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Card, Table, Button, Row, Col, Typography, Statistic, Select, Modal, Form, message, Tabs, Input, Badge, Tag, Alert, Spin
+  Card, Table, Button, Row, Col, Typography, Statistic, Select, Modal, Form, message, Tabs, Input, Tag, Alert, Spin
 } from 'antd';
-import { PlusOutlined, CalendarOutlined, DollarOutlined, ClockCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { PlusOutlined, CalendarOutlined, DollarOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 interface Reservation {
   id: string;
@@ -52,10 +52,10 @@ export const ReservationPage: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData(); // eslint-disable-line react-hooks/set-state-in-effect
   }, []);
 
-  const handleCreate = async (values: any) => {
+  const handleCreate = async (values: Record<string, unknown>) => {
     const hasConflict = reservations.some(
       (r) =>
         r.instrument === values.instrument &&
@@ -88,7 +88,6 @@ export const ReservationPage: React.FC = () => {
     totalFee: reservations.reduce((s: number, r: Reservation) => s + (r.fee || 0), 0),
   };
 
-  const calendarInstruments = ['ICP-MS', '气相色谱', '紫外分光', '原子吸收', '荧光分光', '自动滴定'];
   const calendarDays = ['周一 05-19', '周二 05-20', '周三 05-21', '周四 05-22', '周五 05-23'];
 
   const calendarData = [

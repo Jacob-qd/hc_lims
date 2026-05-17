@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Card, Badge, Button, Space, Tag, Typography, Row, Col, Statistic,
-  Table, Timeline, Empty, Spin, message, Drawer, Select, List,
+  Table, Timeline, Empty, message, Drawer, Select,
 } from 'antd';
 import {
   BellOutlined, WarningOutlined, CheckCircleOutlined,
@@ -56,6 +56,55 @@ const statusConfig: Record<string, { color: string; label: string }> = {
   resolved: { color: 'green', label: '已解决' },
 };
 
+// Simple bar chart for trend
+const TrendChart: React.FC<{ data: AlertStats['trend'] }> = ({ data }) => {
+  const maxVal = Math.max(...data.flatMap(d => [d.qc, d.instrument, d.sample, d.data]));
+  const h = 160;
+  const barW = 24;
+  const gap = 12;
+  const totalW = data.length * (barW * 4 + gap) + gap;
+
+  return (
+    <svg viewBox={`0 0 ${totalW} ${h + 30}`} style={{ width: '100%', height: 200 }}>
+      {data.map((d, i) => {
+        const x = gap + i * (barW * 4 + gap);
+        const vals = [
+          { v: d.qc, c: typeConfig.qc.color },
+          { v: d.instrument, c: typeConfig.instrument.color },
+          { v: d.sample, c: typeConfig.sample.color },
+          { v: d.data, c: typeConfig.data.color },
+        ];
+        return (
+          <g key={d.date}>
+            {vals.map((val, j) => {
+              const bh = maxVal > 0 ? (val.v / maxVal) * h : 0;
+              return (
+                <rect
+                  key={j}
+                  x={x + j * barW}
+                  y={h - bh}
+                  width={barW - 2}
+                  height={bh}
+                  fill={val.c}
+                  rx={2}
+                />
+              );
+            })}
+            <text x={x + barW * 2} y={h + 18} textAnchor="middle" fontSize={10} fill="#999">{d.date}</text>
+          </g>
+        );
+      })}
+      {/* Legend */}
+      {Object.entries(typeConfig).map(([key, cfg], i) => (
+        <g key={key} transform={`translate(${gap + i * 70}, ${h + 26})`}>
+          <rect width={8} height={8} fill={cfg.color} rx={2} />
+          <text x={12} y={7} fontSize={10} fill="#666">{cfg.label}</text>
+        </g>
+      ))}
+    </svg>
+  );
+};
+
 export const AIAlertPage: React.FC = () => {
   const [alerts, setAlerts] = useState<AIAlert[]>([]);
   const [stats, setStats] = useState<AlertStats | null>(null);
@@ -64,10 +113,6 @@ export const AIAlertPage: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterType, setFilterType] = useState<string>('all');
-
-  useEffect(() => {
-    fetchData();
-  }, [filterStatus, filterType]);
 
   const fetchData = () => {
     setLoading(true);
@@ -84,6 +129,10 @@ export const AIAlertPage: React.FC = () => {
     }).catch(() => message.error('加载数据失败'))
     .finally(() => setLoading(false));
   };
+
+  useEffect(() => {
+    fetchData();
+  }, [filterStatus, filterType]);
 
   const handleAck = (id: string) => {
     fetch(`/api/v1/ai/alerts/${id}/ack`, { method: 'PUT' })
@@ -112,55 +161,6 @@ export const AIAlertPage: React.FC = () => {
   const openDetail = (alert: AIAlert) => {
     setSelectedAlert(alert);
     setDrawerOpen(true);
-  };
-
-  // Simple bar chart for trend
-  const TrendChart: React.FC<{ data: AlertStats['trend'] }> = ({ data }) => {
-    const maxVal = Math.max(...data.flatMap(d => [d.qc, d.instrument, d.sample, d.data]));
-    const h = 160;
-    const barW = 24;
-    const gap = 12;
-    const totalW = data.length * (barW * 4 + gap) + gap;
-
-    return (
-      <svg viewBox={`0 0 ${totalW} ${h + 30}`} style={{ width: '100%', height: 200 }}>
-        {data.map((d, i) => {
-          const x = gap + i * (barW * 4 + gap);
-          const vals = [
-            { v: d.qc, c: typeConfig.qc.color },
-            { v: d.instrument, c: typeConfig.instrument.color },
-            { v: d.sample, c: typeConfig.sample.color },
-            { v: d.data, c: typeConfig.data.color },
-          ];
-          return (
-            <g key={d.date}>
-              {vals.map((val, j) => {
-                const bh = maxVal > 0 ? (val.v / maxVal) * h : 0;
-                return (
-                  <rect
-                    key={j}
-                    x={x + j * barW}
-                    y={h - bh}
-                    width={barW - 2}
-                    height={bh}
-                    fill={val.c}
-                    rx={2}
-                  />
-                );
-              })}
-              <text x={x + barW * 2} y={h + 18} textAnchor="middle" fontSize={10} fill="#999">{d.date}</text>
-            </g>
-          );
-        })}
-        {/* Legend */}
-        {Object.entries(typeConfig).map(([key, cfg], i) => (
-          <g key={key} transform={`translate(${gap + i * 70}, ${h + 26})`}>
-            <rect width={8} height={8} fill={cfg.color} rx={2} />
-            <text x={12} y={7} fontSize={10} fill="#666">{cfg.label}</text>
-          </g>
-        ))}
-      </svg>
-    );
   };
 
   const columns: ColumnsType<AIAlert> = [
@@ -202,7 +202,7 @@ export const AIAlertPage: React.FC = () => {
       key: 'status',
       width: 90,
       render: (v: string) => (
-        <Badge status={statusConfig[v]?.color as any} text={statusConfig[v]?.label} />
+        <Badge status={statusConfig[v]?.color as 'success' | 'processing' | 'error' | 'default' | 'warning'} text={statusConfig[v]?.label} />
       ),
     },
     {
@@ -215,7 +215,7 @@ export const AIAlertPage: React.FC = () => {
       title: '操作',
       key: 'action',
       width: 180,
-      render: (_: any, record: AIAlert) => (
+      render: (_: unknown, record: AIAlert) => (
         <Space size="small">
           <Button type="link" size="small" onClick={() => openDetail(record)}>详情</Button>
           {record.status === 'new' && (

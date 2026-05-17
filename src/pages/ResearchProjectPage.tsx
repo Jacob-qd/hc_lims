@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Tabs, Progress, Modal, Form, message, Timeline, Spin
+  Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Tabs, Progress, Modal, Form, message, Timeline
 } from 'antd';
-import { PlusOutlined, SearchOutlined, EyeOutlined, CalendarOutlined, FlagOutlined, FundOutlined, TeamOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined, EyeOutlined, CalendarOutlined, FlagOutlined, FundOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 
@@ -50,7 +50,7 @@ export const ResearchProjectPage: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData(); // eslint-disable-line react-hooks/set-state-in-effect
   }, []);
 
   const filtered = projects.filter((p: ResearchProject) => {
@@ -72,7 +72,7 @@ export const ResearchProjectPage: React.FC = () => {
       : 0,
   };
 
-  const handleCreate = async (values: any) => {
+  const handleCreate = async (values: Record<string, unknown>) => {
     const res = await window.fetch('/api/v1/research/projects', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -136,7 +136,7 @@ export const ResearchProjectPage: React.FC = () => {
             { title: '经费', dataIndex: 'budget', render: (b: number) => `¥${(b / 10000).toFixed(1)}万` },
             { title: '执行率', dataIndex: 'progress', render: (p: number) => <Progress percent={p} size="small" /> },
             { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={statusColors[s]}>{statusLabels[s]}</Tag> },
-            { title: '操作', render: (_: any, r: ResearchProject) => <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawerVisible(true); }}>详情</Button> },
+            { title: '操作', render: (_: unknown, r: ResearchProject) => <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawerVisible(true); }}>详情</Button> },
           ]}
           size="middle"
         />

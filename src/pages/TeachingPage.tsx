@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Tabs, Drawer, Descriptions, message, Modal, Form, Select, Progress, Badge, Spin
+  Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Tabs, Drawer, Descriptions, message, Modal, Form, Select, Progress, Badge
 } from 'antd';
-import { PlusOutlined, SearchOutlined, EyeOutlined, TeamOutlined, BookOutlined, FileTextOutlined, EditOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined, EyeOutlined, TeamOutlined, BookOutlined, FileTextOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 
@@ -41,7 +41,7 @@ export const TeachingPage: React.FC = () => {
     active: courses.filter((c: Course) => c.status === 'active').length,
   };
 
-  const handleCreate = (values: any) => {
+  const handleCreate = (values: Record<string, unknown>) => {
     message.success('课程创建成功');
     setModalVisible(false);
     form.resetFields();
@@ -76,7 +76,7 @@ export const TeachingPage: React.FC = () => {
             { title: '学生人数', dataIndex: 'students' },
             { title: '实验数', dataIndex: 'experiments' },
             { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={s === 'active' ? 'green' : 'default'}>{s === 'active' ? '进行中' : '已结束'}</Tag> },
-            { title: '操作', render: (_: any, r: Course) => <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawer(true); }} /> },
+            { title: '操作', render: (_: unknown, r: Course) => <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawer(true); }} /> },
           ]}
           pagination={{ pageSize: 10 }}
           size="middle"
@@ -116,7 +116,7 @@ export const TeachingPage: React.FC = () => {
                     { title: '学时', dataIndex: 'hours' },
                     { title: '批次', dataIndex: 'batch' },
                     { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={s === 'completed' ? 'green' : s === 'testing' ? 'blue' : 'default'}>{s === 'completed' ? '已完成' : s === 'testing' ? '进行中' : '待开始'}</Tag> },
-                    { title: '进度', render: (_: any, r: any) => <Progress percent={r.status === 'completed' ? 100 : r.status === 'testing' ? 50 : 0} size="small" /> },
+                    { title: '进度', render: (_: unknown, r: { status: string }) => <Progress percent={r.status === 'completed' ? 100 : r.status === 'testing' ? 50 : 0} size="small" /> },
                   ]}
                 />
               )
@@ -160,9 +160,9 @@ export const TeachingPage: React.FC = () => {
                       { title: '学生', dataIndex: 'student' },
                       { title: '实验', dataIndex: 'exp' },
                       { title: '提交日期', dataIndex: 'submitDate', render: (d: string) => d || <Text type="secondary">—</Text> },
-                      { title: '成绩', dataIndex: 'score', render: (s: string, r: any) => r.status === '待批阅' ? <Input size="small" style={{ width: 60 }} placeholder="评分" /> : s || <Text type="secondary">—</Text> },
+                      { title: '成绩', dataIndex: 'score', render: (s: string, r: { status: string; student: string }) => r.status === '待批阅' ? <Input size="small" style={{ width: 60 }} placeholder="评分" /> : s || <Text type="secondary">—</Text> },
                       { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={s === '已批阅' ? 'green' : s === '待批阅' ? 'orange' : 'default'}>{s}</Tag> },
-                      { title: '操作', render: (_: any, r: any) => r.status === '待批阅' ? <Button size="small" type="primary" onClick={() => message.success('正在批阅: ' + r.student)}>批阅</Button> : <Button size="small" onClick={() => message.info('查看报告: ' + r.student)}>查看</Button> },
+                      { title: '操作', render: (_: unknown, r: { status: string; student: string }) => r.status === '待批阅' ? <Button size="small" type="primary" onClick={() => message.success('正在批阅: ' + r.student)}>批阅</Button> : <Button size="small" onClick={() => message.info('查看报告: ' + r.student)}>查看</Button> },
                     ]}
                   />
                   <Button type="primary" style={{ marginTop: 8 }} onClick={() => message.success('批量评分功能')}>批量评分</Button>
