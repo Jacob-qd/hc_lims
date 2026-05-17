@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
   Card, Table, Tag, Button, Input, Select, DatePicker, Row, Col,
-  Space, Typography, Drawer, Timeline, Badge, Steps, Form,
-  Modal, message, Radio, Checkbox, Divider, Tabs,
+  Space, Typography, Drawer, Timeline, Badge, Form,
+  Modal, message, Divider, Tabs,
  Descriptions, List, Empty, Upload,
   Alert,
 } from 'antd';
@@ -11,22 +11,28 @@ import {
   DeleteOutlined, FileTextOutlined, EditOutlined, EyeOutlined,
   CheckCircleOutlined, CloseCircleOutlined, SendOutlined,
   HistoryOutlined, PaperClipOutlined, CommentOutlined,
-  SafetyCertificateOutlined, ClockCircleOutlined,
-  ArrowRightOutlined, DownloadOutlined, CloudUploadOutlined,
+  SafetyCertificateOutlined,
+  DownloadOutlined, CloudUploadOutlined,
   AuditOutlined,
   SignatureOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type {
   Report, ReportTestResult, ReportSignature,
-  ReportAnnotation, ReviewChecklistItem, ReportChangeEntry,
+  ReportAnnotation, ReviewChecklistItem,
   ReportAttachment, ReportAnnotationReply,
 } from '../mocks/data';
 import {
-  reportStatuses, reviewChecklistDef,
+  reportStatuses,
   customers, projects, sampleTypes,
 } from '../mocks/data';
-import { computeDocumentHash, signatureMeanings } from '../mocks/data';
+
+import { SignatureModal } from '../components/reports/SignatureModal';
+import { ReviewModal } from '../components/reports/ReviewModal';
+import { FlowStepIndicator } from '../components/reports/FlowStepIndicator';
+import { QRCodeDisplay } from '../components/reports/QRCodeDisplay';
+import { ChangeHistoryPanel } from '../components/reports/ChangeHistoryPanel';
+import { WatermarkOverlay } from '../components/reports/WatermarkOverlay';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -57,216 +63,7 @@ const getRoleColor = (role: string) => {
 // ================================================
 
 /** Enhanced Digital Signature Modal with SM2/SM3 */
-const SignatureModal: React.FC<{
-  open: boolean;
-  onClose: () => void;
-  onSign: (data: { password: string; reason: string; role: string; meaning: string; meaningStatement: string }) => void;
-  role: 'compiler' | 'reviewer' | 'approver';
-  roleLabel: string;
-  reportId?: string;
-}> = ({ open, onClose, onSign, role, roleLabel, reportId }) => {
-  const [password, setPassword] = useState('');
-  const [reason, setReason] = useState('');
-  const [confirmed, setConfirmed] = useState(false);
-  const [sm3Hash, setSm3Hash] = useState('');
-
-  // Map role to meaning
-  const roleToMeaning: Record<string, string> = {
-    compiler: 'PREPARED',
-    reviewer: 'REVIEWED',
-    approver: 'APPROVED',
-  };
-  const currentMeaning = roleToMeaning[role] || 'PREPARED';
-  const meaningDef = signatureMeanings.find(m => m.value === currentMeaning);
-
-  useEffect(() => {
-    if (open && reportId) {
-      // Generate a mock SM3 hash for the document
-      const docForHash = { id: reportId, reportNo: 'RPT...', title: '检测报告', customerName: '', testResults: [] };
-      const hash = computeDocumentHash(docForHash);
-      setSm3Hash(hash);
-      setPassword('');
-      setReason('');
-      setConfirmed(false);
-    }
-  }, [open, reportId]);
-
-  const handleSubmit = () => {
-    if (!password) { message.warning('请输入签名密码'); return; }
-    if (!reason) { message.warning('请输入签名理由'); return; }
-    if (!confirmed) { message.warning('请确认签名内容真实有效'); return; }
-    if (password !== '123456') { message.error('密码错误'); return; }
-    onSign({ password, reason, role, meaning: currentMeaning, meaningStatement: reason });
-    setPassword('');
-    setReason('');
-    setConfirmed(false);
-  };
-
-  return (
-    <Modal
-      title={<span><SignatureOutlined style={{ color: '#1677ff' }} /> 电子签名确认</span>}
-      open={open}
-      onCancel={onClose}
-      onOk={handleSubmit}
-      okText="确认签名"
-      okButtonProps={{ icon: <CheckCircleOutlined />, disabled: !confirmed || !password || !reason }}
-      width={560}
-    >
-      <Alert
-        message={{
-          PREPARED: '报告编制完成，将以「编制」身份进行电子签名',
-          REVIEWED: '技术审核通过，将以「审核」身份进行电子签名',
-          APPROVED: '报告批准签发，将以「批准」身份进行电子签名',
-        }[currentMeaning] || `即将以「${roleLabel}」身份进行电子签名`}
-        type="info"
-        showIcon
-        style={{ marginBottom: 16 }}
-      />
-
-      <Card size="small" style={{ marginBottom: 16, background: '#f6f8fa' }}>
-        <Descriptions column={1} size="small">
-          <Descriptions.Item label="签名含义">
-            <Tag color={role === 'compiler' ? 'blue' : role === 'reviewer' ? 'orange' : 'green'}>
-              {meaningDef?.label || roleLabel}
-            </Tag>
-            <Text type="secondary" style={{ fontSize: 12, marginLeft: 8 }}>{meaningDef?.description}</Text>
-          </Descriptions.Item>
-          <Descriptions.Item label="签名算法">
-            <Tag color="geekblue">SM2</Tag> 椭圆曲线公钥密码算法 (GB/T 32918)
-          </Descriptions.Item>
-          <Descriptions.Item label="摘要算法">
-            <Tag color="geekblue">SM3</Tag> 密码杂凑算法 (GB/T 32905)
-          </Descriptions.Item>
-          <Descriptions.Item label="文档摘要 (SM3)">
-            <Text copyable style={{ fontFamily: 'monospace', fontSize: 11, wordBreak: 'break-all' }}>
-              {sm3Hash}
-            </Text>
-          </Descriptions.Item>
-        </Descriptions>
-      </Card>
-
-      <Form layout="vertical">
-        <Form.Item label="签名密码" required>
-          <Input.Password
-            placeholder="请输入签名密码（测试密码：123456）"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            prefix={<SafetyCertificateOutlined />}
-          />
-        </Form.Item>
-        <Form.Item label="签名含义声明" required>
-          <TextArea
-            placeholder={meaningDef?.description || '请说明签名理由...'}
-            rows={3}
-            value={reason}
-            onChange={e => setReason(e.target.value)}
-          />
-        </Form.Item>
-        <Form.Item>
-          <Checkbox checked={confirmed} onChange={e => setConfirmed(e.target.checked)}>
-            <Text strong>我确认以上内容真实有效，并承担相应法律责任</Text>
-          </Checkbox>
-        </Form.Item>
-      </Form>
-
-      <div style={{ fontSize: 12, color: '#999', padding: '8px 0', borderTop: '1px solid #f0f0f0' }}>
-        <ClockCircleOutlined style={{ marginRight: 4 }} />
-        签名后将记录时间戳 (NTP)、IP 地址、会话ID，形成不可篡改的签名审计链
-      </div>
-    </Modal>
-  );
-};
-
 /** Review Approval Modal */
-const ReviewModal: React.FC<{
-  open: boolean;
-  onClose: () => void;
-  onSubmit: (data: { conclusion: string; opinion: string; checklist: ReviewChecklistItem[] }) => void;
-  report: Report | null;
-}> = ({ open, onClose, onSubmit, report }) => {
-  const [conclusion, setConclusion] = useState<string>('pass');
-  const [opinion, setOpinion] = useState('');
-  const [checklist, setChecklist] = useState<ReviewChecklistItem[]>(
-    reviewChecklistDef.map(c => ({ ...c }))
-  );
-
-  useEffect(() => {
-    if (open) {
-      setConclusion('pass');
-      setOpinion('');
-      setChecklist(reviewChecklistDef.map(c => ({ ...c })));
-    }
-  }, [open]);
-
-  const handleSubmit = () => {
-    const unchecked = checklist.filter(c => !c.passed);
-    if (unchecked.length > 0) {
-      message.warning(`尚有 ${unchecked.length} 项审核要点未通过`);
-      return;
-    }
-    if (!opinion.trim()) { message.warning('请输入审核意见'); return; }
-    onSubmit({ conclusion, opinion, checklist });
-    onClose();
-  };
-
-  return (
-    <Modal
-      title={<span><AuditOutlined /> 审核确认</span>}
-      open={open}
-      onCancel={onClose}
-      onOk={handleSubmit}
-      width={640}
-      okText="确认审核"
-      okButtonProps={{ icon: <CheckCircleOutlined /> }}
-    >
-      {report && (
-        <div style={{ marginBottom: 16 }}>
-          <Text strong>{report.reportNo}</Text> - <Text>{report.title}</Text>
-        </div>
-      )}
-      <Divider>审核要点检查清单</Divider>
-      <List
-        dataSource={checklist}
-        renderItem={(item, index) => (
-          <List.Item>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%' }}>
-              <Checkbox
-                checked={item.passed}
-                onChange={e => {
-                  const next = [...checklist];
-                  next[index] = { ...next[index], passed: e.target.checked };
-                  setChecklist(next);
-                }}
-              />
-              <Text delete={item.passed} style={{ textDecoration: item.passed ? 'line-through' : 'none', flex: 1 }}>
-                {index + 1}. {item.label}
-              </Text>
-            </div>
-          </List.Item>
-        )}
-      />
-      <Divider>审核结论</Divider>
-      <Radio.Group value={conclusion} onChange={e => setConclusion(e.target.value)} style={{ marginBottom: 16 }}>
-        <Radio.Button value="pass" style={{ borderColor: '#52c41a', color: conclusion === 'pass' ? '#52c41a' : undefined }}>
-          <CheckCircleOutlined /> 通过
-        </Radio.Button>
-        <Radio.Button value="fail" style={{ borderColor: '#f5222d', color: conclusion === 'fail' ? '#f5222d' : undefined }}>
-          <CloseCircleOutlined /> 不通过
-        </Radio.Button>
-      </Radio.Group>
-      <Form.Item label="审核意见" required>
-        <TextArea
-          placeholder="请输入审核意见..."
-          rows={4}
-          value={opinion}
-          onChange={e => setOpinion(e.target.value)}
-        />
-      </Form.Item>
-    </Modal>
-  );
-};
-
-/** Annotations Panel (批注功能) */
 const AnnotationsPanel: React.FC<{
   annotations: ReportAnnotation[];
   reportId: string;
@@ -391,151 +188,6 @@ const AnnotationsPanel: React.FC<{
 };
 
 /** Change History Panel */
-const ChangeHistoryPanel: React.FC<{ history: ReportChangeEntry[] }> = ({ history }) => {
-  if (history.length === 0) {
-    return <Empty description="暂无变更记录" />;
-  }
-  return (
-    <Timeline
-      items={history.map(h => ({
-        color: 'blue',
-        children: (
-          <div>
-            <Text strong>{h.field}</Text>
-            <div style={{ fontSize: 12, color: '#999' }}>{h.operator} · {h.changedAt}</div>
-            <div style={{ fontSize: 12 }}>
-              <Text type="secondary">变更：</Text>
-              <Text delete style={{ fontSize: 12 }}>{h.oldValue}</Text>
-              <ArrowRightOutlined style={{ margin: '0 8px', fontSize: 12 }} />
-              <Text style={{ fontSize: 12 }}>{h.newValue}</Text>
-            </div>
-          </div>
-        ),
-      }))}
-    />
-  );
-};
-
-/** Simple QR Code Display (mock) */
-const QRCodeDisplay: React.FC<{ value: string; size?: number }> = ({ value, size = 150 }) => {
-  // Generate a deterministic pattern from the value
-  const cells = 19; // QR code grid
-  const cellSize = Math.floor(size / cells);
-  const actualSize = cellSize * cells;
-
-  // Deterministic pseudo-random based on value
-  let seed = 0;
-  for (let i = 0; i < value.length; i++) {
-    seed = ((seed << 5) - seed) + value.charCodeAt(i);
-    seed |= 0;
-  }
-
-  const getBit = (x: number, y: number): boolean => {
-    const idx = (x * 7 + y * 13 + seed) % 100;
-    const hash = (seed * (idx + 1) * 31) % 100;
-    // Fixed patterns for QR corner markers
-    if ((x < 7 && y < 7) || (x >= cells - 7 && y < 7) || (x < 7 && y >= cells - 7)) {
-      const cx = x < 7 ? x : (x >= cells - 7 ? x - (cells - 7) : x);
-      const cy = y < 7 ? y : (y >= cells - 7 ? y - (cells - 7) : y);
-      if ((cx === 0 || cx === 6) && (cy >= 0 && cy <= 6)) return true;
-      if ((cy === 0 || cy === 6) && (cx >= 0 && cx <= 6)) return true;
-      if (cx >= 2 && cx <= 4 && cy >= 2 && cy <= 4) return true;
-      return false;
-    }
-    return hash > 45;
-  };
-
-  return (
-    <div style={{ display: 'inline-block', padding: 12, background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-      <svg width={actualSize} height={actualSize}>
-        {Array.from({ length: cells }).map((_, y) =>
-          Array.from({ length: cells }).map((_, x) =>
-            getBit(x, y) ? (
-              <rect
-                key={`${x}-${y}`}
-                x={x * cellSize}
-                y={y * cellSize}
-                width={cellSize}
-                height={cellSize}
-                fill="#000"
-              />
-            ) : null
-          )
-        )}
-      </svg>
-    </div>
-  );
-};
-
-/** Flow Step Indicator */
-const FlowStepIndicator: React.FC<{ report: Report }> = ({ report }) => {
-  const steps = [
-    { title: '报告编制', role: 'compiler', label: '编制人' },
-    { title: '技术审核', role: 'reviewer', label: '审核人' },
-    { title: '批准签发', role: 'approver', label: '批准人' },
-  ];
-
-  const sigMap = new Map<string, ReportSignature>(report.signatures.map(s => [s.role, s]));
-
-  const stepStatus = (role: string): 'finish' | 'process' | 'wait' | 'error' => {
-    const sig = sigMap.get(role);
-    if (sig) return 'finish';
-    // Determine which step should be current
-    const idx = steps.findIndex(s => s.role === role);
-    const prevDone = idx === 0 || sigMap.has(steps[idx - 1].role);
-    if (prevDone) return 'process';
-    return 'wait';
-  };
-
-  return (
-    <Steps
-      direction="vertical"
-      size="small"
-      current={steps.findIndex(s => stepStatus(s.role) === 'process')}
-      items={steps.map(s => {
-        const sig = sigMap.get(s.role);
-        const status = stepStatus(s.role);
-        return {
-          title: (
-            <Space>
-              <Text strong>{s.title}</Text>
-              {sig && <Tag color={getRoleColor(s.role)}>{sig.userName}</Tag>}
-            </Space>
-          ),
-          description: sig ? (
-            <div style={{ fontSize: 12 }}>
-              <div>{sig.signedAt}</div>
-              <div>IP: {sig.ipAddress}</div>
-              <div>理由: {sig.reason}</div>
-            </div>
-          ) : (
-            status === 'process' && <Text type="secondary" style={{ fontSize: 12 }}>待签名</Text>
-          ),
-          status: status,
-        };
-      })}
-    />
-  );
-};
-
-/** 报告水印 */
-const WatermarkOverlay: React.FC<{ text: string }> = ({ text }) => (
-  <div style={{
-    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    pointerEvents: 'none', overflow: 'hidden',
-  }}>
-    <div style={{
-      fontSize: 48, fontWeight: 'bold', color: 'rgba(0,0,0,0.06)',
-      transform: 'rotate(-30deg)', whiteSpace: 'nowrap',
-      userSelect: 'none',
-    }}>
-      {text}
-    </div>
-  </div>
-);
-
-/** PDF Preview (Simplified) */
 const PdfPreviewPanel: React.FC<{ report: Report }> = ({ report }) => {
   const { cover } = report;
   const issued = report.status === 'issued';
@@ -1153,7 +805,7 @@ export const ReportsPage: React.FC = () => {
                         <List
                           dataSource={selectedReport.attachments}
                           renderItem={(a: ReportAttachment) => (
-                            <List.Item actions={[<Button type="link" icon={<DownloadOutlined />}>下载</Button>]}>
+                            <List.Item actions={[<Button type="link" icon={<DownloadOutlined />} onClick={() => message.success('开始下载: ' + a.name)}>下载</Button>]}>
                               <List.Item.Meta
                                 avatar={<PaperClipOutlined style={{ fontSize: 20 }} />}
                                 title={a.name}

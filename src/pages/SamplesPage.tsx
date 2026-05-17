@@ -363,8 +363,8 @@ export const SamplesPage: React.FC = () => {
           </Col>
           <Col span={4}>
             <Space>
-              <Button>重置</Button>
-              <Button type="primary">查询</Button>
+              <Button onClick={loadSamples}>重置</Button>
+              <Button type="primary" onClick={loadSamples}>查询</Button>
             </Space>
           </Col>
         </Row>
@@ -410,7 +410,7 @@ export const SamplesPage: React.FC = () => {
             <div style={{ marginBottom: 24 }}>
               <Title level={5}>{selectedSample.sampleNo}</Title>
               <Tag color={getStatusColor(selectedSample.statusLabel)}>{selectedSample.statusLabel}</Tag>
-              <Button type="link" style={{ float: 'right' }}>查看全部</Button>
+              <Button type="link" style={{ float: 'right' }} onClick={() => navigate('/samples')}>查看全部</Button>
             </div>
 
             <Card title="基本信息" size="small" style={{ marginBottom: 16 }}>

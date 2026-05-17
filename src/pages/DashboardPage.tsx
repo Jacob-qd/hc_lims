@@ -228,14 +228,14 @@ export const DashboardPage: React.FC = () => {
 
         {/* Turnaround Trend */}
         <Col span={12}>
-          <Card title="周转时间趋势（平均天数）" extra={<Button type="link">查看详情</Button>}>
+          <Card title="周转时间趋势（平均天数）" extra={<Button type="link" onClick={() => navigate('/statistics')}>查看详情</Button>}>
             <Line {...lineConfig} />
           </Card>
         </Col>
 
         {/* Sample Type Distribution */}
         <Col span={6}>
-          <Card title="样品类型分布" extra={<Button type="link">查看详情</Button>}>
+          <Card title="样品类型分布" extra={<Button type="link" onClick={() => navigate('/statistics')}>查看详情</Button>}>
             <Pie {...pieConfig} />
           </Card>
         </Col>
@@ -265,7 +265,7 @@ export const DashboardPage: React.FC = () => {
 
         {/* System Alerts */}
         <Col span={12}>
-          <Card title="系统提醒" extra={<Button type="link">查看全部</Button>}>
+          <Card title="系统提醒" extra={<Button type="link" onClick={() => message.info('所有系统提醒列表')}>查看全部</Button>}>
             <List
               dataSource={alerts}
               renderItem={(alert) => (
