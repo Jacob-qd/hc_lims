@@ -11,7 +11,8 @@ import {
   TrophyOutlined, ShopOutlined, ProfileOutlined, ApartmentOutlined,
   FundOutlined, CalendarOutlined, SafetyOutlined,
   EnvironmentOutlined, GlobalOutlined, LogoutOutlined,
-  CheckCircleOutlined,
+  CheckCircleOutlined, RobotOutlined, LineChartOutlined,
+  MobileOutlined, FormOutlined, ScanOutlined,
 } from '@ant-design/icons';
 
 const { Sider } = Layout;
@@ -45,9 +46,21 @@ const allMenuItems = [
     { key: '/statistics', icon: <BarChartOutlined />, label: '数据分析', roles: ['admin', 'lab_tech', 'reviewer'] },
     { key: '/settings', icon: <SettingOutlined />, label: '系统管理', roles: ['admin'] },
   ]},
+  { key: 'ai', icon: <RobotOutlined />, label: '🤖 AI智能助手', roles: ['admin', 'lab_tech', 'reviewer'], children: [
+    { key: '/ai-assistant', icon: <RobotOutlined />, label: '智能对话助手', roles: ['admin', 'lab_tech', 'reviewer'] },
+    { key: '/ai-prediction', icon: <LineChartOutlined />, label: '异常预警看板', roles: ['admin', 'lab_tech', 'reviewer'] },
+  ]},
   { key: 'workflow', icon: <ApartmentOutlined />, label: '工作流引擎', roles: ['admin', 'lab_tech', 'reviewer'], children: [
     { key: '/workflow', icon: <ApartmentOutlined />, label: '流程管理', roles: ['admin', 'lab_tech', 'reviewer'] },
     { key: '/workflow/tasks', icon: <CheckCircleOutlined />, label: '任务中心', roles: ['admin', 'lab_tech', 'reviewer'] },
+  ]},
+  { key: 'mobile', icon: <MobileOutlined />, label: '📱 移动端功能', roles: ['admin', 'lab_tech', 'sampler'], children: [
+    { key: '/mobile', icon: <MobileOutlined />, label: '移动端首页', roles: ['admin', 'lab_tech', 'sampler'] },
+    { key: '/mobile/sampling', icon: <EnvironmentOutlined />, label: '移动采样', roles: ['admin', 'lab_tech', 'sampler'] },
+    { key: '/mobile/scan-receipt', icon: <ScanOutlined />, label: '扫码签收', roles: ['admin', 'lab_tech', 'sampler'] },
+    { key: '/mobile/result-entry', icon: <FormOutlined />, label: '结果录入', roles: ['admin', 'lab_tech'] },
+    { key: '/mobile/reports', icon: <FileTextOutlined />, label: '报告查看', roles: ['admin', 'lab_tech', 'reviewer'] },
+    { key: '/mobile/profile', icon: <UserOutlined />, label: '个人中心', roles: ['admin', 'lab_tech', 'sampler', 'reviewer'] },
   ]},
   { key: 'divider2', type: 'divider' as const, roles: ['admin'] },
   { key: 'research', icon: <ApartmentOutlined />, label: '🔬 高校科研版', roles: ['admin'], children: [

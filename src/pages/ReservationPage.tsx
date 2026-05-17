@@ -78,7 +78,7 @@ export const ReservationPage: React.FC = () => {
     { title: '操作', width: 120, render: (_: any, r: Reservation) => <Button size="small" danger icon={<DeleteOutlined />} onClick={() => handleDelete(r.id)}>取消</Button> },
   ];
 
-  const todayRes = reservations.filter(r => r.startTime.startsWith(dayjs().format('YYYY-MM-DD')));
+  const todayRes = reservations.filter(r => r.startTime?.startsWith(dayjs().format('YYYY-MM-DD')));
 
   return (
     <div>

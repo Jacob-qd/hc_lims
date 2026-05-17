@@ -54,6 +54,8 @@ const MobileScanReceiptPage = lazy(() => import('../pages/MobileScanReceiptPage'
 const MobileResultEntryPage = lazy(() => import('../pages/MobileResultEntryPage').then(m => ({ default: m.MobileResultEntryPage })));
 const MobileReportViewPage = lazy(() => import('../pages/MobileReportViewPage').then(m => ({ default: m.MobileReportViewPage })));
 const MobileProfilePage = lazy(() => import('../pages/MobileProfilePage').then(m => ({ default: m.MobileProfilePage })));
+const AIAssistantPage = lazy(() => import('../pages/AIAssistantPage').then(m => ({ default: m.AIAssistantPage })));
+const AIPredictionPage = lazy(() => import('../pages/AIPredictionPage').then(m => ({ default: m.AIPredictionPage })));
 
 export const router = createBrowserRouter([
   {
@@ -143,6 +145,15 @@ export const router = createBrowserRouter([
       { path: 'monitor', element: <MonitorPage /> },
       { path: 'scheduler', element: <BatchSchedulerPage /> },
       { path: 'certificates', element: <CertificatePage /> },
+      { path: 'ai-assistant', element: <AIAssistantPage /> },
+      { path: 'ai-prediction', element: <AIPredictionPage /> },
+      { path: 'mobile', element: <MobilePage /> },
+      { path: 'mobile/sampling', element: <MobileSamplingPage /> },
+      { path: 'mobile/tasks', element: <MobileTaskListPage /> },
+      { path: 'mobile/scan-receipt', element: <MobileScanReceiptPage /> },
+      { path: 'mobile/result-entry', element: <MobileResultEntryPage /> },
+      { path: 'mobile/reports', element: <MobileReportViewPage /> },
+      { path: 'mobile/profile', element: <MobileProfilePage /> },
       { path: '*', element: <Navigate to="/dashboard" replace /> },
     ],
   },

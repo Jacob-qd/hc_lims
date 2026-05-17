@@ -50,7 +50,7 @@ export const AchievementPage: React.FC = () => {
   const columns = [
     { title: '类型', dataIndex: 'type', width: 100, render: (t: string, r: Achievement) => <Tag color={typeColors[t]} icon={typeIcons[t]}>{r.typeLabel}</Tag> },
     { title: '标题', dataIndex: 'title', ellipsis: true },
-    { title: '作者/完成人', dataIndex: 'authors', render: (v: string[]) => v.join(', '), ellipsis: true },
+    { title: '作者/完成人', dataIndex: 'authors', render: (v: any) => (Array.isArray(v) ? v.join(', ') : typeof v === 'string' ? v : '-'), ellipsis: true },
     { title: '日期', dataIndex: 'date', width: 120 },
     { title: '详细信息', render: (_: any, r: Achievement) => {
       if (r.type === 'paper') return <span>期刊: {r.metadata.journal} | IF: {r.metadata.impactFactor}</span>;
