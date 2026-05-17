@@ -1161,6 +1161,75 @@ export const mockCourses = [
   { id: 'course3', name: '仪器分析实验', teacher: '王强', dept: '化学与分子工程学院', semester: '2024春季', students: 28, experiments: 10, status: 'active' },
 ];
 
+export const mockCourseStudents = [
+  { id: 'stu1', courseId: 'course1', name: '张三', studentNo: '2022010001', class: '化学2201', status: 'active' },
+  { id: 'stu2', courseId: 'course1', name: '李四', studentNo: '2022010002', class: '化学2201', status: 'active' },
+  { id: 'stu3', courseId: 'course1', name: '王五', studentNo: '2022010003', class: '化学2202', status: 'active' },
+  { id: 'stu4', courseId: 'course1', name: '赵六', studentNo: '2022010004', class: '化学2202', status: 'dropped' },
+  { id: 'stu5', courseId: 'course2', name: '钱七', studentNo: '2022010005', class: '环境2201', status: 'active' },
+  { id: 'stu6', courseId: 'course2', name: '孙八', studentNo: '2022010006', class: '环境2201', status: 'active' },
+];
+
+export const mockCourseExperiments = [
+  { id: 'exp1', courseId: 'course1', name: '实验一: 水质pH值测定', hours: 3, batch: 3, status: 'completed', schedule: '第3周 周一/三/五' },
+  { id: 'exp2', courseId: 'course1', name: '实验二: COD测定', hours: 4, batch: 3, status: 'completed', schedule: '第4周 周一/三/五' },
+  { id: 'exp3', courseId: 'course1', name: '实验三: 氨氮测定', hours: 4, batch: 3, status: 'testing', schedule: '第5周 周一/三/五' },
+  { id: 'exp4', courseId: 'course1', name: '实验四: 重金属测定', hours: 4, batch: 2, status: 'pending', schedule: '第6周 周一/五' },
+  { id: 'exp5', courseId: 'course2', name: '实验一: 大气采样与PM2.5测定', hours: 4, batch: 2, status: 'completed', schedule: '第3周 周二/四' },
+  { id: 'exp6', courseId: 'course2', name: '实验二: 水质总磷测定', hours: 3, batch: 2, status: 'testing', schedule: '第4周 周二/四' },
+];
+
+export const mockCourseReports = [
+  { id: 'r1', courseId: 'course1', studentId: 'stu1', student: '张三', exp: '水质pH值测定', score: '', status: '待批阅', submitDate: '2024-05-20' },
+  { id: 'r2', courseId: 'course1', studentId: 'stu2', student: '李四', exp: '水质pH值测定', score: '92', status: '已批阅', submitDate: '2024-05-19' },
+  { id: 'r3', courseId: 'course1', studentId: 'stu3', student: '王五', exp: 'COD测定', score: '', status: '未提交', submitDate: '' },
+  { id: 'r4', courseId: 'course1', studentId: 'stu1', student: '张三', exp: 'COD测定', score: '85', status: '已批阅', submitDate: '2024-05-21' },
+  { id: 'r5', courseId: 'course1', studentId: 'stu2', student: '李四', exp: 'COD测定', score: '', status: '待批阅', submitDate: '2024-05-21' },
+];
+
+export const mockGroupMembers = [
+  { id: 'm1', groupId: 'rg1', name: '张明', role: 'PI', education: '教授/博导', field: '环境污染物高灵敏检测', joinDate: '2021-09-01', status: 'active' },
+  { id: 'm2', groupId: 'rg1', name: '李华', role: '博士后', education: '博士', field: 'VOCs在线监测技术', joinDate: '2023-07-01', status: 'active' },
+  { id: 'm3', groupId: 'rg1', name: '王芳', role: '博士生', education: '博士在读', field: '水质自动监测系统', joinDate: '2022-09-01', status: 'active' },
+  { id: 'm4', groupId: 'rg1', name: '赵岩', role: '硕士生', education: '硕士在读', field: '环境样品前处理', joinDate: '2023-09-01', status: 'active' },
+  { id: 'm5', groupId: 'rg1', name: '陈静', role: '科研助理', education: '本科', field: '实验室日常管理', joinDate: '2022-03-01', status: 'active' },
+  { id: 'm6', groupId: 'rg2', name: '李华', role: 'PI', education: '副教授', field: '光谱分析新技术', joinDate: '2022-03-15', status: 'active' },
+  { id: 'm7', groupId: 'rg2', name: '刘洋', role: '博士生', education: '博士在读', field: '拉曼光谱应用', joinDate: '2022-09-01', status: 'active' },
+  { id: 'm8', groupId: 'rg3', name: '王强', role: 'PI', education: '教授/博导', field: '色谱质谱联用技术', joinDate: '2020-06-01', status: 'active' },
+  { id: 'm9', groupId: 'rg3', name: '周敏', role: '博士后', education: '博士', field: '高分辨质谱', joinDate: '2024-01-01', status: 'active' },
+];
+
+export const mockGroupBudget = [
+  { id: 'b1', groupId: 'rg1', date: '2024-01-15', source: '国自然基金', type: '纵向', amount: 500000, used: 180000, remain: 320000, description: '面上项目经费' },
+  { id: 'b2', groupId: 'rg1', date: '2024-03-01', source: '企业合作', type: '横向', amount: 300000, used: 120000, remain: 180000, description: 'VOCs监测技术开发' },
+  { id: 'b3', groupId: 'rg1', date: '2024-01-01', source: '校内启动金', type: '校内', amount: 100000, used: 50000, remain: 50000, description: '青年基金配套' },
+];
+
+export const mockProjectMilestones = [
+  { id: 'ms1', projectId: 'rp1', name: '文献调研与方案设计', plannedDate: '2024-03-01', actualDate: '2024-02-28', status: 'completed' },
+  { id: 'ms2', projectId: 'rp1', name: '材料合成与表征', plannedDate: '2025-06-01', actualDate: '', status: 'pending' },
+  { id: 'ms3', projectId: 'rp1', name: '性能测试与优化', plannedDate: '2026-09-01', actualDate: '', status: 'pending' },
+  { id: 'ms4', projectId: 'rp1', name: '论文撰写与结题', plannedDate: '2027-11-01', actualDate: '', status: 'pending' },
+  { id: 'ms5', projectId: 'rp2', name: '传感器选型与采购', plannedDate: '2024-04-01', actualDate: '2024-04-15', status: 'completed' },
+  { id: 'ms6', projectId: 'rp2', name: '现场安装调试', plannedDate: '2024-09-01', actualDate: '2024-08-20', status: 'completed' },
+  { id: 'ms7', projectId: 'rp2', name: '数据采集与验证', plannedDate: '2025-02-01', actualDate: '', status: 'pending' },
+  { id: 'ms8', projectId: 'rp2', name: '项目验收', plannedDate: '2025-05-01', actualDate: '', status: 'pending' },
+];
+
+export const mockELNTemplates = [
+  { id: 'tmpl1', name: '常规化学分析模板', category: '化学', description: '适用于常规滴定、比色等分析实验' },
+  { id: 'tmpl2', name: '仪器分析模板', category: '仪器', description: '适用于光谱、色谱、质谱等仪器分析' },
+  { id: 'tmpl3', name: '材料合成模板', category: '材料', description: '适用于纳米材料、有机合成等实验' },
+  { id: 'tmpl4', name: '生物实验模板', category: '生物', description: '适用于细胞、蛋白等生物实验' },
+];
+
+export const mockReservationRules = [
+  { instrumentId: 'i3', instrument: 'ICP-MS质谱仪 ICP-001', method: 'hourly', rate: 200, priorityRate: 300, freePeriod: '00:00-08:00', overtimeRate: 300, penalty: 50 },
+  { instrumentId: 'i8', instrument: '液相色谱仪 LC-001', method: 'hourly', rate: 150, priorityRate: 200, freePeriod: '00:00-08:00', overtimeRate: 200, penalty: 50 },
+  { instrumentId: 'i5', instrument: '紫外分光光度计 UV-001', method: 'per_use', rate: 50, priorityRate: 80, freePeriod: '-', overtimeRate: 30, penalty: 20 },
+  { instrumentId: 'i3', instrument: '原子吸收光谱仪 AAS-001', method: 'hourly', rate: 150, priorityRate: 200, freePeriod: '00:00-08:00', overtimeRate: 200, penalty: 50 },
+];
+
 // ============================================
 // Electronic Signature (SM2/SM3) Mock Data
 // ============================================

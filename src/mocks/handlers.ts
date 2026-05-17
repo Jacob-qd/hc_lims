@@ -38,6 +38,14 @@ import {
   mockReservations,
   mockInventory,
   mockPurchaseRequests,
+  mockGroupMembers,
+  mockGroupBudget,
+  mockProjectMilestones,
+  mockELNTemplates,
+  mockReservationRules,
+  mockCourseStudents,
+  mockCourseExperiments,
+  mockCourseReports,
   mockMethods,
   mockPersonnel,
   mockTrainingRecords,
@@ -676,8 +684,86 @@ export const handlers = [
   http.get(apiUrl('/personnel/training'), () => HttpResponse.json({ code: 200, data: { list: mockTrainingRecords } })),
   http.get(apiUrl('/personnel/certificates'), () => HttpResponse.json({ code: 200, data: { list: mockCertificates } })),
 
-  // ===== Teaching =====
+  // ===== Research Groups (enhanced) =====
+  http.get(apiUrl('/research/groups'), () => HttpResponse.json({ code: 200, data: { list: [...mockResearchGroupsExpanded, { id: 'rg1', name: '环境分析课题组', dept: '化学与分子工程学院', pi: '张明', members: 12, budget: '¥1,280,000', projects: 4, usage: 86, field: '环境水质 / VOCs / 重金属' }, { id: 'rg2', name: '光谱分析课题组', dept: '化学与分子工程学院', pi: '李华', members: 8, budget: '¥860,000', projects: 3, usage: 45, field: '光谱分析 / 纳米材料' }, { id: 'rg3', name: '色谱质谱课题组', dept: '化学与分子工程学院', pi: '王强', members: 15, budget: '¥2,100,000', projects: 5, usage: 120, field: '色谱分析 / 质谱技术' }] } })),
+  http.get(apiUrl('/research/groups/:id/members'), ({ params }) => {
+    const members = (mockGroupMembers as any[]).filter((m: any) => m.groupId === params.id);
+    return HttpResponse.json({ code: 200, data: { list: members.length ? members : mockGroupMembers.filter((m: any) => m.groupId === 'rg1') } });
+  }),
+  http.get(apiUrl('/research/groups/:id/budget'), ({ params }) => {
+    const items = (mockGroupBudget as any[]).filter((b: any) => b.groupId === params.id);
+    return HttpResponse.json({ code: 200, data: { list: items.length ? items : mockGroupBudget.filter((b: any) => b.groupId === 'rg1') } });
+  }),
+
+  // ===== Research Projects (enhanced) =====
+  http.get(apiUrl('/research/projects/:id/milestones'), ({ params }) => {
+    const items = (mockProjectMilestones as any[]).filter((m: any) => m.projectId === params.id);
+    return HttpResponse.json({ code: 200, data: { list: items.length ? items : mockProjectMilestones.filter((m: any) => m.projectId === 'rp1') } });
+  }),
+  http.get(apiUrl('/research/projects/:id/budget'), ({ params }) => {
+    const project = mockResearchProjects.find(p => p.id === params.id);
+    const breakdown = [
+      { category: '设备费', budget: (project?.budget || 0) * 0.4, used: (project?.used || 0) * 0.35 },
+      { category: '材料费', budget: (project?.budget || 0) * 0.25, used: (project?.used || 0) * 0.3 },
+      { category: '测试费', budget: (project?.budget || 0) * 0.15, used: (project?.used || 0) * 0.2 },
+      { category: '差旅费', budget: (project?.budget || 0) * 0.1, used: (project?.used || 0) * 0.1 },
+      { category: '其他', budget: (project?.budget || 0) * 0.1, used: (project?.used || 0) * 0.05 },
+    ];
+    return HttpResponse.json({ code: 200, data: { list: breakdown } });
+  }),
+
+  // ===== ELN (enhanced) =====
+  http.get(apiUrl('/research/eln/templates'), () => HttpResponse.json({ code: 200, data: { list: mockELNTemplates } })),
+  http.get(apiUrl('/research/eln/:id/versions'), ({ params }) => {
+    return HttpResponse.json({ code: 200, data: { list: [
+      { version: 1, updatedAt: '2024-05-20 10:00', updater: '张伟', changes: '创建实验记录' },
+      { version: 2, updatedAt: '2024-05-21 14:30', updater: '张伟', changes: '补充实验数据' },
+    ] } });
+  }),
+
+  // ===== Reservations (enhanced) =====
+  http.get(apiUrl('/research/reservations/rules'), () => HttpResponse.json({ code: 200, data: { list: mockReservationRules } })),
+  http.get(apiUrl('/research/reservations/conflicts'), ({ request }) => {
+    const url = new URL(request.url);
+    const instrument = url.searchParams.get('instrument') || '';
+    const date = url.searchParams.get('date') || '';
+    const conflicts = mockReservations.filter((r: any) => r.instrument === instrument && r.date === date && r.status !== 'cancelled');
+    return HttpResponse.json({ code: 200, data: { hasConflict: conflicts.length > 0, conflicts } });
+  }),
+
+  // ===== Publications (enhanced) =====
+  http.post(apiUrl('/research/publications'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const item = { id: 'pub' + Date.now(), status: 'draft', ...body };
+    mockPublications.push(item as any);
+    return HttpResponse.json({ code: 200, data: item, message: '创建成功' });
+  }),
+  http.put(apiUrl('/research/publications/:id'), async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    const idx = mockPublications.findIndex(p => p.id === params.id);
+    if (idx >= 0) { mockPublications[idx] = { ...mockPublications[idx], ...body }; }
+    return HttpResponse.json({ code: 200, message: '更新成功' });
+  }),
+  http.delete(apiUrl('/research/publications/:id'), ({ params }) => {
+    const idx = mockPublications.findIndex(p => p.id === params.id);
+    if (idx >= 0) mockPublications.splice(idx, 1);
+    return HttpResponse.json({ code: 200, message: '删除成功' });
+  }),
+
+  // ===== Teaching (enhanced) =====
   http.get(apiUrl('/teaching/courses'), () => HttpResponse.json({ code: 200, data: { list: mockCourses } })),
+  http.get(apiUrl('/teaching/courses/:id/students'), ({ params }) => {
+    const students = (mockCourseStudents as any[]).filter((s: any) => s.courseId === params.id);
+    return HttpResponse.json({ code: 200, data: { list: students.length ? students : mockCourseStudents.filter((s: any) => s.courseId === 'course1') } });
+  }),
+  http.get(apiUrl('/teaching/courses/:id/experiments'), ({ params }) => {
+    const experiments = (mockCourseExperiments as any[]).filter((e: any) => e.courseId === params.id);
+    return HttpResponse.json({ code: 200, data: { list: experiments.length ? experiments : mockCourseExperiments.filter((e: any) => e.courseId === 'course1') } });
+  }),
+  http.get(apiUrl('/teaching/courses/:id/reports'), ({ params }) => {
+    const reports = (mockCourseReports as any[]).filter((r: any) => r.courseId === params.id);
+    return HttpResponse.json({ code: 200, data: { list: reports.length ? reports : mockCourseReports.filter((r: any) => r.courseId === 'course1') } });
+  }),
 
   // ===== Dynamic Form =====
   http.get(apiUrl('/field-configs'), ({ request }) => {
