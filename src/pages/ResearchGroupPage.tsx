@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Tree, Tabs, Descriptions, Drawer, Badge, Progress, Modal, Form, message, Select } from 'antd';
-import { PlusOutlined, SearchOutlined, UserOutlined, TeamOutlined, FundOutlined, ToolOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Tree, Tabs, Descriptions, Drawer, Badge, Progress, Modal, Form, message } from 'antd';
+import { PlusOutlined, SearchOutlined, UserOutlined, TeamOutlined, FundOutlined, ToolOutlined, EditOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 
@@ -105,7 +105,7 @@ export const ResearchGroupPage: React.FC = () => {
 
   const stats = { total: groups.length, members: groups.reduce((s, g) => s + (g.members || 0), 0), budget: groups.reduce((s, g) => s + parseInt((g.budget || '').replace(/[¥,]/g, '')), 0), projects: groups.reduce((s, g) => s + (g.projects || 0), 0) };
 
-  const handleCreate = async (values: any) => {
+  const handleCreate = async (_values: any) => {
     message.success('课题组创建成功');
     setModalVisible(false);
     form.resetFields();

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Button, Row, Col, Typography, Statistic, Select, Modal, Form, message, Tabs, Input, Badge, Alert, Tag, Space } from 'antd';
-import { PlusOutlined, CalendarOutlined, DollarOutlined, WarningOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { Card, Table, Button, Row, Col, Typography, Statistic, Select, Modal, Form, message, Tabs, Input, Badge, Alert, Tag } from 'antd';
+import { PlusOutlined, CalendarOutlined, DollarOutlined, WarningOutlined } from '@ant-design/icons';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 interface Reservation {
   id: string; instrument: string; user: string; group: string; project: string;

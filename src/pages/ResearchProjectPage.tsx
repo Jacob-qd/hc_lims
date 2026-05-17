@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Tabs, Progress, Modal, Form, message, Timeline } from 'antd';
-import { PlusOutlined, SearchOutlined, EyeOutlined, FlagOutlined, FundOutlined, ClockCircleOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined, EyeOutlined, FlagOutlined, FundOutlined, CheckCircleOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 
@@ -25,7 +25,7 @@ export const ResearchProjectPage: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [budgetDetail, setBudgetDetail] = useState<BudgetItem[]>([]);
-  const [detailLoading, setDetailLoading] = useState(false);
+  const [, setDetailLoading] = useState(false);
   const [form] = Form.useForm();
 
   const fetchData = async () => {

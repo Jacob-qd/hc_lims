@@ -714,7 +714,7 @@ export const handlers = [
 
   // ===== ELN (enhanced) =====
   http.get(apiUrl('/research/eln/templates'), () => HttpResponse.json({ code: 200, data: { list: mockELNTemplates } })),
-  http.get(apiUrl('/research/eln/:id/versions'), ({ params }) => {
+  http.get(apiUrl('/research/eln/:id/versions'), () => {
     return HttpResponse.json({ code: 200, data: { list: [
       { version: 1, updatedAt: '2024-05-20 10:00', updater: '张伟', changes: '创建实验记录' },
       { version: 2, updatedAt: '2024-05-21 14:30', updater: '张伟', changes: '补充实验数据' },
