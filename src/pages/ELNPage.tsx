@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Tag, Button, Row, Col, Typography, Space, Input, Select, Modal, Form, message, Tabs, Descriptions, Timeline } from 'antd';
-import { PlusOutlined, SearchOutlined, EditOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import {
+  Card, Table, Tag, Button, Row, Col, Typography, Space, Input, Select, Modal, Form, message, Tabs, Descriptions, Timeline, Badge, Spin
+} from 'antd';
+import { PlusOutlined, SearchOutlined, EditOutlined, CheckCircleOutlined, LockOutlined, HistoryOutlined, FileTextOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -8,14 +10,29 @@ const { TextArea } = Input;
 const statusColors: Record<string, string> = { draft: '#1677ff', signed: '#52c41a', locked: '#d9d9d9' };
 const statusLabels: Record<string, string> = { draft: '草稿', signed: '已签名', locked: '已锁定' };
 
+interface ELNEntry {
+  id: string;
+  no: string;
+  title: string;
+  author: string;
+  project: string;
+  group: string;
+  date: string;
+  protocol: string;
+  status: string;
+  tags: string[];
+}
+
 export const ELNPage: React.FC = () => {
-  const [entries, setEntries] = useState<any[]>([]);
+  const [entries, setEntries] = useState<ELNEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [createVisible, setCreateVisible] = useState(false);
   const [editorVisible, setEditorVisible] = useState(false);
   const [signVisible, setSignVisible] = useState(false);
-  const [currentEntry, setCurrentEntry] = useState<any>(null);
+  const [witnessVisible, setWitnessVisible] = useState(false);
+  const [currentEntry, setCurrentEntry] = useState<ELNEntry | null>(null);
   const [content, setContent] = useState('');
   const [title, setTitle] = useState('');
   const [form] = Form.useForm();
@@ -25,21 +42,40 @@ export const ELNPage: React.FC = () => {
     try {
       const res = await window.fetch('/api/v1/research/eln-entries');
       const json = await res.json();
-      setEntries(json.data.list);
-    } catch { message.error('加载失败'); }
-    finally { setLoading(false); }
+      setEntries(json.data?.list || []);
+    } catch {
+      message.error('加载失败');
+    } finally {
+      setLoading(false);
+    }
   };
-  useEffect(() => { fetchData(); }, []);
 
-  const filtered = entries.filter((e: any) => e.title.includes(searchText) || e.author.includes(searchText));
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const filtered = entries.filter((e: ELNEntry) => {
+    const matchesSearch = e.title.includes(searchText) || e.author.includes(searchText) || e.no.includes(searchText);
+    const matchesStatus = statusFilter ? e.status === statusFilter : true;
+    return matchesSearch && matchesStatus;
+  });
 
   const handleCreate = async (values: any) => {
-    const res = await window.fetch('/api/v1/research/eln-entries', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(values) });
+    const res = await window.fetch('/api/v1/research/eln-entries', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(values),
+    });
     const json = await res.json();
-    if (json.code === 200) { message.success('创建成功'); setCreateVisible(false); form.resetFields(); fetchData(); }
+    if (json.code === 200) {
+      message.success('创建成功');
+      setCreateVisible(false);
+      form.resetFields();
+      fetchData();
+    }
   };
 
-  const openEditor = (entry: any) => {
+  const openEditor = (entry: ELNEntry) => {
     setCurrentEntry(entry);
     setTitle(entry?.title || '');
     setContent('');
@@ -58,7 +94,19 @@ export const ELNPage: React.FC = () => {
     if (!currentEntry) return;
     const res = await window.fetch(`/api/v1/research/eln-entries/${currentEntry.id}/sign`, { method: 'POST' });
     const json = await res.json();
-    if (json.code === 200) { message.success('签名成功'); setSignVisible(false); setEditorVisible(false); fetchData(); }
+    if (json.code === 200) {
+      message.success('签名成功');
+      setSignVisible(false);
+      setEditorVisible(false);
+      fetchData();
+    }
+  };
+
+  const handleWitness = async () => {
+    if (!currentEntry) return;
+    message.success('见证成功');
+    setWitnessVisible(false);
+    fetchData();
   };
 
   return (
@@ -68,29 +116,44 @@ export const ELNPage: React.FC = () => {
         <Col><Button type="primary" icon={<PlusOutlined />} onClick={() => setCreateVisible(true)}>新建实验记录</Button></Col>
       </Row>
 
+      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
+        <Col xs={6}><Card size="small"><Statistic title="总记录" value={entries.length} prefix={<FileTextOutlined />} /></Card></Col>
+        <Col xs={6}><Card size="small"><Statistic title="草稿" value={entries.filter(e => e.status === 'draft').length} valueStyle={{ color: '#1677ff' }} /></Card></Col>
+        <Col xs={6}><Card size="small"><Statistic title="已签名" value={entries.filter(e => e.status === 'signed').length} valueStyle={{ color: '#52c41a' }} /></Card></Col>
+        <Col xs={6}><Card size="small"><Statistic title="已锁定" value={entries.filter(e => e.status === 'locked').length} valueStyle={{ color: '#d9d9d9' }} /></Card></Col>
+      </Row>
+
       <Card>
         <Space style={{ marginBottom: 16 }}>
           <Input placeholder="全文搜索标题/作者/标签" prefix={<SearchOutlined />} value={searchText} onChange={e => setSearchText(e.target.value)} style={{ width: 300 }} allowClear />
-          <Select placeholder="状态" style={{ width: 120 }} allowClear>
+          <Select placeholder="状态" style={{ width: 120 }} allowClear onChange={v => setStatusFilter(v)}>
             {Object.entries(statusLabels).map(([k, v]) => <Select.Option key={k} value={k}>{v}</Select.Option>)}
           </Select>
         </Space>
-        <Table dataSource={filtered} rowKey="id" loading={loading} columns={[
-          { title: '实验编号', dataIndex: 'no', render: (n: string) => <Text code>{n}</Text> },
-          { title: '标题', dataIndex: 'title', render: (t: string, r: any) => <a onClick={() => openEditor(r)}>{t}</a> },
-          { title: '实验人', dataIndex: 'author' },
-          { title: '所属项目', dataIndex: 'project' },
-          { title: '课题组', dataIndex: 'group' },
-          { title: '实验日期', dataIndex: 'date' },
-          { title: 'Protocol', dataIndex: 'protocol' },
-          { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={statusColors[s]}>{statusLabels[s]}</Tag> },
-          { title: '操作', render: (_: any, r: any) => (
-            <Space>
-              <Button type="link" size="small" icon={<EditOutlined />} onClick={() => openEditor(r)}>编辑</Button>
-              {r.status === 'draft' && <Button type="link" size="small" icon={<CheckCircleOutlined />} onClick={() => { setCurrentEntry(r); setSignVisible(true); }}>签名</Button>}
-            </Space>
-          )},
-        ]} size="middle" pagination={{ pageSize: 10 }} />
+        <Table
+          dataSource={filtered}
+          rowKey="id"
+          loading={loading}
+          columns={[
+            { title: '实验编号', dataIndex: 'no', render: (n: string) => <Text code>{n}</Text> },
+            { title: '标题', dataIndex: 'title', render: (t: string, r: ELNEntry) => <a onClick={() => openEditor(r)}>{t}</a> },
+            { title: '实验人', dataIndex: 'author' },
+            { title: '所属项目', dataIndex: 'project' },
+            { title: '课题组', dataIndex: 'group' },
+            { title: '实验日期', dataIndex: 'date' },
+            { title: 'Protocol', dataIndex: 'protocol' },
+            { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={statusColors[s]}>{statusLabels[s]}</Tag> },
+            { title: '操作', render: (_: any, r: ELNEntry) => (
+              <Space>
+                <Button type="link" size="small" icon={<EditOutlined />} onClick={() => openEditor(r)}>编辑</Button>
+                {r.status === 'draft' && <Button type="link" size="small" icon={<CheckCircleOutlined />} onClick={() => { setCurrentEntry(r); setSignVisible(true); }}>签名</Button>}
+                {r.status === 'signed' && <Button type="link" size="small" icon={<LockOutlined />} onClick={() => { setCurrentEntry(r); setWitnessVisible(true); }}>见证</Button>}
+              </Space>
+            )},
+          ]}
+          size="middle"
+          pagination={{ pageSize: 10 }}
+        />
       </Card>
 
       {/* Create Modal */}
@@ -109,30 +172,34 @@ export const ELNPage: React.FC = () => {
       <Modal title={currentEntry?.no ? `编辑: ${currentEntry.no}` : '新建实验记录'} open={editorVisible} onOk={handleSave} onCancel={() => setEditorVisible(false)} width={800} okText="保存" destroyOnClose>
         <Space direction="vertical" style={{ width: '100%' }}>
           <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="实验标题" size="large" />
-          <div style={{border:'1px solid #d9d9d9',borderRadius:6,overflow:'hidden'}}>
-            <div style={{padding:'4px 8px',background:'#fafafa',borderBottom:'1px solid #d9d9d9',display:'flex',gap:4}}>
-              {['H1','H2','B','I','U','列表','表格','图片','公式','链接'].map(t => <Button key={t} size="small" type="text" style={{fontSize:12}}>{t}</Button>)}
+          <div style={{ border: '1px solid #d9d9d9', borderRadius: 6, overflow: 'hidden' }}>
+            <div style={{ padding: '4px 8px', background: '#fafafa', borderBottom: '1px solid #d9d9d9', display: 'flex', gap: 4 }}>
+              {['H1', 'H2', 'B', 'I', 'U', '列表', '表格', '图片', '公式', '链接'].map(t => <Button key={t} size="small" type="text" style={{ fontSize: 12 }}>{t}</Button>)}
             </div>
             <Tabs defaultActiveKey="content" items={[
-              { key: 'content', label: '实验内容', children: <TextArea rows={12} value={content} onChange={e => setContent(e.target.value)} placeholder="在这里记录实验目的、步骤、结果和结论..." style={{border:'none',borderRadius:0}} /> },
-              { key: 'steps', label: '实验步骤', children: <div style={{padding:8}}>
-                {['样品准备','仪器设置','数据采集','数据分析'].map((s,i) => <div key={s} style={{display:'flex',alignItems:'center',gap:8,padding:'6px 0',borderBottom:'1px solid #f0f0f0'}}>
-                  <span style={{width:20,height:20,borderRadius:'50%',background:i<2?'#52c41a':'#f0f0f0',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:12}}>{i+1}</span>
-                  <Text strong style={{width:80}}>{s}</Text>
-                  <Input size="small" placeholder="操作描述..." style={{flex:1}} />
-                  <Tag color={i<2?'green':'default'}>{i<2?'已完成':'待开始'}</Tag>
+              { key: 'content', label: '实验内容', children: <TextArea rows={12} value={content} onChange={e => setContent(e.target.value)} placeholder="在这里记录实验目的、步骤、结果和结论..." style={{ border: 'none', borderRadius: 0 }} /> },
+              { key: 'steps', label: '实验步骤', children: <div style={{ padding: 8 }}>
+                {['样品准备', '仪器设置', '数据采集', '数据分析'].map((s, i) => <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderBottom: '1px solid #f0f0f0' }}>
+                  <span style={{ width: 20, height: 20, borderRadius: '50%', background: i < 2 ? '#52c41a' : '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 12 }}>{i + 1}</span>
+                  <Text strong style={{ width: 80 }}>{s}</Text>
+                  <Input size="small" placeholder="操作描述..." style={{ flex: 1 }} />
+                  <Tag color={i < 2 ? 'green' : 'default'}>{i < 2 ? '已完成' : '待开始'}</Tag>
                 </div>)}
-              </div>},
+              </div> },
+              { key: 'history', label: '版本历史', children: <Timeline items={[
+                { color: 'green', children: 'v1.0 - 创建记录 (2024-05-21 09:00)' },
+                { color: 'blue', children: 'v1.1 - 修改实验步骤 (2024-05-21 14:30)' },
+              ]} /> },
             ]} />
           </div>
-          <div style={{border:'1px dashed #d9d9d9',borderRadius:6,padding:16,textAlign:'center',cursor:'pointer'}}>
+          <div style={{ border: '1px dashed #d9d9d9', borderRadius: 6, padding: 16, textAlign: 'center', cursor: 'pointer' }}>
             <Text type="secondary">📎 拖拽文件到此处上传 (图谱、数据表、照片)</Text>
           </div>
         </Space>
       </Modal>
 
       {/* Sign Modal */}
-      <Modal title="提交签名与见证" open={signVisible} onOk={handleSign} onCancel={() => setSignVisible(false)} okText="确认签名">
+      <Modal title="提交签名与锁定" open={signVisible} onOk={handleSign} onCancel={() => setSignVisible(false)} okText="确认签名">
         <Descriptions column={1} size="small">
           <Descriptions.Item label="实验编号">{currentEntry?.no}</Descriptions.Item>
           <Descriptions.Item label="标题">{currentEntry?.title}</Descriptions.Item>
@@ -150,6 +217,21 @@ export const ELNPage: React.FC = () => {
           { color: 'gray', children: '3. 见证人签名（可选）' },
           { color: 'gray', children: '4. 记录锁定' },
         ]} />
+      </Modal>
+
+      {/* Witness Modal */}
+      <Modal title="导师见证确认" open={witnessVisible} onOk={handleWitness} onCancel={() => setWitnessVisible(false)} okText="确认见证">
+        <Descriptions column={1} size="small">
+          <Descriptions.Item label="实验编号">{currentEntry?.no}</Descriptions.Item>
+          <Descriptions.Item label="标题">{currentEntry?.title}</Descriptions.Item>
+          <Descriptions.Item label="实验人">{currentEntry?.author}</Descriptions.Item>
+          <Descriptions.Item label="状态"><Badge status="processing" text="已签名，待见证" /></Descriptions.Item>
+        </Descriptions>
+        <div style={{ marginTop: 16, padding: 16, background: '#f5f5f5', borderRadius: 8 }}>
+          <Text strong>见证签名</Text>
+          <Input.Password placeholder="输入密码验证身份" style={{ marginTop: 8 }} />
+          <Text type="secondary" style={{ display: 'block', marginTop: 4, fontSize: 12 }}>见证后记录将锁定归档</Text>
+        </div>
       </Modal>
     </div>
   );
