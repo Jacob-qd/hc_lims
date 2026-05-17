@@ -188,7 +188,7 @@ export const LoginPage: React.FC = () => {
         message.error(data.message || t('login:loginFailed'));
       }
     } catch {
-      message.error(t('common:networkError'));
+      message.error(t('common.networkError'));
     } finally {
       setLoading(false);
     }
@@ -229,7 +229,7 @@ export const LoginPage: React.FC = () => {
               {t('login:companyName')}
             </Title>
             <Text type="secondary" style={{ fontSize: 13, display: 'block', marginTop: 2 }}>
-              {t('common:app.subtitle')}
+              {t('app.subtitle')}
             </Text>
           </div>
 
@@ -265,7 +265,7 @@ export const LoginPage: React.FC = () => {
                       <Text strong style={{ fontSize: 13, display: 'block' }}>{label}</Text>
                       <Text type="secondary" style={{ fontSize: 11 }}>{t(`login:role.${value}.desc` as const)}</Text>
                     </div>
-                    {active && <Tag color={meta.color}>{t('common:current')}</Tag>}
+                    {active && <Tag color={meta.color}>{t('common.current')}</Tag>}
                   </div>
                 );
               })}
@@ -297,7 +297,7 @@ export const LoginPage: React.FC = () => {
                 loading={loading}
                 style={{ height: 44, borderRadius: 10, fontSize: 15, fontWeight: 500 }}
               >
-                {t('common:action.enterSystem')}
+                {t('action.enterSystem')}
               </Button>
             </Form.Item>
           </Form>
@@ -313,7 +313,7 @@ export const LoginPage: React.FC = () => {
         position: 'absolute', bottom: 20, left: 0, right: 0, textAlign: 'center',
         color: 'rgba(255,255,255,0.3)', fontSize: 11, zIndex: 10,
       }}>
-        {t('common:app.fullName')}
+        {t('app.fullName')}
       </div>
     </div>
   );

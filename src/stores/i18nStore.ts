@@ -19,7 +19,16 @@ export const useI18nStore = create<I18nState>((set, get) => ({
   t: (key, options) => {
     // Use i18next if initialized, fallback to simple key return
     if (i18n.isInitialized) {
-      return i18n.t(key, options || {}) as string;
+      const opts = options || {};
+      if (i18n.exists(key, opts)) {
+        return i18n.t(key, opts) as string;
+      }
+      // Fallback: try namespace prefix syntax (e.g., login:title)
+      const nsKey = key.replace('.', ':');
+      if (nsKey !== key && i18n.exists(nsKey, opts)) {
+        return i18n.t(nsKey, opts) as string;
+      }
+      return key;
     }
     return key;
   },
