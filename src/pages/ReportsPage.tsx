@@ -3,7 +3,7 @@ import {
   Card, Table, Tag, Button, Input, Select, DatePicker, Row, Col,
   Space, Typography, Drawer, Timeline, Form,
   Modal, message, Divider, Tabs,
- Descriptions, List, Empty, Upload,
+ Descriptions, List, Empty, Upload, Statistic,
   Alert,
 } from 'antd';
 import {
@@ -13,7 +13,7 @@ import {
   HistoryOutlined, PaperClipOutlined, CommentOutlined,
   SafetyCertificateOutlined,
   DownloadOutlined, CloudUploadOutlined,
-  AuditOutlined,
+  AuditOutlined, BarChartOutlined,
   SignatureOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
@@ -600,6 +600,40 @@ export const ReportsPage: React.FC = () => {
                           },
                         ]}
                       />
+                    </Card>
+
+                    {/* AI 智能结论 */}
+                    <Card title={<Space><BarChartOutlined /> AI 智能结论</Space>} size="small" style={{ marginBottom: 16 }}>
+                      {(() => {
+                        const results = selectedReport.testResults;
+                        if (!results || results.length === 0) return <Empty description="无检测结果数据" />;
+                        const failed = results.filter(r => r.judgment === '不合格');
+                        const passed = results.filter(r => r.judgment === '合格');
+                        const total = results.length;
+                        return (
+                          <div>
+                            <Row gutter={16} style={{ marginBottom: 12 }}>
+                              <Col span={8}><Statistic title="检测项数" value={total} /></Col>
+                              <Col span={8}><Statistic title="合格" value={passed.length} valueStyle={{ color: '#52c41a' }} /></Col>
+                              <Col span={8}><Statistic title="不合格" value={failed.length} valueStyle={{ color: failed.length > 0 ? '#ff4d4f' : undefined }} /></Col>
+                            </Row>
+                            <Alert
+                              type={failed.length === 0 ? 'success' : 'warning'}
+                              message={failed.length === 0
+                                ? '所有检测项目结果均合格，建议签发报告。'
+                                : `有 ${failed.length} 项检测结果不合格（${failed.map(r => r.itemName).join('、')}），请审核后处理。`
+                              }
+                              showIcon
+                              style={{ marginBottom: 8 }}
+                            />
+                            {failed.length > 0 && (
+                              <Text type="secondary" style={{ fontSize: 12 }}>
+                                建议：不合格项目需标记超标、关联偏差记录、确认是否需要复测。
+                              </Text>
+                            )}
+                          </div>
+                        );
+                      })()}
                     </Card>
 
                     <Card title="电子签名记录" size="small" style={{ marginBottom: 16 }}>

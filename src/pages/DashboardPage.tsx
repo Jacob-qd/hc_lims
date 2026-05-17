@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Row, Col, Card, Table, Tag, List, Button,
-  Typography, Badge, Select, message
+  Typography, Badge, Select, message, Statistic, Divider, Space
 } from 'antd';
 import { CustomWorkspace } from '../components/CustomWorkspace';
 import {
@@ -10,6 +10,7 @@ import {
   WarningOutlined, CheckCircleOutlined, ClockCircleOutlined,
   ArrowUpOutlined, ArrowDownOutlined,
   EyeOutlined, BellOutlined, SettingOutlined, AppstoreOutlined,
+  BarChartOutlined,
 } from '@ant-design/icons';
 import { Line, Pie } from '@ant-design/plots';
 import type { Sample } from '../mocks/data';
@@ -312,6 +313,53 @@ export const DashboardPage: React.FC = () => {
           </Card>
         </Col>
       </Row>
+
+      {/* AI 预测：检测周期预测 */}
+      <Card title={<Space><BarChartOutlined /> AI 检测周期预测</Space>} style={{ marginBottom: 24 }}>
+        <Row gutter={16}>
+          <Col span={6}>
+            <Card size="small" style={{ background: '#f6ffed' }}>
+              <Statistic title="地表水" value="3.2" suffix="天" valueStyle={{ color: '#52c41a' }} />
+              <Text type="secondary" style={{ fontSize: 11 }}>较上月 -0.5天</Text>
+            </Card>
+          </Col>
+          <Col span={6}>
+            <Card size="small" style={{ background: '#fff7e6' }}>
+              <Statistic title="土壤" value="5.8" suffix="天" valueStyle={{ color: '#faad14' }} />
+              <Text type="secondary" style={{ fontSize: 11 }}>较上月 +0.3天</Text>
+            </Card>
+          </Col>
+          <Col span={6}>
+            <Card size="small" style={{ background: '#fff0f6' }}>
+              <Statistic title="废水" value="4.5" suffix="天" valueStyle={{ color: '#eb2f96' }} />
+              <Text type="secondary" style={{ fontSize: 11 }}>较上月 -0.2天</Text>
+            </Card>
+          </Col>
+          <Col span={6}>
+            <Card size="small" style={{ background: '#e6f7ff' }}>
+              <Statistic title="空气/废气" value="6.1" suffix="天" valueStyle={{ color: '#1890ff' }} />
+              <Text type="secondary" style={{ fontSize: 11 }}>较上月 +0.8天 ↑</Text>
+            </Card>
+          </Col>
+        </Row>
+        <Divider />
+        <Row gutter={16}>
+          <Col span={8}>
+            <Text strong>预测模型：</Text>
+            <Tag color="blue">时序分析 (ARIMA)</Tag>
+            <Tag color="green">准确率 87%</Tag>
+          </Col>
+          <Col span={8}>
+            <Text strong>训练数据：</Text>
+            <Text type="secondary">近 12 个月检测记录</Text>
+          </Col>
+          <Col span={8}>
+            <Text strong>下次更新：</Text>
+            <Text type="secondary">每日 03:00 自动重训练</Text>
+          </Col>
+        </Row>
+      </Card>
+
       <CustomWorkspace
         open={workspaceOpen}
         onClose={() => setWorkspaceOpen(false)}

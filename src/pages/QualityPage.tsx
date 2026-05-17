@@ -6,6 +6,7 @@ import {
 import {
   CheckCircleOutlined, CloseCircleOutlined,
 } from '@ant-design/icons';
+import { WestgardAnalyzer } from '../components/WestgardAnalyzer';
 // import { Pie } from '@ant-design/plots';
 import type { ColumnsType } from 'antd/es/table';
 
@@ -140,6 +141,14 @@ export const QualityPage: React.FC = () => {
               </Card>
             </Col>
           </Row>
+        )},
+        { key: 'westgard', label: 'Westgard规则分析', children: (
+          <WestgardAnalyzer
+            data={(chartData as any)?.points?.map((p: any) => ({ value: p.value, date: p.date, batch: p.batch || '' })) || []}
+            mean={(chartData as any)?.mean || 0}
+            sd={(chartData as any)?.sd || 1}
+            analyte="COD"
+          />
         )},
         { key: 'qcsamples', label: '质控样品', children: (
           <Card title="质控样品管理" extra={<Button type="primary" size="small" onClick={() => {

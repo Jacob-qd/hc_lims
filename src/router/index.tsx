@@ -44,8 +44,13 @@ const CompliancePage = lazy(() => import('../pages/CompliancePage').then(m => ({
 const MonitorPage = lazy(() => import('../pages/MonitorPage').then(m => ({ default: m.MonitorPage })));
 const BatchSchedulerPage = lazy(() => import('../pages/BatchSchedulerPage').then(m => ({ default: m.BatchSchedulerPage })));
 const CertificatePage = lazy(() => import('../pages/CertificatePage').then(m => ({ default: m.CertificatePage })));
+const MobilePage = lazy(() => import('../pages/MobilePage').then(m => ({ default: m.MobilePage })));
 
 export const router = createBrowserRouter([
+  {
+    path: '/mobile',
+    element: <RouteGuard requireAuth={false}><MobilePage /></RouteGuard>,
+  },
   {
     path: '/login',
     element: (
