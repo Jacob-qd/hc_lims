@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
-  Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input,
+  Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, InputNumber,
   Timeline, Descriptions, Modal, Form, message, Select, Tabs, Empty,
   Alert, Divider, QRCode, Popconfirm,
 } from 'antd';
@@ -82,6 +82,8 @@ export const COCPage: React.FC = () => {
   const [searchText, setSearchText] = useState('');
   const [newEventType, setNewEventType] = useState<COCEventType>('RECEIPT');
   const scanInputRef = useRef<any>(null);
+  const [transferForm] = Form.useForm();
+  const [disposalForm] = Form.useForm();
 
   const loadChains = useCallback(async () => {
     setLoading(true);
@@ -399,7 +401,7 @@ export const COCPage: React.FC = () => {
         width={600}
         footer={null}
       >
-        <Form layout="vertical" onFinish={handleTransfer}>
+        <Form layout="vertical" form={transferForm} onFinish={handleTransfer}>
           <Form.Item name="chainId" label="COC 链" rules={[{ required: true }]}>
             <Select placeholder="选择COC链" showSearch>
               {chains.filter(c => c.status === 'active').map(c => (
@@ -417,6 +419,7 @@ export const COCPage: React.FC = () => {
               onSearch={(val) => {
                 const found = chains.find(c => c.cocNumber === val || c.sampleId === val);
                 if (found) {
+                  transferForm.setFieldsValue({ chainId: found.id });
                   message.success(`已识别: ${found.cocNumber}`);
                   // @ts-ignore
                   scanInputRef.current?.blur?.();
@@ -442,17 +445,17 @@ export const COCPage: React.FC = () => {
           <Row gutter={16}>
             <Col span={8}>
               <Form.Item name="sampleCount" label="样品数量" rules={[{ required: true }]} initialValue={1}>
-                <Input type="number" min={1} />
+                <InputNumber min={1} style={{ width: '100%' }} />
               </Form.Item>
             </Col>
             <Col span={8}>
               <Form.Item name="intactCount" label="完好数量" initialValue={1}>
-                <Input type="number" min={0} />
+                <InputNumber min={0} style={{ width: '100%' }} />
               </Form.Item>
             </Col>
             <Col span={8}>
               <Form.Item name="damagedCount" label="破损数量" initialValue={0}>
-                <Input type="number" min={0} />
+                <InputNumber min={0} style={{ width: '100%' }} />
               </Form.Item>
             </Col>
           </Row>
@@ -469,7 +472,7 @@ export const COCPage: React.FC = () => {
             </Col>
             <Col span={12}>
               <Form.Item name="temperature" label="运输温度(°C)">
-                <Input type="number" placeholder="如 4.0" />
+                <InputNumber placeholder="如 4.0" style={{ width: '100%' }} />
               </Form.Item>
             </Col>
           </Row>
@@ -516,7 +519,7 @@ export const COCPage: React.FC = () => {
             style={{ marginBottom: 16 }}
           />
         )}
-        <Form layout="vertical" onFinish={handleDisposal}>
+        <Form layout="vertical" form={disposalForm} id="disposalForm" onFinish={handleDisposal}>
           <Form.Item name="disposalMethod" label="处置方式" rules={[{ required: true }]}>
             <Select placeholder="选择处置方式">
               <Option value="销毁">销毁</Option>
@@ -541,8 +544,7 @@ export const COCPage: React.FC = () => {
             <Space>
               <Button onClick={() => setDisposalOpen(false)}>取消</Button>
               <Popconfirm title="确认处置后COC链将关闭，不可再添加事件，确认吗？" onConfirm={() => {
-                const formEl = document.getElementById('disposalForm') as HTMLFormElement;
-                formEl?.requestSubmit();
+                disposalForm.submit();
               }}>
                 <Button type="primary" danger>确认处置</Button>
               </Popconfirm>

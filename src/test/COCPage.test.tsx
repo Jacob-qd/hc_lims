@@ -2,6 +2,19 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, waitFor, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
+
+// Mock heavy PDF library to prevent test timeouts
+vi.mock('jspdf', () => ({
+  jsPDF: vi.fn().mockImplementation(() => ({
+    internal: { pageSize: { getWidth: () => 600, getHeight: () => 800 } },
+    setFontSize: vi.fn(),
+    text: vi.fn(),
+    setTextColor: vi.fn(),
+    save: vi.fn(),
+  })),
+}));
+vi.mock('jspdf-autotable', () => ({ default: vi.fn() }));
+
 import { COCPage } from '../pages/COCPage';
 
 describe('COCPage', () => {
@@ -66,8 +79,8 @@ describe('COCPage', () => {
     render(<BrowserRouter><ConfigProvider><COCPage /></ConfigProvider></BrowserRouter>);
     await waitFor(() => {
       expect(document.body.textContent).toBeTruthy();
-    }, { timeout: 2000 });
-  });
+    }, { timeout: 3000 });
+  }, 10000);
 
   it('displays COC list with stats', async () => {
     render(<BrowserRouter><ConfigProvider><COCPage /></ConfigProvider></BrowserRouter>);
