@@ -66,11 +66,24 @@ describe('ReportsPage', () => {
     await waitFor(() => expect(document.body.textContent).toContain('提交审核'));
   });
 
-  it('opens submit modal for draft report', async () => {
+  it('opens submit modal for draft report and fills form', async () => {
     render(<BrowserRouter><ConfigProvider><ReportsPage /></ConfigProvider></BrowserRouter>);
     await waitFor(() => expect(screen.getByText('RPT-001')).toBeInTheDocument());
     fireEvent.click(screen.getAllByText('提交')[0]);
-    await waitFor(() => expect(document.body.textContent).toContain('签名'));
+    await waitFor(() => expect(document.body.textContent).toContain('电子签名确认'));
+    // Fill sign modal form
+    const pwInputs = document.querySelectorAll('input[type="password"]');
+    if (pwInputs.length > 0) {
+      fireEvent.change(pwInputs[0], { target: { value: '123456' } });
+    }
+    const textareas = document.querySelectorAll('textarea');
+    if (textareas.length > 0) {
+      fireEvent.change(textareas[0], { target: { value: '报告编制完成' } });
+    }
+    const checkboxes = document.querySelectorAll('.ant-checkbox-input');
+    if (checkboxes.length > 0) {
+      fireEvent.click(checkboxes[checkboxes.length - 1]);
+    }
   });
 
   it('filters by status via KPI card', async () => {
@@ -107,11 +120,19 @@ describe('ReportsPage with pending review report', () => {
     fetchSpy.mockRestore();
   });
 
-  it('opens review modal', async () => {
+  it('opens review modal and fills checklist', async () => {
     render(<BrowserRouter><ConfigProvider><ReportsPage /></ConfigProvider></BrowserRouter>);
     await waitFor(() => expect(screen.getByText('RPT-002')).toBeInTheDocument());
     fireEvent.click(screen.getAllByText('审核')[0]);
-    await waitFor(() => expect(document.body.textContent).toContain('审核'));
+    await waitFor(() => expect(document.body.textContent).toContain('审核要点检查清单'));
+    // Check all checklist items
+    const checkboxes = document.querySelectorAll('.ant-checkbox-input');
+    checkboxes.forEach(cb => fireEvent.click(cb));
+    // Fill opinion
+    const textareas = document.querySelectorAll('textarea');
+    if (textareas.length > 0) {
+      fireEvent.change(textareas[0], { target: { value: '审核通过，数据完整' } });
+    }
   });
 });
 

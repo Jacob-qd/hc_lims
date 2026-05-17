@@ -45,6 +45,12 @@ describe('COCPage', () => {
           json: async () => ({ code: 200, data: chain || mockChains[0], message: 'success' }),
         } as Response;
       }
+      if (url.includes('/coc/disposal') || (url.includes('/coc/chains/') && url.includes('/verify'))) {
+        return {
+          ok: true, status: 200,
+          json: async () => ({ code: 200, data: { valid: true, msg: '链完整' }, message: 'success' }),
+        } as Response;
+      }
       return {
         ok: true, status: 200,
         json: async () => ({ code: 200, data: {}, message: 'success' }),
@@ -94,5 +100,14 @@ describe('COCPage', () => {
     await waitFor(() => expect(screen.getByText('COC-260515-0001')).toBeTruthy(), { timeout: 2000 });
     const disposalBtns = screen.getAllByText('处置');
     expect(disposalBtns.length).toBeGreaterThan(0);
+    fireEvent.click(disposalBtns[0]);
+    await waitFor(() => expect(document.body.textContent).toContain('样品处置'));
+  });
+
+  it('clicks verify button', async () => {
+    render(<BrowserRouter><ConfigProvider><COCPage /></ConfigProvider></BrowserRouter>);
+    await waitFor(() => expect(screen.getByText('COC-260515-0001')).toBeTruthy(), { timeout: 2000 });
+    const verifyBtns = screen.getAllByText('校验');
+    if (verifyBtns.length > 0) fireEvent.click(verifyBtns[0]);
   });
 });
