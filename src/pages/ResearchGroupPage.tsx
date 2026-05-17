@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Tree, Tabs, Descriptions, Drawer, Badge, Progress, Modal, Form, message } from 'antd';
-import { PlusOutlined, SearchOutlined, UserOutlined, TeamOutlined, FundOutlined, ToolOutlined } from '@ant-design/icons';
+import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Tree, Tabs, Descriptions, Drawer, Badge, Progress, Modal, Form, message, Segmented, List, Avatar } from 'antd';
+import { PlusOutlined, SearchOutlined, UserOutlined, TeamOutlined, FundOutlined, ToolOutlined, ExperimentOutlined, TrophyOutlined, BookOutlined, CalendarOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 
@@ -42,24 +42,62 @@ const roleColors: Record<string, string> = { PI: '#ff4d4f', 博士后: '#1677ff'
 
 const GroupDetail: React.FC<{ group: ResearchGroup | null; visible: boolean; onClose: () => void }> = ({ group, visible, onClose }) => {
   if (!group) return null;
+  const budgetData = [
+    {source:'国自然基金-面上项目',type:'纵向',amount:'¥500,000',used:'¥180,000',remain:'¥320,000',rate:36},
+    {source:'企业合作-绿源环保',type:'横向',amount:'¥300,000',used:'¥120,000',remain:'¥180,000',rate:40},
+    {source:'校内启动金',type:'校内',amount:'¥100,000',used:'¥50,000',remain:'¥50,000',rate:50},
+    {source:'省自然科学基金',type:'纵向',amount:'¥380,000',used:'¥90,000',remain:'¥290,000',rate:24},
+  ];
+  const projectData = [
+    {no:'NSFC-2024-001',name:'新型二维材料的界面调控机制研究',pi:'张明',budget:'¥580,000',progress:22,status:'在研'},
+    {no:'SJ-2024-002',name:'地表水VOCs在线监测技术开发',pi:'张明',budget:'¥350,000',progress:45,status:'在研'},
+  ];
+  const achievementData = [
+    {title:'新型二维材料在高效催化中的结构调控',type:'论文',journal:'Nature Materials',year:2025,status:'published'},
+    {title:'一种VOCs在线监测预处理装置',type:'专利',journal:'国家发明专利',year:2025,status:'pending'},
+  ];
+  const usageData = [
+    {inst:'液相色谱仪 LC-001',count:28,hours:56,fee:'¥2,800'},
+    {inst:'ICP-MS质谱仪 ICP-001',count:18,hours:45,fee:'¥9,000'},
+    {inst:'紫外分光光度计 UV-001',count:15,hours:22,fee:'¥750'},
+    {inst:'气相色谱仪 GC-002',count:12,hours:30,fee:'¥3,600'},
+  ];
   return (
-    <Drawer title={`${group.name} - 详情`} open={visible} onClose={onClose} width={640}>
+    <Drawer title={<Space><TeamOutlined />{group.name}</Space>} open={visible} onClose={onClose} width={720}>
+      <Card size="small" style={{ marginBottom: 16 }}>
+        <Row gutter={16} align="middle">
+          <Col span={4} style={{ textAlign: 'center' }}>
+            <Avatar size={64} style={{ background: '#1677ff' }}>{group.pi[0]}</Avatar>
+          </Col>
+          <Col span={20}>
+            <Row gutter={16}>
+              <Col span={6}><Statistic title="PI" value={group.pi} valueStyle={{ fontSize: 14 }} /></Col>
+              <Col span={6}><Statistic title="职称" value={group.detail.piTitle} valueStyle={{ fontSize: 14 }} /></Col>
+              <Col span={6}><Statistic title="成立日期" value={group.detail.founded} valueStyle={{ fontSize: 14 }} /></Col>
+              <Col span={6}><Statistic title="状态" value={<Badge status="success" text="在研" />} valueStyle={{ fontSize: 14 }} /></Col>
+            </Row>
+          </Col>
+        </Row>
+      </Card>
       <Row gutter={16} style={{ marginBottom: 16 }}>
-        <Col span={6}><Card size="small"><Statistic title="经费余额" value={group.detail.balance} valueStyle={{ fontSize: 14 }} /></Card></Col>
-        <Col span={6}><Card size="small"><Statistic title="在研项目" value={group.detail.activeProjects} /></Card></Col>
-        <Col span={6}><Card size="small"><Statistic title="在组人数" value={group.detail.peopleCount} /></Card></Col>
-        <Col span={6}><Card size="small"><Statistic title="本月使用" value={group.detail.monthlyUsage} suffix="次" /></Card></Col>
+        <Col span={6}><Card size="small"><Statistic title="经费余额" value={group.detail.balance} valueStyle={{ fontSize: 14, color: '#52c41a' }} prefix={<FundOutlined />} /></Card></Col>
+        <Col span={6}><Card size="small"><Statistic title="在研项目" value={group.detail.activeProjects} prefix={<ExperimentOutlined />} /></Card></Col>
+        <Col span={6}><Card size="small"><Statistic title="在组人数" value={group.detail.peopleCount} prefix={<UserOutlined />} /></Card></Col>
+        <Col span={6}><Card size="small"><Statistic title="本月使用" value={group.detail.monthlyUsage} suffix="次" prefix={<ToolOutlined />} /></Card></Col>
       </Row>
       <Tabs defaultActiveKey="members" items={[
         { key: 'members', label: '成员管理', children: (
-          <Table dataSource={group.membersList} rowKey="id" pagination={false} size="small" columns={[
-            { title: '姓名', dataIndex: 'name' },
-            { title: '角色', dataIndex: 'role', render: (r: string) => <Tag color={roleColors[r]}>{r}</Tag> },
-            { title: '学历', dataIndex: 'education' },
-            { title: '研究方向', dataIndex: 'field' },
-            { title: '加入日期', dataIndex: 'joinDate' },
-            { title: '状态', dataIndex: 'status', render: () => <Badge status="success" text="在组" /> },
-          ]} />
+          <>
+            <Button type="primary" size="small" icon={<PlusOutlined />} style={{ marginBottom: 8 }}>添加成员</Button>
+            <Table dataSource={group.membersList} rowKey="id" pagination={false} size="small" columns={[
+              { title: '姓名', dataIndex: 'name' },
+              { title: '角色', dataIndex: 'role', render: (r: string) => <Tag color={roleColors[r]}>{r}</Tag> },
+              { title: '学历', dataIndex: 'education' },
+              { title: '研究方向', dataIndex: 'field' },
+              { title: '加入日期', dataIndex: 'joinDate' },
+              { title: '状态', dataIndex: 'status', render: () => <Badge status="success" text="在组" /> },
+            ]} />
+          </>
         )},
         { key: 'info', label: '基本信息', children: (
           <Descriptions column={2} size="small" bordered>
@@ -68,25 +106,50 @@ const GroupDetail: React.FC<{ group: ResearchGroup | null; visible: boolean; onC
             <Descriptions.Item label="所属院系">{group.dept}</Descriptions.Item>
             <Descriptions.Item label="成立日期">{group.detail.founded}</Descriptions.Item>
             <Descriptions.Item label="研究方向" span={2}>{group.detail.field}</Descriptions.Item>
+            <Descriptions.Item label="在组人数">{group.detail.peopleCount} 人</Descriptions.Item>
+            <Descriptions.Item label="活跃项目">{group.detail.activeProjects} 个</Descriptions.Item>
           </Descriptions>
         )},
-        { key: 'budget', label: '经费台账', children: <Table dataSource={[
-          {source:'国自然基金',type:'纵向',amount:'¥500,000',used:'¥180,000',remain:'¥320,000',rate:36},
-          {source:'企业合作',type:'横向',amount:'¥300,000',used:'¥120,000',remain:'¥180,000',rate:40},
-          {source:'校内启动金',type:'校内',amount:'¥100,000',used:'¥50,000',remain:'¥50,000',rate:50},
-        ]} rowKey="source" pagination={false} size="small" columns={[
-          {title:'来源',dataIndex:'source'},{title:'类型',dataIndex:'type',render:(t:string) => <Tag color={t==='纵向'?'blue':t==='横向'?'orange':'default'}>{t}</Tag>},
-          {title:'金额',dataIndex:'amount'},{title:'已支出',dataIndex:'used'},{title:'余额',dataIndex:'remain',render:(v:string) => <Text type="success">{v}</Text>},
-          {title:'执行率',dataIndex:'rate',render:(r:number) => <Progress percent={r} size="small" />},
-        ]} /> },
-        { key: 'usage', label: '仪器使用统计', children: <Table dataSource={[
-          {inst:'液相色谱仪',count:28,hours:56,fee:'¥2,800'},
-          {inst:'ICP-MS质谱仪',count:18,hours:45,fee:'¥9,000'},
-          {inst:'紫外分光光度计',count:15,hours:22,fee:'¥750'},
-          {inst:'气相色谱仪',count:12,hours:30,fee:'¥3,600'},
-        ]} rowKey="inst" pagination={false} size="small" columns={[
-          {title:'仪器',dataIndex:'inst'},{title:'使用次数',dataIndex:'count'},{title:'使用时长(h)',dataIndex:'hours'},{title:'费用',dataIndex:'fee'},
-        ]} /> },
+        { key: 'projects', label: '研究项目', children: (
+          <Table dataSource={projectData} rowKey="no" pagination={false} size="small" columns={[
+            {title:'项目编号',dataIndex:'no',render:(n:string)=><Text code>{n}</Text>},
+            {title:'项目名称',dataIndex:'name'},
+            {title:'PI',dataIndex:'pi'},
+            {title:'经费',dataIndex:'budget'},
+            {title:'进度',dataIndex:'progress',render:(p:number)=><Progress percent={p} size="small" />},
+            {title:'状态',dataIndex:'status',render:(s:string)=><Tag color="green">{s}</Tag>},
+          ]} />
+        )},
+        { key: 'budget', label: '经费台账', children: (
+          <>
+            <Row gutter={16} style={{ marginBottom: 16 }}>
+              <Col span={8}><Card size="small"><Statistic title="总经费" value={group.budget} prefix={<FundOutlined />} /></Card></Col>
+              <Col span={8}><Card size="small"><Statistic title="已支出" value="¥350,000" valueStyle={{ color: '#1677ff' }} /></Card></Col>
+              <Col span={8}><Card size="small"><Statistic title="执行率" value={27} suffix="%" valueStyle={{ color: '#52c41a' }} /></Card></Col>
+            </Row>
+            <Table dataSource={budgetData} rowKey="source" pagination={false} size="small" columns={[
+              {title:'来源',dataIndex:'source'},{title:'类型',dataIndex:'type',render:(t:string) => <Tag color={t==='纵向'?'blue':t==='横向'?'orange':'default'}>{t}</Tag>},
+              {title:'金额',dataIndex:'amount'},{title:'已支出',dataIndex:'used'},{title:'余额',dataIndex:'remain',render:(v:string) => <Text type="success">{v}</Text>},
+              {title:'执行率',dataIndex:'rate',render:(r:number) => <Progress percent={r} size="small" />},
+            ]} />
+          </>
+        )},
+        { key: 'achievements', label: '成果汇总', children: (
+          <List dataSource={achievementData} renderItem={item => (
+            <List.Item>
+              <List.Item.Meta
+                title={<Space>{item.type==='论文'?<BookOutlined />:<TrophyOutlined />}{item.title}</Space>}
+                description={<Space><Tag color={item.type==='论文'?'blue':'green'}>{item.type}</Tag><Text type="secondary">{item.journal} · {item.year}</Text></Space>}
+              />
+              <Tag color={item.status==='published'?'green':'orange'}>{item.status==='published'?'已发表':'审核中'}</Tag>
+            </List.Item>
+          )} />
+        )},
+        { key: 'usage', label: '仪器使用统计', children: (
+          <Table dataSource={usageData} rowKey="inst" pagination={false} size="small" columns={[
+            {title:'仪器',dataIndex:'inst'},{title:'使用次数',dataIndex:'count'},{title:'使用时长(h)',dataIndex:'hours'},{title:'费用',dataIndex:'fee'},
+          ]} />
+        )},
       ]} />
     </Drawer>
   );
@@ -97,8 +160,13 @@ export const ResearchGroupPage: React.FC = () => {
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
 
-  const filtered = groups.filter(g => g.name.includes(searchText) || g.pi.includes(searchText) || g.dept.includes(searchText));
+  const filtered = groups.filter(g => {
+    const matchSearch = g.name.includes(searchText) || g.pi.includes(searchText) || g.dept.includes(searchText);
+    const matchStatus = statusFilter === 'all' || g.status === statusFilter;
+    return matchSearch && matchStatus;
+  });
 
   const stats = { total: groups.length, members: groups.reduce((s, g) => s + g.members, 0), budget: groups.reduce((s, g) => s + parseInt(g.budget.replace(/[¥,]/g, '')), 0), projects: groups.reduce((s, g) => s + g.projects, 0) };
 
@@ -117,7 +185,7 @@ export const ResearchGroupPage: React.FC = () => {
       </Row>
 
       <Row gutter={16}>
-        <Col xs={24} lg={6}>
+        <Col xs={24} lg={5}>
           <Card title="组织树" size="small">
             <Tree treeData={[
               { title: '化学与分子工程学院', key: '0', children: [
@@ -131,10 +199,11 @@ export const ResearchGroupPage: React.FC = () => {
             }} />
           </Card>
         </Col>
-        <Col xs={24} lg={18}>
+        <Col xs={24} lg={19}>
           <Card>
-            <Space style={{ marginBottom: 16 }}>
+            <Space style={{ marginBottom: 16 }} wrap>
               <Input placeholder="搜索课题组/PI/院系" prefix={<SearchOutlined />} value={searchText} onChange={e => setSearchText(e.target.value)} style={{ width: 260 }} allowClear />
+              <Segmented options={[{label:'全部',value:'all'},{label:'在研',value:'active'},{label:'已结题',value:'closed'},{label:'暂停',value:'paused'}]} value={statusFilter} onChange={v => setStatusFilter(v as string)} />
             </Space>
             <Table dataSource={filtered} rowKey="id" columns={[
               { title: '课题组编号', dataIndex: 'id', key: 'id', render: (id: string) => <Text code>{id.toUpperCase()}</Text> },
@@ -145,8 +214,9 @@ export const ResearchGroupPage: React.FC = () => {
               { title: '经费余额', dataIndex: 'budget', key: 'budget' },
               { title: '活跃项目', dataIndex: 'projects', key: 'projects' },
               { title: '本月使用', dataIndex: 'instrumentUsage', key: 'instrumentUsage', render: (v: number) => <>{v}次</> },
+              { title: '状态', dataIndex: 'status', key: 'status', render: (s: string) => <Badge status={s==='active'?'success':'default'} text={s==='active'?'在研':'其他'} /> },
               { title: '操作', key: 'action', render: (_: any, r: ResearchGroup) => <Button type="link" size="small" onClick={() => { setSelected(r); setDrawerVisible(true); }}>查看</Button> },
-            ]} pagination={false} size="middle" />
+            ]} pagination={{ pageSize: 10 }} size="middle" />
           </Card>
         </Col>
       </Row>
