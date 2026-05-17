@@ -1,31 +1,75 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Tabs, message, Modal, Form, Tooltip } from 'antd';
-import { PlusOutlined, SearchOutlined, EyeOutlined, DownloadOutlined, FileTextOutlined, TrophyOutlined, BookOutlined, FilePdfOutlined } from '@ant-design/icons';
+import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Tabs, message, Modal, Form, Tooltip, Popconfirm } from 'antd';
+import { PlusOutlined, SearchOutlined, EyeOutlined, DownloadOutlined, FileTextOutlined, TrophyOutlined, BookOutlined, FilePdfOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { exportCSV, exportPDF, exportJSON } from '../utils/export';
 
 const { Title, Text } = Typography;
-const typeColors: Record<string, string> = { 论文: '#1677ff', 专利: '#52c41a', 报告: '#fa8c16', 数据: '#722ed1' };
-const typeIcons: Record<string, any> = { 论文: <BookOutlined />, 专利: <TrophyOutlined />, 报告: <FileTextOutlined /> };
+const typeColors: Record<string, string> = { 论文: '#1677ff', 专利: '#52c41a', 报告: '#fa8c16', 数据: '#722ed1', 软件著作权: '#eb2f96' };
+const typeIcons: Record<string, any> = { 论文: <BookOutlined />, 专利: <TrophyOutlined />, 报告: <FileTextOutlined />, 软件著作权: <FileTextOutlined /> };
+
+interface Publication {
+  id: string; title: string; type: string; journal: string; authors: string; year: number; doi: string; project: string; status: string; citations?: number; impactFactor?: number;
+}
 
 export const AchievementPage: React.FC = () => {
-  const [pubs, setPubs] = useState<any[]>([]);
+  const [pubs, setPubs] = useState<Publication[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [selected, setSelected] = useState<any>(null);
+  const [typeFilter, setTypeFilter] = useState<string | undefined>(undefined);
+  const [yearFilter, setYearFilter] = useState<number | undefined>(undefined);
+  const [selected, setSelected] = useState<Publication | null>(null);
   const [drawer, setDrawer] = useState(false);
   const [createModal, setCreateModal] = useState(false);
+  const [editModal, setEditModal] = useState(false);
   const [form] = Form.useForm();
+  const [editForm] = Form.useForm();
 
   useEffect(() => {
     fetch('/api/v1/research/publications').then(r => r.json()).then(d => { setPubs(d.data?.list || []); setLoading(false); });
   }, []);
 
-  const filtered = pubs.filter((p: any) => p.title.includes(search) || p.authors.includes(search) || p.journal.includes(search));
-  const stats = { total: pubs.length, papers: pubs.filter((p: any) => p.type === '论文').length, patents: pubs.filter((p: any) => p.type === '专利').length, published: pubs.filter((p: any) => p.status === 'published').length };
+  const filtered = pubs.filter((p: Publication) => {
+    const matchText = p.title.includes(search) || p.authors.includes(search) || p.journal.includes(search);
+    const matchType = typeFilter ? p.type === typeFilter : true;
+    const matchYear = yearFilter ? p.year === yearFilter : true;
+    return matchText && matchType && matchYear;
+  });
+
+  const stats = { total: pubs.length, papers: pubs.filter(p => p.type === '论文').length, patents: pubs.filter(p => p.type === '专利').length, published: pubs.filter(p => p.status === 'published').length };
+
+  const handleCreate = async (values: any) => {
+    const res = await fetch('/api/v1/research/publications', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(values) });
+    const json = await res.json();
+    if (json.code === 200) { message.success('成果已添加'); setCreateModal(false); form.resetFields(); setPubs(prev => [...prev, json.data]); }
+  };
+
+  const handleEdit = async (values: any) => {
+    if (!selected) return;
+    const res = await fetch(`/api/v1/research/publications/${selected.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(values) });
+    const json = await res.json();
+    if (json.code === 200) {
+      message.success('更新成功'); setEditModal(false);
+      setPubs(prev => prev.map(p => p.id === selected.id ? { ...p, ...values } : p));
+      setSelected(prev => prev ? { ...prev, ...values } : null);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    const res = await fetch(`/api/v1/research/publications/${id}`, { method: 'DELETE' });
+    const json = await res.json();
+    if (json.code === 200) { message.success('删除成功'); setPubs(prev => prev.filter(p => p.id !== id)); if (selected?.id === id) { setDrawer(false); setSelected(null); } }
+  };
+
+  const openEdit = (pub: Publication) => {
+    setSelected(pub);
+    editForm.setFieldsValue(pub);
+    setEditModal(true);
+  };
 
   return (
     <div>
-      <Row justify="space-between" style={{ marginBottom: 16 }}><Col><Title level={4}>成果管理</Title></Col>
+      <Row justify="space-between" style={{ marginBottom: 16 }}>
+        <Col><Title level={4}>成果管理</Title></Col>
         <Col><Button type="primary" icon={<PlusOutlined />} onClick={() => setCreateModal(true)}>新增成果</Button></Col>
       </Row>
       <Row gutter={[16,16]} style={{ marginBottom: 16 }}>
@@ -37,25 +81,31 @@ export const AchievementPage: React.FC = () => {
       <Card>
         <Space style={{ marginBottom: 16 }}>
           <Input placeholder="搜索标题/作者/期刊" prefix={<SearchOutlined />} value={search} onChange={e => setSearch(e.target.value)} style={{ width: 280 }} allowClear />
-          <Select placeholder="类型" style={{ width: 120 }} allowClear>
-            {Object.entries(typeColors).map(([k, col]) => <Select.Option key={k}><Tag color={col}>{k}</Tag></Select.Option>)}
+          <Select placeholder="类型" style={{ width: 120 }} allowClear value={typeFilter} onChange={v => setTypeFilter(v)}>
+            {Object.entries(typeColors).map(([k, col]) => <Select.Option key={k} value={k}><Tag color={col}>{k}</Tag></Select.Option>)}
           </Select>
-          <Select placeholder="年份" style={{ width: 100 }} allowClear>
-            {[2025,2024].map(y => <Select.Option key={y}>{y}</Select.Option>)}
+          <Select placeholder="年份" style={{ width: 100 }} allowClear value={yearFilter} onChange={v => setYearFilter(v)}>
+            {[2025,2024,2023].map(y => <Select.Option key={y} value={y}>{y}</Select.Option>)}
           </Select>
+          <Button icon={<DownloadOutlined />} onClick={() => exportCSV(filtered, '成果数据', ['title','authors','journal','year','doi'])}>导出CSV</Button>
         </Space>
         <Table dataSource={filtered} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} columns={[
-          { title: '标题', dataIndex: 'title', render: (t: string, r: any) => <a onClick={() => { setSelected(r); setDrawer(true); }}>{t}</a> },
+          { title: '标题', dataIndex: 'title', render: (t: string, r: Publication) => <a onClick={() => { setSelected(r); setDrawer(true); }}>{t}</a> },
           { title: '类型', dataIndex: 'type', render: (t: string) => <Tag color={typeColors[t]} icon={typeIcons[t]}>{t}</Tag> },
           { title: '期刊/专利号', dataIndex: 'journal' },
           { title: '作者', dataIndex: 'authors', ellipsis: true },
           { title: '年份', dataIndex: 'year' },
           { title: 'DOI', dataIndex: 'doi', render: (d: string) => <Text code style={{ fontSize: 11 }}>{d}</Text> },
           { title: '关联项目', dataIndex: 'project' },
-          { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={s === 'published' ? 'green' : 'orange'}>{s === 'published' ? '已发表' : '审核中'}</Tag> },
-          { title: '操作', render: (_: any, r: any) => (
-            <Space><Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawer(true); }} />
-            <Tooltip title="导出数据"><Button type="link" size="small" icon={<DownloadOutlined />} /></Tooltip></Space>
+          { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={s === 'published' ? 'green' : s === 'pending' ? 'orange' : 'default'}>{s === 'published' ? '已发表' : s === 'pending' ? '审核中' : '草稿'}</Tag> },
+          { title: '操作', render: (_: any, r: Publication) => (
+            <Space>
+              <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawer(true); }} />
+              <Button type="link" size="small" icon={<EditOutlined />} onClick={() => openEdit(r)} />
+              <Popconfirm title="确认删除?" onConfirm={() => handleDelete(r.id)}>
+                <Button type="link" size="small" danger icon={<DeleteOutlined />} />
+              </Popconfirm>
+            </Space>
           )},
         ]} size="middle" />
       </Card>
@@ -70,6 +120,8 @@ export const AchievementPage: React.FC = () => {
             <Descriptions.Item label="年份">{selected.year}</Descriptions.Item>
             <Descriptions.Item label="DOI">{selected.doi}</Descriptions.Item>
             <Descriptions.Item label="关联项目">{selected.project}</Descriptions.Item>
+            {selected.citations !== undefined && <Descriptions.Item label="引用次数">{selected.citations}</Descriptions.Item>}
+            {selected.impactFactor !== undefined && <Descriptions.Item label="影响因子">{selected.impactFactor}</Descriptions.Item>}
           </Descriptions>
           <Tabs style={{ marginTop: 16 }} items={[
             { key: 'data', label: '关联实验数据', children: (
@@ -94,13 +146,26 @@ export const AchievementPage: React.FC = () => {
       </Drawer>
 
       <Modal title="新增成果" open={createModal} onOk={() => form.submit()} onCancel={() => { setCreateModal(false); form.resetFields(); }}>
-        <Form form={form} layout="vertical" onFinish={() => { message.success('成果已添加'); setCreateModal(false); }}>
-          <Form.Item name="title" label="标题" required><Input /></Form.Item>
-          <Form.Item name="type" label="类型"><Select><Select.Option value="论文">论文</Select.Option><Select.Option value="专利">专利</Select.Option><Select.Option value="报告">报告</Select.Option></Select></Form.Item>
+        <Form form={form} layout="vertical" onFinish={handleCreate}>
+          <Form.Item name="title" label="标题" rules={[{ required: true }]}><Input /></Form.Item>
+          <Form.Item name="type" label="类型"><Select><Select.Option value="论文">论文</Select.Option><Select.Option value="专利">专利</Select.Option><Select.Option value="报告">报告</Select.Option><Select.Option value="软件著作权">软件著作权</Select.Option></Select></Form.Item>
           <Form.Item name="journal" label="期刊/专利号"><Input /></Form.Item>
           <Form.Item name="authors" label="作者"><Input /></Form.Item>
           <Form.Item name="year" label="年份"><Input type="number" /></Form.Item>
           <Form.Item name="doi" label="DOI"><Input /></Form.Item>
+          <Form.Item name="project" label="关联项目"><Input /></Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal title="编辑成果" open={editModal} onOk={() => editForm.submit()} onCancel={() => { setEditModal(false); editForm.resetFields(); }}>
+        <Form form={editForm} layout="vertical" onFinish={handleEdit}>
+          <Form.Item name="title" label="标题" rules={[{ required: true }]}><Input /></Form.Item>
+          <Form.Item name="type" label="类型"><Select><Select.Option value="论文">论文</Select.Option><Select.Option value="专利">专利</Select.Option><Select.Option value="报告">报告</Select.Option><Select.Option value="软件著作权">软件著作权</Select.Option></Select></Form.Item>
+          <Form.Item name="journal" label="期刊/专利号"><Input /></Form.Item>
+          <Form.Item name="authors" label="作者"><Input /></Form.Item>
+          <Form.Item name="year" label="年份"><Input type="number" /></Form.Item>
+          <Form.Item name="doi" label="DOI"><Input /></Form.Item>
+          <Form.Item name="project" label="关联项目"><Input /></Form.Item>
         </Form>
       </Modal>
     </div>

@@ -1,12 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Tabs, Progress, Modal, Form, message } from 'antd';
-import { PlusOutlined, SearchOutlined, EyeOutlined } from '@ant-design/icons';
+import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Tabs, Progress, Modal, Form, message, Timeline } from 'antd';
+import { PlusOutlined, SearchOutlined, EyeOutlined, FlagOutlined, FundOutlined, ClockCircleOutlined, CheckCircleOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 
 const typeColors: Record<string, string> = { 纵向: '#1677ff', 横向: '#faad14', 校内: '#d9d9d9' };
 const statusColors: Record<string, string> = { active: '#52c41a', closing: '#faad14', closed: '#d9d9d9' };
 const statusLabels: Record<string, string> = { active: '在研', closing: '待结题', closed: '已结题' };
+
+interface Milestone {
+  id: string; name: string; plannedDate: string; actualDate?: string; status: string;
+}
+
+interface BudgetItem {
+  category: string; budget: number; used: number;
+}
 
 export const ResearchProjectPage: React.FC = () => {
   const [projects, setProjects] = useState<any[]>([]);
@@ -15,6 +23,9 @@ export const ResearchProjectPage: React.FC = () => {
   const [selected, setSelected] = useState<any>(null);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [milestones, setMilestones] = useState<Milestone[]>([]);
+  const [budgetDetail, setBudgetDetail] = useState<BudgetItem[]>([]);
+  const [detailLoading, setDetailLoading] = useState(false);
   const [form] = Form.useForm();
 
   const fetchData = async () => {
@@ -26,7 +37,29 @@ export const ResearchProjectPage: React.FC = () => {
     } catch { message.error('加载失败'); }
     finally { setLoading(false); }
   };
+
   useEffect(() => { fetchData(); }, []);
+
+  const fetchDetail = async (project: any) => {
+    setDetailLoading(true);
+    try {
+      const [msRes, bdRes] = await Promise.all([
+        fetch(`/api/v1/research/projects/${project.id}/milestones`),
+        fetch(`/api/v1/research/projects/${project.id}/budget`),
+      ]);
+      const msJson = await msRes.json();
+      const bdJson = await bdRes.json();
+      setMilestones(msJson.data?.list || []);
+      setBudgetDetail(bdJson.data?.list || []);
+    } catch { /* ignore */ }
+    finally { setDetailLoading(false); }
+  };
+
+  const openDetail = (project: any) => {
+    setSelected(project);
+    setDrawerVisible(true);
+    fetchDetail(project);
+  };
 
   const filtered = projects.filter((p: any) => p.name.includes(searchText) || p.pi.includes(searchText) || p.no.includes(searchText));
 
@@ -45,18 +78,24 @@ export const ResearchProjectPage: React.FC = () => {
         <Col><Button type="primary" icon={<PlusOutlined />} onClick={() => setModalVisible(true)}>新建项目</Button></Col>
       </Row>
       <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-        <Col xs={12} sm={6}><Card size="small"><Statistic title="在研项目" value={stats.total} /></Card></Col>
-        <Col xs={12} sm={6}><Card size="small"><Statistic title="经费总额" value={`¥${(stats.budget/10000).toFixed(0)}万`} /></Card></Col>
+        <Col xs={12} sm={6}><Card size="small"><Statistic title="在研项目" value={stats.total} prefix={<FlagOutlined />} /></Card></Col>
+        <Col xs={12} sm={6}><Card size="small"><Statistic title="经费总额" value={`¥${(stats.budget/10000).toFixed(0)}万`} prefix={<FundOutlined />} /></Card></Col>
         <Col xs={12} sm={6}><Card size="small"><Statistic title="已使用经费" value={`¥${(stats.used/10000).toFixed(0)}万`} valueStyle={{ color: '#1677ff' }} /></Card></Col>
         <Col xs={12} sm={6}><Card size="small"><Statistic title="预算执行率" value={stats.rate} suffix="%" valueStyle={{ color: stats.rate > 80 ? '#faad14' : '#52c41a' }} /></Card></Col>
       </Row>
       <Card>
         <Space style={{ marginBottom: 16 }}>
           <Input placeholder="搜索项目名称/PI/编号" prefix={<SearchOutlined />} value={searchText} onChange={e => setSearchText(e.target.value)} style={{ width: 260 }} allowClear />
+          <Select placeholder="类型" style={{ width: 120 }} allowClear>
+            {Object.keys(typeColors).map(k => <Select.Option key={k} value={k}>{k}</Select.Option>)}
+          </Select>
+          <Select placeholder="状态" style={{ width: 120 }} allowClear>
+            {Object.entries(statusLabels).map(([k, v]) => <Select.Option key={k} value={k}>{v}</Select.Option>)}
+          </Select>
         </Space>
         <Table dataSource={filtered} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} columns={[
           { title: '项目编号', dataIndex: 'no', render: (n: string) => <Text code>{n}</Text> },
-          { title: '项目名称', dataIndex: 'name', render: (n: string, r: any) => <a onClick={() => { setSelected(r); setDrawerVisible(true); }}>{n}</a> },
+          { title: '项目名称', dataIndex: 'name', render: (n: string, r: any) => <a onClick={() => openDetail(r)}>{n}</a> },
           { title: '类型', dataIndex: 'type', render: (t: string) => <Tag color={typeColors[t]}>{t}</Tag> },
           { title: '资金来源', dataIndex: 'source' },
           { title: 'PI', dataIndex: 'pi' },
@@ -64,11 +103,11 @@ export const ResearchProjectPage: React.FC = () => {
           { title: '经费', dataIndex: 'budget', render: (b: number) => `¥${(b/10000).toFixed(1)}万` },
           { title: '执行率', dataIndex: 'progress', render: (p: number) => <Progress percent={p} size="small" /> },
           { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={statusColors[s]}>{statusLabels[s]}</Tag> },
-          { title: '操作', render: (_: any, r: any) => <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawerVisible(true); }}>详情</Button> },
+          { title: '操作', render: (_: any, r: any) => <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => openDetail(r)}>详情</Button> },
         ]} size="middle" />
       </Card>
 
-      <Drawer title={selected?.name} open={drawerVisible} onClose={() => { setDrawerVisible(false); setSelected(null); }} width={520}>
+      <Drawer title={selected?.name} open={drawerVisible} onClose={() => { setDrawerVisible(false); setSelected(null); }} width={560}>
         {selected && (<>
           <Row gutter={16} style={{ marginBottom: 16 }}>
             <Col span={8}><Card size="small"><Statistic title="经费总额" value={`¥${(selected.budget/10000).toFixed(1)}万`} /></Card></Col>
@@ -87,17 +126,23 @@ export const ResearchProjectPage: React.FC = () => {
                 <Descriptions.Item label="起止日期">{selected.startDate} ~ {selected.endDate}</Descriptions.Item>
               </Descriptions>
             )},
-            { key: 'funds', label: '经费管理', children: <Table dataSource={[
-              {item:'设备费',budget:selected.budget*0.4,used:selected.used*0.35,remain:selected.budget*0.4-selected.used*0.35,rate:35},
-              {item:'材料费',budget:selected.budget*0.25,used:selected.used*0.3,remain:selected.budget*0.25-selected.used*0.3,rate:30},
-              {item:'测试费',budget:selected.budget*0.15,used:selected.used*0.2,remain:selected.budget*0.15-selected.used*0.2,rate:20},
-              {item:'差旅费',budget:selected.budget*0.1,used:selected.used*0.1,remain:selected.budget*0.1-selected.used*0.1,rate:10},
-              {item:'其他',budget:selected.budget*0.1,used:selected.used*0.05,remain:selected.budget*0.1-selected.used*0.05,rate:5},
-            ]} rowKey="item" pagination={false} size="small" columns={[
-              {title:'预算科目',dataIndex:'item'},
+            { key: 'milestones', label: '里程碑', children: (
+              <Timeline mode="left" style={{ marginTop: 8 }}>
+                {milestones.map(m => (
+                  <Timeline.Item key={m.id} color={m.status === 'completed' ? 'green' : 'blue'} label={m.plannedDate}>
+                    <Text strong>{m.name}</Text>
+                    <br />
+                    <Text type="secondary">{m.status === 'completed' ? `实际完成: ${m.actualDate}` : '待完成'}</Text>
+                    {m.status === 'completed' && <CheckCircleOutlined style={{ color: '#52c41a', marginLeft: 8 }} />}
+                  </Timeline.Item>
+                ))}
+              </Timeline>
+            )},
+            { key: 'funds', label: '经费管理', children: <Table dataSource={budgetDetail.map((b: any) => ({...b, remain: b.budget - b.used, rate: Math.round(b.used / b.budget * 100)}))} rowKey="category" pagination={false} size="small" columns={[
+              {title:'预算科目',dataIndex:'category'},
               {title:'预算金额',dataIndex:'budget',render:(v:number) => '¥'+(v/10000).toFixed(1)+'万'},
               {title:'已支出',dataIndex:'used',render:(v:number) => '¥'+(v/10000).toFixed(1)+'万'},
-              {title:'余额',dataIndex:'remain',render:(v:number) => <Text type={v<0?'danger':undefined}>¥'+(v/10000).toFixed(1)+'万</Text>},
+              {title:'余额',dataIndex:'remain',render:(v:number) => <Text type={v<0?'danger':undefined}>¥{(v/10000).toFixed(1)}万</Text>},
               {title:'支出占比',dataIndex:'rate',render:(v:number) => <Progress percent={v} size="small" />},
             ]} /> },
             { key: 'experiments', label: '关联实验', children: <Table dataSource={[

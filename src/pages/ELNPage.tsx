@@ -1,21 +1,37 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Tag, Button, Row, Col, Typography, Space, Input, Select, Modal, Form, message, Tabs, Descriptions, Timeline } from 'antd';
-import { PlusOutlined, SearchOutlined, EditOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Modal, Form, message, Tabs, Descriptions, Timeline, List } from 'antd';
+import { PlusOutlined, SearchOutlined, EditOutlined, CheckCircleOutlined, FileTextOutlined, HistoryOutlined, FileImageOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
-const statusColors: Record<string, string> = { draft: '#1677ff', signed: '#52c41a', locked: '#d9d9d9' };
-const statusLabels: Record<string, string> = { draft: '草稿', signed: '已签名', locked: '已锁定' };
+const statusColors: Record<string, string> = { draft: '#1677ff', signed: '#52c41a', witnessed: '#722ed1', locked: '#d9d9d9' };
+const statusLabels: Record<string, string> = { draft: '草稿', signed: '已签名', witnessed: '已见证', locked: '已锁定' };
+
+interface ELNEntry {
+  id: string; no: string; title: string; author: string; project: string; group: string;
+  date: string; protocol: string; status: string; tags: string[];
+}
+
+interface Template {
+  id: string; name: string; category: string; description: string;
+}
+
+interface Version {
+  version: number; updatedAt: string; updater: string; changes: string;
+}
 
 export const ELNPage: React.FC = () => {
-  const [entries, setEntries] = useState<any[]>([]);
+  const [entries, setEntries] = useState<ELNEntry[]>([]);
+  const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState('');
   const [createVisible, setCreateVisible] = useState(false);
   const [editorVisible, setEditorVisible] = useState(false);
   const [signVisible, setSignVisible] = useState(false);
-  const [currentEntry, setCurrentEntry] = useState<any>(null);
+  const [versionVisible, setVersionVisible] = useState(false);
+  const [currentEntry, setCurrentEntry] = useState<ELNEntry | null>(null);
+  const [versions, setVersions] = useState<Version[]>([]);
   const [content, setContent] = useState('');
   const [title, setTitle] = useState('');
   const [form] = Form.useForm();
@@ -23,12 +39,18 @@ export const ELNPage: React.FC = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await window.fetch('/api/v1/research/eln-entries');
-      const json = await res.json();
-      setEntries(json.data.list);
+      const [entriesRes, tmplRes] = await Promise.all([
+        window.fetch('/api/v1/research/eln-entries'),
+        window.fetch('/api/v1/research/eln/templates'),
+      ]);
+      const entriesJson = await entriesRes.json();
+      const tmplJson = await tmplRes.json();
+      setEntries(entriesJson.data?.list || []);
+      setTemplates(tmplJson.data?.list || []);
     } catch { message.error('加载失败'); }
     finally { setLoading(false); }
   };
+
   useEffect(() => { fetchData(); }, []);
 
   const filtered = entries.filter((e: any) => e.title.includes(searchText) || e.author.includes(searchText));
@@ -39,7 +61,7 @@ export const ELNPage: React.FC = () => {
     if (json.code === 200) { message.success('创建成功'); setCreateVisible(false); form.resetFields(); fetchData(); }
   };
 
-  const openEditor = (entry: any) => {
+  const openEditor = (entry: ELNEntry) => {
     setCurrentEntry(entry);
     setTitle(entry?.title || '');
     setContent('');
@@ -61,6 +83,16 @@ export const ELNPage: React.FC = () => {
     if (json.code === 200) { message.success('签名成功'); setSignVisible(false); setEditorVisible(false); fetchData(); }
   };
 
+  const openVersions = async (entry: ELNEntry) => {
+    setCurrentEntry(entry);
+    try {
+      const res = await fetch(`/api/v1/research/eln/${entry.id}/versions`);
+      const json = await res.json();
+      setVersions(json.data?.list || []);
+      setVersionVisible(true);
+    } catch { message.error('加载版本历史失败'); }
+  };
+
   return (
     <div>
       <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
@@ -68,11 +100,21 @@ export const ELNPage: React.FC = () => {
         <Col><Button type="primary" icon={<PlusOutlined />} onClick={() => setCreateVisible(true)}>新建实验记录</Button></Col>
       </Row>
 
+      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
+        <Col xs={6}><Card size="small"><Statistic title="总记录" value={entries.length} prefix={<FileTextOutlined />} /></Card></Col>
+        <Col xs={6}><Card size="small"><Statistic title="草稿" value={entries.filter(e => e.status === 'draft').length} valueStyle={{ color: '#1677ff' }} /></Card></Col>
+        <Col xs={6}><Card size="small"><Statistic title="已签名" value={entries.filter(e => e.status === 'signed').length} valueStyle={{ color: '#52c41a' }} /></Card></Col>
+        <Col xs={6}><Card size="small"><Statistic title="已锁定" value={entries.filter(e => e.status === 'locked').length} valueStyle={{ color: '#d9d9d9' }} /></Card></Col>
+      </Row>
+
       <Card>
         <Space style={{ marginBottom: 16 }}>
           <Input placeholder="全文搜索标题/作者/标签" prefix={<SearchOutlined />} value={searchText} onChange={e => setSearchText(e.target.value)} style={{ width: 300 }} allowClear />
           <Select placeholder="状态" style={{ width: 120 }} allowClear>
             {Object.entries(statusLabels).map(([k, v]) => <Select.Option key={k} value={k}>{v}</Select.Option>)}
+          </Select>
+          <Select placeholder="模板" style={{ width: 140 }} allowClear>
+            {templates.map(t => <Select.Option key={t.id} value={t.id}>{t.name}</Select.Option>)}
           </Select>
         </Space>
         <Table dataSource={filtered} rowKey="id" loading={loading} columns={[
@@ -84,10 +126,11 @@ export const ELNPage: React.FC = () => {
           { title: '实验日期', dataIndex: 'date' },
           { title: 'Protocol', dataIndex: 'protocol' },
           { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={statusColors[s]}>{statusLabels[s]}</Tag> },
-          { title: '操作', render: (_: any, r: any) => (
+          { title: '操作', render: (_: any, r: ELNEntry) => (
             <Space>
               <Button type="link" size="small" icon={<EditOutlined />} onClick={() => openEditor(r)}>编辑</Button>
               {r.status === 'draft' && <Button type="link" size="small" icon={<CheckCircleOutlined />} onClick={() => { setCurrentEntry(r); setSignVisible(true); }}>签名</Button>}
+              <Button type="link" size="small" icon={<HistoryOutlined />} onClick={() => openVersions(r)}>版本</Button>
             </Space>
           )},
         ]} size="middle" pagination={{ pageSize: 10 }} />
@@ -101,6 +144,11 @@ export const ELNPage: React.FC = () => {
           <Form.Item name="project" label="所属项目"><Input /></Form.Item>
           <Form.Item name="group" label="课题组"><Input /></Form.Item>
           <Form.Item name="protocol" label="关联Protocol"><Input /></Form.Item>
+          <Form.Item name="template" label="选择模板">
+            <Select placeholder="选择实验模板（可选）" allowClear>
+              {templates.map(t => <Select.Option key={t.id} value={t.id}>{t.name} - {t.description}</Select.Option>)}
+            </Select>
+          </Form.Item>
           <Form.Item name="date" label="实验日期"><Input placeholder="YYYY-MM-DD" /></Form.Item>
         </Form>
       </Modal>
@@ -123,10 +171,16 @@ export const ELNPage: React.FC = () => {
                   <Tag color={i<2?'green':'default'}>{i<2?'已完成':'待开始'}</Tag>
                 </div>)}
               </div>},
+              { key: 'attachments', label: '附件', children: (
+                <div style={{padding:16,textAlign:'center'}}>
+                  <div style={{border:'1px dashed #d9d9d9',borderRadius:6,padding:16,cursor:'pointer',marginBottom:8}}>
+                    <FileImageOutlined style={{fontSize:24,color:'#999'}} /><br/>
+                    <Text type="secondary">拖拽文件到此处上传 (图谱、数据表、照片)</Text>
+                  </div>
+                  <List size="small" dataSource={[]} renderItem={() => null} />
+                </div>
+              )},
             ]} />
-          </div>
-          <div style={{border:'1px dashed #d9d9d9',borderRadius:6,padding:16,textAlign:'center',cursor:'pointer'}}>
-            <Text type="secondary">📎 拖拽文件到此处上传 (图谱、数据表、照片)</Text>
           </div>
         </Space>
       </Modal>
@@ -150,6 +204,21 @@ export const ELNPage: React.FC = () => {
           { color: 'gray', children: '3. 见证人签名（可选）' },
           { color: 'gray', children: '4. 记录锁定' },
         ]} />
+      </Modal>
+
+      {/* Version History Modal */}
+      <Modal title="版本历史" open={versionVisible} onCancel={() => setVersionVisible(false)} footer={null} width={560}>
+        <Timeline mode="left">
+          {versions.map((v, i) => (
+            <Timeline.Item key={i} color={i === 0 ? 'blue' : 'gray'} label={v.updatedAt}>
+              <Text strong>版本 {v.version}</Text>
+              <br/>
+              <Text type="secondary">{v.updater}</Text>
+              <br/>
+              <Text>{v.changes}</Text>
+            </Timeline.Item>
+          ))}
+        </Timeline>
       </Modal>
     </div>
   );

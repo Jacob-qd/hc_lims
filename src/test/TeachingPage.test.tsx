@@ -14,6 +14,13 @@ describe('TeachingPage', () => {
   beforeEach(() => {
     fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockImplementation(async (url: any) => {
       if (url.includes('/api/v1/teaching/courses')) {
+        if (url.includes('/students') || url.includes('/experiments') || url.includes('/reports')) {
+          return mockFetchResponse({ code: 200, data: { list: [
+            { id: 'exp1', name: '实验一: 水质pH值测定', hours: 3, batch: 3, status: 'completed', schedule: '第3周' },
+            { id: 'stu1', name: '张三', studentNo: '2022010001', class: '化学2201', status: 'active' },
+            { id: 'r1', student: '张三', exp: '水质pH值测定', score: '92', status: '已批阅', submitDate: '2024-05-20' },
+          ]}});
+        }
         return mockFetchResponse({
           code: 200,
           data: { list: [

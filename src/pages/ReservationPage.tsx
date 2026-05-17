@@ -1,33 +1,69 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Button, Row, Col, Typography, Statistic, Select, Modal, Form, message, Tabs, Input, Badge } from 'antd';
-import { PlusOutlined, CalendarOutlined, DollarOutlined } from '@ant-design/icons';
+import { Card, Table, Button, Row, Col, Typography, Statistic, Select, Modal, Form, message, Tabs, Input, Badge, Alert, Tag, Space } from 'antd';
+import { PlusOutlined, CalendarOutlined, DollarOutlined, WarningOutlined, CheckCircleOutlined } from '@ant-design/icons';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
+
+interface Reservation {
+  id: string; instrument: string; user: string; group: string; project: string;
+  date: string; time: string; fee: number; status: string;
+}
+
+interface Rule {
+  instrument: string; method: string; rate: string; priorityRate: string; freePeriod: string; overtimeRate: string; penalty: string;
+}
 
 export const ReservationPage: React.FC = () => {
-  const [reservations, setReservations] = useState<any[]>([]);
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [rules, setRules] = useState<Rule[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
+  const [conflictMsg, setConflictMsg] = useState<string | null>(null);
   const [form] = Form.useForm();
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await window.fetch('/api/v1/research/reservations');
-      const json = await res.json();
-      setReservations(json.data?.list || []);
+      const [resRes, ruleRes] = await Promise.all([
+        window.fetch('/api/v1/research/reservations'),
+        window.fetch('/api/v1/research/reservations/rules'),
+      ]);
+      const resJson = await resRes.json();
+      const ruleJson = await ruleRes.json();
+      setReservations(resJson.data?.list || []);
+      setRules(ruleJson.data?.list || []);
     } catch { message.error('加载失败'); }
     finally { setLoading(false); }
   };
+
   useEffect(() => { fetchData(); }, []);
+
+  const checkConflict = async (instrument: string, date: string) => {
+    try {
+      const res = await fetch(`/api/v1/research/reservations/conflicts?instrument=${encodeURIComponent(instrument)}&date=${date}`);
+      const json = await res.json();
+      if (json.data?.hasConflict) {
+        setConflictMsg(`该仪器在 ${date} 已有 ${json.data.conflicts.length} 个预约，可能存在时间冲突`);
+      } else {
+        setConflictMsg(null);
+      }
+    } catch { setConflictMsg(null); }
+  };
 
   const handleCreate = async (values: any) => {
     const res = await window.fetch('/api/v1/research/reservations', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(values) });
     const json = await res.json();
-    if (json.code === 200) { message.success('预约成功'); setModalVisible(false); form.resetFields(); fetchData(); }
+    if (json.code === 200) { message.success('预约成功'); setModalVisible(false); form.resetFields(); setConflictMsg(null); fetchData(); }
   };
 
-  const stats = { total: reservations.length, active: reservations.filter((r: any) => r.status === 'active').length, pending: reservations.filter((r: any) => r.status === 'pending').length, totalFee: reservations.reduce((s: number, r: any) => s + (r.fee || 0), 0) };
+  const stats = { total: reservations.length, active: reservations.filter(r => r.status === 'active').length, pending: reservations.filter(r => r.status === 'pending').length, totalFee: reservations.reduce((s, r) => s + (r.fee || 0), 0) };
+
+  const statusBadge = (s: string) => {
+    if (s === 'active') return <Badge status="processing" text="使用中" />;
+    if (s === 'completed') return <Badge status="success" text="已完成" />;
+    if (s === 'pending') return <Badge status="warning" text="待确认" />;
+    return <Badge status="default" text={s} />;
+  };
 
   return (
     <div>
@@ -79,7 +115,7 @@ export const ReservationPage: React.FC = () => {
                   {title:'仪器',dataIndex:'instrument',ellipsis:true},
                   {title:'预约人',dataIndex:'user'},
                   {title:'时间',dataIndex:'time'},
-                  {title:'状态',dataIndex:'status',render:(s:string) => <Badge status={s==='active'?'processing':s==='completed'?'success':'default'} />},
+                  {title:'状态',dataIndex:'status',render:(s:string) => statusBadge(s)},
                 ]} />
               </Card>
               <Button type="primary" icon={<PlusOutlined />} block onClick={() => setModalVisible(true)}>新建预约</Button>
@@ -88,18 +124,14 @@ export const ReservationPage: React.FC = () => {
         )},
         { key: 'rules', label: '计费规则', children: (
           <Card>
-            <Table dataSource={[
-              { instrument: 'ICP-MS', method: '按时计费', rate: '¥200/小时', priority: '¥300/小时', free: '00:00-08:00', overtime: '¥300/小时', penalty: '¥50/次' },
-              { instrument: '液相色谱', method: '按时计费', rate: '¥150/小时', priority: '¥200/小时', free: '00:00-08:00', overtime: '¥200/小时', penalty: '¥50/次' },
-              { instrument: '紫外分光', method: '按次计费', rate: '¥50/次', priority: '¥80/次', free: '-', overtime: '¥30/次', penalty: '¥20/次' },
-            ]} rowKey="instrument" pagination={false} columns={[
+            <Table dataSource={rules} rowKey="instrument" pagination={false} columns={[
               { title: '仪器', dataIndex: 'instrument' },
-              { title: '计费方式', dataIndex: 'method' },
-              { title: '常规费率', dataIndex: 'rate' },
-              { title: '优先费率', dataIndex: 'priority' },
-              { title: '免费时段', dataIndex: 'free' },
-              { title: '超时费率', dataIndex: 'overtime' },
-              { title: '未打卡处罚', dataIndex: 'penalty' },
+              { title: '计费方式', dataIndex: 'method', render: (m: string) => <Tag>{m === 'hourly' ? '按时计费' : '按次计费'}</Tag> },
+              { title: '常规费率', dataIndex: 'rate', render: (v: number, r: Rule) => `¥${v}/${r.method === 'hourly' ? '小时' : '次'}` },
+              { title: '优先费率', dataIndex: 'priorityRate', render: (v: number, r: Rule) => `¥${v}/${r.method === 'hourly' ? '小时' : '次'}` },
+              { title: '免费时段', dataIndex: 'freePeriod' },
+              { title: '超时费率', dataIndex: 'overtimeRate', render: (v: number, r: Rule) => `¥${v}/${r.method === 'hourly' ? '小时' : '次'}` },
+              { title: '未打卡处罚', dataIndex: 'penalty', render: (v: number) => `¥${v}` },
             ]} size="small" bordered />
           </Card>
         )},
@@ -114,20 +146,29 @@ export const ReservationPage: React.FC = () => {
         )},
       ]} />
 
-      <Modal title="新建预约" open={modalVisible} onOk={() => form.submit()} onCancel={() => { setModalVisible(false); form.resetFields(); }} width={520}>
+      <Modal title="新建预约" open={modalVisible} onOk={() => form.submit()} onCancel={() => { setModalVisible(false); form.resetFields(); setConflictMsg(null); }} width={520}>
+        {conflictMsg && <Alert message={conflictMsg} type="warning" showIcon icon={<WarningOutlined />} style={{ marginBottom: 16 }} />}
         <Form form={form} layout="vertical" onFinish={handleCreate}>
-          <Form.Item name="instrument" label="选择仪器" rules={[{ required: true }]}><Select>
-            <Select.Option value="ICP-MS质谱仪 ICP-001">ICP-MS质谱仪 ICP-001</Select.Option>
-            <Select.Option value="气相色谱仪 GC-002">气相色谱仪 GC-002</Select.Option>
-            <Select.Option value="紫外分光光度计 UV-001">紫外分光光度计 UV-001</Select.Option>
-            <Select.Option value="原子吸收光谱仪 AAS-001">原子吸收光谱仪 AAS-001</Select.Option>
-            <Select.Option value="液相色谱仪 LC-001">液相色谱仪 LC-001</Select.Option>
-          </Select></Form.Item>
+          <Form.Item name="instrument" label="选择仪器" rules={[{ required: true }]}>
+            <Select onChange={() => { setConflictMsg(null); }}>
+              <Select.Option value="ICP-MS质谱仪 ICP-001">ICP-MS质谱仪 ICP-001</Select.Option>
+              <Select.Option value="气相色谱仪 GC-002">气相色谱仪 GC-002</Select.Option>
+              <Select.Option value="紫外分光光度计 UV-001">紫外分光光度计 UV-001</Select.Option>
+              <Select.Option value="原子吸收光谱仪 AAS-001">原子吸收光谱仪 AAS-001</Select.Option>
+              <Select.Option value="液相色谱仪 LC-001">液相色谱仪 LC-001</Select.Option>
+            </Select>
+          </Form.Item>
           <Form.Item name="user" label="预约人" rules={[{ required: true }]}><Input /></Form.Item>
           <Form.Item name="group" label="课题组"><Input /></Form.Item>
           <Form.Item name="project" label="关联项目"><Input /></Form.Item>
-          <Form.Item name="date" label="日期" rules={[{ required: true }]}><Input placeholder="YYYY-MM-DD" /></Form.Item>
+          <Form.Item name="date" label="日期" rules={[{ required: true }]}>
+            <Input placeholder="YYYY-MM-DD" onBlur={(e) => {
+              const inst = form.getFieldValue('instrument');
+              if (inst && e.target.value) checkConflict(inst, e.target.value);
+            }} />
+          </Form.Item>
           <Form.Item name="time" label="时间段" rules={[{ required: true }]}><Input placeholder="如: 09:00-12:00" /></Form.Item>
+          <Form.Item name="purpose" label="用途说明"><Input.TextArea rows={2} placeholder="简要说明实验目的..." /></Form.Item>
         </Form>
       </Modal>
     </div>
