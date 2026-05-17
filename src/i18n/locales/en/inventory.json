@@ -1,0 +1,18 @@
+{
+  "title": "Inventory Management",
+  "create": "New Item",
+  "edit": "Edit Item",
+  "inbound": "Inbound",
+  "outbound": "Outbound",
+  "columns": {
+    "itemNo": "Item No.",
+    "name": "Name",
+    "category": "Category",
+    "spec": "Spec",
+    "quantity": "Quantity",
+    "unit": "Unit",
+    "location": "Location",
+    "expiryDate": "Expiry",
+    "status": "Status"
+  }
+}

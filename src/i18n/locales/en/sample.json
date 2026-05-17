@@ -1,0 +1,39 @@
+{
+  "title": "Sample Management",
+  "create": "New Sample",
+  "edit": "Edit Sample",
+  "detail": "Sample Detail",
+  "columns": {
+    "sampleNo": "Sample No.",
+    "name": "Name",
+    "type": "Type",
+    "customer": "Customer",
+    "receivingDate": "Received",
+    "status": "Status",
+    "location": "Location",
+    "quantity": "Quantity",
+    "unit": "Unit"
+  },
+  "fields": {
+    "sampleNo": "Sample No.",
+    "name": "Sample Name",
+    "type": "Sample Type",
+    "customer": "Customer",
+    "receivingDate": "Receiving Date",
+    "samplingDate": "Sampling Date",
+    "samplingLocation": "Sampling Location",
+    "sampler": "Sampler",
+    "storageCondition": "Storage Condition",
+    "remark": "Remark"
+  },
+  "status": {
+    "pendingReceive": "Pending Receive",
+    "received": "Received",
+    "pendingAssign": "Pending Assign",
+    "assigned": "Assigned",
+    "testing": "Testing",
+    "pendingReview": "Pending Review",
+    "reviewing": "Reviewing",
+    "completed": "Completed"
+  }
+}

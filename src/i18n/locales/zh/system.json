@@ -1,0 +1,25 @@
+{
+  "title": "系统管理",
+  "settings": "系统设置",
+  "dict": "数据字典",
+  "auditLog": "审计日志",
+  "notification": "消息通知",
+  "security": "安全管理",
+  "backup": "备份恢复",
+  "monitor": "系统监控",
+  "profile": {
+    "title": "个人中心",
+    "basicInfo": "基本信息",
+    "changePassword": "修改密码",
+    "preferences": "偏好设置"
+  },
+  "dict": {
+    "title": "数据字典",
+    "type": "字典类型",
+    "code": "字典编码",
+    "label": "字典标签",
+    "value": "字典值",
+    "sort": "排序",
+    "remark": "备注"
+  }
+}

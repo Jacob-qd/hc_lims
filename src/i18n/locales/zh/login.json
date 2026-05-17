@@ -1,0 +1,37 @@
+{
+  "title": "登录",
+  "username": "用户名",
+  "password": "密码",
+  "button": "登录",
+  "companyName": "红创检测认证",
+  "selectRole": "选择角色登录",
+  "testAccount": "测试账号: admin / admin123",
+  "testAccountAll": "各角色使用对应密码登录",
+  "welcomeBack": "欢迎回来，{{name}}",
+  "loginFailed": "登录失败",
+  "role": {
+    "admin": {
+      "desc": "系统配置、用户管理、审计日志"
+    },
+    "lab_tech": {
+      "desc": "样品登记、检测任务、结果录入"
+    },
+    "reviewer": {
+      "desc": "报告审核、电子签名、签发"
+    },
+    "sampler": {
+      "desc": "现场采样、GPS定位、样品管理"
+    },
+    "client": {
+      "desc": "委托查询、报告下载、进度追踪"
+    }
+  },
+  "placeholder": {
+    "username": "用户名",
+    "password": "密码"
+  },
+  "rules": {
+    "usernameRequired": "请输入用户名",
+    "passwordRequired": "请输入密码"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "title": "人员与培训",
+  "create": "新建人员",
+  "edit": "编辑人员",
+  "columns": {
+    "employeeNo": "工号",
+    "name": "姓名",
+    "department": "部门",
+    "position": "岗位",
+    "role": "角色",
+    "qualification": "资质",
+    "status": "状态",
+    "entryDate": "入职日期"
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "title": "首页 Dashboard",
+  "welcome": "欢迎使用红创LIMS实验室信息管理系统",
+  "customizeWorkspace": "自定义工作台",
+  "kpi": {
+    "totalSamples": "样品总数",
+    "pendingTests": "待检测数",
+    "overdueTasks": "逾期任务",
+    "completedReports": "已完成报告",
+    "changeFromYesterday": "较昨日"
+  },
+  "recentSamples": "最近样品",
+  "columns": {
+    "sampleNo": "样品编号",
+    "sampleName": "样品名称",
+    "sampleType": "样品类型",
+    "customerName": "客户名称",
+    "receivingDate": "接收日期",
+    "status": "状态"
+  },
+  "taskQueue": "任务队列",
+  "taskQueueItems": {
+    "pendingAssign": "待分配任务",
+    "pendingTest": "待检测任务",
+    "pendingReview": "待审核报告",
+    "pendingApprove": "待批准报告",
+    "overdue": "已逾期任务"
+  },
+  "turnaroundTrend": "周转时间趋势（平均天数）",
+  "sampleDistribution": "样品类型分布",
+  "instrumentStatus": "仪器状态",
+  "systemAlerts": "系统提醒",
+  "quickActions": "快速操作",
+  "quickActionItems": {
+    "registerSample": {
+      "label": "样品登记",
+      "desc": "新建样品信息"
+    },
+    "createTask": {
+      "label": "创建检测",
+      "desc": "新建检测任务"
+    },
+    "viewReport": {
+      "label": "查看报告",
+      "desc": "浏览检测报告"
+    },
+    "auditTrail": {
+      "label": "审计追踪",
+      "desc": "查看操作记录"
+    },
+    "dataAnalysis": {
+      "label": "数据分析",
+      "desc": "统计分析报表"
+    }
+  },
+  "aiPrediction": "AI 检测周期预测",
+  "prediction": {
+    "model": "预测模型",
+    "trainingData": "训练数据",
+    "nextUpdate": "下次更新",
+    "accuracy": "准确率",
+    "arima": "时序分析 (ARIMA)",
+    "last12Months": "近 12 个月检测记录",
+    "autoRetrain": "每日 03:00 自动重训练"
+  },
+  "sampleTypes": {
+    "all": "所有样品",
+    "water": "环境水",
+    "soil": "土壤",
+    "air": "空气"
+  },
+  "waterTypes": {
+    "surface": "地表水",
+    "soil": "土壤",
+    "wasteWater": "废水",
+    "air": "空气/废气"
+  }
+}

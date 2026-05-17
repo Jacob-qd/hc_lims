@@ -1,0 +1,24 @@
+{
+  "title": "Report Management",
+  "create": "New Report",
+  "edit": "Edit Report",
+  "detail": "Report Detail",
+  "preview": "Preview",
+  "columns": {
+    "reportNo": "Report No.",
+    "sampleNo": "Sample No.",
+    "customer": "Customer",
+    "reportType": "Type",
+    "createDate": "Created",
+    "status": "Status",
+    "signer": "Signatory"
+  },
+  "status": {
+    "draft": "Draft",
+    "pendingReview": "Pending Review",
+    "pendingApprove": "Pending Approve",
+    "approved": "Approved",
+    "signed": "Signed",
+    "published": "Published"
+  }
+}

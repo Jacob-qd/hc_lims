@@ -1,0 +1,22 @@
+{
+  "title": "仪器管理",
+  "create": "新建仪器",
+  "edit": "编辑仪器",
+  "detail": "仪器详情",
+  "columns": {
+    "instrumentNo": "仪器编号",
+    "name": "仪器名称",
+    "model": "型号",
+    "manufacturer": "制造商",
+    "location": "存放位置",
+    "status": "状态",
+    "nextCalibration": "下次校准",
+    "operator": "操作人"
+  },
+  "status": {
+    "running": "运行中",
+    "idle": "空闲",
+    "maintenance": "维护中",
+    "outOfService": "停用"
+  }
+}

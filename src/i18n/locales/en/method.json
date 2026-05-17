@@ -1,0 +1,14 @@
+{
+  "title": "Method Management",
+  "create": "New Method",
+  "edit": "Edit Method",
+  "columns": {
+    "methodNo": "Method No.",
+    "name": "Name",
+    "standard": "Standard",
+    "category": "Category",
+    "version": "Version",
+    "status": "Status",
+    "effectiveDate": "Effective Date"
+  }
+}

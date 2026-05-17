@@ -1,0 +1,25 @@
+{
+  "title": "Testing Management",
+  "create": "New Task",
+  "edit": "Edit Task",
+  "detail": "Task Detail",
+  "resultEntry": "Result Entry",
+  "columns": {
+    "taskNo": "Task No.",
+    "sampleNo": "Sample No.",
+    "method": "Method",
+    "testItem": "Test Item",
+    "assignee": "Assignee",
+    "deadline": "Deadline",
+    "status": "Status",
+    "priority": "Priority"
+  },
+  "status": {
+    "pending": "Pending",
+    "assigned": "Assigned",
+    "inProgress": "In Progress",
+    "pendingReview": "Pending Review",
+    "approved": "Approved",
+    "rejected": "Rejected"
+  }
+}

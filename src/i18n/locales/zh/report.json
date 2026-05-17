@@ -1,0 +1,24 @@
+{
+  "title": "报告管理",
+  "create": "新建报告",
+  "edit": "编辑报告",
+  "detail": "报告详情",
+  "preview": "预览报告",
+  "columns": {
+    "reportNo": "报告编号",
+    "sampleNo": "样品编号",
+    "customer": "客户",
+    "reportType": "报告类型",
+    "createDate": "创建日期",
+    "status": "状态",
+    "signer": "签发人"
+  },
+  "status": {
+    "draft": "草稿",
+    "pendingReview": "待审核",
+    "pendingApprove": "待批准",
+    "approved": "已批准",
+    "signed": "已签发",
+    "published": "已发布"
+  }
+}

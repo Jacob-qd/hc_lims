@@ -1,0 +1,25 @@
+{
+  "title": "System Management",
+  "settings": "Settings",
+  "dict": "Dictionary",
+  "auditLog": "Audit Log",
+  "notification": "Notifications",
+  "security": "Security",
+  "backup": "Backup & Recovery",
+  "monitor": "System Monitor",
+  "profile": {
+    "title": "Profile",
+    "basicInfo": "Basic Info",
+    "changePassword": "Change Password",
+    "preferences": "Preferences"
+  },
+  "dict": {
+    "title": "Data Dictionary",
+    "type": "Type",
+    "code": "Code",
+    "label": "Label",
+    "value": "Value",
+    "sort": "Sort",
+    "remark": "Remark"
+  }
+}

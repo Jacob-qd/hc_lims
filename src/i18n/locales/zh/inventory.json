@@ -1,0 +1,18 @@
+{
+  "title": "库存管理",
+  "create": "新建物料",
+  "edit": "编辑物料",
+  "inbound": "入库",
+  "outbound": "出库",
+  "columns": {
+    "itemNo": "物料编号",
+    "name": "物料名称",
+    "category": "分类",
+    "spec": "规格",
+    "quantity": "数量",
+    "unit": "单位",
+    "location": "存放位置",
+    "expiryDate": "有效期",
+    "status": "状态"
+  }
+}

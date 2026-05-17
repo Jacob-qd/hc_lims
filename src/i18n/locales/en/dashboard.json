@@ -1,0 +1,78 @@
+{
+  "title": "Dashboard",
+  "welcome": "Welcome to HC-LIMS Laboratory Information Management System",
+  "customizeWorkspace": "Customize Workspace",
+  "kpi": {
+    "totalSamples": "Total Samples",
+    "pendingTests": "Pending Tests",
+    "overdueTasks": "Overdue Tasks",
+    "completedReports": "Completed Reports",
+    "changeFromYesterday": "vs yesterday"
+  },
+  "recentSamples": "Recent Samples",
+  "columns": {
+    "sampleNo": "Sample No.",
+    "sampleName": "Sample Name",
+    "sampleType": "Type",
+    "customerName": "Customer",
+    "receivingDate": "Received",
+    "status": "Status"
+  },
+  "taskQueue": "Task Queue",
+  "taskQueueItems": {
+    "pendingAssign": "Pending Assign",
+    "pendingTest": "Pending Test",
+    "pendingReview": "Pending Review",
+    "pendingApprove": "Pending Approve",
+    "overdue": "Overdue"
+  },
+  "turnaroundTrend": "Turnaround Trend (avg days)",
+  "sampleDistribution": "Sample Distribution",
+  "instrumentStatus": "Instrument Status",
+  "systemAlerts": "System Alerts",
+  "quickActions": "Quick Actions",
+  "quickActionItems": {
+    "registerSample": {
+      "label": "Register Sample",
+      "desc": "Create new sample"
+    },
+    "createTask": {
+      "label": "Create Task",
+      "desc": "New testing task"
+    },
+    "viewReport": {
+      "label": "View Reports",
+      "desc": "Browse test reports"
+    },
+    "auditTrail": {
+      "label": "Audit Trail",
+      "desc": "View operation logs"
+    },
+    "dataAnalysis": {
+      "label": "Analysis",
+      "desc": "Statistical reports"
+    }
+  },
+  "aiPrediction": "AI Turnaround Prediction",
+  "prediction": {
+    "model": "Model",
+    "trainingData": "Training Data",
+    "nextUpdate": "Next Update",
+    "accuracy": "Accuracy",
+    "arima": "Time Series (ARIMA)",
+    "last12Months": "Last 12 months records",
+    "autoRetrain": "Auto retrain daily at 03:00"
+  },
+  "sampleTypes": {
+    "all": "All Samples",
+    "water": "Water",
+    "soil": "Soil",
+    "air": "Air"
+  },
+  "waterTypes": {
+    "surface": "Surface Water",
+    "soil": "Soil",
+    "wasteWater": "Wastewater",
+    "air": "Air / Exhaust"
+  }
+}

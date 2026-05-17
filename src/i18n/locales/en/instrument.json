@@ -1,0 +1,22 @@
+{
+  "title": "Instrument Management",
+  "create": "New Instrument",
+  "edit": "Edit Instrument",
+  "detail": "Instrument Detail",
+  "columns": {
+    "instrumentNo": "Instrument No.",
+    "name": "Name",
+    "model": "Model",
+    "manufacturer": "Manufacturer",
+    "location": "Location",
+    "status": "Status",
+    "nextCalibration": "Next Calibration",
+    "operator": "Operator"
+  },
+  "status": {
+    "running": "Running",
+    "idle": "Idle",
+    "maintenance": "Maintenance",
+    "outOfService": "Out of Service"
+  }
+}

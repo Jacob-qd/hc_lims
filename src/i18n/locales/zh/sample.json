@@ -1,0 +1,39 @@
+{
+  "title": "样品管理",
+  "create": "新建样品",
+  "edit": "编辑样品",
+  "detail": "样品详情",
+  "columns": {
+    "sampleNo": "样品编号",
+    "name": "样品名称",
+    "type": "样品类型",
+    "customer": "客户名称",
+    "receivingDate": "接收日期",
+    "status": "状态",
+    "location": "存放位置",
+    "quantity": "数量",
+    "unit": "单位"
+  },
+  "fields": {
+    "sampleNo": "样品编号",
+    "name": "样品名称",
+    "type": "样品类型",
+    "customer": "客户",
+    "receivingDate": "接收日期",
+    "samplingDate": "采样日期",
+    "samplingLocation": "采样地点",
+    "sampler": "采样人",
+    "storageCondition": "储存条件",
+    "remark": "备注"
+  },
+  "status": {
+    "pendingReceive": "待接收",
+    "received": "已接收",
+    "pendingAssign": "待分配",
+    "assigned": "已分配",
+    "testing": "检测中",
+    "pendingReview": "待审核",
+    "reviewing": "审核中",
+    "completed": "已完成"
+  }
+}

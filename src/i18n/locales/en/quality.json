@@ -1,0 +1,16 @@
+{
+  "title": "Quality Control",
+  "qcSample": "QC Sample",
+  "blank": "Blank",
+  "parallel": "Parallel",
+  "spike": "Spike Recovery",
+  "columns": {
+    "batchNo": "Batch No.",
+    "qcType": "QC Type",
+    "sampleNo": "Sample No.",
+    "result": "Result",
+    "standard": "Standard",
+    "deviation": "Deviation",
+    "status": "Status"
+  }
+}

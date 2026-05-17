@@ -1,0 +1,16 @@
+{
+  "title": "质量控制",
+  "qcSample": "质控样",
+  "blank": "空白样",
+  "parallel": "平行样",
+  "spike": "加标回收",
+  "columns": {
+    "batchNo": "批次号",
+    "qcType": "质控类型",
+    "sampleNo": "样品编号",
+    "result": "结果",
+    "standard": "标准值",
+    "deviation": "偏差",
+    "status": "状态"
+  }
+}

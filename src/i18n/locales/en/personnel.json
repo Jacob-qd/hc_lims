@@ -1,0 +1,15 @@
+{
+  "title": "Personnel",
+  "create": "New Employee",
+  "edit": "Edit Employee",
+  "columns": {
+    "employeeNo": "Employee No.",
+    "name": "Name",
+    "department": "Department",
+    "position": "Position",
+    "role": "Role",
+    "qualification": "Qualification",
+    "status": "Status",
+    "entryDate": "Entry Date"
+  }
+}

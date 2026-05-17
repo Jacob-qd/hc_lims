@@ -7,20 +7,19 @@ import {
   UserOutlined, LockOutlined, ExperimentOutlined,
   SafetyCertificateOutlined, FileTextOutlined, EnvironmentOutlined, TeamOutlined,
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore, roleLabels } from '../stores/authStore';
 
 const { Title, Text } = Typography;
 
-// 角色对应的图标和颜色
-const roleMeta: Record<string, { icon: React.ReactNode; color: string; desc: string; defaultPage: string }> = {
-  admin: { icon: <SafetyCertificateOutlined />, color: '#1677ff', desc: '系统配置、用户管理、审计日志', defaultPage: '/dashboard' },
-  lab_tech: { icon: <ExperimentOutlined />, color: '#52c41a', desc: '样品登记、检测任务、结果录入', defaultPage: '/tasks' },
-  reviewer: { icon: <FileTextOutlined />, color: '#722ed1', desc: '报告审核、电子签名、签发', defaultPage: '/reports' },
-  sampler: { icon: <EnvironmentOutlined />, color: '#fa8c16', desc: '现场采样、GPS定位、样品管理', defaultPage: '/mobile/sampling' },
-  client: { icon: <TeamOutlined />, color: '#13c2c2', desc: '委托查询、报告下载、进度追踪', defaultPage: '/portal' },
+const roleMeta: Record<string, { icon: React.ReactNode; color: string; defaultPage: string }> = {
+  admin: { icon: <SafetyCertificateOutlined />, color: '#1677ff', defaultPage: '/dashboard' },
+  lab_tech: { icon: <ExperimentOutlined />, color: '#52c41a', defaultPage: '/tasks' },
+  reviewer: { icon: <FileTextOutlined />, color: '#722ed1', defaultPage: '/reports' },
+  sampler: { icon: <EnvironmentOutlined />, color: '#fa8c16', defaultPage: '/mobile/sampling' },
+  client: { icon: <TeamOutlined />, color: '#13c2c2', defaultPage: '/portal' },
 };
 
-/** 各角色默认登录凭证 */
 const roleCreds: Record<string, { username: string; password: string }> = {
   admin: { username: 'admin', password: 'admin123' },
   lab_tech: { username: 'tech', password: '123456' },
@@ -29,7 +28,6 @@ const roleCreds: Record<string, { username: string; password: string }> = {
   client: { username: 'client', password: '123456' },
 };
 
-/** 实验室背景浮动画布 */
 const LabBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -43,7 +41,6 @@ const LabBackground: React.FC = () => {
     let h = canvas.height = window.innerHeight;
     let animId: number;
 
-    // 分子结构粒子
     class Molecule {
       x: number; y: number; vx: number; vy: number; radius: number;
       connections: Molecule[] = [];
@@ -55,7 +52,7 @@ const LabBackground: React.FC = () => {
         this.vy = (Math.random() - 0.5) * 0.4;
         this.radius = Math.random() * 3 + 1.5;
         this.opacity = Math.random() * 0.4 + 0.1;
-        this.hue = Math.random() * 60 + 200; // blue-cyan range
+        this.hue = Math.random() * 60 + 200;
       }
       update() {
         this.x += this.vx;
@@ -71,7 +68,6 @@ const LabBackground: React.FC = () => {
       }
     }
 
-    // 烧瓶/试管形状
     class Flask {
       x: number; y: number; size: number; rotation: number; speed: number;
       constructor() {
@@ -91,7 +87,6 @@ const LabBackground: React.FC = () => {
         ctx.globalAlpha = 0.06;
         ctx.strokeStyle = '#1677ff';
         ctx.lineWidth = 1.5;
-        // Simple flask shape
         ctx.beginPath();
         ctx.moveTo(-this.size * 0.3, -this.size * 0.5);
         ctx.lineTo(this.size * 0.3, -this.size * 0.5);
@@ -111,13 +106,10 @@ const LabBackground: React.FC = () => {
     for (let i = 0; i < 60; i++) molecules.push(new Molecule());
     for (let i = 0; i < 8; i++) flasks.push(new Flask());
 
-    // Store connections data
     const connections: { a: Molecule; b: Molecule; opacity: number }[] = [];
 
     const animate = () => {
       ctx.clearRect(0, 0, w, h);
-
-      // Draw connection lines between nearby molecules
       connections.length = 0;
       for (let i = 0; i < molecules.length; i++) {
         for (let j = i + 1; j < molecules.length; j++) {
@@ -166,15 +158,14 @@ const LabBackground: React.FC = () => {
   );
 };
 
-/** 重新设计的登录页面 */
 export const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState('admin');
   const navigate = useNavigate();
   const login = useAuthStore((s) => s.login);
   const [form] = Form.useForm();
+  const { t } = useTranslation(['login', 'common']);
 
-  // 选择角色时同步到表单
   useEffect(() => {
     form.setFieldsValue({ role: selectedRole, username: roleCreds[selectedRole].username, password: roleCreds[selectedRole].password });
   }, [selectedRole, form]);
@@ -190,32 +181,26 @@ export const LoginPage: React.FC = () => {
       const data = await res.json();
       if (data.code === 200) {
         login(data.data.user, data.data.token);
-        message.success(`欢迎回来，${data.data.user.realName}`);
+        message.success(t('login:welcomeBack', { name: data.data.user.realName }));
         const defaultPage = roleMeta[values.role]?.defaultPage || '/dashboard';
         navigate(defaultPage);
       } else {
-        message.error(data.message || '登录失败');
+        message.error(data.message || t('login:loginFailed'));
       }
     } catch {
-      message.error('网络错误，请重试');
+      message.error(t('common:networkError'));
     } finally {
       setLoading(false);
     }
   };
 
-
   return (
     <div style={{ height: '100vh', position: 'relative', overflow: 'hidden', background: '#0a1628' }}>
-      {/* 实验室动态背景 */}
       <LabBackground />
-
-      {/* 渐变叠加层 */}
       <div style={{
         position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
         background: 'linear-gradient(135deg, rgba(10,22,40,0.85) 0%, rgba(22,119,255,0.15) 50%, rgba(10,22,40,0.9) 100%)',
       }} />
-
-      {/* 登录卡片 */}
       <div style={{
         position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
         width: 440, zIndex: 10,
@@ -230,7 +215,6 @@ export const LoginPage: React.FC = () => {
           }}
           styles={{ body: { padding: '36px 32px 28px' } }}
         >
-          {/* Logo + 标题 */}
           <div style={{ textAlign: 'center', marginBottom: 28 }}>
             <div style={{
               width: 60, height: 60, borderRadius: 16,
@@ -242,17 +226,16 @@ export const LoginPage: React.FC = () => {
               HC
             </div>
             <Title level={3} style={{ margin: 0, fontWeight: 600, fontSize: 22 }}>
-              红创检测认证
+              {t('login:companyName')}
             </Title>
             <Text type="secondary" style={{ fontSize: 13, display: 'block', marginTop: 2 }}>
-              实验室信息管理系统 HC-LIMS
+              {t('common:app.subtitle')}
             </Text>
           </div>
 
-          {/* 角色选择卡片 */}
           <div style={{ marginBottom: 20 }}>
             <Text type="secondary" style={{ fontSize: 12, display: 'block', marginBottom: 8 }}>
-              选择角色登录
+              {t('login:selectRole')}
             </Text>
             <Space direction="vertical" style={{ width: '100%' }} size={4}>
               {Object.entries(roleLabels).map(([value, label]) => {
@@ -280,16 +263,15 @@ export const LoginPage: React.FC = () => {
                     </div>
                     <div style={{ flex: 1 }}>
                       <Text strong style={{ fontSize: 13, display: 'block' }}>{label}</Text>
-                      <Text type="secondary" style={{ fontSize: 11 }}>{meta.desc}</Text>
+                      <Text type="secondary" style={{ fontSize: 11 }}>{t(`login:role.${value}.desc` as const)}</Text>
                     </div>
-                    {active && <Tag color={meta.color}>当前</Tag>}
+                    {active && <Tag color={meta.color}>{t('common:current')}</Tag>}
                   </div>
                 );
               })}
             </Space>
           </div>
 
-          {/* 登录表单 */}
           <Form
             form={form}
             name="login"
@@ -301,11 +283,11 @@ export const LoginPage: React.FC = () => {
             <Form.Item name="role" hidden>
               <Input />
             </Form.Item>
-            <Form.Item name="username" rules={[{ required: true, message: '请输入用户名' }]}>
-              <Input prefix={<UserOutlined style={{ color: '#999' }} />} placeholder="用户名" />
+            <Form.Item name="username" rules={[{ required: true, message: t('login:rules.usernameRequired') }]}>
+              <Input prefix={<UserOutlined style={{ color: '#999' }} />} placeholder={t('login:placeholder.username')} />
             </Form.Item>
-            <Form.Item name="password" rules={[{ required: true, message: '请输入密码' }]}>
-              <Input.Password prefix={<LockOutlined style={{ color: '#999' }} />} placeholder="密码" />
+            <Form.Item name="password" rules={[{ required: true, message: t('login:rules.passwordRequired') }]}>
+              <Input.Password prefix={<LockOutlined style={{ color: '#999' }} />} placeholder={t('login:placeholder.password')} />
             </Form.Item>
             <Form.Item style={{ marginBottom: 0 }}>
               <Button
@@ -315,24 +297,23 @@ export const LoginPage: React.FC = () => {
                 loading={loading}
                 style={{ height: 44, borderRadius: 10, fontSize: 15, fontWeight: 500 }}
               >
-                进入系统
+                {t('common:action.enterSystem')}
               </Button>
             </Form.Item>
           </Form>
 
           <Divider style={{ margin: '16px 0 8px' }} />
           <div style={{ fontSize: 11, color: '#bbb', textAlign: 'center' }}>
-            测试账号: admin / admin123 &nbsp;|&nbsp; 各角色使用对应密码登录
+            {t('login:testAccount')} &nbsp;|&nbsp; {t('login:testAccountAll')}
           </div>
         </Card>
       </div>
 
-      {/* 版权 */}
       <div style={{
         position: 'absolute', bottom: 20, left: 0, right: 0, textAlign: 'center',
         color: 'rgba(255,255,255,0.3)', fontSize: 11, zIndex: 10,
       }}>
-        © 2026 红创检测认证有限公司 HC-LIMS v2.0
+        {t('common:app.fullName')}
       </div>
     </div>
   );

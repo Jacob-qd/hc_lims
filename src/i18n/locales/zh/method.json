@@ -1,0 +1,14 @@
+{
+  "title": "方法管理",
+  "create": "新建方法",
+  "edit": "编辑方法",
+  "columns": {
+    "methodNo": "方法编号",
+    "name": "方法名称",
+    "standard": "标准号",
+    "category": "分类",
+    "version": "版本",
+    "status": "状态",
+    "effectiveDate": "生效日期"
+  }
+}

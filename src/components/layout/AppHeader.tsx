@@ -8,6 +8,7 @@ import {
   LogoutOutlined,
   SettingOutlined,
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../stores/authStore';
 import { useI18nStore } from '../../stores/i18nStore';
 import { useThemeStore } from '../../stores/themeStore';
@@ -23,6 +24,8 @@ interface AppHeaderProps {
 export const AppHeader: React.FC<AppHeaderProps> = ({ onOpenDrawer }) => {
   const { user, logout } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
+  const { locale, setLocale } = useI18nStore();
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -34,12 +37,12 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onOpenDrawer }) => {
     {
       key: 'profile',
       icon: <UserOutlined />,
-      label: '个人中心',
+      label: t('nav.profile'),
     },
     {
       key: 'settings',
       icon: <SettingOutlined />,
-      label: '系统设置',
+      label: t('nav.settings'),
     },
     {
       type: 'divider' as const,
@@ -47,7 +50,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onOpenDrawer }) => {
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-      label: '退出登录',
+      label: t('common.logout'),
       danger: true,
       onClick: handleLogout,
     },
@@ -83,14 +86,14 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onOpenDrawer }) => {
           HC
         </div>
         <Text strong style={{ fontSize: 18, color: 'var(--text-primary)' }}>
-          红创 LIMS
+          {t('app.name')}
         </Text>
       </div>
 
       <Space size={20}>
         <Select
-          value={useI18nStore.getState().locale}
-          onChange={(v: any) => useI18nStore.getState().setLocale(v)}
+          value={locale}
+          onChange={(v: 'zh' | 'en') => setLocale(v)}
           size="small"
           style={{ width: 78 }}
           variant="borderless"
@@ -114,7 +117,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onOpenDrawer }) => {
         <Dropdown menu={{ items }} placement="bottomRight">
           <Space style={{ cursor: 'pointer' }}>
             <Avatar src={user?.avatar || undefined} icon={!user?.avatar && <UserOutlined />} size="small" />
-            <Text style={{ color: 'var(--text-primary)' }}>{user?.realName || '未登录'}</Text>
+            <Text style={{ color: 'var(--text-primary)' }}>{user?.realName || t('common.notLoggedIn')}</Text>
           </Space>
         </Dropdown>
       </Space>

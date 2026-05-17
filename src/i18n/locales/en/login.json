@@ -1,0 +1,37 @@
+{
+  "title": "Sign In",
+  "username": "Username",
+  "password": "Password",
+  "button": "Sign In",
+  "companyName": "HC Testing & Certification",
+  "selectRole": "Select role to sign in",
+  "testAccount": "Test: admin / admin123",
+  "testAccountAll": "Use corresponding password for each role",
+  "welcomeBack": "Welcome back, {{name}}",
+  "loginFailed": "Login failed",
+  "role": {
+    "admin": {
+      "desc": "System config, user management, audit logs"
+    },
+    "lab_tech": {
+      "desc": "Sample registration, testing tasks, result entry"
+    },
+    "reviewer": {
+      "desc": "Report review, e-signature, issuance"
+    },
+    "sampler": {
+      "desc": "Field sampling, GPS, sample management"
+    },
+    "client": {
+      "desc": "Order query, report download, progress tracking"
+    }
+  },
+  "placeholder": {
+    "username": "Username",
+    "password": "Password"
+  },
+  "rules": {
+    "usernameRequired": "Please enter username",
+    "passwordRequired": "Please enter password"
+  }
+}
