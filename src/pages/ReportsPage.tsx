@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Card, Table, Tag, Button, Input, Select, DatePicker, Row, Col,
-  Space, Typography, Drawer, Timeline, Badge, Form,
+  Space, Typography, Drawer, Timeline, Form,
   Modal, message, Divider, Tabs,
  Descriptions, List, Empty, Upload,
   Alert,
@@ -19,7 +19,7 @@ import {
 import type { ColumnsType } from 'antd/es/table';
 import type {
   Report, ReportTestResult, ReportSignature,
-  ReportAnnotation, ReviewChecklistItem,
+  ReviewChecklistItem,
   ReportAttachment, ReportAnnotationReply,
 } from '../mocks/data';
 import {
@@ -32,11 +32,11 @@ import { ReviewModal } from '../components/reports/ReviewModal';
 import { FlowStepIndicator } from '../components/reports/FlowStepIndicator';
 import { QRCodeDisplay } from '../components/reports/QRCodeDisplay';
 import { ChangeHistoryPanel } from '../components/reports/ChangeHistoryPanel';
-import { WatermarkOverlay } from '../components/reports/WatermarkOverlay';
+import { AnnotationsPanel } from '../components/reports/AnnotationsPanel';
+import { PdfPreviewPanel } from '../components/reports/PdfPreviewPanel';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 const { Option } = Select;
-const { TextArea } = Input;
 
 // ================================================
 // Helper Functions
@@ -64,180 +64,6 @@ const getRoleColor = (role: string) => {
 
 /** Enhanced Digital Signature Modal with SM2/SM3 */
 /** Review Approval Modal */
-const AnnotationsPanel: React.FC<{
-  annotations: ReportAnnotation[];
-  reportId: string;
-  onAdd: (content: string, mentions: string[]) => void;
-  onResolve: (annId: string) => void;
-  onReply: (annId: string, content: string) => void;
-}> = ({ annotations, reportId: _reportId, onAdd, onResolve, onReply }) => {
-  const [newContent, setNewContent] = useState('');
-  const [replyContents, setReplyContents] = useState<Record<string, string>>({});
-
-  const handleAdd = () => {
-    if (!newContent.trim()) { message.warning('请输入批注内容'); return; }
-    // Extract @mentions
-    const mentionMatches = newContent.match(/@(\S+)/g) || [];
-    const mentions = mentionMatches.map(m => m.slice(1));
-    onAdd(newContent, mentions);
-    setNewContent('');
-  };
-
-  return (
-    <div>
-      <div style={{ marginBottom: 16 }}>
-        <TextArea
-          placeholder="添加批注，使用 @用户名 提及相关人员..."
-          rows={3}
-          value={newContent}
-          onChange={e => setNewContent(e.target.value)}
-        />
-        <Button
-          type="primary"
-          size="small"
-          icon={<CommentOutlined />}
-          onClick={handleAdd}
-          style={{ marginTop: 8 }}
-        >
-          添加批注
-        </Button>
-      </div>
-
-      {annotations.length === 0 ? (
-        <Empty description="暂无批注" />
-      ) : (
-        <List
-          dataSource={annotations}
-          renderItem={(ann) => (
-            <List.Item
-              actions={
-                ann.status === 'open'
-                  ? [
-                      <Button
-                        key="resolve"
-                        type="link"
-                        size="small"
-                        icon={<CheckCircleOutlined />}
-                        onClick={() => onResolve(ann.id)}
-                      >
-                        解决
-                      </Button>,
-                    ]
-                  : [<Tag key="done" color="success">已解决</Tag>]
-              }
-            >
-              <List.Item.Meta
-                avatar={<Badge status={ann.status === 'open' ? 'warning' : 'success'} />}
-                title={
-                  <Space>
-                    <Text strong>{ann.authorName}</Text>
-                    <Text type="secondary" style={{ fontSize: 12 }}>{ann.createdAt}</Text>
-                    {ann.mentions.length > 0 && (
-                      <Text type="secondary" style={{ fontSize: 12 }}>
-                        @{ann.mentions.join(', ')}
-                      </Text>
-                    )}
-                  </Space>
-                }
-                description={
-                  <div>
-                    <Text>{ann.content}</Text>
-                    {ann.replies.length > 0 && (
-                      <div style={{ marginTop: 8, paddingLeft: 16, borderLeft: '2px solid #e8e8e8' }}>
-                        {ann.replies.map(reply => (
-                          <div key={reply.id} style={{ marginBottom: 4 }}>
-                            <Text strong style={{ fontSize: 12 }}>{reply.authorName}</Text>
-                            <Text style={{ fontSize: 12, marginLeft: 8 }}>{reply.content}</Text>
-                            <Text type="secondary" style={{ fontSize: 11, marginLeft: 8 }}>{reply.createdAt}</Text>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    {ann.status === 'open' && (
-                      <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
-                        <Input
-                          size="small"
-                          placeholder="回复..."
-                          style={{ flex: 1 }}
-                          value={replyContents[ann.id] || ''}
-                          onChange={e => setReplyContents({ ...replyContents, [ann.id]: e.target.value })}
-                        />
-                        <Button
-                          size="small"
-                          type="primary"
-                          onClick={() => {
-                            const content = replyContents[ann.id];
-                            if (!content?.trim()) { message.warning('请输入回复内容'); return; }
-                            onReply(ann.id, content);
-                            setReplyContents({ ...replyContents, [ann.id]: '' });
-                          }}
-                        >
-                          回复
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                }
-              />
-            </List.Item>
-          )}
-        />
-      )}
-    </div>
-  );
-};
-
-/** Change History Panel */
-const PdfPreviewPanel: React.FC<{ report: Report }> = ({ report }) => {
-  const { cover } = report;
-  const issued = report.status === 'issued';
-  const issuedDate = report.signatures.find(s => s.role === 'approver')?.signedAt;
-  const watermarkText = issued ? `已签发 ${issuedDate ? new Date(issuedDate).toLocaleDateString() : ''}` : '';
-  return (
-    <div style={{ background: '#f5f5f5', borderRadius: 8, padding: 24, minHeight: 400, position: 'relative' }}>
-      {issued && <WatermarkOverlay text={watermarkText} />}
-      <div
-        style={{
-          background: '#fff',
-          maxWidth: 420,
-          margin: '0 auto',
-          padding: 32,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-          borderRadius: 4,
-          position: 'relative',
-          zIndex: 1,
-        }}
-      >
-        <div style={{ textAlign: 'center', marginBottom: 24 }}>
-          <Title level={4} style={{ margin: 0 }}>{cover.companyName}</Title>
-          <Divider />
-          <Title level={3} style={{ margin: '8px 0', color: '#1677ff' }}>{cover.reportTitle}</Title>
-          <Text type="secondary">{cover.reportNo}</Text>
-        </div>
-        <Descriptions column={1} size="small" bordered>
-          <Descriptions.Item label="委托单位">{cover.entrustUnit}</Descriptions.Item>
-          <Descriptions.Item label="项目名称">{cover.projectName}</Descriptions.Item>
-          <Descriptions.Item label="样品类型">{cover.sampleType}</Descriptions.Item>
-          <Descriptions.Item label="采样地点">{cover.samplingLocation}</Descriptions.Item>
-          <Descriptions.Item label="采样日期">{cover.samplingDate}</Descriptions.Item>
-          <Descriptions.Item label="检测日期">{cover.testDate}</Descriptions.Item>
-          <Descriptions.Item label="签发日期">{cover.issueDate || '-'}</Descriptions.Item>
-          <Descriptions.Item label="共 {cover.pageCount} 页">{cover.pageCount} 页</Descriptions.Item>
-        </Descriptions>
-        <div style={{ textAlign: 'center', marginTop: 24 }}>
-          <Text type="secondary" style={{ fontSize: 11 }}>红创检测认证有限公司</Text>
-          <br />
-          <Text type="secondary" style={{ fontSize: 11 }}>检测专用章</Text>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// ================================================
-// Main Page Component
-// ================================================
-
 export const ReportsPage: React.FC = () => {
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(false);
