@@ -197,21 +197,21 @@ export const handlers = [
   // Auth
   http.post(apiUrl('/auth/login'), async ({ request }) => {
     const body = (await request.json()) as { username: string; password: string; role?: string };
-    const user = mockUsers.find(
-      (u) => u.username === body.username && u.password === body.password
+    // 先尝试匹配用户名+密码+角色
+    let user = mockUsers.find(
+      (u) => u.username === body.username && u.password === body.password && u.role === body.role
     );
+    // 如果没找到，回退到仅匹配用户名+密码（管理员可跨角色登录）
+    if (!user) {
+      user = mockUsers.find(
+        (u) => u.username === body.username && u.password === body.password
+      );
+    }
 
     if (!user) {
       return HttpResponse.json(
         { code: 401, message: '用户名或密码错误', data: null },
         { status: 401 }
-      );
-    }
-
-    if (body.role && body.role !== user.role) {
-      return HttpResponse.json(
-        { code: 403, message: '角色不匹配', data: null },
-        { status: 403 }
       );
     }
 

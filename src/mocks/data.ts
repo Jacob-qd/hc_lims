@@ -8,6 +8,11 @@ export const mockUsers = [
   { id: '3', username: 'lisi', password: '123456', realName: '李思', role: 'analyst' as const, avatar: '', department: '检测一部', lab: '理化实验室', permissions: ['sample:view', 'sample:edit', 'task:view', 'task:edit', 'result:view', 'result:edit'] },
   { id: '4', username: 'wangqiang', password: '123456', realName: '王强', role: 'signatory' as const, avatar: '', department: '质量管理部', lab: '中心实验室', permissions: ['report:view', 'report:review', 'report:approve'] },
   { id: '5', username: 'liming', password: '123456', realName: '李明', role: 'instrument_manager' as const, avatar: '', department: '仪器管理部', lab: '仪器分析室', permissions: ['instrument:view', 'instrument:edit', 'instrument:calibrate', 'instrument:maintain'] },
+  // Login dropdown roles
+  { id: '6', username: 'tech', password: '123456', realName: '赵岩', role: 'lab_tech' as const, avatar: '', department: '检测二部', lab: '有机实验室', permissions: ['sample:view', 'sample:edit', 'task:view', 'task:edit', 'result:view', 'result:edit', 'instrument:view'] },
+  { id: '7', username: 'reviewer', password: '123456', realName: '陈静', role: 'reviewer' as const, avatar: '', department: '质量管理部', lab: '中心实验室', permissions: ['report:view', 'report:review', 'report:approve', 'report:sign'] },
+  { id: '8', username: 'sampler', password: '123456', realName: '刘强', role: 'sampler' as const, avatar: '', department: '现场部', lab: '外勤', permissions: ['sample:create', 'sample:view', 'mobile:access', 'coc:create'] },
+  { id: '9', username: 'client', password: '123456', realName: '王先生', role: 'client' as const, avatar: '', department: '客户', lab: '', permissions: ['portal:view', 'report:view', 'order:view'] },
 ];
 
 export interface Sample {
