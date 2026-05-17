@@ -70,6 +70,70 @@ import {
 
 const apiUrl = (path: string) => `/api/v1${path}`;
 
+// ===================== Mobile Sampling =====================
+const mockSamplingTasks = [
+  {
+    id: 'st1', taskNo: 'SMP-TASK-001', projectName: '东湖水质监测项目',
+    sampleType: '地表水', assignedTo: '张三', planDate: '2026-05-17',
+    status: 'in_progress',
+    points: [
+      { id: 'sp1', name: '东湖入口', location: { latitude: 30.274, longitude: 120.155, address: '东湖公园南门' }, expectedSampleType: '地表水', expectedCount: 2 },
+      { id: 'sp2', name: '东湖中心', location: { latitude: 30.278, longitude: 120.162, address: '东湖湖心' }, expectedSampleType: '地表水', expectedCount: 1 },
+    ],
+  },
+  {
+    id: 'st2', taskNo: 'SMP-TASK-002', projectName: '工业园区土壤监测',
+    sampleType: '土壤', assignedTo: '李四', planDate: '2026-05-18',
+    status: 'pending',
+    points: [
+      { id: 'sp3', name: '园区A区', location: { latitude: 30.265, longitude: 120.145, address: '科技园区A栋' }, expectedSampleType: '土壤', expectedCount: 3 },
+    ],
+  },
+];
+
+const mockFieldSamples: any[] = [
+  {
+    id: 'fs1', sampleNo: 'FS-20260517-001', taskId: 'st1', pointId: 'sp1',
+    name: '东湖入口-1', sampleType: '地表水',
+    location: { latitude: 30.2741, longitude: 120.1552, accuracy: 8 },
+    photos: [], fieldData: { pH: 7.2, temperature: 22.5, dissolvedOxygen: 6.8 },
+    description: '东湖公园南门右侧采样', collectedAt: '2026-05-17T08:30:00Z',
+    collectedBy: '张三', cocEventId: 'coc-ev-001', status: 'synced',
+  },
+];
+
+const mobileSamplingHandlers = [
+  http.get(apiUrl('/mobile/sampling-tasks'), ({ request }) => {
+    const userId = new URL(request.url).searchParams.get('userId') || '';
+    const tasks = userId
+      ? mockSamplingTasks.filter(t => t.assignedTo === userId)
+      : mockSamplingTasks;
+    return HttpResponse.json({ code: 200, data: { list: tasks, total: tasks.length } });
+  }),
+  http.get(apiUrl('/mobile/sampling-tasks/:id'), ({ params }) => {
+    const task = mockSamplingTasks.find(t => t.id === params.id);
+    if (!task) return HttpResponse.json({ code: 404, message: '任务不存在' }, { status: 404 });
+    return HttpResponse.json({ code: 200, data: task });
+  }),
+  http.get(apiUrl('/mobile/field-samples'), () => {
+    return HttpResponse.json({ code: 200, data: { list: mockFieldSamples, total: mockFieldSamples.length } });
+  }),
+  http.post(apiUrl('/mobile/field-samples'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const newSample = {
+      id: `fs-${Date.now()}`,
+      sampleNo: `FS-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${String(mockFieldSamples.length + 1).padStart(3,'0')}`,
+      ...body,
+      collectedAt: new Date().toISOString(),
+      status: 'synced',
+    };
+    mockFieldSamples.push(newSample);
+    return HttpResponse.json({ code: 200, data: newSample, message: '采样记录已保存' });
+  }),
+  http.post(apiUrl('/mobile/field-samples/:id/sync'), () => {
+    return HttpResponse.json({ code: 200, message: '同步成功' });
+  }),
+];
 export const handlers = [
   // Auth
   http.post(apiUrl('/auth/login'), async ({ request }) => {
@@ -1226,4 +1290,6 @@ export const handlers = [
     if (idx >= 0) mockContracts.splice(idx, 1);
     return HttpResponse.json({ code: 200, message: 'success' });
   }),
+  ...mobileSamplingHandlers,
 ];
+
