@@ -1,34 +1,43 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { InventoryPage } from '../pages/InventoryPage';
+
+function mockFetchResponse(data: any) {
+  return { ok: true, status: 200, json: async () => data } as Response;
+}
 
 describe('InventoryPage', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({ code: 200, data: [], message: 'success' }),
-    } as Response);
+    fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockImplementation(async (url: any) => {
+      if (url.includes('/api/v1/inventory') && url.includes('purchase')) {
+        return mockFetchResponse({ code: 200, data: { list: [] }});
+      }
+      if (url.includes('/api/v1/inventory')) {
+        return mockFetchResponse({ code: 200, data: { list: [
+          { id: 'i1', code: 'INV-001', name: '甲醇标准液', category: '标准品', quantity: 5, unit: '瓶', minQuantity: 3, supplier: '国药', status: 'normal', expireDate: '2026-01-01', location: 'A1-01' },
+        ]}});
+      }
+      return mockFetchResponse({ code: 200, data: null });
+    });
   });
 
   afterEach(() => {
     fetchSpy.mockRestore();
   });
 
-  it('renders without crashing', async () => {
-    render(
-      <BrowserRouter>
-        <ConfigProvider>
-          <InventoryPage />
-        </ConfigProvider>
-      </BrowserRouter>
-    );
-    await waitFor(() => {
-      expect(document.body.textContent).toBeTruthy();
-    }, { timeout: 2000 });
+  it('renders and loads inventory', async () => {
+    render(<BrowserRouter><ConfigProvider><InventoryPage /></ConfigProvider></BrowserRouter>);
+    await waitFor(() => expect(screen.getByText('INV-001')).toBeInTheDocument());
+    expect(screen.getByText('甲醇标准液')).toBeInTheDocument();
+  });
+
+  it('opens detail drawer by clicking name', async () => {
+    render(<BrowserRouter><ConfigProvider><InventoryPage /></ConfigProvider></BrowserRouter>);
+    await waitFor(() => expect(screen.getByText('甲醇标准液')).toBeInTheDocument());
+    fireEvent.click(screen.getByText('甲醇标准液'));
   });
 });
