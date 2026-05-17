@@ -6,6 +6,7 @@ import {
   ExperimentOutlined, ClockCircleOutlined,
   InboxOutlined, EnvironmentOutlined,
   TeamOutlined, BarChartOutlined, BellOutlined, RightOutlined, ScanOutlined,
+  FileTextOutlined, EditOutlined, UserOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
@@ -32,9 +33,13 @@ export const MobilePage: React.FC = () => {
 
   const quickActions = [
     { icon: <EnvironmentOutlined />, label: '现场采样', path: '/mobile/sampling', color: '#52c41a', count: 0 },
-    { icon: <ScanOutlined />, label: '扫码', path: '/mobile/sampling', color: '#1677ff', count: 0 },
+    { icon: <ScanOutlined />, label: '扫码签收', path: '/mobile/scan-receipt', color: '#1677ff', count: 0 },
+    { icon: <EditOutlined />, label: '结果录入', path: '/mobile/result-entry', color: '#722ed1', count: 0 },
+    { icon: <FileTextOutlined />, label: '报告查看', path: '/mobile/reports', color: '#13c2c2', count: 0 },
     { icon: <InboxOutlined />, label: '我的任务', path: '/mobile/tasks', color: '#fa8c16', count: tasks.filter((t: any) => t.status === 'pending').length },
     { icon: <BellOutlined />, label: '待处理', path: '/quality', color: '#ff4d4f', count: stats?.pendingIssues || 0 },
+    { icon: <UserOutlined />, label: '我的', path: '/mobile/profile', color: '#eb2f96', count: 0 },
+    { icon: <TeamOutlined />, label: '人员', path: '/personnel', color: '#2f54eb', count: 0 },
   ];
 
   const statusColor: Record<string, string> = { pending: 'orange', in_progress: 'blue', completed: 'green' };
@@ -190,12 +195,13 @@ export const MobilePage: React.FC = () => {
           {[
             { icon: <BarChartOutlined />, label: '首页', path: '/mobile' },
             { icon: <EnvironmentOutlined />, label: '采样', path: '/mobile/sampling' },
-            { icon: <InboxOutlined />, label: '任务', path: '/mobile/tasks' },
-            { icon: <TeamOutlined />, label: '我的', path: '/profile' },
+            { icon: <ScanOutlined />, label: '签收', path: '/mobile/scan-receipt' },
+            { icon: <EditOutlined />, label: '录入', path: '/mobile/result-entry' },
+            { icon: <FileTextOutlined />, label: '报告', path: '/mobile/reports' },
           ].map((item, i) => {
             const isActive = location.pathname === item.path;
             return (
-              <Col span={6} key={i} style={{ textAlign: 'center' }}>
+              <Col span={Math.floor(24 / 5)} key={i} style={{ textAlign: 'center' }}>
                 <div
                   style={{ cursor: 'pointer', color: isActive ? '#1677ff' : '#999', padding: '4px 0' }}
                   onClick={() => navigate(item.path)}

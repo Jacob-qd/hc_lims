@@ -70,6 +70,8 @@ import {
   mockWorkflowInstances,
   type WorkflowDefinition,
   type WorkflowInstance,
+  mockScanReceipts,
+  mockMessages,
 } from './data';
 
 const apiUrl = (path: string) => `/api/v1${path}`;
@@ -480,7 +482,80 @@ const mobileSamplingHandlers = [
     if (idx >= 0) mockCourses.splice(idx, 1);
     return HttpResponse.json({ code: 200 });
   }),
+
+  // ===== Mobile Scan Receipt =====
+  http.get(apiUrl('/mobile/scan-receipts'), () => {
+    return HttpResponse.json({ code: 200, data: { list: mockScanReceipts, total: mockScanReceipts.length } });
+  }),
+  http.post(apiUrl('/mobile/scan-receipt'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const receipt = {
+      id: `sr-${Date.now()}`,
+      ...body,
+      status: 'received',
+    };
+    mockScanReceipts.push(receipt);
+    // Update sample status to received
+    const sample = mockSamples.find(s => s.id === body.sampleId);
+    if (sample) sample.status = 'received';
+    return HttpResponse.json({ code: 200, data: receipt, message: '签收成功' });
+  }),
+
+  // ===== Mobile Result Entry =====
+  http.get(apiUrl('/mobile/my-tasks'), () => {
+    return HttpResponse.json({ code: 200, data: { list: mockTasks, total: mockTasks.length } });
+  }),
+  http.post(apiUrl('/mobile/tasks/:id/results'), async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    const task = mockTasks.find(t => t.id === params.id);
+    if (task) {
+      task.status = 'pending_review';
+      task.statusLabel = '待审核';
+      task.progress = 100;
+    }
+    return HttpResponse.json({ code: 200, data: { taskId: params.id, ...body }, message: '结果已提交' });
+  }),
+
+  // ===== Mobile Reports =====
+  http.get(apiUrl('/mobile/reports'), () => {
+    const mobileReports = mockReports.map(r => ({
+      id: r.id,
+      reportNo: r.reportNo,
+      title: r.title,
+      sampleName: r.sampleNos.join('、') || r.projectName,
+      issueDate: r.issuedAt?.slice(0, 10) || r.createdAt?.slice(0, 10),
+      status: r.status,
+      statusLabel: r.statusLabel,
+      signed: r.status === 'signed',
+      customerName: r.customerName,
+      testItems: r.testResults.map((t: any) => t.item).join('、'),
+    }));
+    return HttpResponse.json({ code: 200, data: { list: mobileReports, total: mobileReports.length } });
+  }),
+  http.post(apiUrl('/mobile/reports/:id/sign'), async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    const report = mockReports.find(r => r.id === params.id);
+    if (report) {
+      report.status = 'signed';
+      report.statusLabel = '已签收';
+    }
+    return HttpResponse.json({ code: 200, data: { reportId: params.id, ...body }, message: '签名确认成功' });
+  }),
+
+  // ===== Mobile Profile =====
+  http.get(apiUrl('/mobile/profile'), () => {
+    const user = mockUsers[0];
+    return HttpResponse.json({ code: 200, data: {
+      id: user.id, username: user.username, realName: user.realName,
+      role: user.role, roleLabel: (user as any).roleLabel || '管理员', department: user.department,
+      phone: (user as any).phone || '13800138001', email: (user as any).email || 'admin@hc-lims.com', status: (user as any).status || 'active',
+    }});
+  }),
+  http.get(apiUrl('/mobile/messages'), () => {
+    return HttpResponse.json({ code: 200, data: { list: mockMessages.slice(0, 5), total: 5 } });
+  }),
 ];
+
 export const handlers = [
   // Auth
   http.post(apiUrl('/auth/login'), async ({ request }) => {

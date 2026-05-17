@@ -2174,3 +2174,16 @@ export const mockDataSources = [
   { key: 'reports', name: '检测报告', fields: ['reportNo', 'title', 'customerName', 'projectName', 'sampleTypeLabel', 'status', 'statusLabel', 'creatorName', 'createdAt', 'issuedAt'] },
   { key: 'personnel', name: '人员信息', fields: ['name', 'empNo', 'dept', 'position', 'role', 'lab', 'joinDate', 'certStatus', 'certStatusLabel'] },
 ];
+
+// ===== Mobile Data =====
+export const mockScanReceipts: any[] = [
+  { id: 'sr1', sampleId: 's3', sampleNo: 'SMP20240521003', sampleName: '废水样品-3', receivedBy: '张伟', receivedAt: '2024-05-21T10:05:00Z', status: 'received' },
+];
+
+export const mockMessages: any[] = [
+  { id: 'msg1', type: 'task', title: '新采样任务分配', content: '您有新的采样任务 TK-2025-001', time: '2024-05-21 08:30', read: false },
+  { id: 'msg2', type: 'report', title: '报告已出具', content: '报告 RPT20240521001 已生成', time: '2024-05-20 17:00', read: true },
+  { id: 'msg3', type: 'system', title: '质控警告', content: '铅标准品浓度漂移，请检查', time: '2024-05-20 09:15', read: false },
+  { id: 'msg4', type: 'task', title: '结果审核通过', content: '您的检测结果已通过审核', time: '2024-05-19 16:30', read: true },
+  { id: 'msg5', type: 'system', title: '仪器维护提醒', content: 'ICP-MS 校准即将到期', time: '2024-05-18 10:00', read: true },
+];
