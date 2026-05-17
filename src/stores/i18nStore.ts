@@ -9,7 +9,7 @@ interface I18nState {
   t: (key: string, options?: Record<string, unknown>) => string;
 }
 
-export const useI18nStore = create<I18nState>((set, get) => ({
+export const useI18nStore = create<I18nState>((set) => ({
   locale: (localStorage.getItem('hc_lims_locale') as Locale) || 'zh',
   setLocale: (locale) => {
     localStorage.setItem('hc_lims_locale', locale);

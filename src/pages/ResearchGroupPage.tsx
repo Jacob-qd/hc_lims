@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Tree, Tabs, Descriptions, Drawer, Badge, Progress, Modal, Form, message, Segmented, List, Avatar } from 'antd';
-import { PlusOutlined, SearchOutlined, UserOutlined, TeamOutlined, FundOutlined, ToolOutlined, ExperimentOutlined, TrophyOutlined, BookOutlined, CalendarOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined, UserOutlined, TeamOutlined, FundOutlined, ToolOutlined, ExperimentOutlined, TrophyOutlined, BookOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 
@@ -74,7 +74,7 @@ const GroupDetail: React.FC<{ group: ResearchGroup | null; visible: boolean; onC
               <Col span={6}><Statistic title="PI" value={group.pi} valueStyle={{ fontSize: 14 }} /></Col>
               <Col span={6}><Statistic title="职称" value={group.detail.piTitle} valueStyle={{ fontSize: 14 }} /></Col>
               <Col span={6}><Statistic title="成立日期" value={group.detail.founded} valueStyle={{ fontSize: 14 }} /></Col>
-              <Col span={6}><Statistic title="状态" value={<Badge status="success" text="在研" />} valueStyle={{ fontSize: 14 }} /></Col>
+              <Col span={6}><Statistic title="状态" value="在研" valueStyle={{ fontSize: 14, color: '#52c41a' }} /></Col>
             </Row>
           </Col>
         </Row>

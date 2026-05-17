@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Tag, Button, Row, Col, Typography, Space, Input, Select, Modal, Form, message, Tabs, Descriptions, Timeline, Segmented, List, Badge, Tooltip } from 'antd';
-import { PlusOutlined, SearchOutlined, EditOutlined, CheckCircleOutlined, AppstoreOutlined, UnorderedListOutlined, FileTextOutlined, LockOutlined, SignatureOutlined, CalendarOutlined, ExperimentOutlined, TeamOutlined } from '@ant-design/icons';
+import { Card, Table, Tag, Button, Row, Col, Typography, Space, Input, Select, Modal, Form, message, Tabs, Descriptions, Timeline, Segmented } from 'antd';
+import { PlusOutlined, SearchOutlined, EditOutlined, CheckCircleOutlined, AppstoreOutlined, UnorderedListOutlined, FileTextOutlined, CalendarOutlined, ExperimentOutlined, TeamOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -117,7 +117,7 @@ export const ELNPage: React.FC = () => {
                       <Text type="secondary"><ExperimentOutlined /> {e.project}</Text>
                       <Text type="secondary"><TeamOutlined /> {e.group}</Text>
                       <Text type="secondary"><CalendarOutlined /> {e.date}</Text>
-                      <div>{e.tags?.map((tag: string) => <Tag key={tag} size="small">{tag}</Tag>)}</div>
+                      <div>{e.tags?.map((tag: string) => <Tag key={tag}>{tag}</Tag>)}</div>
                     </Space>
                   </div>
                 </Card>
