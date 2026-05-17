@@ -1,0 +1,56 @@
+<view class="container">
+  <view class="header">
+    <text class="title">红创 LIMS</text>
+    <text class="subtitle">移动实验室工作台</text>
+  </view>
+
+  <view class="quick-actions">
+    <view class="action-item" bindtap="goToSampling">
+      <view class="icon" style="background: #52c41a;">📍</view>
+      <text>现场采样</text>
+    </view>
+    <view class="action-item" bindtap="goToScan">
+      <view class="icon" style="background: #1677ff;">📷</view>
+      <text>扫码签收</text>
+    </view>
+    <view class="action-item" bindtap="goToResultEntry">
+      <view class="icon" style="background: #faad14;">📝</view>
+      <text>结果录入</text>
+    </view>
+    <view class="action-item" bindtap="goToReports">
+      <view class="icon" style="background: #722ed1;">📄</view>
+      <text>报告查看</text>
+    </view>
+  </view>
+
+  <view class="stats-card">
+    <view class="stat-item">
+      <text class="stat-value">{{stats.todaySamples}}</text>
+      <text class="stat-label">今日采样</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-value" style="color: #1677ff;">{{stats.inProgress}}</text>
+      <text class="stat-label">进行中</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-value" style="color: #52c41a;">{{stats.todayCompleted}}</text>
+      <text class="stat-label">今日完成</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-value" style="color: #faad14;">{{stats.pendingSync}}</text>
+      <text class="stat-label">待同步</text>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-title">待办任务</view>
+    <view wx:for="{{tasks}}" wx:key="id" class="task-item">
+      <view class="task-info">
+        <text class="task-name">{{item.sampleName}}</text>
+        <text class="task-meta">{{item.testItem}}</text>
+      </view>
+      <text class="task-status {{item.status}}">{{item.statusLabel}}</text>
+    </view>
+    <view wx:if="{{tasks.length === 0}}" class="empty">暂无待办任务</view>
+  </view>
+</view>

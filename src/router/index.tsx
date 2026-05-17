@@ -49,6 +49,9 @@ const OrdersPage = lazy(() => import('../pages/OrdersPage').then(m => ({ default
 const MobilePage = lazy(() => import('../pages/MobilePage').then(m => ({ default: m.MobilePage })));
 const MobileSamplingPage = lazy(() => import('../pages/MobileSamplingPage').then(m => ({ default: m.MobileSamplingPage })));
 const MobileTaskListPage = lazy(() => import('../pages/MobileTaskListPage').then(m => ({ default: m.MobileTaskListPage })));
+const MobileScanReceiptPage = lazy(() => import('../pages/MobileScanReceiptPage').then(m => ({ default: m.MobileScanReceiptPage })));
+const MobileResultEntryPage = lazy(() => import('../pages/MobileResultEntryPage').then(m => ({ default: m.MobileResultEntryPage })));
+const MobileReportViewPage = lazy(() => import('../pages/MobileReportViewPage').then(m => ({ default: m.MobileReportViewPage })));
 
 export const router = createBrowserRouter([
   {
@@ -62,6 +65,18 @@ export const router = createBrowserRouter([
   {
     path: '/mobile/tasks',
     element: <RouteGuard requireAuth={false}><MobileTaskListPage /></RouteGuard>,
+  },
+  {
+    path: '/mobile/scan-receipt',
+    element: <RouteGuard requireAuth={false}><MobileScanReceiptPage /></RouteGuard>,
+  },
+  {
+    path: '/mobile/result-entry',
+    element: <RouteGuard requireAuth={false}><MobileResultEntryPage /></RouteGuard>,
+  },
+  {
+    path: '/mobile/reports',
+    element: <RouteGuard requireAuth={false}><MobileReportViewPage /></RouteGuard>,
   },
   {
     path: '/login',

@@ -1,0 +1,40 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/result-entry/index",
+    "pages/report-view/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#1677ff",
+    "navigationBarTitleText": "红创LIMS",
+    "navigationBarTextStyle": "white"
+  },
+  "tabBar": {
+    "color": "#999",
+    "selectedColor": "#1677ff",
+    "backgroundColor": "#fff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "assets/home.png",
+        "selectedIconPath": "assets/home-active.png"
+      },
+      {
+        "pagePath": "pages/result-entry/index",
+        "text": "录入",
+        "iconPath": "assets/edit.png",
+        "selectedIconPath": "assets/edit-active.png"
+      },
+      {
+        "pagePath": "pages/report-view/index",
+        "text": "报告",
+        "iconPath": "assets/file.png",
+        "selectedIconPath": "assets/file-active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

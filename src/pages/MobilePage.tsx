@@ -6,6 +6,7 @@ import {
   ExperimentOutlined, ClockCircleOutlined,
   InboxOutlined, EnvironmentOutlined,
   TeamOutlined, BarChartOutlined, BellOutlined, RightOutlined, ScanOutlined,
+  FileTextOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
@@ -32,9 +33,9 @@ export const MobilePage: React.FC = () => {
 
   const quickActions = [
     { icon: <EnvironmentOutlined />, label: '现场采样', path: '/mobile/sampling', color: '#52c41a', count: 0 },
-    { icon: <ScanOutlined />, label: '扫码', path: '/mobile/sampling', color: '#1677ff', count: 0 },
+    { icon: <ScanOutlined />, label: '扫码签收', path: '/mobile/scan-receipt', color: '#1677ff', count: 0 },
     { icon: <InboxOutlined />, label: '我的任务', path: '/mobile/tasks', color: '#fa8c16', count: tasks.filter((t: any) => t.status === 'pending').length },
-    { icon: <BellOutlined />, label: '待处理', path: '/quality', color: '#ff4d4f', count: stats?.pendingIssues || 0 },
+    { icon: <BellOutlined />, label: '结果录入', path: '/mobile/result-entry', color: '#ff4d4f', count: 0 },
   ];
 
   const statusColor: Record<string, string> = { pending: 'orange', in_progress: 'blue', completed: 'green' };
@@ -136,6 +137,23 @@ export const MobilePage: React.FC = () => {
             </div>
           )}}
         />
+      </Card>
+
+      {/* 报告查看入口 */}
+      <Card
+        size="small"
+        hoverable
+        style={{ marginBottom: 16, borderRadius: 12 }}
+        onClick={() => navigate('/mobile/reports')}
+      >
+        <Space>
+          <FileTextOutlined style={{ fontSize: 20, color: '#722ed1' }} />
+          <div>
+            <Text strong>报告查看</Text>
+            <div><Text type="secondary" style={{ fontSize: 11 }}>预览、下载、签名确认</Text></div>
+          </div>
+          <RightOutlined style={{ color: '#999', marginLeft: 'auto' }} />
+        </Space>
       </Card>
 
       {/* 待办任务 */}
