@@ -2166,6 +2166,228 @@ export const mockContracts: Contract[] = [
 ];
 
 // Data source definitions for report builder
+// ========== AI 功能 Mock 数据 ==========
+
+export interface AIMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  type: 'text' | 'table' | 'chart';
+  data?: any;
+  timestamp: string;
+}
+
+export interface AIConversation {
+  id: string;
+  title: string;
+  messages: AIMessage[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const mockAIConversations: AIConversation[] = [
+  {
+    id: 'conv1',
+    title: '本月 COD 检测统计',
+    messages: [
+      { id: 'm1', role: 'user', content: '本月 COD 检测合格率是多少？', type: 'text', timestamp: '2026-05-10 09:15:00' },
+      { id: 'm2', role: 'assistant', content: '本月 COD 检测合格率为 **96.5%**（129/134 批次）。其中 5 批次出现偏差，主要集中在前处理阶段。建议关注提取效率。', type: 'text', timestamp: '2026-05-10 09:15:02' },
+    ],
+    createdAt: '2026-05-10 09:15:00',
+    updatedAt: '2026-05-10 09:15:02',
+  },
+  {
+    id: 'conv2',
+    title: '仪器利用率分析',
+    messages: [
+      { id: 'm3', role: 'user', content: '哪些仪器利用率低于50%？', type: 'text', timestamp: '2026-05-12 14:30:00' },
+      { id: 'm4', role: 'assistant', content: '以下 3 台仪器本月利用率低于 50%，建议评估是否需要调配或共享：', type: 'text', data: [
+        { name: '气相色谱仪 GC-2010', utilization: 32, location: '有机实验室', responsiblePerson: '赵岩' },
+        { name: '原子吸收光谱仪 AA-7000', utilization: 41, location: '无机实验室', responsiblePerson: '李思' },
+        { name: '离子色谱仪 IC-900', utilization: 45, location: '离子实验室', responsiblePerson: '王强' },
+      ], timestamp: '2026-05-12 14:30:03' },
+    ],
+    createdAt: '2026-05-12 14:30:00',
+    updatedAt: '2026-05-12 14:30:03',
+  },
+];
+
+export interface AIReportConfig {
+  id: string;
+  name: string;
+  dataSource: string;
+  timeRange: [string, string];
+  reportType: 'summary' | 'analytical' | 'compliance';
+  generatedContent: string;
+  status: 'draft' | 'reviewed' | 'approved';
+  createdAt: string;
+}
+
+export const mockAIReports: AIReportConfig[] = [
+  {
+    id: 'air1',
+    name: '2026年4月水质检测月报',
+    dataSource: 'samples',
+    timeRange: ['2026-04-01', '2026-04-30'],
+    reportType: 'summary',
+    generatedContent: `## 检测概况\n\n本月共完成水质检测样品 **245** 批次，涉及地表水、地下水、饮用水、废水 4 大类别。总体合格率为 **97.1%**，较上月提升 1.2 个百分点。\n\n## 主要指标分析\n\n- **COD**: 检测 89 批次，合格率 96.5%，5 批次不合格\n- **氨氮**: 检测 76 批次，合格率 98.7%，1 批次不合格\n- **总磷**: 检测 62 批次，合格率 96.8%，2 批次不合格\n- **重金属(Pb)**: 检测 45 批次，合格率 100%\n\n## 异常分析\n\n不合格样品主要集中在 **清源化工废水排放口**（3 批次 COD 超标），建议加强现场采样规范性复核。\n\n## 结论与建议\n\n1. 总体质量受控，建议维持现有质控方案\n2. 关注 COD 前处理提取效率\n3. 建议对清源化工开展专项跟踪检测`,
+    status: 'reviewed',
+    createdAt: '2026-05-05 10:00:00',
+  },
+  {
+    id: 'air2',
+    name: '质控趋势分析报告',
+    dataSource: 'quality',
+    timeRange: ['2026-01-01', '2026-04-30'],
+    reportType: 'analytical',
+    generatedContent: `## 质控趋势分析（2026年Q1-Q2）\n\n### Westgard 规则触发统计\n\n| 规则 | 触发次数 | 占比 |\n|------|---------|------|\n| 1-2s | 12 | 38% |\n| 1-3s | 3 | 9% |\n| 2-2s | 8 | 25% |\n| R-4s | 5 | 16% |\n| 4-1s | 4 | 12% |\n\n### 趋势判断\n\n质控失控事件呈下降趋势（1月 15 次 → 4月 6 次），说明前期 CAPA 措施有效。\n\n### 建议\n\n继续执行 "增加平行样频率" 的预防措施，并关注 4-1s 规则的新发趋势。`,
+    status: 'draft',
+    createdAt: '2026-05-10 16:30:00',
+  },
+];
+
+export interface AIAlert {
+  id: string;
+  type: 'qc' | 'instrument' | 'sample' | 'data';
+  level: 'info' | 'warning' | 'critical';
+  title: string;
+  description: string;
+  sourceId: string;
+  sourceType: string;
+  suggestion: string;
+  status: 'new' | 'acknowledged' | 'resolved';
+  createdAt: string;
+  resolvedAt?: string;
+}
+
+export const mockAIAlerts: AIAlert[] = [
+  {
+    id: 'alt1', type: 'qc', level: 'critical',
+    title: 'COD 质控样 1-3s 失控',
+    description: 'QC-BATCH-2026-004 靶值 100.0 mg/L，测定值 112.5 mg/L，偏差 12.5%，触发 1-3s 规则。',
+    sourceId: 'qc4', sourceType: '质控批次',
+    suggestion: '立即停用该批次试剂，检查标准溶液配制过程，重新检测并评估前 3 批次数据。',
+    status: 'new', createdAt: '2026-05-17 08:15:00',
+  },
+  {
+    id: 'alt2', type: 'instrument', level: 'warning',
+    title: '气相色谱仪 GC-2010 利用率持续偏低',
+    description: '该仪器本月利用率仅 32%，连续 3 个月低于 50%。',
+    sourceId: 'inst-gc2010', sourceType: '仪器设备',
+    suggestion: '评估是否需要调配至其他实验室，或开展共享预约提高利用率。',
+    status: 'acknowledged', createdAt: '2026-05-15 10:00:00',
+  },
+  {
+    id: 'alt3', type: 'sample', level: 'warning',
+    title: '样品 SP-2026-089 TAT 即将超期',
+    description: '该样品已接收 4.5 天，距离合同要求 TAT（5 天）仅剩 0.5 天。',
+    sourceId: 'sp089', sourceType: '样品',
+    suggestion: '优先分配该样品检测任务，必要时启动加急流程。',
+    status: 'new', createdAt: '2026-05-17 09:00:00',
+  },
+  {
+    id: 'alt4', type: 'data', level: 'info',
+    title: 'pH 检测结果出现轻微趋势漂移',
+    description: '近 10 批次 pH 测定值均值 7.05，较历史均值 7.00 偏移 +0.05，尚未超出控制限。',
+    sourceId: 'ph-series', sourceType: '数据序列',
+    suggestion: '关注电极校准状态，建议提前更换电极缓冲液。',
+    status: 'resolved', createdAt: '2026-05-14 11:00:00', resolvedAt: '2026-05-15 09:30:00',
+  },
+  {
+    id: 'alt5', type: 'instrument', level: 'critical',
+    title: '原子吸收光谱仪 AA-7000 校准到期',
+    description: '该仪器校准有效期至 2026-05-16，已过期 1 天。',
+    sourceId: 'inst-aa7000', sourceType: '仪器设备',
+    suggestion: '立即停止使用该仪器，联系计量部门安排校准，更新设备状态。',
+    status: 'new', createdAt: '2026-05-17 00:00:00',
+  },
+  {
+    id: 'alt6', type: 'qc', level: 'warning',
+    title: '氨氮质控样 2-2s 警告',
+    description: '连续 2 批次氨氮质控样落在同一侧 2SD 外，触发 2-2s 规则。',
+    sourceId: 'qc2', sourceType: '质控批次',
+    suggestion: '检查显色剂稳定性，复核标准曲线，必要时重新配制。',
+    status: 'acknowledged', createdAt: '2026-05-16 14:20:00',
+  },
+];
+
+export const mockAIAlertStats = {
+  total: 6, new: 3, acknowledged: 2, resolved: 1, critical: 2, warning: 3, info: 1,
+  trend: [
+    { date: '05-12', qc: 2, instrument: 1, sample: 0, data: 1 },
+    { date: '05-13', qc: 1, instrument: 0, sample: 1, data: 0 },
+    { date: '05-14', qc: 0, instrument: 1, sample: 0, data: 1 },
+    { date: '05-15', qc: 1, instrument: 1, sample: 0, data: 0 },
+    { date: '05-16', qc: 2, instrument: 0, sample: 1, data: 0 },
+    { date: '05-17', qc: 2, instrument: 2, sample: 1, data: 0 },
+  ],
+};
+
+export const mockAIQuickQuestions = [
+  '本月样品检测量统计',
+  '哪些仪器利用率低于50%？',
+  '最近7天有哪些异常质控结果？',
+  '生成本月工作报告摘要',
+  'COD检测合格率趋势',
+  '哪些客户样品量最大？',
+];
+
+export const mockAIReplyTemplates: Record<string, { content: string; type: 'text' | 'table'; data?: any[] }> = {
+  '合格率': {
+    content: '本月检测总体合格率为 **97.1%**（245/252 批次）。按项目分类：COD 96.5%、氨氮 98.7%、总磷 96.8%、重金属 100%。',
+    type: 'text',
+  },
+  '统计': {
+    content: '本月实验室运营数据概览：',
+    type: 'table',
+    data: [
+      { metric: '完成样品数', value: '245 批次', trend: '+12%' },
+      { metric: '检测项目数', value: '1,286 项次', trend: '+8%' },
+      { metric: '报告出具数', value: '198 份', trend: '+15%' },
+      { metric: '平均 TAT', value: '3.2 天', trend: '-0.3 天' },
+      { metric: '质控合格率', value: '97.1%', trend: '+1.2%' },
+    ],
+  },
+  '仪器': {
+    content: '当前仪器状态概览：',
+    type: 'table',
+    data: [
+      { name: '气相色谱仪 GC-2010', status: '运行中', utilization: '32%', calibrationDue: '2026-08-15' },
+      { name: '液相色谱仪 LC-2030', status: '运行中', utilization: '78%', calibrationDue: '2026-07-20' },
+      { name: '原子吸收光谱仪 AA-7000', status: '待机', utilization: '41%', calibrationDue: '2026-05-16' },
+      { name: '离子色谱仪 IC-900', status: '运行中', utilization: '45%', calibrationDue: '2026-09-01' },
+      { name: 'ICP-MS 7900', status: '运行中', utilization: '85%', calibrationDue: '2026-06-30' },
+    ],
+  },
+  '客户': {
+    content: '本月样品量 TOP 5 客户：',
+    type: 'table',
+    data: [
+      { rank: 1, customer: '清源化工有限公司', samples: 45, amount: '¥89,000' },
+      { rank: 2, customer: '东湖水质监测中心', samples: 38, amount: '¥76,000' },
+      { rank: 3, customer: '宏达食品有限公司', samples: 32, amount: '¥64,000' },
+      { rank: 4, customer: '绿能环保科技', samples: 28, amount: '¥56,000' },
+      { rank: 5, customer: '城市排水管理中心', samples: 25, amount: '¥50,000' },
+    ],
+  },
+  '报告': {
+    content: '本月报告出具情况：共出具报告 198 份，其中水质检测 89 份、食品检测 67 份、环境检测 42 份。平均出具周期 2.8 天，较上月缩短 0.4 天。',
+    type: 'text',
+  },
+  '趋势': {
+    content: '近 6 个月关键指标趋势：',
+    type: 'table',
+    data: [
+      { month: '2025-12', samples: 210, passRate: '95.2%', tat: '3.8 天' },
+      { month: '2026-01', samples: 198, passRate: '95.8%', tat: '3.5 天' },
+      { month: '2026-02', samples: 225, passRate: '96.1%', tat: '3.4 天' },
+      { month: '2026-03', samples: 238, passRate: '96.8%', tat: '3.3 天' },
+      { month: '2026-04', samples: 245, passRate: '97.1%', tat: '3.2 天' },
+      { month: '2026-05', samples: 132, passRate: '96.9%', tat: '3.1 天' },
+    ],
+  },
+};
+
 export const mockDataSources = [
   { key: 'samples', name: '样品数据', fields: ['sampleNo', 'name', 'type', 'typeLabel', 'customerName', 'projectName', 'status', 'statusLabel', 'priority', 'createdAt', 'testItems', 'testItemsCompleted'] },
   { key: 'tasks', name: '检测任务', fields: ['taskNo', 'sampleName', 'testItem', 'method', 'analystName', 'instrumentName', 'labName', 'status', 'statusLabel', 'progress', 'plannedStart', 'plannedEnd', 'actualStart', 'actualEnd'] },

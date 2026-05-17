@@ -66,6 +66,12 @@ import {
   mockCalibrationRecords,
   mockMaintenanceRecords,
   mockTurnaroundTrendReal,
+  mockAIConversations,
+  mockAIReports,
+  mockAIAlerts,
+  mockAIAlertStats,
+  mockAIQuickQuestions,
+  mockAIReplyTemplates,
 } from './data';
 
 const apiUrl = (path: string) => `/api/v1${path}`;
@@ -1353,5 +1359,98 @@ export const handlers = [
   ...clientsHandlers,
   ...quotationsHandlers,
   ...ordersHandlers,
+
+  // ========== AI Assistant ==========
+  http.get(apiUrl('/ai/conversations'), () => {
+    return HttpResponse.json({ code: 200, message: 'success', data: { list: mockAIConversations, total: mockAIConversations.length } });
+  }),
+
+  http.post(apiUrl('/ai/chat'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const { message } = body;
+    let reply = { content: '抱歉，我暂时无法理解这个问题。请尝试询问关于合格率、统计、仪器、客户、报告或趋势的问题。', type: 'text' as const, data: undefined };
+    for (const [key, template] of Object.entries(mockAIReplyTemplates)) {
+      if (message.includes(key)) {
+        reply = template;
+        break;
+      }
+    }
+    await new Promise(r => setTimeout(r, 800));
+    return HttpResponse.json({
+      code: 200, message: 'success',
+      data: {
+        messageId: 'msg' + Date.now(), role: 'assistant',
+        content: reply.content, type: reply.type, data: reply.data,
+        suggestedQuestions: mockAIQuickQuestions.slice(0, 3),
+      },
+    });
+  }),
+
+  http.delete(apiUrl('/ai/conversations/:id'), ({ params }) => {
+    const idx = mockAIConversations.findIndex(c => c.id === params.id);
+    if (idx >= 0) mockAIConversations.splice(idx, 1);
+    return HttpResponse.json({ code: 200, message: 'success' });
+  }),
+
+  // ========== AI Report Generator ==========
+  http.get(apiUrl('/ai/reports'), () => {
+    return HttpResponse.json({ code: 200, message: 'success', data: { list: mockAIReports, total: mockAIReports.length } });
+  }),
+
+  http.get(apiUrl('/ai/reports/:id'), ({ params }) => {
+    const report = mockAIReports.find(r => r.id === params.id);
+    if (!report) return HttpResponse.json({ code: 404, message: '报告不存在' }, { status: 404 });
+    return HttpResponse.json({ code: 200, message: 'success', data: report });
+  }),
+
+  http.post(apiUrl('/ai/reports/generate'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const { dataSource, timeRange, reportType } = body;
+    const now = new Date().toISOString().replace('T', ' ').slice(0, 19);
+    const sourceLabels: Record<string, string> = { samples: '样品', tasks: '检测任务', quality: '质量控制', instruments: '仪器设备' };
+    const typeLabels: Record<string, string> = { summary: '汇总报告', analytical: '分析报告', compliance: '合规报告' };
+    const newReport = {
+      id: 'air' + Date.now(),
+      name: `${sourceLabels[dataSource] || '综合'}${typeLabels[reportType] || '报告'}_${timeRange[0]}`,
+      dataSource: dataSource || 'samples',
+      timeRange: timeRange || ['2026-04-01', '2026-04-30'],
+      reportType: reportType || 'summary',
+      generatedContent: `## ${typeLabels[reportType] || '报告'}\n\n基于 ${sourceLabels[dataSource] || '综合'} 数据自动生成。\n\n> ⚠️ **AI 辅助生成内容，请人工审核确认**\n\n本报告由 AI 根据实验室管理系统数据自动生成，仅供参考。所有结论需经授权签字人审核确认后方可用于正式场合。`,
+      status: 'draft' as const,
+      createdAt: now,
+    };
+    mockAIReports.unshift(newReport);
+    return HttpResponse.json({ code: 200, message: 'success', data: newReport });
+  }),
+
+  // ========== AI Alerts ==========
+  http.get(apiUrl('/ai/alerts'), ({ request }) => {
+    const url = new URL(request.url);
+    const status = url.searchParams.get('status');
+    const type = url.searchParams.get('type');
+    let filtered = [...mockAIAlerts];
+    if (status && status !== 'all') filtered = filtered.filter(a => a.status === status);
+    if (type && type !== 'all') filtered = filtered.filter(a => a.type === type);
+    return HttpResponse.json({ code: 200, message: 'success', data: { list: filtered, total: filtered.length } });
+  }),
+
+  http.get(apiUrl('/ai/alerts/stats'), () => {
+    return HttpResponse.json({ code: 200, message: 'success', data: mockAIAlertStats });
+  }),
+
+  http.put(apiUrl('/ai/alerts/:id/ack'), ({ params }) => {
+    const alert = mockAIAlerts.find(a => a.id === params.id);
+    if (!alert) return HttpResponse.json({ code: 404, message: '预警不存在' }, { status: 404 });
+    alert.status = 'acknowledged';
+    return HttpResponse.json({ code: 200, message: 'success', data: alert });
+  }),
+
+  http.put(apiUrl('/ai/alerts/:id/resolve'), ({ params }) => {
+    const alert = mockAIAlerts.find(a => a.id === params.id);
+    if (!alert) return HttpResponse.json({ code: 404, message: '预警不存在' }, { status: 404 });
+    alert.status = 'resolved';
+    alert.resolvedAt = new Date().toISOString().replace('T', ' ').slice(0, 19);
+    return HttpResponse.json({ code: 200, message: 'success', data: alert });
+  }),
 ];
 
