@@ -8,12 +8,12 @@ const certLabels: Record<string, string> = { active: '正常', warning: '即将�
 const roleColors: Record<string, string> = { PI: '#ff4d4f', 博士后: '#1677ff', 博士生: '#52c41a', 硕士生: '#faad14', 检测员: '#1677ff', 仪器管理员: '#722ed1', 质量主管: '#eb2f96', 报告审核员: '#13c2c2' };
 
 export const PersonnelPage: React.FC = () => {
-  const [personnel, setPersonnel] = useState<any[]>([]);
-  const [trainings, setTrainings] = useState<any[]>([]);
-  const [certs, setCerts] = useState<any[]>([]);
+  const [personnel, setPersonnel] = useState<unknown[]>([]);
+  const [trainings, setTrainings] = useState<unknown[]>([]);
+  const [certs, setCerts] = useState<unknown[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [selected, setSelected] = useState<any>(null);
+  const [selected, setSelected] = useState<unknown>(null);
   const [drawer, setDrawer] = useState(false);
 
   const fetchData = async () => {
@@ -25,10 +25,11 @@ export const PersonnelPage: React.FC = () => {
     ]);
     setPersonnel(pr.data.list); setTrainings(tr.data.list); setCerts(cr.data.list); setLoading(false);
   };
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchData(); }, []);
 
-  const filtered = personnel.filter((p: any) => p.name.includes(search) || p.dept.includes(search) || p.position.includes(search));
-  const stats = { total: personnel.length, active: personnel.filter((p: any) => p.certStatus === 'active').length, warning: personnel.filter((p: any) => p.certStatus === 'warning').length, expired: personnel.filter((p: any) => p.certStatus === 'expired').length };
+  const filtered = personnel.filter((p: Record<string, unknown>) => p.name.includes(search) || p.dept.includes(search) || p.position.includes(search));
+  const stats = { total: personnel.length, active: personnel.filter((p: Record<string, unknown>) => p.certStatus === 'active').length, warning: personnel.filter((p: Record<string, unknown>) => p.certStatus === 'warning').length, expired: personnel.filter((p: Record<string, unknown>) => p.certStatus === 'expired').length };
 
   return (
     <div>
@@ -48,7 +49,7 @@ export const PersonnelPage: React.FC = () => {
             </Select>
           </Space>
           <Table dataSource={filtered} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} columns={[
-            { title: '姓名', dataIndex: 'name', render: (n: string, r: any) => <a onClick={() => { setSelected(r); setDrawer(true); }}>{n}</a> },
+            { title: '姓名', dataIndex: 'name', render: (n: string, r: Record<string, unknown>) => <a onClick={() => { setSelected(r); setDrawer(true); }}>{n}</a> },
             { title: '工号', dataIndex: 'empNo', render: (e: string) => <Text code>{e}</Text> },
             { title: '部门', dataIndex: 'dept' },
             { title: '岗位', dataIndex: 'position' },
@@ -56,7 +57,7 @@ export const PersonnelPage: React.FC = () => {
             { title: '实验室', dataIndex: 'lab' },
             { title: '入职日期', dataIndex: 'joinDate' },
             { title: '资质状态', dataIndex: 'certStatus', render: (s: string) => <Tag color={certColors[s]}>{certLabels[s]}</Tag> },
-            { title: '操作', render: (_: any, r: any) => <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawer(true); }} /> },
+            { title: '操作', render: (_: string, r: Record<string, unknown>) => <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawer(true); }} /> },
           ]} size="middle" /></Card>
         )},
         { key: 'training', label: '培训管理', children: (

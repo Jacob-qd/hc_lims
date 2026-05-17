@@ -64,7 +64,7 @@ export const ContractsPage: React.FC = () => {
       if (data.code === 200) {
         setContracts(data.data.list);
       }
-    } catch (e) {
+    } catch {
       message.error('加载数据失败');
     } finally {
       setLoading(false);
@@ -72,6 +72,7 @@ export const ContractsPage: React.FC = () => {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
   }, [statusFilter, searchKeyword]);
 
@@ -112,7 +113,7 @@ export const ContractsPage: React.FC = () => {
       } else {
         message.error(data.message || '操作失败');
       }
-    } catch (e) {
+    } catch {
       // validation error
     }
   };
@@ -136,7 +137,7 @@ export const ContractsPage: React.FC = () => {
     { title: '截止日期', dataIndex: 'endDate', key: 'endDate' },
     { title: '状态', dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={statusColors[s]}>{statusLabels[s]}</Tag> },
     {
-      title: '操作', key: 'action', render: (_: any, record: Contract) => (
+      title: '操作', key: 'action', render: (_: string, record: Contract) => (
         <Space size="small">
           <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => openModal('view', record)}>查看</Button>
           <Button type="link" size="small" icon={<EditOutlined />} onClick={() => openModal('edit', record)}>编辑</Button>

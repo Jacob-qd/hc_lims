@@ -49,7 +49,7 @@ export interface ReportAnnotation {
   createdAt: string;
   status: 'open' | 'resolved';
   mentions: string[];
-  replies: any[];
+  replies: unknown[];
 }
 
 export interface Report {
@@ -69,8 +69,8 @@ export interface Report {
   issuedAt: string;
   signatures: ReportSignature[];
   annotations: ReportAnnotation[];
-  attachments: any[];
-  changeHistory: any[];
+  attachments: unknown[];
+  changeHistory: unknown[];
   testResults: ReportTestResult[];
   cover: ReportCover;
   customerId?: string;

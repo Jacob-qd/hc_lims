@@ -15,7 +15,7 @@ describe('MobileTaskListPage - 移动端任务列表', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockImplementation(async (url: any) => {
+    fetchSpy = vi.spyOn(globalThis as unknown as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: unknown) => {
       if (url.includes('/api/v1/tasks')) {
         return {
           ok: true, status: 200,

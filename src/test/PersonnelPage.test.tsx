@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { PersonnelPage } from '../pages/PersonnelPage';
 
-function mockFetchResponse(data: any) {
+function mockFetchResponse(data: unknown) {
   return { ok: true, status: 200, json: async () => data } as Response;
 }
 
@@ -12,7 +12,7 @@ describe('PersonnelPage', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockImplementation(async (url: any) => {
+    fetchSpy = vi.spyOn(globalThis as unknown as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: unknown) => {
       if (url.includes('/api/v1/personnel') && !url.includes('/training') && !url.includes('/certificates')) {
         return mockFetchResponse({ code: 200, data: { list: [
           { id: 'p1', name: '张三', empNo: 'EMP001', dept: '环境实验室', position: '检测员', role: '检测员', lab: 'A101', joinDate: '2023-01-01', certStatus: 'active' },

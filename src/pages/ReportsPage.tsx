@@ -68,13 +68,13 @@ export const ReportsPage: React.FC = () => {
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState({ draft: 0, pendingTechReview: 0, pendingApproval: 0, issued: 0, total: 0 });
-  const [filters, setFilters] = useState({ keyword: '', status: '', customer: '', dateRange: [null, null] as any[] });
+  const [filters, setFilters] = useState({ keyword: '', status: '', customer: '', dateRange: [null, null] as unknown[] });
 
   // Detail Drawer
   const [detailOpen, setDetailOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [detailTab, setDetailTab] = useState('info');
-  const [flowHistory, setFlowHistory] = useState<any[]>([]);
+  const [flowHistory, setFlowHistory] = useState<unknown[]>([]);
 
   // Compilation Mode
   const [compileOpen, setCompileOpen] = useState(false);
@@ -88,9 +88,9 @@ export const ReportsPage: React.FC = () => {
   const [signRoleLabel, setSignRoleLabel] = useState('编制');
 
   // Signature Verification
-  const [verifyResult, setVerifyResult] = useState<any>(null);
+  const [verifyResult, setVerifyResult] = useState<unknown>(null);
   const [verifyLoading, setVerifyLoading] = useState(false);
-  const [_verifyOpen, setVerifyOpen] = useState(false);
+  const [, setVerifyOpen] = useState(false);
 
   // Selection
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
@@ -110,6 +110,7 @@ export const ReportsPage: React.FC = () => {
     });
   };
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { loadReports(); }, []);
 
   // ============ Detail Drawer ============
@@ -150,7 +151,7 @@ export const ReportsPage: React.FC = () => {
 
   // ============ Actions ============
 
-  const handleSubmitForReview = (_report: Report) => {
+  const handleSubmitForReview = () => {
     setSignRole('compiler');
     setSignRoleLabel('编制');
     setSignModalOpen(true);
@@ -277,7 +278,7 @@ export const ReportsPage: React.FC = () => {
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
-        setReports(prev => [{ ...merged, cover: merged.cover } as any, ...prev]);
+        setReports(prev => [{ ...merged, cover: merged.cover } as unknown, ...prev]);
         setSelectedRowKeys([]);
         message.success(`已创建合并报告，包含 ${count} 个样品`);
       },
@@ -684,7 +685,7 @@ export const ReportsPage: React.FC = () => {
                         <Empty description="暂无流转记录" />
                       ) : (
                         <Timeline
-                          items={flowHistory.map((h: any) => ({
+                          items={flowHistory.map((h: Record<string, unknown>) => ({
                             color: 'blue',
                             children: (
                               <div>
@@ -816,7 +817,7 @@ export const ReportsPage: React.FC = () => {
                           >
                             {verifyResult.signatures && verifyResult.signatures.length > 0 && (
                               <Timeline
-                                items={verifyResult.signatures.map((sig: any) => ({
+                                items={verifyResult.signatures.map((sig: Record<string, unknown>) => ({
                                   color: sig.status === 'valid' ? 'green' : 'red',
                                   children: (
                                     <div>
@@ -1050,7 +1051,7 @@ export const ReportsPage: React.FC = () => {
                               style={{ width: 90 }}
                               onChange={val => {
                                 const next = [...editReport.testResults];
-                                next[idx] = { ...next[idx], judgment: val as any };
+                                next[idx] = { ...next[idx], judgment: val as unknown };
                                 setEditReport({ ...editReport, testResults: next });
                               }}
                             >

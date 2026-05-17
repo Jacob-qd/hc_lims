@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import {
   Modal, Alert, Card, Descriptions, Tag, Form, Input, Checkbox, Typography, message,
 } from 'antd';
@@ -36,14 +36,16 @@ export const SignatureModal: React.FC<SignatureModalProps> = ({
   const currentMeaning = roleToMeaning[role] || 'PREPARED';
   const meaningDef = signatureMeanings.find(m => m.value === currentMeaning);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (open && reportId) {
       const docForHash = { id: reportId, reportNo: 'RPT...', title: '检测报告', customerName: '', testResults: [] };
       const hash = computeDocumentHash(docForHash);
-      setSm3Hash(hash);
-      setPassword('');
-      setReason('');
-      setConfirmed(false);
+      queueMicrotask(() => {
+        setSm3Hash(hash);
+        setPassword('');
+        setReason('');
+        setConfirmed(false);
+      });
     }
   }, [open, reportId]);
 

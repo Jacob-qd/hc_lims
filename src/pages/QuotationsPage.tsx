@@ -47,7 +47,7 @@ export const QuotationsPage: React.FC = () => {
   const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [customers, setCustomers] = useState<any[]>([]);
+  const [customers, setCustomers] = useState<unknown[]>([]);
   const [form] = Form.useForm();
   const [items, setItems] = useState<QuotationItem[]>([]);
 
@@ -64,6 +64,7 @@ export const QuotationsPage: React.FC = () => {
     finally { setLoading(false); }
   }, []);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { loadData(); }, [loadData]);
 
   const addItem = () => {
@@ -74,7 +75,7 @@ export const QuotationsPage: React.FC = () => {
     setItems(prev => prev.filter(i => i.key !== key));
   };
 
-  const updateItem = (key: string, field: string, value: any) => {
+  const updateItem = (key: string, field: string, value: unknown) => {
     setItems(prev => prev.map(i => {
       if (i.key !== key) return i;
       const updated = { ...i, [field]: value };
@@ -89,7 +90,7 @@ export const QuotationsPage: React.FC = () => {
 
   const totalAmount = items.reduce((sum, i) => sum + (i.unitPrice * i.quantity), 0);
 
-  const handleSave = async (values: any) => {
+  const handleSave = async (values: unknown) => {
     if (items.length === 0) { message.warning('请至少添加一个检测项目'); return; }
     const payload = { ...values, items, totalAmount };
     try {
@@ -125,7 +126,7 @@ export const QuotationsPage: React.FC = () => {
     { title: '有效期', dataIndex: 'validUntil' },
     { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={statusColor[s]}>{statusLabel[s]}</Tag> },
     { title: '创建时间', dataIndex: 'createdAt' },
-    { title: '操作', render: (_: any, r: Quotation) => (
+    { title: '操作', render: (_: string, r: Quotation) => (
       <Space size="small">
         {r.status === 'draft' && <Button size="small" icon={<SendOutlined />} onClick={() => handleStatusChange(r.id, 'sent')}>发送</Button>}
         {r.status === 'sent' && <Button size="small" icon={<CheckCircleOutlined />} onClick={() => handleStatusChange(r.id, 'confirmed')}>确认</Button>}

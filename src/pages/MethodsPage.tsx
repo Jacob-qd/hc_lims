@@ -5,13 +5,13 @@ import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined } from '@ant-de
 const { Title, Text } = Typography;
 const statusColors: Record<string, string> = { active: '#52c41a', revision: '#faad14', archived: '#d9d9d9', draft: '#1677ff' };
 
-const SopView: React.FC<{method: any}> = ({method}) => <div>方法: {method?.code} ({method?.name})</div>;
+const SopView: React.FC<{method: unknown}> = ({method}) => <div>方法: {method?.code} ({method?.name})</div>;
 
 export const MethodsPage: React.FC = () => {
-  const [methods, setMethods] = useState<any[]>([]);
+  const [methods, setMethods] = useState<unknown[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [selected, setSelected] = useState<any>(null);
+  const [selected, setSelected] = useState<unknown>(null);
   const [drawer, setDrawer] = useState(false);
   const [createModal, setCreateModal] = useState(false);
   const [form] = Form.useForm();
@@ -21,10 +21,11 @@ export const MethodsPage: React.FC = () => {
     const res = await window.fetch('/api/v1/methods').then(r => r.json());
     setMethods(res.data.list); setLoading(false);
   };
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchMethods(); }, []);
 
-  const filtered = methods.filter((m: any) => m.name.includes(search) || m.code.includes(search) || m.analyte.includes(search));
-  const stats = { active: methods.filter((m: any) => m.status === 'active').length, revision: methods.filter((m: any) => m.status === 'revision').length, archived: methods.filter((m: any) => m.status === 'archived').length };
+  const filtered = methods.filter((m: Record<string, unknown>) => m.name.includes(search) || m.code.includes(search) || m.analyte.includes(search));
+  const stats = { active: methods.filter((m: Record<string, unknown>) => m.status === 'active').length, revision: methods.filter((m: Record<string, unknown>) => m.status === 'revision').length, archived: methods.filter((m: Record<string, unknown>) => m.status === 'archived').length };
 
   return (
     <div>
@@ -50,7 +51,7 @@ export const MethodsPage: React.FC = () => {
         </Space>
         <Table dataSource={filtered} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} columns={[
           { title: '方法编号', dataIndex: 'code', render: (c: string) => <Text code>{c}</Text> },
-          { title: '方法名称', dataIndex: 'name', render: (n: string, r: any) => <a onClick={() => { setSelected(r); setDrawer(true); }}>{n}</a> },
+          { title: '方法名称', dataIndex: 'name', render: (n: string, r: Record<string, unknown>) => <a onClick={() => { setSelected(r); setDrawer(true); }}>{n}</a> },
           { title: '分析项目', dataIndex: 'analyte' },
           { title: '版本', dataIndex: 'version' },
           { title: '样品基质', dataIndex: 'matrix' },
@@ -59,7 +60,7 @@ export const MethodsPage: React.FC = () => {
           { title: '生效日期', dataIndex: 'effectiveDate' },
           { title: '负责人', dataIndex: 'responsible' },
           { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={statusColors[s]}>{s==='active'?'生效':s==='revision'?'修订中':s==='archived'?'已归档':'草稿'}</Tag> },
-          { title: '操作', render: (_: any, r: any) => <Space><Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawer(true); }}>详情</Button><Button type="link" size="small" icon={<EditOutlined />} onClick={() => message.info('编辑方法: '+r.code)}>编辑</Button><Button type="link" size="small" onClick={() => message.success('已复制方法: '+r.code)}>复制</Button></Space> },
+          { title: '操作', render: (_: string, r: Record<string, unknown>) => <Space><Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawer(true); }}>详情</Button><Button type="link" size="small" icon={<EditOutlined />} onClick={() => message.info('编辑方法: '+r.code)}>编辑</Button><Button type="link" size="small" onClick={() => message.success('已复制方法: '+r.code)}>复制</Button></Space> },
         ]} size="middle" />
       </Card>
 

@@ -18,7 +18,7 @@ export interface AnnotationsPanelProps {
 
 /** 批注功能面板 */
 export const AnnotationsPanel: React.FC<AnnotationsPanelProps> = ({
-  annotations, reportId: _reportId, onAdd, onResolve, onReply,
+  annotations, onAdd, onResolve, onReply,
 }) => {
   const [newContent, setNewContent] = useState('');
   const [replyContents, setReplyContents] = useState<Record<string, string>>({});

@@ -57,11 +57,11 @@ export const MobileSamplingPage: React.FC = () => {
   const navigate = useNavigate();
   const [page, setPage] = useState<Page>('list');
   const [tasks, setTasks] = useState<SamplingTask[]>([]);
-  const [fieldSamples, setFieldSamples] = useState<any[]>([]);
+  const [fieldSamples, setFieldSamples] = useState<unknown[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedTask, setSelectedTask] = useState<SamplingTask | null>(null);
   const [selectedPoint, setSelectedPoint] = useState<SamplingPoint | null>(null);
-  const [offlineQueue, setOfflineQueue] = useState<any[]>([]);
+  const [offlineQueue, setOfflineQueue] = useState<unknown[]>([]);
 
   // === Phase 3: 批量采样 ===
   const [batchMode, setBatchMode] = useState(false);
@@ -101,6 +101,7 @@ export const MobileSamplingPage: React.FC = () => {
     } catch { /* ignore */ }
   }, []);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { loadTasks(); loadFieldSamples(); }, [loadTasks, loadFieldSamples]);
 
   // ===== GPS 定位 (Phase 4) =====
@@ -128,7 +129,7 @@ export const MobileSamplingPage: React.FC = () => {
   const takePhoto = () => {
     const input = document.createElement('input');
     input.type = 'file'; input.accept = 'image/*'; input.capture = 'environment';
-    input.onchange = (e: any) => {
+    input.onchange = (e: unknown) => {
       const file = e.target?.files?.[0];
       if (!file) return;
       const reader = new FileReader();
@@ -503,7 +504,7 @@ export const MobileSamplingPage: React.FC = () => {
         </div>
         <List
           dataSource={fieldSamples}
-          renderItem={(s: any) => (
+          renderItem={(s: Record<string, unknown>) => (
             <Card size="small" style={{ marginBottom: 8, borderRadius: 12 }} key={s.id}>
               <Space direction="vertical" style={{ width: '100%' }}>
                 <Space>

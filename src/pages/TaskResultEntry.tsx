@@ -30,7 +30,7 @@ export const TaskResultEntry: React.FC = () => {
 
   const columns = [
     { title: '检测指标', dataIndex: 'index', key: 'index', width: 180 },
-    { title: '检测结果', dataIndex: 'result', key: 'result', width: 100, render: (v: string, r: any) => (
+    { title: '检测结果', dataIndex: 'result', key: 'result', width: 100, render: (v: string, r: Record<string, unknown>) => (
       <Input size="small" value={v} onChange={e => handleResultChange(r.key, 'result', e.target.value)} style={{ width: 80 }} />
     )},
     { title: '单位', dataIndex: 'unit', key: 'unit', width: 60 },
@@ -39,7 +39,7 @@ export const TaskResultEntry: React.FC = () => {
     { title: '判定', dataIndex: 'judgment', key: 'judgment', width: 80, render: (v: string) => (
       <Tag color={v === '符合' ? 'green' : 'red'}>{v}</Tag>
     )},
-    { title: '备注', dataIndex: 'note', key: 'note', width: 120, render: (v: string, r: any) => (
+    { title: '备注', dataIndex: 'note', key: 'note', width: 120, render: (v: string, r: Record<string, unknown>) => (
       <Input size="small" value={v} onChange={e => handleResultChange(r.key, 'note', e.target.value)} />
     )},
   ];

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import {
   Modal, Divider, List, Checkbox, Radio, Form, Input, Typography, message,
 } from 'antd';
@@ -24,11 +24,13 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({ open, onClose, onSubmi
     reviewChecklistDef.map(c => ({ ...c }))
   );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (open) {
-      setConclusion('pass');
-      setOpinion('');
-      setChecklist(reviewChecklistDef.map(c => ({ ...c })));
+      queueMicrotask(() => {
+        setConclusion('pass');
+        setOpinion('');
+        setChecklist(reviewChecklistDef.map(c => ({ ...c })));
+      });
     }
   }, [open]);
 

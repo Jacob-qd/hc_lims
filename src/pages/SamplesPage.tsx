@@ -28,8 +28,8 @@ export const SamplesPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [detailOpen, setDetailOpen] = useState(false);
   const [selectedSample, setSelectedSample] = useState<Sample | null>(null);
-  const [detailData, setDetailData] = useState<any>(null);
-  const [flowHistory, setFlowHistory] = useState<any[]>([]);
+  const [detailData, setDetailData] = useState<unknown>(null);
+  const [flowHistory, setFlowHistory] = useState<unknown[]>([]);
   const [wizardOpen, setWizardOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [barcodeVisible, setBarcodeVisible] = useState(false);
@@ -39,13 +39,13 @@ export const SamplesPage: React.FC = () => {
   const [batchBarcodeCodes, setBatchBarcodeCodes] = useState<{code:string;label:string}[]>([]);
   const [form] = Form.useForm();
   const [selectedTestItems, setSelectedTestItems] = useState<string[]>([]);
-  const [testItemOptions, setTestItemOptions] = useState<any[]>([]);
+  const [testItemOptions, setTestItemOptions] = useState<unknown[]>([]);
   const [stats] = useState({ todayReceive: 42, pendingReceive: 18, inStock: 1248, urgent: 7 });
   const [dynamicConfigs, setDynamicConfigs] = useState<FieldConfig[]>([]);
   const [dynamicValues, setDynamicValues] = useState<Record<string, unknown>>({});
   const [importOpen, setImportOpen] = useState(false);
   const [importFile, setImportFile] = useState<File | null>(null);
-  const [importPreview, setImportPreview] = useState<any[] | null>(null);
+  const [importPreview, setImportPreview] = useState<unknown[] | null>(null);
 
   const loadDynamicConfigs = async (module: string) => {
     try {
@@ -54,17 +54,6 @@ export const SamplesPage: React.FC = () => {
       setDynamicConfigs(json.data?.list?.filter((f: FieldConfig) => f.active !== false) || []);
     } catch { setDynamicConfigs([]); }
   };
-
-  useEffect(() => {
-    if (wizardOpen) loadDynamicConfigs('sample');
-  }, [wizardOpen]);
-
-  useEffect(() => {
-    loadSamples();
-    fetch('/api/v1/test-items').then(r => r.json()).then(res => {
-      if (res.code === 200) setTestItemOptions(res.data);
-    });
-  }, []);
 
   const loadSamples = () => {
     setLoading(true);
@@ -75,6 +64,19 @@ export const SamplesPage: React.FC = () => {
       setLoading(false);
     });
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (wizardOpen) loadDynamicConfigs('sample');
+  }, [wizardOpen]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadSamples();
+    fetch('/api/v1/test-items').then(r => r.json()).then(res => {
+      if (res.code === 200) setTestItemOptions(res.data);
+    });
+  }, []);
 
   const showDetail = (sample: Sample) => {
     setSelectedSample(sample);
@@ -529,7 +531,7 @@ export const SamplesPage: React.FC = () => {
               { title: '类型', dataIndex: 'type', width: 80 },
               { title: '采样地点', dataIndex: 'location', width: 100 },
               { title: '采样日期', dataIndex: 'samplingDate', width: 100 },
-              { title: '校验结果', dataIndex: 'status', width: 150, render: (s: string, r: any) => <Text style={{ color: r._error ? '#ff4d4f' : '#52c41a' }}>{s}</Text> },
+              { title: '校验结果', dataIndex: 'status', width: 150, render: (s: string, r: Record<string, unknown>) => <Text style={{ color: r._error ? '#ff4d4f' : '#52c41a' }}>{s}</Text> },
             ]} />
             <div style={{ marginTop: 16, textAlign: 'right' }}>
               <Button onClick={() => { setImportPreview(null); setImportFile(null); }}>返回修改</Button>

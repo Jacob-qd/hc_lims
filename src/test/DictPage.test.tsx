@@ -15,7 +15,7 @@ const mockItems = [
   { id: 'di3', typeId: 'dt2', typeCode: 'status', code: 'pending', name: '待处理', sort: 1, status: 'active' },
 ];
 
-function mockFetchResponse(data: any) {
+function mockFetchResponse(data: unknown) {
   return { ok: true, status: 200, json: async () => data } as Response;
 }
 
@@ -23,7 +23,7 @@ describe('DictPage', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockImplementation(async (url: any) => {
+    fetchSpy = vi.spyOn(globalThis as unknown as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: unknown) => {
       if (url.includes('/dict-types')) {
         return mockFetchResponse({ code: 200, data: { list: mockTypes, total: mockTypes.length } });
       }

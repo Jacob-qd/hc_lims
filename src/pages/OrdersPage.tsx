@@ -35,7 +35,7 @@ const payLabel: Record<string, string> = { unpaid: '未付款', partial: '部分
 export const OrdersPage: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
-  const [customers, setCustomers] = useState<any[]>([]);
+  const [customers, setCustomers] = useState<unknown[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [detailVisible, setDetailVisible] = useState(false);
   const [selected, setSelected] = useState<Order | null>(null);
@@ -54,6 +54,7 @@ export const OrdersPage: React.FC = () => {
     finally { setLoading(false); }
   }, []);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { loadData(); }, [loadData]);
 
   const stats = {
@@ -63,7 +64,7 @@ export const OrdersPage: React.FC = () => {
     completed: orders.filter(o => o.status === 'completed').length,
   };
 
-  const handleCreate = async (values: any) => {
+  const handleCreate = async (values: unknown) => {
     try {
       const res = await fetch(api('/orders'), {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -88,7 +89,7 @@ export const OrdersPage: React.FC = () => {
     { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={statusColor[s]}>{statusLabel[s]}</Tag> },
     { title: '付款', dataIndex: 'paymentStatus', render: (s: string) => <Tag color={payColor[s]}>{payLabel[s]}</Tag> },
     { title: '创建时间', dataIndex: 'createdAt' },
-    { title: '操作', render: (_: any, r: Order) => (
+    { title: '操作', render: (_: string, r: Order) => (
       <Button type="link" size="small" icon={<EyeOutlined />}
         onClick={() => { setSelected(r); setDetailVisible(true); }}>详情</Button>
     )},

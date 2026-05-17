@@ -42,7 +42,7 @@ describe('COCPage', () => {
   ];
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockImplementation(async (input: unknown) => {
+    fetchSpy = vi.spyOn(globalThis as unknown as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (input: unknown) => {
       const url = String(input);
       if ((url.endsWith('/coc/chains') || url.includes('/coc/chains?')) && !url.includes('/by-sample')) {
         return {

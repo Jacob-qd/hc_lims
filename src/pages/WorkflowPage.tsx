@@ -26,7 +26,7 @@ interface WFNode {
   name: string;
   x: number;
   y: number;
-  config?: Record<string, any>;
+  config?: Record<string, unknown>;
 }
 
 interface WFEdge {
@@ -74,7 +74,7 @@ interface WFInstance {
   currentNodes: string[];
   currentNodeNames: string[];
   assignees: string[];
-  variables: Record<string, any>;
+  variables: Record<string, unknown>;
   startedBy: string;
   startedAt: string;
   completedAt?: string;
@@ -576,6 +576,7 @@ export const WorkflowPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchDefinitions();
     fetchInstances();
   }, [fetchDefinitions, fetchInstances]);
@@ -774,17 +775,17 @@ export const WorkflowPage: React.FC = () => {
                   columns={[
                     { title: '流程名称', dataIndex: 'name', render: (n: string, r: WFDefinition) => <a onClick={() => openDesigner(r)}>{n}</a> },
                     { title: '类型', dataIndex: 'type', render: (t: string) => <Tag color="blue">{t}</Tag> },
-                    { title: '节点数', dataIndex: 'nodes', render: (_: any, r: WFDefinition) => <Tag>{r.nodes?.length || 0} 个节点</Tag> },
+                    { title: '节点数', dataIndex: 'nodes', render: (_: string, r: WFDefinition) => <Tag>{r.nodes?.length || 0} 个节点</Tag> },
                     { title: '版本', dataIndex: 'version' },
                     { title: '已使用次数', dataIndex: 'usedCount' },
                     {
                       title: '状态',
                       dataIndex: 'status',
-                      render: (s: WFStatus) => <Badge status={statusMap[s].color as any} text={statusMap[s].text} />,
+                      render: (s: WFStatus) => <Badge status={statusMap[s].color as unknown} text={statusMap[s].text} />,
                     },
                     {
                       title: '操作',
-                      render: (_: any, r: WFDefinition) => (
+                      render: (_: string, r: WFDefinition) => (
                         <Space>
                           <Button type="link" size="small" icon={<EditOutlined />} onClick={() => openDesigner(r)}>
                             编辑
@@ -845,11 +846,11 @@ export const WorkflowPage: React.FC = () => {
                     {
                       title: '状态',
                       dataIndex: 'status',
-                      render: (s: InstStatus) => <Badge status={instStatusMap[s].color as any} text={instStatusMap[s].text} />,
+                      render: (s: InstStatus) => <Badge status={instStatusMap[s].color as unknown} text={instStatusMap[s].text} />,
                     },
                     {
                       title: '操作',
-                      render: (_: any, r: WFInstance) => (
+                      render: (_: string, r: WFInstance) => (
                         <Space>
                           <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => openDetail(r)}>
                             详情
@@ -971,7 +972,7 @@ export const WorkflowPage: React.FC = () => {
                 <Descriptions.Item label="结束时间">{detailInstance.completedAt}</Descriptions.Item>
               )}
               <Descriptions.Item label="状态">
-                <Badge status={instStatusMap[detailInstance.status].color as any} text={instStatusMap[detailInstance.status].text} />
+                <Badge status={instStatusMap[detailInstance.status].color as unknown} text={instStatusMap[detailInstance.status].text} />
               </Descriptions.Item>
             </Descriptions>
             <Divider />

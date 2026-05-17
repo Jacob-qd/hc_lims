@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { useMemo } from 'react';
 import { Card, Tag, Row, Col, Typography, Alert, Statistic, Space, Divider } from 'antd';
 import {

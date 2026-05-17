@@ -58,6 +58,7 @@ export const CertificatePage: React.FC = () => {
     setLoading(false);
   };
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { loadCertificates(); }, []);
 
   const handleRevoke = (cert: Sm2Certificate) => {
@@ -79,7 +80,7 @@ export const CertificatePage: React.FC = () => {
     });
   };
 
-  const handleImport = async (values: any) => {
+  const handleImport = async (values: unknown) => {
     const payload = {
       userId: values.userId || '3',
       userName: values.userName,
@@ -127,11 +128,11 @@ export const CertificatePage: React.FC = () => {
     },
     {
       title: '算法', key: 'algorithm', width: 100,
-      render: (_: any, r: Sm2Certificate) => <Tag color="geekblue">{r.algorithm} {r.keyLength}bit</Tag>,
+      render: (_: string, r: Sm2Certificate) => <Tag color="geekblue">{r.algorithm} {r.keyLength}bit</Tag>,
     },
     {
       title: '有效期', key: 'validity', width: 220,
-      render: (_: any, r: Sm2Certificate) => (
+      render: (_: string, r: Sm2Certificate) => (
         <Space size="small" style={{ fontSize: 12 }}>
           <ClockCircleOutlined />
           {r.notBefore} ~ {r.notAfter}
@@ -144,7 +145,7 @@ export const CertificatePage: React.FC = () => {
     },
     {
       title: '操作', key: 'action', width: 200,
-      render: (_: any, record: Sm2Certificate) => (
+      render: (_: string, record: Sm2Certificate) => (
         <Space size="small">
           <Button type="link" size="small" onClick={() => { setSelectedCert(record); setDetailVisible(true); }}>
             详情

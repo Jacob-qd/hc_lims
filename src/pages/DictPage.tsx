@@ -55,7 +55,7 @@ export const DictPage: React.FC = () => {
         }
       }
       if (itemRes.code === 200) setDictItems(itemRes.data.list);
-    } catch (e) {
+    } catch {
       message.error('加载数据失败');
     } finally {
       setLoading(false);
@@ -63,6 +63,7 @@ export const DictPage: React.FC = () => {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
   }, []);
 
@@ -90,7 +91,7 @@ export const DictPage: React.FC = () => {
       } else {
         message.error(data.message || '操作失败');
       }
-    } catch (e) {
+    } catch {
       // validation error
     }
   };
@@ -122,7 +123,7 @@ export const DictPage: React.FC = () => {
       } else {
         message.error(data.message || '操作失败');
       }
-    } catch (e) {
+    } catch {
       // validation error
     }
   };
@@ -145,7 +146,7 @@ export const DictPage: React.FC = () => {
     { title: '排序', dataIndex: 'sort', key: 'sort' },
     { title: '状态', dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={s === 'active' ? 'green' : 'default'}>{s === 'active' ? '启用' : '禁用'}</Tag> },
     {
-      title: '操作', key: 'action', render: (_: any, record: DictItem) => (
+      title: '操作', key: 'action', render: (_: string, record: DictItem) => (
         <Space size="small">
           <Button type="link" size="small" icon={<EditOutlined />} onClick={() => openItemModal('edit', record)}>编辑</Button>
           <Popconfirm title="确认删除?" onConfirm={() => handleItemDelete(record.id)}>

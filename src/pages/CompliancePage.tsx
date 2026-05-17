@@ -71,7 +71,7 @@ export const CompliancePage: React.FC = () => {
             <Steps direction="vertical" size="small" current={2} items={roadmap.map(r => ({
               title: r.date,
               description: r.title,
-              status: r.status as any,
+              status: r.status as unknown,
             }))} />
           </Card>
           <Card title="验证文档清单">

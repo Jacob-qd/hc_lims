@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { MethodsPage } from '../pages/MethodsPage';
 
-function mockFetchResponse(data: any) {
+function mockFetchResponse(data: unknown) {
   return { ok: true, status: 200, json: async () => data } as Response;
 }
 
@@ -12,7 +12,7 @@ describe('MethodsPage', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockImplementation(async (url: any) => {
+    fetchSpy = vi.spyOn(globalThis as unknown as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: unknown) => {
       if (url.includes('/api/v1/methods')) {
         return mockFetchResponse({
           code: 200,

@@ -2,17 +2,15 @@ import React, { useEffect, useState } from 'react';
 import {
   Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Tabs,
   Select, message, Modal, Form, Input, Steps, Checkbox, Radio,
-  Popconfirm, Empty, Divider, Alert
+  Tooltip, Popconfirm, Empty, Divider, Alert
 } from 'antd';
 import {
   PlusOutlined, BarChartOutlined, FileTextOutlined, ClockCircleOutlined,
   SettingOutlined, PlayCircleOutlined, DownloadOutlined, EditOutlined,
   DeleteOutlined, EyeOutlined, AreaChartOutlined,
   PieChartOutlined, LineChartOutlined, TableOutlined, DashboardOutlined,
-  FileExcelOutlined, FilePdfOutlined, FileTextTwoTone,
-  MailOutlined, CopyOutlined
+  FileExcelOutlined, FilePdfOutlined, FileTextTwoTone
 } from '@ant-design/icons';
-import { Line, Bar, Pie, Area } from '@ant-design/plots';
 
 const { Title, Text } = Typography;
 const { Step } = Steps;
@@ -24,10 +22,10 @@ interface ReportTemplate {
   dataSource: string;
   outputFormat: string[];
   status: 'active' | 'draft';
-  fields: any[];
-  filters: any[];
-  chartConfig?: any;
-  outputSettings: any;
+  fields: unknown[];
+  filters: unknown[];
+  chartConfig?: unknown;
+  outputSettings: unknown;
   cronExpression?: string;
   nextRunTime?: string;
   createdAt: string;
@@ -39,8 +37,8 @@ interface ChartComponent {
   name: string;
   type: string;
   dataSource: string;
-  config: any;
-  previewData: any[];
+  config: unknown;
+  previewData: unknown[];
   createdAt: string;
 }
 
@@ -54,8 +52,6 @@ interface ReportSchedule {
   lastRunStatus?: 'success' | 'failed' | 'running';
   outputFile?: string;
   enabled: boolean;
-  emailRecipients?: string[];
-  distributeOnComplete?: boolean;
 }
 
 interface ReportExecution {
@@ -138,7 +134,6 @@ export const ReportEnginePage: React.FC = () => {
   const [charts, setCharts] = useState<ChartComponent[]>([]);
   const [schedules, setSchedules] = useState<ReportSchedule[]>([]);
   const [executions, setExecutions] = useState<ReportExecution[]>([]);
-  const [generatedReports, setGeneratedReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -151,32 +146,27 @@ export const ReportEnginePage: React.FC = () => {
   const [chartForm] = Form.useForm();
   const [outputForm] = Form.useForm();
 
-  const [selectedFields, setSelectedFields] = useState<any[]>([]);
-  const [filters, setFilters] = useState<any[]>([]);
+  const [selectedFields, setSelectedFields] = useState<unknown[]>([]);
+  const [filters, setFilters] = useState<unknown[]>([]);
 
   const [previewChart, setPreviewChart] = useState<ChartComponent | null>(null);
   const [logModalVisible, setLogModalVisible] = useState(false);
   const [logContent, setLogContent] = useState('');
-  const [distributeModalVisible, setDistributeModalVisible] = useState(false);
-  const [distributeForm] = Form.useForm();
-  const [distributingReport, setDistributingReport] = useState<any>(null);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [tRes, cRes, sRes, eRes, gRes] = await Promise.all([
+      const [tRes, cRes, sRes, eRes] = await Promise.all([
         fetch('/api/v1/reports/templates').then(r => r.json()),
         fetch('/api/v1/reports/charts').then(r => r.json()),
         fetch('/api/v1/reports/schedules').then(r => r.json()),
         fetch('/api/v1/reports/executions').then(r => r.json()),
-        fetch('/api/v1/reports/generated').then(r => r.json()),
       ]);
       if (tRes.code === 200) setTemplates(tRes.data.list);
       if (cRes.code === 200) setCharts(cRes.data.list);
       if (sRes.code === 200) setSchedules(sRes.data.list);
       if (eRes.code === 200) setExecutions(eRes.data.list);
-      if (gRes.code === 200) setGeneratedReports(gRes.data.list);
-    } catch (e) {
+    } catch {
       message.error('加载数据失败');
     } finally {
       setLoading(false);
@@ -184,6 +174,7 @@ export const ReportEnginePage: React.FC = () => {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
   }, []);
 
@@ -241,7 +232,7 @@ export const ReportEnginePage: React.FC = () => {
       } else {
         message.error(data.message || '操作失败');
       }
-    } catch (e) {
+    } catch {
       message.error('请完善表单信息');
     }
   };
@@ -265,58 +256,6 @@ export const ReportEnginePage: React.FC = () => {
     if (data.code === 200) {
       message.success('报表生成成功');
       fetchData();
-    }
-  };
-
-  const handleDownload = async (record: any) => {
-    try {
-      const res = await fetch(`/api/v1/reports/generated/${record.id}/download`);
-      if (!res.ok) {
-        message.error('下载失败');
-        return;
-      }
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = record.fileName || record.outputFile || 'report.pdf';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
-      message.success('下载成功');
-    } catch (e) {
-      message.error('下载失败');
-    }
-  };
-
-  const openDistributeModal = (record: any) => {
-    setDistributingReport(record);
-    distributeForm.resetFields();
-    setDistributeModalVisible(true);
-  };
-
-  const handleDistribute = async () => {
-    try {
-      const values = await distributeForm.validateFields();
-      const res = await fetch('/api/v1/reports/distribute', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          reportId: distributingReport?.id,
-          recipients: values.recipients?.split(',').map((r: string) => r.trim()),
-          subject: values.subject,
-        }),
-      });
-      const data = await res.json();
-      if (data.code === 200) {
-        message.success('分发成功');
-        setDistributeModalVisible(false);
-      } else {
-        message.error(data.message || '分发失败');
-      }
-    } catch (e) {
-      message.error('请完善表单信息');
     }
   };
 
@@ -347,7 +286,7 @@ export const ReportEnginePage: React.FC = () => {
     if (!values.fieldKey) return;
     const ds = form.getFieldValue('dataSource');
     const opts = fieldOptions[ds] || [];
-    const opt = opts.find((o: any) => o.value === values.fieldKey);
+    const opt = opts.find((o: Record<string, unknown>) => o.value === values.fieldKey);
     setSelectedFields(prev => [...prev, {
       fieldKey: values.fieldKey,
       label: opt?.label || values.fieldKey,
@@ -377,7 +316,7 @@ export const ReportEnginePage: React.FC = () => {
     if (chart.type === 'kpi') {
       return (
         <Row gutter={[8, 8]}>
-          {chart.previewData.map((d: any, i: number) => (
+          {chart.previewData.map((d: Record<string, unknown>, i: number) => (
             <Col span={12} key={i}>
               <Card size="small">
                 <Statistic title={d.label} value={d.value} suffix={d.unit} />
@@ -389,61 +328,40 @@ export const ReportEnginePage: React.FC = () => {
       );
     }
     if (chart.type === 'pie') {
-      const data = chart.previewData.map((d: any) => ({
-        type: d.testItem || d.labName || d[Object.keys(d)[0]],
-        value: d.count || 0,
-      }));
+      const total = chart.previewData.reduce((s: number, d: Record<string, unknown>) => s + (d.count || 0), 0);
       return (
-        <Pie
-          data={data}
-          angleField="value"
-          colorField="type"
-          radius={0.8}
-          label={{ type: 'outer', content: '{name} {percentage}' }}
-          interactions={[{ type: 'element-active' }]}
-          height={160}
-          legend={false}
-        />
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          {chart.previewData.map((d: Record<string, unknown>, i: number) => {
+            const pct = total ? Math.round((d.count / total) * 100) : 0;
+            const colors = ['#1890ff', '#52c41a', '#faad14', '#f5222d', '#722ed1', '#13c2c2'];
+            return (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 120 }}>
+                <div style={{ width: 12, height: 12, borderRadius: '50%', background: colors[i % colors.length] }} />
+                <Text style={{ fontSize: 12 }}>{d[Object.keys(d)[0]]}: {pct}%</Text>
+              </div>
+            );
+          })}
+        </div>
       );
     }
-    if (chart.type === 'line') {
-      const xKey = Object.keys(chart.previewData[0]).find(k => k.includes('month') || k.includes('date')) || 'x';
-      const yKey = Object.keys(chart.previewData[0]).find(k => k !== xKey) || 'count';
-      return (
-        <Line
-          data={chart.previewData}
-          xField={xKey}
-          yField={yKey}
-          point={{ size: 3, shape: 'circle' }}
-          smooth
-          height={160}
-          legend={false}
-        />
-      );
-    }
-    if (chart.type === 'area') {
-      const xKey = Object.keys(chart.previewData[0]).find(k => k.includes('month') || k.includes('date')) || 'x';
-      const yKey = Object.keys(chart.previewData[0]).find(k => k !== xKey) || 'count';
-      return (
-        <Area
-          data={chart.previewData}
-          xField={xKey}
-          yField={yKey}
-          height={160}
-          legend={false}
-        />
-      );
-    }
-    const xKey = Object.keys(chart.previewData[0]).find(k => k.includes('name') || k.includes('dept') || k.includes('lab')) || 'x';
-    const yKey = Object.keys(chart.previewData[0]).find(k => k !== xKey) || 'count';
+    const maxVal = Math.max(...chart.previewData.map((d: Record<string, unknown>) => d[Object.keys(d).find(k => k !== 'month' && k !== 'date') || 'count'] || 0));
     return (
-      <Bar
-        data={chart.previewData}
-        xField={xKey}
-        yField={yKey}
-        height={160}
-        legend={false}
-      />
+      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 100, paddingTop: 8 }}>
+        {chart.previewData.map((d: Record<string, unknown>, i: number) => {
+          const valKey = Object.keys(d).find(k => k !== 'month' && k !== 'date') || 'count';
+          const val = d[valKey] || 0;
+          const height = maxVal ? (val / maxVal) * 80 : 0;
+          const colors = ['#1890ff', '#52c41a', '#faad14'];
+          return (
+            <Tooltip key={i} title={`${d.month || d.date || d.labName || d.testItem || ''}: ${val}`}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                <div style={{ width: '80%', height, background: colors[i % colors.length], borderRadius: 2, minHeight: 4 }} />
+                <Text style={{ fontSize: 10, marginTop: 2 }}>{(d.month || d.date || d.labName || d.testItem || '').toString().slice(-2)}</Text>
+              </div>
+            </Tooltip>
+          );
+        })}
+      </div>
     );
   };
 
@@ -455,11 +373,11 @@ export const ReportEnginePage: React.FC = () => {
     { title: '状态', dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={s === 'active' ? 'green' : 'default'}>{s === 'active' ? '已启用' : '草稿'}</Tag> },
     { title: '下次执行', dataIndex: 'nextRunTime', key: 'nextRunTime', render: (v: string) => v || '-' },
     {
-      title: '操作', key: 'action', render: (_: any, record: ReportTemplate) => (
+      title: '操作', key: 'action', render: (_: string, record: ReportTemplate) => (
         <Space size="small">
           <Button type="link" size="small" icon={<PlayCircleOutlined />} onClick={() => handleRun(record)}>运行</Button>
           <Button type="link" size="small" icon={<EditOutlined />} onClick={() => openEditModal(record)}>编辑</Button>
-          <Button type="link" size="small" icon={<MailOutlined />} onClick={() => openDistributeModal(record)}>分发</Button>
+          <Button type="link" size="small" icon={<DownloadOutlined />}>下载</Button>
           <Popconfirm title="确认删除?" onConfirm={() => handleDelete(record.id)}>
             <Button type="link" size="small" danger icon={<DeleteOutlined />}>删除</Button>
           </Popconfirm>
@@ -477,11 +395,9 @@ export const ReportEnginePage: React.FC = () => {
     { title: '输出文件', dataIndex: 'outputFile', key: 'outputFile', render: (v: string) => v || '-' },
     { title: '大小', dataIndex: 'outputSize', key: 'outputSize', render: (v: string) => v || '-' },
     {
-      title: '操作', key: 'action', render: (_: any, record: ReportExecution) => (
+      title: '操作', key: 'action', render: (_: string, record: ReportExecution) => (
         <Space size="small">
-          {record.outputFile && (
-            <Button type="link" size="small" icon={<DownloadOutlined />} onClick={() => handleDownload(record)}>下载</Button>
-          )}
+          {record.outputFile && <Button type="link" size="small" icon={<DownloadOutlined />}>下载</Button>}
           {record.status === 'failed' && (
             <Button type="link" size="small" onClick={() => { setLogContent(record.errorMessage || '未知错误'); setLogModalVisible(true); }}>查看日志</Button>
           )}
@@ -496,14 +412,6 @@ export const ReportEnginePage: React.FC = () => {
     { title: '下次执行', dataIndex: 'nextRunTime', key: 'nextRunTime' },
     { title: '上次执行', dataIndex: 'lastRunTime', key: 'lastRunTime', render: (v: string) => v || '-' },
     { title: '上次状态', dataIndex: 'lastRunStatus', key: 'lastRunStatus', render: (s: string) => s ? <Tag color={s === 'success' ? 'green' : 'red'}>{s === 'success' ? '成功' : '失败'}</Tag> : '-' },
-    { title: '自动分发', dataIndex: 'distributeOnComplete', key: 'distributeOnComplete', render: (v: boolean, record: ReportSchedule) => (
-      <Space direction="vertical" size={0}>
-        <Tag color={v ? 'green' : 'default'}>{v ? '已启用' : '未启用'}</Tag>
-        {record.emailRecipients && record.emailRecipients.length > 0 && (
-          <Text type="secondary" style={{ fontSize: 12 }}>{record.emailRecipients.join(', ')}</Text>
-        )}
-      </Space>
-    )},
     {
       title: '状态', dataIndex: 'enabled', key: 'enabled', render: (v: boolean, record: ReportSchedule) => (
         <Button type="link" size="small" onClick={() => handleToggleSchedule(record)}>
@@ -512,10 +420,9 @@ export const ReportEnginePage: React.FC = () => {
       ),
     },
     {
-      title: '操作', key: 'action', render: (_: any, record: ReportSchedule) => (
+      title: '操作', key: 'action', render: (_: string, record: ReportSchedule) => (
         <Space size="small">
-          <Button type="link" size="small" icon={<PlayCircleOutlined />} onClick={() => handleRun(templates.find(t => t.id === record.reportId) || { id: record.reportId, name: record.reportName } as any)}>立即执行</Button>
-          <Button type="link" size="small" icon={<MailOutlined />} onClick={() => openDistributeModal(record)}>分发</Button>
+          <Button type="link" size="small" icon={<PlayCircleOutlined />} onClick={() => handleRun(templates.find(t => t.id === record.reportId) || { id: record.reportId, name: record.reportName } as unknown)}>立即执行</Button>
           <Popconfirm title="确认删除?" onConfirm={() => handleDeleteSchedule(record.id)}>
             <Button type="link" size="small" danger icon={<DeleteOutlined />}>删除</Button>
           </Popconfirm>
@@ -636,7 +543,7 @@ export const ReportEnginePage: React.FC = () => {
               columns={[
                 { title: '字段', dataIndex: 'field' },
                 { title: '操作符', dataIndex: 'operator' },
-                { title: '值', dataIndex: 'value', render: (v: any) => String(v) },
+                { title: '值', dataIndex: 'value', render: (v: unknown) => String(v) },
                 { title: '逻辑', dataIndex: 'logic' },
                 { title: '操作', render: (_, __, index) => <Button type="link" danger size="small" onClick={() => removeFilter(index)}>删除</Button> },
               ]}
@@ -713,45 +620,19 @@ export const ReportEnginePage: React.FC = () => {
         </Col>
       </Row>
       <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-        <Col span={4}><Card size="small"><Statistic title="报表模板" value={templates.length} /></Card></Col>
-        <Col span={5}><Card size="small"><Statistic title="定时报表" value={templates.filter(r => r.type === 'scheduled').length} prefix={<ClockCircleOutlined />} /></Card></Col>
-        <Col span={5}><Card size="small"><Statistic title="图表组件" value={charts.length} prefix={<BarChartOutlined />} /></Card></Col>
-        <Col span={5}><Card size="small"><Statistic title="已生成报表" value={generatedReports.length} prefix={<FileTextOutlined />} /></Card></Col>
-        <Col span={5}><Card size="small"><Statistic title="数据源" value={6} prefix={<DashboardOutlined />} /></Card></Col>
+        <Col span={6}><Card size="small"><Statistic title="报表模板" value={templates.length} /></Card></Col>
+        <Col span={6}><Card size="small"><Statistic title="定时报表" value={templates.filter(r => r.type === 'scheduled').length} prefix={<ClockCircleOutlined />} /></Card></Col>
+        <Col span={6}><Card size="small"><Statistic title="图表组件" value={charts.length} prefix={<BarChartOutlined />} /></Card></Col>
+        <Col span={6}><Card size="small"><Statistic title="数据源" value={6} prefix={<FileTextOutlined />} /></Card></Col>
       </Row>
 
       <Tabs activeKey={activeTab} onChange={setActiveTab} items={[
         {
           key: 'templates', label: '报表模板',
           children: (
-            <>
-              <Card title="预置报表模板" style={{ marginBottom: 16 }}>
-                <Row gutter={[16, 16]}>
-                  {templates.filter(t => t.status === 'active').slice(0, 8).map(tmpl => (
-                    <Col xs={24} sm={12} lg={6} key={tmpl.id}>
-                      <Card
-                        size="small"
-                        title={tmpl.name}
-                        extra={<Tag color={tmpl.type === 'scheduled' ? 'blue' : 'orange'}>{tmpl.type === 'scheduled' ? '定时' : '手动'}</Tag>}
-                        actions={[
-                          <Button type="link" size="small" icon={<PlayCircleOutlined />} onClick={() => handleRun(tmpl)}>运行</Button>,
-                          <Button type="link" size="small" icon={<CopyOutlined />} onClick={() => { openEditModal(tmpl); }}>复制</Button>,
-                        ]}
-                      >
-                        <Space direction="vertical" size={0}>
-                          <Text type="secondary" style={{ fontSize: 12 }}>数据源: {dataSourceOptions.find(o => o.value === tmpl.dataSource)?.label}</Text>
-                          <Text type="secondary" style={{ fontSize: 12 }}>格式: {tmpl.outputFormat?.join(', ')}</Text>
-                          {tmpl.cronExpression && <Text type="secondary" style={{ fontSize: 12 }}>Cron: {tmpl.cronExpression}</Text>}
-                        </Space>
-                      </Card>
-                    </Col>
-                  ))}
-                </Row>
-              </Card>
-              <Card title="我的报表">
-                <Table dataSource={templates} rowKey="id" columns={templateColumns} loading={loading} size="middle" />
-              </Card>
-            </>
+            <Card>
+              <Table dataSource={templates} rowKey="id" columns={templateColumns} loading={loading} size="middle" />
+            </Card>
           ),
         },
         {
@@ -797,35 +678,6 @@ export const ReportEnginePage: React.FC = () => {
             </Card>
           ),
         },
-        {
-          key: 'generated', label: '已生成报表',
-          children: (
-            <Card>
-              <Table
-                dataSource={generatedReports}
-                rowKey="id"
-                loading={loading}
-                size="middle"
-                columns={[
-                  { title: '报表名称', dataIndex: 'reportName', key: 'reportName' },
-                  { title: '格式', dataIndex: 'format', key: 'format', render: (v: string) => <Tag>{v}</Tag> },
-                  { title: '文件名', dataIndex: 'fileName', key: 'fileName' },
-                  { title: '大小', dataIndex: 'fileSize', key: 'fileSize' },
-                  { title: '生成时间', dataIndex: 'generatedAt', key: 'generatedAt' },
-                  { title: '生成者', dataIndex: 'generatedBy', key: 'generatedBy' },
-                  {
-                    title: '操作', key: 'action', render: (_: any, record: any) => (
-                      <Space size="small">
-                        <Button type="link" size="small" icon={<DownloadOutlined />} onClick={() => handleDownload(record)}>下载</Button>
-                        <Button type="link" size="small" icon={<MailOutlined />} onClick={() => openDistributeModal(record)}>分发</Button>
-                      </Space>
-                    ),
-                  },
-                ]}
-              />
-            </Card>
-          ),
-        },
       ]} />
 
       <Modal
@@ -860,24 +712,6 @@ export const ReportEnginePage: React.FC = () => {
 
       <Modal title="执行日志" open={logModalVisible} onCancel={() => setLogModalVisible(false)} footer={null}>
         <pre style={{ background: '#f5f5f5', padding: 16, borderRadius: 4, maxHeight: 300, overflow: 'auto' }}>{logContent}</pre>
-      </Modal>
-
-      <Modal
-        title="报表分发"
-        open={distributeModalVisible}
-        onCancel={() => setDistributeModalVisible(false)}
-        onOk={handleDistribute}
-        width={500}
-      >
-        <Form form={distributeForm} layout="vertical">
-          <Form.Item name="recipients" label="收件人邮箱" rules={[{ required: true }]}>
-            <Input.TextArea rows={3} placeholder="多个邮箱用逗号分隔，例如: manager@hc-lims.com, director@hc-lims.com" />
-          </Form.Item>
-          <Form.Item name="subject" label="邮件主题">
-            <Input placeholder={`报表: ${distributingReport?.name || distributingReport?.reportName || ''}`} />
-          </Form.Item>
-          <Alert message="报表将以附件形式发送到指定邮箱" type="info" showIcon style={{ marginTop: 8 }} />
-        </Form>
       </Modal>
     </div>
   );

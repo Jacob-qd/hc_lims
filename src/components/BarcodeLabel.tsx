@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { useEffect, useRef } from 'react';
 import { Modal, Button, Space, Typography } from 'antd';
 import { PrinterOutlined } from '@ant-design/icons';

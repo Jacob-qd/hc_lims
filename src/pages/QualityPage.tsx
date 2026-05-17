@@ -24,18 +24,18 @@ interface Deviation {
   desc: string; foundDate: string; rootCause: string; capaStatus: string;
 }
 
-const LJChart: React.FC<{data: any}> = ({data}) => {
+const LJChart: React.FC<{data: unknown}> = ({data}) => {
   const pts = data?.points || [];
   if (!pts.length) return <Text type="secondary">暂无数据</Text>;
   const mean = data?.mean || 0, sd = data?.sd || 1;
   const w = 600, h = 220, pl = 50, pr = 20, pt = 20, pb = 40;
   const pw = w - pl - pr, ph = h - pt - pb;
-  const vals = pts.map((p:any) => p.value);
+  const vals = pts.map((p: Record<string, unknown>) => p.value);
   const yMin = Math.min(...vals, mean - 3.5*sd), yMax = Math.max(...vals, mean + 3.5*sd);
   const sx = (i:number) => pl + (i / Math.max(pts.length-1,1)) * pw;
   const sy = (v:number) => pt + ph - ((v - yMin) / (yMax - yMin)) * ph;
   const hline = (v:number) => `M${pl},${sy(v)}L${w-pr},${sy(v)}`;
-  const pd = pts.map((p:any,i:number) => `${i===0?'M':'L'}${sx(i)},${sy(p.value)}`).join('');
+  const pd = pts.map((p: Record<string, unknown>,i:number) => `${i===0?'M':'L'}${sx(i)},${sy(p.value)}`).join('');
   return <svg viewBox={"0 0 "+w+" "+h} style={{width:'100%',height:280}}>
     <rect x={pl-5} y={pt-5} width={pw+10} height={ph+10} fill="#fafafa" rx={4} />
     <path d={hline(mean+3*sd)} stroke="#ff4d4f" strokeWidth={1} strokeDasharray="4,4" fill="none" />
@@ -44,12 +44,12 @@ const LJChart: React.FC<{data: any}> = ({data}) => {
     <path d={hline(mean-2*sd)} stroke="#faad14" strokeWidth={1} strokeDasharray="4,4" fill="none" />
     <path d={hline(mean-3*sd)} stroke="#ff4d4f" strokeWidth={1} strokeDasharray="4,4" fill="none" />
     <path d={pd} stroke="#333" strokeWidth={2} fill="none" />
-    {pts.map((p:any,i:number) => {
+    {pts.map((p: Record<string, unknown>,i:number) => {
       const d = Math.abs(p.value - mean);
       const c = d > 3*sd ? '#ff4d4f' : d > 2*sd ? '#faad14' : '#1677ff';
       return <circle key={i} cx={sx(i)} cy={sy(p.value)} r={4} fill={c} stroke="#fff" strokeWidth={1.5} />;
     })}
-    {pts.filter((_:any,i:number) => i%3===0||i===pts.length-1).map((p:any) => {
+    {pts.filter((_: Record<string, unknown>,i:number) => i%3===0||i===pts.length-1).map((p: Record<string, unknown>) => {
       const idx = pts.indexOf(p);
       return <text key={idx} x={sx(idx)} y={h-8} textAnchor="middle" fontSize={10} fill="#999">{p.date}</text>;
     })}
@@ -65,7 +65,7 @@ export const QualityPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [qcResults, setQcResults] = useState<QCResult[]>([]);
   const [deviations, setDeviations] = useState<Deviation[]>([]);
-  const [chartData, setChartData] = useState<any>(null);
+  const [chartData, setChartData] = useState<unknown>(null);
   const [selectedDev, setSelectedDev] = useState<Deviation | null>(null);
   const [devDrawer, setDevDrawer] = useState(false);
 
@@ -113,7 +113,7 @@ export const QualityPage: React.FC = () => {
     { title: '发现日期', dataIndex: 'foundDate', key: 'foundDate' },
     { title: '状态', dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={devStatusColor[s]}>{s === 'open' ? '开放' : s === 'investigating' ? '调查中' : '已关闭'}</Tag> },
     { title: 'CAPA状态', dataIndex: 'capaStatus', key: 'capaStatus', render: (s: string) => <Tag>{s === 'pending' ? '待执行' : s === 'verified' ? '已验证' : '待验证'}</Tag> },
-    { title: '操作', key: 'action', render: (_: any, r: Deviation) => <Button type="link" size="small" onClick={() => { setSelectedDev(r); setDevDrawer(true); }}>查看</Button> },
+    { title: '操作', key: 'action', render: (_: string, r: Deviation) => <Button type="link" size="small" onClick={() => { setSelectedDev(r); setDevDrawer(true); }}>查看</Button> },
   ];
 
   return (
@@ -132,7 +132,7 @@ export const QualityPage: React.FC = () => {
           <Row gutter={16}>
             <Col span={24} style={{ marginBottom: 16 }}>
               <Card title="Levey-Jennings 控制图">
-                {chartData && (chartData as any).points ? <LJChart data={chartData} /> : <Text type="secondary">加载中...</Text>}
+                {chartData && (chartData as unknown).points ? <LJChart data={chartData} /> : <Text type="secondary">加载中...</Text>}
               </Card>
             </Col>
             <Col span={24}>
@@ -144,9 +144,9 @@ export const QualityPage: React.FC = () => {
         )},
         { key: 'westgard', label: 'Westgard规则分析', children: (
           <WestgardAnalyzer
-            data={(chartData as any)?.points?.map((p: any) => ({ value: p.value, date: p.date, batch: p.batch || '' })) || []}
-            mean={(chartData as any)?.mean || 0}
-            sd={(chartData as any)?.sd || 1}
+            data={(chartData as unknown)?.points?.map((p: Record<string, unknown>) => ({ value: p.value, date: p.date, batch: p.batch || '' })) || []}
+            mean={(chartData as unknown)?.mean || 0}
+            sd={(chartData as unknown)?.sd || 1}
             analyte="COD"
           />
         )},
@@ -214,7 +214,7 @@ export const QualityPage: React.FC = () => {
                   <Descriptions.Item label="状态"><Tag color={devStatusColor[selectedDev.status]}>{selectedDev.status === 'open' ? '开放' : selectedDev.status === 'investigating' ? '调查中' : '已关闭'}</Tag></Descriptions.Item>
                   <Descriptions.Item label="事件描述">{selectedDev.desc}</Descriptions.Item>
                   <Descriptions.Item label="发现日期">{selectedDev.foundDate}</Descriptions.Item>
-                  <Descriptions.Item label="责任人">{(selectedDev as any)['责任人'] || '-'}</Descriptions.Item>
+                  <Descriptions.Item label="责任人">{(selectedDev as unknown)['责任人'] || '-'}</Descriptions.Item>
                   <Descriptions.Item label="影响评估">待评估</Descriptions.Item>
                 </Descriptions>
                 <div style={{marginTop:16}}><Text strong>处理流程</Text></div>
@@ -244,7 +244,7 @@ export const QualityPage: React.FC = () => {
               </Card>},
               {key:'attachments', label:'附件', children:<Text type="secondary">暂无附件</Text>},
               {key:'audit', label:'审计追踪', children:<Table dataSource={[
-                {time:selectedDev.foundDate+' 09:15',user:(selectedDev as any)['责任人']||'-',action:'创建偏差',detail:'偏差编号 '+selectedDev.no},
+                {time:selectedDev.foundDate+' 09:15',user:(selectedDev as unknown)['责任人']||'-',action:'创建偏差',detail:'偏差编号 '+selectedDev.no},
                 {time:selectedDev.foundDate+' 10:30',user:'系统',action:'自动通知',detail:'通知质量主管'},
               ]} rowKey="time" pagination={false} size="small" columns={[
                 {title:'时间',dataIndex:'time'},{title:'操作人',dataIndex:'user'},{title:'操作',dataIndex:'action'},{title:'详情',dataIndex:'detail'},

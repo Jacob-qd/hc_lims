@@ -8,11 +8,11 @@ const statusColors: Record<string, string> = { normal: '#52c41a', low: '#faad14'
 const urgencyColors: Record<string, string> = { 紧急: '#ff4d4f', 普通: '#1677ff' };
 
 export const InventoryPage: React.FC = () => {
-  const [items, setItems] = useState<any[]>([]);
-  const [prs, setPrs] = useState<any[]>([]);
+  const [items, setItems] = useState<unknown[]>([]);
+  const [prs, setPrs] = useState<unknown[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [selected, setSelected] = useState<any>(null);
+  const [selected, setSelected] = useState<unknown>(null);
   const [drawer, setDrawer] = useState(false);
   const [prDrawer, setPrDrawer] = useState(false);
   const [inModal, setInModal] = useState(false);
@@ -24,10 +24,11 @@ export const InventoryPage: React.FC = () => {
     const [ir, pr] = await Promise.all([fetch('/api/v1/inventory').then(r => r.json()), fetch('/api/v1/inventory/purchase-requests').then(r => r.json())]);
     setItems(ir.data.list); setPrs(pr.data.list); setLoading(false);
   };
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchData(); }, []);
 
-  const filtered = items.filter((i: any) => i.name.includes(search) || i.code.includes(search) || i.supplier.includes(search));
-  const stats = { total: items.length, low: items.filter((i: any) => i.status === 'low' || i.status === 'out').length, expiring: items.filter((i: any) => i.status === 'expiring').length, pendingPr: prs.filter((p: any) => p.status === 'pending_approval').length };
+  const filtered = items.filter((i: Record<string, unknown>) => i.name.includes(search) || i.code.includes(search) || i.supplier.includes(search));
+  const stats = { total: items.length, low: items.filter((i: Record<string, unknown>) => i.status === 'low' || i.status === 'out').length, expiring: items.filter((i: Record<string, unknown>) => i.status === 'expiring').length, pendingPr: prs.filter((p: Record<string, unknown>) => p.status === 'pending_approval').length };
 
   return (
     <div>
@@ -54,17 +55,17 @@ export const InventoryPage: React.FC = () => {
           </Space></div>
           <Table dataSource={filtered} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} columns={[
             { title: '编码', dataIndex: 'code', render: (c: string) => <Text code>{c}</Text> },
-            { title: '名称', dataIndex: 'name', render: (n: string, r: any) => <a onClick={() => { setSelected(r); setDrawer(true); }}>{n}</a> },
+            { title: '名称', dataIndex: 'name', render: (n: string, r: Record<string, unknown>) => <a onClick={() => { setSelected(r); setDrawer(true); }}>{n}</a> },
             { title: '分类', dataIndex: 'category', render: (c: string) => <Tag color={categoryColors[c]}>{c}</Tag> },
             { title: '批号', dataIndex: 'batchNo' },
-            { title: '库存', dataIndex: 'stock', render: (s: number, r: any) => <Text type={s <= r.safetyStock ? 'danger' : undefined}>{s}{r.unit}</Text> },
-            { title: '安全库存', dataIndex: 'safetyStock', render: (s: number, r: any) => <Text type={r.stock <= s ? 'danger' : undefined}>{s}{r.unit}</Text> },
+            { title: '库存', dataIndex: 'stock', render: (s: number, r: Record<string, unknown>) => <Text type={s <= r.safetyStock ? 'danger' : undefined}>{s}{r.unit}</Text> },
+            { title: '安全库存', dataIndex: 'safetyStock', render: (s: number, r: Record<string, unknown>) => <Text type={r.stock <= s ? 'danger' : undefined}>{s}{r.unit}</Text> },
             { title: '有效期', dataIndex: 'expiryDate', render: (d: string) => <Text type={new Date(d) < new Date(Date.now() + 30*86400000) ? 'danger' : undefined}>{d}</Text> },
             { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={statusColors[s]}>{s==='normal'?'正常':s==='low'?'低库存':s==='expiring'?'即将过期':'缺货'}</Tag> },
           ]} size="middle" />
           <Card title="到期预警 (30天内)" size="small" style={{marginTop:16}}>
             <Row gutter={16}>
-              {filtered.filter((i:any) => i.status === 'expiring' || i.status === 'low' || i.status === 'out').slice(0,4).map((i:any) => (
+              {filtered.filter((i: Record<string, unknown>) => i.status === 'expiring' || i.status === 'low' || i.status === 'out').slice(0,4).map((i: Record<string, unknown>) => (
                 <Col span={6} key={i.id}>
                   <Card size="small" style={{borderLeft:'3px solid '+(i.status==='out'?'#ff4d4f':i.status==='expiring'?'#faad14':'#fa8c16')}}>
                     <Text strong style={{fontSize:13}}>{i.name}</Text><br />
@@ -74,7 +75,7 @@ export const InventoryPage: React.FC = () => {
                   </Card>
                 </Col>
               ))}
-              {filtered.filter((i:any) => i.status === 'expiring' || i.status === 'low').length === 0 && <Col span={24}><Text type="secondary">暂无到期预警</Text></Col>}
+              {filtered.filter((i: Record<string, unknown>) => i.status === 'expiring' || i.status === 'low').length === 0 && <Col span={24}><Text type="secondary">暂无到期预警</Text></Col>}
             </Row>
           </Card>
         </Card>
@@ -141,7 +142,7 @@ export const InventoryPage: React.FC = () => {
             { title: '紧急程度', dataIndex: 'urgency', render: (u: string) => <Tag color={urgencyColors[u]}>{u}</Tag> },
             { title: '总金额', dataIndex: 'total', render: (t: number) => `¥${t}` },
             { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={s==='pending_approval'?'orange':s==='approved'?'green':'blue'}>{s==='pending_approval'?'待审批':s==='approved'?'已审批':'已采购'}</Tag> },
-            { title: '操作', render: (_: any, r: any) => <Button type="link" size="small" onClick={() => { setSelected(r); setPrDrawer(true); }}>查看</Button> },
+            { title: '操作', render: (_: string, r: Record<string, unknown>) => <Button type="link" size="small" onClick={() => { setSelected(r); setPrDrawer(true); }}>查看</Button> },
           ]} pagination={false} size="middle" /></Card>
         )},
       ]} />

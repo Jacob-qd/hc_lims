@@ -47,6 +47,7 @@ export const ClientsPage: React.FC = () => {
     finally { setLoading(false); }
   }, []);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { loadClients(); }, [loadClients]);
 
   const filtered = clients.filter(c =>
@@ -72,7 +73,7 @@ export const ClientsPage: React.FC = () => {
     setModalVisible(true);
   };
 
-  const handleSave = async (values: any) => {
+  const handleSave = async (values: unknown) => {
     const isEdit = !!editingClient;
     const url = isEdit ? api(`/clients/${editingClient!.id}`) : api('/clients');
     const method = isEdit ? 'PUT' : 'POST';
@@ -112,7 +113,7 @@ export const ClientsPage: React.FC = () => {
     { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={statusColor[s]}>{statusLabel[s]}</Tag> },
     { title: '信用', dataIndex: 'credit', render: (c: string) => <Tag color={creditColor[c]}>{c}</Tag> },
     { title: '样品数', dataIndex: 'samples' },
-    { title: '操作', render: (_: any, r: Client) => (
+    { title: '操作', render: (_: string, r: Client) => (
       <Space size="small">
         <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawerVisible(true); }}>查看</Button>
         <Button type="link" size="small" icon={<EditOutlined />} onClick={() => openEdit(r)}>编辑</Button>

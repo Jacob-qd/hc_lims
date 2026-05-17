@@ -19,7 +19,7 @@ const statusMap: Record<string, { color: string; label: string }> = {
 /** 移动端任务列表 */
 export const MobileTaskListPage: React.FC = () => {
   const navigate = useNavigate();
-  const [tasks, setTasks] = useState<any[]>([]);
+  const [tasks, setTasks] = useState<unknown[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export const MobileTaskListPage: React.FC = () => {
       <List
         dataSource={tasks}
         loading={loading}
-        renderItem={(t: any) => (
+        renderItem={(t: Record<string, unknown>) => (
           <Card
             size="small" hoverable
             style={{ marginBottom: 8, borderRadius: 12 }}

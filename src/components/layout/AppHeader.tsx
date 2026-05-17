@@ -90,7 +90,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onOpenDrawer }) => {
       <Space size={20}>
         <Select
           value={useI18nStore.getState().locale}
-          onChange={(v: any) => useI18nStore.getState().setLocale(v)}
+          onChange={(v: unknown) => useI18nStore.getState().setLocale(v)}
           size="small"
           style={{ width: 78 }}
           variant="borderless"

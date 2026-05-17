@@ -126,7 +126,7 @@ const InstrumentDetail: React.FC<{ instrument: Instrument | null; visible: boole
               <Text strong>压力趋势</Text>
               <svg viewBox="0 0 300 100" style={{width:'100%',height:100,marginTop:4}}>
                 <rect x={0} y={0} width={300} height={100} fill="#f5f5f5" rx={4} />
-                <path d={Array.from({length:30},(_,i)=>`${i===0?'M':'L'}${i*10},${80-Math.sin(i*0.5)*15-Math.random()*5}`).join('')} stroke="#1677ff" strokeWidth={2} fill="none" />
+                <path d={Array.from({length:30},(_,i)=>`${i===0?'M':'L'}${i*10},${80-Math.sin(i*0.5)*15-(i%5)}`).join('')} stroke="#1677ff" strokeWidth={2} fill="none" />
                 <text x={0} y={95} fontSize={10} fill="#999">0</text>
                 <text x={290} y={95} fontSize={10} fill="#999" textAnchor="end">30min</text>
                 <line x1={0} y1={30} x2={300} y2={30} stroke="#ff4d4f" strokeWidth={1} strokeDasharray="4,2" />
@@ -202,6 +202,7 @@ export const InstrumentsPage: React.FC = () => {
     finally { setLoading(false); }
   };
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchInstruments(); }, [statusFilter, searchText]);
 
   const stats = {
@@ -229,7 +230,7 @@ export const InstrumentsPage: React.FC = () => {
     { title: '连接状态', dataIndex: 'connectionStatus', key: 'connectionStatus', width: 80, responsive: ['md' as const], render: (s: string) => <Badge status={s === 'online' ? 'success' : 'default'} text={s === 'online' ? '在线' : '离线'} /> },
     { title: '校准到期', dataIndex: 'calibrationDue', key: 'calibrationDue', width: 100, render: (d: string) => <Text type={dayjs(d).isBefore(dayjs()) ? 'danger' : undefined}>{d}</Text> },
     { title: '利用率', dataIndex: 'utilization', key: 'utilization', width: 100, render: (v: number) => <Progress percent={v} size="small" /> },
-    { title: '操作', key: 'action', width: 100, render: (_: any, r: Instrument) => (
+    { title: '操作', key: 'action', width: 100, render: (_: string, r: Instrument) => (
       <Space>
         <Tooltip title="查看详情"><Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelectedInstrument(r); setDrawerVisible(true); }} /></Tooltip>
         <Tooltip title="编辑"><Button type="link" size="small" icon={<EditOutlined />} /></Tooltip>
@@ -237,7 +238,7 @@ export const InstrumentsPage: React.FC = () => {
     )},
   ];
 
-  const handleCreate = async (values: any) => {
+  const handleCreate = async (values: unknown) => {
     try {
       const res = await fetch('/api/v1/instruments', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(values) });
       const json = await res.json();

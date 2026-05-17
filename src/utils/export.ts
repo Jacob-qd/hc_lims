@@ -1,4 +1,4 @@
-export function exportCSV(data: Record<string, any>[], filename: string, headers?: string[]) {
+export function exportCSV(data: Record<string, unknown>[], filename: string, headers?: string[]) {
   if (!data.length) return;
   const keys = headers || Object.keys(data[0]);
   const csvContent = [
@@ -18,7 +18,7 @@ export function exportCSV(data: Record<string, any>[], filename: string, headers
   URL.revokeObjectURL(url);
 }
 
-export function exportJSON(data: any, filename: string) {
+export function exportJSON(data: unknown, filename: string) {
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');

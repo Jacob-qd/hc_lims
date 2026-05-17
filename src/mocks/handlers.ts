@@ -59,7 +59,6 @@ import {
   mockChartComponents,
   mockReportSchedules,
   mockReportExecutions,
-  mockGeneratedReports,
   mockDictTypes,
   mockDictItems,
   mockContracts,
@@ -94,7 +93,7 @@ const mockSamplingTasks = [
   },
 ];
 
-const mockFieldSamples: any[] = [
+const mockFieldSamples: Record<string, unknown>[] = [
   {
     id: 'fs1', sampleNo: 'FS-20260517-001', taskId: 'st1', pointId: 'sp1',
     name: '东湖入口-1', sampleType: '地表水',
@@ -114,267 +113,54 @@ const mockClients = [
   { id: "c6", name: "康源医药集团", shortName: "康源医药", type: "企业", industry: "医药", contact: "孙经理", phone: "133-0007-6789", email: "sun@kyyy.com", credit: "C", status: "suspended", source: "线上渠道", samples: 54, contracts: 1, createdAt: "2025-03-12", updatedAt: "2026-02-01" },
 ];
 
-let _mockQuotations: any[] = [];
-let _mockOrders: any[] = [];
+const _mockQuotations: Record<string, unknown>[] = [];
+const _mockOrders: Record<string, unknown>[] = [];
 
 const clientsHandlers = [
   http.get(apiUrl('/clients'), () => HttpResponse.json({ code: 200, data: { list: mockClients, total: mockClients.length } })),
   http.post(apiUrl('/clients'), async ({ request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as Record<string, unknown>;
     const newClient = { id: `c${Date.now()}`, ...body, samples: 0, contracts: 0, createdAt: new Date().toISOString().slice(0, 10), updatedAt: new Date().toISOString().slice(0, 10) };
     mockClients.push(newClient);
     return HttpResponse.json({ code: 200, message: 'success', data: newClient });
   }),
   http.put(apiUrl('/clients/:id'), async ({ params, request }) => {
-    const body = (await request.json()) as any;
-    const idx = mockClients.findIndex((c: any) => c.id === params.id);
+    const body = (await request.json()) as Record<string, unknown>;
+    const idx = mockClients.findIndex((c: Record<string, unknown>) => c.id === params.id);
     if (idx === -1) return HttpResponse.json({ code: 404, message: '客户不存在' }, { status: 404 });
     mockClients[idx] = { ...mockClients[idx], ...body, updatedAt: new Date().toISOString().slice(0, 10) };
     return HttpResponse.json({ code: 200, message: 'success', data: mockClients[idx] });
   }),
   http.delete(apiUrl('/clients/:id'), ({ params }) => {
-    const idx = mockClients.findIndex((c: any) => c.id === params.id);
+    const idx = mockClients.findIndex((c: Record<string, unknown>) => c.id === params.id);
     if (idx >= 0) mockClients.splice(idx, 1);
     return HttpResponse.json({ code: 200, message: 'success' });
-  }),
-
-  // AI Assistant
-  http.post(apiUrl('/ai/chat'), async ({ request }) => {
-    const body = (await request.json()) as any;
-    const msg = body.message || '';
-    let reply = '';
-    if (msg.includes('不合格')) reply = '本周不合格样品共 3 批次，主要集中在重金属检测（2 批次）和微生物检测（1 批次）。';
-    else if (msg.includes('报告')) reply = '上周共生成检测报告 156 份，其中 148 份已通过审核，8 份正在审核中。';
-    else if (msg.includes('质控')) reply = '近 30 天质控合格率 98.7%，其中有 2 次警告（铅标准品漂移）。';
-    else if (msg.includes('预测')) reply = '基于当前排程，预计平均检测周期为 4.2 天，较上周缩短 0.5 天。';
-    else reply = '收到您的问题：' + msg + '\n\n我是HC-LIMS AI助手，可以帮您查询样品状态、分析数据趋势、生成报告建议等。';
-    return HttpResponse.json({ code: 200, data: { reply, suggestions: ['查看详细报告', '导出数据', '设置预警'] } });
-  }),
-
-  // AI Anomaly Dashboard
-  http.get(apiUrl('/ai/anomaly/dashboard'), () => {
-    const alerts = [
-      { id: 'a1', level: 'critical', title: '铅标准品超标', description: '质控样 Pb 浓度 12.5 mg/L，超出控制限（10.0 mg/L）', source: '质控管理', occurredAt: '2025-08-15 09:30:00', status: 'active', suggestedAction: '重新配制标准品并校准仪器' },
-      { id: 'a2', level: 'warning', title: '检测周期延长', description: '近 3 天平均检测周期 5.8 天，超出目标值 5.0 天', source: '任务管理', occurredAt: '2025-08-14 16:00:00', status: 'active', suggestedAction: '检查任务分配和仪器负载' },
-      { id: 'a3', level: 'info', title: '新设备校准到期', description: 'ICP-MS 年度校准将于 2025-09-01 到期', source: '仪器管理', occurredAt: '2025-08-13 10:00:00', status: 'resolved', suggestedAction: '已预约校准服务' },
-    ];
-    const predictions = Array.from({ length: 7 }, (_, i) => {
-      const date = new Date(); date.setDate(date.getDate() + i + 1);
-      return { date: date.toISOString().slice(0, 10), predicted: 4.2 + Math.random() * 0.8 - 0.4, lower: 3.5, upper: 5.0 };
-    });
-    return HttpResponse.json({ code: 200, data: { riskScore: 62, alerts, predictions } });
-  }),
-
-  // ELN Templates
-  http.get(apiUrl('/eln/templates'), () => HttpResponse.json({ code: 200, data: { list: [
-    { id: 't1', name: '水质检测原始记录', category: '环境检测', fields: [
-      { id: 'f1', label: '样品编号', type: 'text', required: true },
-      { id: 'f2', label: '检测项目', type: 'select', required: true, options: ['pH', 'COD', '重金属', '微生物'] },
-      { id: 'f3', label: '检测结果', type: 'table', required: true },
-      { id: 'f4', label: '检测方法', type: 'select', required: true, options: ['GB/T 5750', 'HJ 828'] },
-    ]},
-    { id: 't2', name: '食品微生物检验记录', category: '食品检测', fields: [
-      { id: 'f5', label: '样品名称', type: 'text', required: true },
-      { id: 'f6', label: '培养条件', type: 'text', required: true },
-      { id: 'f7', label: '菌落计数', type: 'table', required: true },
-    ]},
-  ]}})),
-
-  // Achievements
-  http.get(apiUrl('/achievements/statistics'), () => HttpResponse.json({ code: 200, data: {
-    total: 12, paperCount: 5, patentCount: 3, awardCount: 2, completionCount: 2, totalCitations: 186,
-  }})),
-  http.post(apiUrl('/achievements'), async ({ request }) => {
-    const body = (await request.json()) as any;
-    return HttpResponse.json({ code: 200, data: { id: 'ach' + Date.now(), ...body } });
-  }),
-  http.delete(apiUrl('/achievements/:id'), () => HttpResponse.json({ code: 200 })),
-
-  // Teaching CRUD
-  http.post(apiUrl('/teaching/courses'), async ({ request }) => {
-    const body = (await request.json()) as any;
-    const course = { id: 'c' + Date.now(), ...body, status: 'active', statusLabel: '开课中' };
-    mockCourses.push(course);
-    return HttpResponse.json({ code: 200, data: course });
-  }),
-  http.put(apiUrl('/teaching/courses/:id'), async ({ params, request }) => {
-    const body = (await request.json()) as any;
-    const idx = mockCourses.findIndex(c => c.id === params.id);
-    if (idx >= 0) mockCourses[idx] = { ...mockCourses[idx], ...body };
-    return HttpResponse.json({ code: 200, data: mockCourses[idx] });
-  }),
-  http.delete(apiUrl('/teaching/courses/:id'), ({ params }) => {
-    const idx = mockCourses.findIndex(c => c.id === params.id);
-    if (idx >= 0) mockCourses.splice(idx, 1);
-    return HttpResponse.json({ code: 200 });
   }),
 ];
 
 const quotationsHandlers = [
   http.get(apiUrl('/quotations'), () => HttpResponse.json({ code: 200, data: { list: _mockQuotations, total: _mockQuotations.length } })),
   http.post(apiUrl('/quotations'), async ({ request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as Record<string, unknown>;
     const newQ = { id: `q${Date.now()}`, no: `Q-${new Date().getFullYear()}-${String(_mockQuotations.length + 1).padStart(3, '0')}`, ...body, createdAt: new Date().toISOString().slice(0, 10) };
     _mockQuotations.push(newQ);
     return HttpResponse.json({ code: 200, message: 'success', data: newQ });
   }),
   http.put(apiUrl('/quotations/:id'), async ({ params, request }) => {
-    const body = (await request.json()) as any;
-    const idx = _mockQuotations.findIndex((q: any) => q.id === params.id);
+    const body = (await request.json()) as Record<string, unknown>;
+    const idx = _mockQuotations.findIndex((q: Record<string, unknown>) => q.id === params.id);
     if (idx >= 0) _mockQuotations[idx] = { ..._mockQuotations[idx], ...body };
     return HttpResponse.json({ code: 200, message: 'success' });
-  }),
-
-  // AI Assistant
-  http.post(apiUrl('/ai/chat'), async ({ request }) => {
-    const body = (await request.json()) as any;
-    const msg = body.message || '';
-    let reply = '';
-    if (msg.includes('不合格')) reply = '本周不合格样品共 3 批次，主要集中在重金属检测（2 批次）和微生物检测（1 批次）。';
-    else if (msg.includes('报告')) reply = '上周共生成检测报告 156 份，其中 148 份已通过审核，8 份正在审核中。';
-    else if (msg.includes('质控')) reply = '近 30 天质控合格率 98.7%，其中有 2 次警告（铅标准品漂移）。';
-    else if (msg.includes('预测')) reply = '基于当前排程，预计平均检测周期为 4.2 天，较上周缩短 0.5 天。';
-    else reply = '收到您的问题：' + msg + '\n\n我是HC-LIMS AI助手，可以帮您查询样品状态、分析数据趋势、生成报告建议等。';
-    return HttpResponse.json({ code: 200, data: { reply, suggestions: ['查看详细报告', '导出数据', '设置预警'] } });
-  }),
-
-  // AI Anomaly Dashboard
-  http.get(apiUrl('/ai/anomaly/dashboard'), () => {
-    const alerts = [
-      { id: 'a1', level: 'critical', title: '铅标准品超标', description: '质控样 Pb 浓度 12.5 mg/L，超出控制限（10.0 mg/L）', source: '质控管理', occurredAt: '2025-08-15 09:30:00', status: 'active', suggestedAction: '重新配制标准品并校准仪器' },
-      { id: 'a2', level: 'warning', title: '检测周期延长', description: '近 3 天平均检测周期 5.8 天，超出目标值 5.0 天', source: '任务管理', occurredAt: '2025-08-14 16:00:00', status: 'active', suggestedAction: '检查任务分配和仪器负载' },
-      { id: 'a3', level: 'info', title: '新设备校准到期', description: 'ICP-MS 年度校准将于 2025-09-01 到期', source: '仪器管理', occurredAt: '2025-08-13 10:00:00', status: 'resolved', suggestedAction: '已预约校准服务' },
-    ];
-    const predictions = Array.from({ length: 7 }, (_, i) => {
-      const date = new Date(); date.setDate(date.getDate() + i + 1);
-      return { date: date.toISOString().slice(0, 10), predicted: 4.2 + Math.random() * 0.8 - 0.4, lower: 3.5, upper: 5.0 };
-    });
-    return HttpResponse.json({ code: 200, data: { riskScore: 62, alerts, predictions } });
-  }),
-
-  // ELN Templates
-  http.get(apiUrl('/eln/templates'), () => HttpResponse.json({ code: 200, data: { list: [
-    { id: 't1', name: '水质检测原始记录', category: '环境检测', fields: [
-      { id: 'f1', label: '样品编号', type: 'text', required: true },
-      { id: 'f2', label: '检测项目', type: 'select', required: true, options: ['pH', 'COD', '重金属', '微生物'] },
-      { id: 'f3', label: '检测结果', type: 'table', required: true },
-      { id: 'f4', label: '检测方法', type: 'select', required: true, options: ['GB/T 5750', 'HJ 828'] },
-    ]},
-    { id: 't2', name: '食品微生物检验记录', category: '食品检测', fields: [
-      { id: 'f5', label: '样品名称', type: 'text', required: true },
-      { id: 'f6', label: '培养条件', type: 'text', required: true },
-      { id: 'f7', label: '菌落计数', type: 'table', required: true },
-    ]},
-  ]}})),
-
-  // Achievements
-  http.get(apiUrl('/achievements/statistics'), () => HttpResponse.json({ code: 200, data: {
-    total: 12, paperCount: 5, patentCount: 3, awardCount: 2, completionCount: 2, totalCitations: 186,
-  }})),
-  http.post(apiUrl('/achievements'), async ({ request }) => {
-    const body = (await request.json()) as any;
-    return HttpResponse.json({ code: 200, data: { id: 'ach' + Date.now(), ...body } });
-  }),
-  http.delete(apiUrl('/achievements/:id'), () => HttpResponse.json({ code: 200 })),
-
-  // Teaching CRUD
-  http.post(apiUrl('/teaching/courses'), async ({ request }) => {
-    const body = (await request.json()) as any;
-    const course = { id: 'c' + Date.now(), ...body, status: 'active', statusLabel: '开课中' };
-    mockCourses.push(course);
-    return HttpResponse.json({ code: 200, data: course });
-  }),
-  http.put(apiUrl('/teaching/courses/:id'), async ({ params, request }) => {
-    const body = (await request.json()) as any;
-    const idx = mockCourses.findIndex(c => c.id === params.id);
-    if (idx >= 0) mockCourses[idx] = { ...mockCourses[idx], ...body };
-    return HttpResponse.json({ code: 200, data: mockCourses[idx] });
-  }),
-  http.delete(apiUrl('/teaching/courses/:id'), ({ params }) => {
-    const idx = mockCourses.findIndex(c => c.id === params.id);
-    if (idx >= 0) mockCourses.splice(idx, 1);
-    return HttpResponse.json({ code: 200 });
   }),
 ];
 
 const ordersHandlers = [
   http.get(apiUrl('/orders'), () => HttpResponse.json({ code: 200, data: { list: _mockOrders, total: _mockOrders.length } })),
   http.post(apiUrl('/orders'), async ({ request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as Record<string, unknown>;
     const newOrder = { id: `o${Date.now()}`, no: `ORD-${new Date().getFullYear()}-${String(_mockOrders.length + 1).padStart(3, '0')}`, ...body, paidAmount: 0, samples: [], createdAt: new Date().toISOString().slice(0, 10), updatedAt: new Date().toISOString().slice(0, 10) };
     _mockOrders.push(newOrder);
     return HttpResponse.json({ code: 200, message: 'success', data: newOrder });
-  }),
-
-  // AI Assistant
-  http.post(apiUrl('/ai/chat'), async ({ request }) => {
-    const body = (await request.json()) as any;
-    const msg = body.message || '';
-    let reply = '';
-    if (msg.includes('不合格')) reply = '本周不合格样品共 3 批次，主要集中在重金属检测（2 批次）和微生物检测（1 批次）。';
-    else if (msg.includes('报告')) reply = '上周共生成检测报告 156 份，其中 148 份已通过审核，8 份正在审核中。';
-    else if (msg.includes('质控')) reply = '近 30 天质控合格率 98.7%，其中有 2 次警告（铅标准品漂移）。';
-    else if (msg.includes('预测')) reply = '基于当前排程，预计平均检测周期为 4.2 天，较上周缩短 0.5 天。';
-    else reply = '收到您的问题：' + msg + '\n\n我是HC-LIMS AI助手，可以帮您查询样品状态、分析数据趋势、生成报告建议等。';
-    return HttpResponse.json({ code: 200, data: { reply, suggestions: ['查看详细报告', '导出数据', '设置预警'] } });
-  }),
-
-  // AI Anomaly Dashboard
-  http.get(apiUrl('/ai/anomaly/dashboard'), () => {
-    const alerts = [
-      { id: 'a1', level: 'critical', title: '铅标准品超标', description: '质控样 Pb 浓度 12.5 mg/L，超出控制限（10.0 mg/L）', source: '质控管理', occurredAt: '2025-08-15 09:30:00', status: 'active', suggestedAction: '重新配制标准品并校准仪器' },
-      { id: 'a2', level: 'warning', title: '检测周期延长', description: '近 3 天平均检测周期 5.8 天，超出目标值 5.0 天', source: '任务管理', occurredAt: '2025-08-14 16:00:00', status: 'active', suggestedAction: '检查任务分配和仪器负载' },
-      { id: 'a3', level: 'info', title: '新设备校准到期', description: 'ICP-MS 年度校准将于 2025-09-01 到期', source: '仪器管理', occurredAt: '2025-08-13 10:00:00', status: 'resolved', suggestedAction: '已预约校准服务' },
-    ];
-    const predictions = Array.from({ length: 7 }, (_, i) => {
-      const date = new Date(); date.setDate(date.getDate() + i + 1);
-      return { date: date.toISOString().slice(0, 10), predicted: 4.2 + Math.random() * 0.8 - 0.4, lower: 3.5, upper: 5.0 };
-    });
-    return HttpResponse.json({ code: 200, data: { riskScore: 62, alerts, predictions } });
-  }),
-
-  // ELN Templates
-  http.get(apiUrl('/eln/templates'), () => HttpResponse.json({ code: 200, data: { list: [
-    { id: 't1', name: '水质检测原始记录', category: '环境检测', fields: [
-      { id: 'f1', label: '样品编号', type: 'text', required: true },
-      { id: 'f2', label: '检测项目', type: 'select', required: true, options: ['pH', 'COD', '重金属', '微生物'] },
-      { id: 'f3', label: '检测结果', type: 'table', required: true },
-      { id: 'f4', label: '检测方法', type: 'select', required: true, options: ['GB/T 5750', 'HJ 828'] },
-    ]},
-    { id: 't2', name: '食品微生物检验记录', category: '食品检测', fields: [
-      { id: 'f5', label: '样品名称', type: 'text', required: true },
-      { id: 'f6', label: '培养条件', type: 'text', required: true },
-      { id: 'f7', label: '菌落计数', type: 'table', required: true },
-    ]},
-  ]}})),
-
-  // Achievements
-  http.get(apiUrl('/achievements/statistics'), () => HttpResponse.json({ code: 200, data: {
-    total: 12, paperCount: 5, patentCount: 3, awardCount: 2, completionCount: 2, totalCitations: 186,
-  }})),
-  http.post(apiUrl('/achievements'), async ({ request }) => {
-    const body = (await request.json()) as any;
-    return HttpResponse.json({ code: 200, data: { id: 'ach' + Date.now(), ...body } });
-  }),
-  http.delete(apiUrl('/achievements/:id'), () => HttpResponse.json({ code: 200 })),
-
-  // Teaching CRUD
-  http.post(apiUrl('/teaching/courses'), async ({ request }) => {
-    const body = (await request.json()) as any;
-    const course = { id: 'c' + Date.now(), ...body, status: 'active', statusLabel: '开课中' };
-    mockCourses.push(course);
-    return HttpResponse.json({ code: 200, data: course });
-  }),
-  http.put(apiUrl('/teaching/courses/:id'), async ({ params, request }) => {
-    const body = (await request.json()) as any;
-    const idx = mockCourses.findIndex(c => c.id === params.id);
-    if (idx >= 0) mockCourses[idx] = { ...mockCourses[idx], ...body };
-    return HttpResponse.json({ code: 200, data: mockCourses[idx] });
-  }),
-  http.delete(apiUrl('/teaching/courses/:id'), ({ params }) => {
-    const idx = mockCourses.findIndex(c => c.id === params.id);
-    if (idx >= 0) mockCourses.splice(idx, 1);
-    return HttpResponse.json({ code: 200 });
   }),
 ];
 const mobileSamplingHandlers = [
@@ -394,7 +180,7 @@ const mobileSamplingHandlers = [
     return HttpResponse.json({ code: 200, data: { list: mockFieldSamples, total: mockFieldSamples.length } });
   }),
   http.post(apiUrl('/mobile/field-samples'), async ({ request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as Record<string, unknown>;
     const newSample = {
       id: `fs-${Date.now()}`,
       sampleNo: `FS-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${String(mockFieldSamples.length + 1).padStart(3,'0')}`,
@@ -407,77 +193,6 @@ const mobileSamplingHandlers = [
   }),
   http.post(apiUrl('/mobile/field-samples/:id/sync'), () => {
     return HttpResponse.json({ code: 200, message: '同步成功' });
-  }),
-
-  // AI Assistant
-  http.post(apiUrl('/ai/chat'), async ({ request }) => {
-    const body = (await request.json()) as any;
-    const msg = body.message || '';
-    let reply = '';
-    if (msg.includes('不合格')) reply = '本周不合格样品共 3 批次，主要集中在重金属检测（2 批次）和微生物检测（1 批次）。';
-    else if (msg.includes('报告')) reply = '上周共生成检测报告 156 份，其中 148 份已通过审核，8 份正在审核中。';
-    else if (msg.includes('质控')) reply = '近 30 天质控合格率 98.7%，其中有 2 次警告（铅标准品漂移）。';
-    else if (msg.includes('预测')) reply = '基于当前排程，预计平均检测周期为 4.2 天，较上周缩短 0.5 天。';
-    else reply = '收到您的问题：' + msg + '\n\n我是HC-LIMS AI助手，可以帮您查询样品状态、分析数据趋势、生成报告建议等。';
-    return HttpResponse.json({ code: 200, data: { reply, suggestions: ['查看详细报告', '导出数据', '设置预警'] } });
-  }),
-
-  // AI Anomaly Dashboard
-  http.get(apiUrl('/ai/anomaly/dashboard'), () => {
-    const alerts = [
-      { id: 'a1', level: 'critical', title: '铅标准品超标', description: '质控样 Pb 浓度 12.5 mg/L，超出控制限（10.0 mg/L）', source: '质控管理', occurredAt: '2025-08-15 09:30:00', status: 'active', suggestedAction: '重新配制标准品并校准仪器' },
-      { id: 'a2', level: 'warning', title: '检测周期延长', description: '近 3 天平均检测周期 5.8 天，超出目标值 5.0 天', source: '任务管理', occurredAt: '2025-08-14 16:00:00', status: 'active', suggestedAction: '检查任务分配和仪器负载' },
-      { id: 'a3', level: 'info', title: '新设备校准到期', description: 'ICP-MS 年度校准将于 2025-09-01 到期', source: '仪器管理', occurredAt: '2025-08-13 10:00:00', status: 'resolved', suggestedAction: '已预约校准服务' },
-    ];
-    const predictions = Array.from({ length: 7 }, (_, i) => {
-      const date = new Date(); date.setDate(date.getDate() + i + 1);
-      return { date: date.toISOString().slice(0, 10), predicted: 4.2 + Math.random() * 0.8 - 0.4, lower: 3.5, upper: 5.0 };
-    });
-    return HttpResponse.json({ code: 200, data: { riskScore: 62, alerts, predictions } });
-  }),
-
-  // ELN Templates
-  http.get(apiUrl('/eln/templates'), () => HttpResponse.json({ code: 200, data: { list: [
-    { id: 't1', name: '水质检测原始记录', category: '环境检测', fields: [
-      { id: 'f1', label: '样品编号', type: 'text', required: true },
-      { id: 'f2', label: '检测项目', type: 'select', required: true, options: ['pH', 'COD', '重金属', '微生物'] },
-      { id: 'f3', label: '检测结果', type: 'table', required: true },
-      { id: 'f4', label: '检测方法', type: 'select', required: true, options: ['GB/T 5750', 'HJ 828'] },
-    ]},
-    { id: 't2', name: '食品微生物检验记录', category: '食品检测', fields: [
-      { id: 'f5', label: '样品名称', type: 'text', required: true },
-      { id: 'f6', label: '培养条件', type: 'text', required: true },
-      { id: 'f7', label: '菌落计数', type: 'table', required: true },
-    ]},
-  ]}})),
-
-  // Achievements
-  http.get(apiUrl('/achievements/statistics'), () => HttpResponse.json({ code: 200, data: {
-    total: 12, paperCount: 5, patentCount: 3, awardCount: 2, completionCount: 2, totalCitations: 186,
-  }})),
-  http.post(apiUrl('/achievements'), async ({ request }) => {
-    const body = (await request.json()) as any;
-    return HttpResponse.json({ code: 200, data: { id: 'ach' + Date.now(), ...body } });
-  }),
-  http.delete(apiUrl('/achievements/:id'), () => HttpResponse.json({ code: 200 })),
-
-  // Teaching CRUD
-  http.post(apiUrl('/teaching/courses'), async ({ request }) => {
-    const body = (await request.json()) as any;
-    const course = { id: 'c' + Date.now(), ...body, status: 'active', statusLabel: '开课中' };
-    mockCourses.push(course);
-    return HttpResponse.json({ code: 200, data: course });
-  }),
-  http.put(apiUrl('/teaching/courses/:id'), async ({ params, request }) => {
-    const body = (await request.json()) as any;
-    const idx = mockCourses.findIndex(c => c.id === params.id);
-    if (idx >= 0) mockCourses[idx] = { ...mockCourses[idx], ...body };
-    return HttpResponse.json({ code: 200, data: mockCourses[idx] });
-  }),
-  http.delete(apiUrl('/teaching/courses/:id'), ({ params }) => {
-    const idx = mockCourses.findIndex(c => c.id === params.id);
-    if (idx >= 0) mockCourses.splice(idx, 1);
-    return HttpResponse.json({ code: 200 });
   }),
 ];
 export const handlers = [
@@ -502,7 +217,8 @@ export const handlers = [
       );
     }
 
-    const { password, ...userWithoutPassword } = user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _password, ...userWithoutPassword } = user;
     return HttpResponse.json({
       code: 200,
       message: 'success',
@@ -608,7 +324,7 @@ export const handlers = [
   }),
 
   http.get(apiUrl('/samples/:id/detail'), ({ params }) => {
-    const detail = (mockSampleDetail as any)[params.id as string];
+    const detail = (mockSampleDetail as unknown)[params.id as string];
     if (!detail) {
       return HttpResponse.json({ code: 404, message: '样品详情不存在', data: null }, { status: 404 });
     }
@@ -629,7 +345,7 @@ export const handlers = [
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    mockSamples.push(newSample as any);
+    mockSamples.push(newSample as unknown);
     // Auto-create COC chain
     const cocId = `coc${Date.now()}`;
     const samplingTime = (body.samplingTime as string) || new Date().toISOString();
@@ -654,7 +370,7 @@ export const handlers = [
       }],
       createdAt: new Date().toISOString(),
     };
-    mockCOCChains.push(cocChain as any);
+    mockCOCChains.push(cocChain as unknown);
     return HttpResponse.json({ code: 200, message: 'success', data: newSample });
   }),
 
@@ -683,14 +399,14 @@ export const handlers = [
   }),
 
   http.post(apiUrl('/tasks'), async ({ request }) => {
-    const body = (await request.json()) as any;
-    const task: any = { id: 'tk' + Date.now(), taskNo: 'TK-2025-' + String(mockTasks.length + 1).padStart(3, '0'), ...body, createdAt: new Date().toISOString().slice(0, 10), updatedAt: new Date().toISOString().slice(0, 10) };
+    const body = (await request.json()) as Record<string, unknown>;
+    const task: Record<string, unknown> = { id: 'tk' + Date.now(), taskNo: 'TK-2025-' + String(mockTasks.length + 1).padStart(3, '0'), ...body, createdAt: new Date().toISOString().slice(0, 10), updatedAt: new Date().toISOString().slice(0, 10) };
     mockTasks.push(task);
     return HttpResponse.json({ code: 200, data: task, message: '创建成功' });
   }),
 
   http.post(apiUrl('/tasks/:id/assign'), async ({ params, request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as Record<string, unknown>;
     const task = mockTasks.find(t => t.id === params.id);
     if (task) { task.analystId = body.analystId; task.analystName = body.analystName; task.instrumentId = body.instrumentId; task.instrumentName = body.instrumentName; task.plannedStart = body.plannedStart; task.plannedEnd = body.plannedEnd; task.status = 'pending'; task.statusLabel = '待检测'; }
     return HttpResponse.json({ code: 200, message: '分配成功' });
@@ -743,7 +459,7 @@ export const handlers = [
       return HttpResponse.json({ code: 404, message: '报告不存在', data: null }, { status: 404 });
     }
     const updated = { ...mockReports[idx], ...body, updatedAt: new Date().toISOString().replace('T', ' ').slice(0, 19) };
-    mockReports[idx] = updated as any;
+    mockReports[idx] = updated as unknown;
     return HttpResponse.json({ code: 200, message: 'success', data: updated });
   }),
 
@@ -763,7 +479,7 @@ export const handlers = [
       ...body,
       reviewedAt: new Date().toISOString().replace('T', ' ').slice(0, 19),
     };
-    report.reviews.push(newReview as any);
+    report.reviews.push(newReview as unknown);
     return HttpResponse.json({ code: 200, message: 'success', data: newReview });
   }),
 
@@ -778,7 +494,7 @@ export const handlers = [
       ...body,
       signedAt: new Date().toISOString().replace('T', ' ').slice(0, 19),
     };
-    report.signatures.push(newSig as any);
+    report.signatures.push(newSig as unknown);
     return HttpResponse.json({ code: 200, message: 'success', data: newSig });
   }),
 
@@ -795,7 +511,7 @@ export const handlers = [
       status: 'open',
       replies: [],
     };
-    report.annotations.push(newAnn as any);
+    report.annotations.push(newAnn as unknown);
     return HttpResponse.json({ code: 200, message: 'success', data: newAnn });
   }),
 
@@ -875,11 +591,11 @@ export const handlers = [
     if (!instrument) return HttpResponse.json({ code: 404, message: '仪器不存在' });
     const calibrations = mockCalibrationRecords.filter(c => c.instrumentId === params.id);
     const maintenances = mockMaintenanceRecords.filter(m => m.instrumentId === params.id);
-    return HttpResponse.json({ code: 200, data: { ...(instrument as any), calibrations, maintenances } });
+    return HttpResponse.json({ code: 200, data: { ...(instrument as unknown), calibrations, maintenances } });
   }),
 
   http.post(apiUrl('/instruments'), async ({ request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as Record<string, unknown>;
     const newInstrument = { id: `i${mockInstruments.length + 1}`, ...body, connectionStatus: 'online', utilization: 0 };
     mockInstruments.push(newInstrument);
     return HttpResponse.json({ code: 200, data: newInstrument, message: '创建成功' });
@@ -909,7 +625,7 @@ export const handlers = [
   // ===== Research Module Handlers =====
   http.get(apiUrl('/research/projects'), () => HttpResponse.json({ code: 200, data: { list: mockResearchProjects } })),
   http.post(apiUrl('/research/projects'), async ({ request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as Record<string, unknown>;
     const item = { id: 'rp' + Date.now(), ...body };
     mockResearchProjects.push(item);
     return HttpResponse.json({ code: 200, data: item, message: '创建成功' });
@@ -917,7 +633,7 @@ export const handlers = [
 
   http.get(apiUrl('/research/eln-entries'), () => HttpResponse.json({ code: 200, data: { list: mockELNEntries } })),
   http.post(apiUrl('/research/eln-entries'), async ({ request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as Record<string, unknown>;
     const item = { id: 'eln' + Date.now(), no: 'ELN' + new Date().toISOString().slice(0,10).replace(/-/g,''), status: 'draft', tags: [], ...body };
     mockELNEntries.push(item);
     return HttpResponse.json({ code: 200, data: item, message: '创建成功' });
@@ -930,7 +646,7 @@ export const handlers = [
 
   http.get(apiUrl('/research/reservations'), () => HttpResponse.json({ code: 200, data: { list: mockReservations } })),
   http.post(apiUrl('/research/reservations'), async ({ request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as Record<string, unknown>;
     const item = { id: 'res' + Date.now(), status: 'pending', fee: 0, ...body };
     mockReservations.push(item);
     return HttpResponse.json({ code: 200, data: item, message: '预约成功' });
@@ -970,37 +686,37 @@ export const handlers = [
   http.get(apiUrl('/field-configs'), ({ request }) => {
     const url = new URL(request.url);
     const module = url.searchParams.get('module') || 'sample';
-    const data = (mockFieldConfigs as any)[module] || [];
+    const data = (mockFieldConfigs as unknown)[module] || [];
     return HttpResponse.json({ code: 200, data: { list: data } });
   }),
   http.post(apiUrl('/field-configs'), async ({ request }) => {
-    const body = await request.json() as any;
+    const body = await request.json() as Record<string, unknown>;
     const module = body.module || 'sample';
-    if (!(mockFieldConfigs as any)[module]) (mockFieldConfigs as any)[module] = [];
-    const item = { id: 'fc' + Date.now(), sortOrder: ((mockFieldConfigs as any)[module]?.length || 0) + 1, active: true, ...body };
-    (mockFieldConfigs as any)[module].push(item);
+    if (!(mockFieldConfigs as unknown)[module]) (mockFieldConfigs as unknown)[module] = [];
+    const item = { id: 'fc' + Date.now(), sortOrder: ((mockFieldConfigs as unknown)[module]?.length || 0) + 1, active: true, ...body };
+    (mockFieldConfigs as unknown)[module].push(item);
     return HttpResponse.json({ code: 200, data: item, message: '字段创建成功' });
   }),
   http.put(apiUrl('/field-configs/:id'), async ({ params, request }) => {
-    const body = await request.json() as any;
+    const body = await request.json() as Record<string, unknown>;
     for (const mod of Object.keys(mockFieldConfigs)) {
-      const idx = (mockFieldConfigs as any)[mod].findIndex((f: any) => f.id === params.id);
-      if (idx >= 0) { (mockFieldConfigs as any)[mod][idx] = { ...(mockFieldConfigs as any)[mod][idx], ...body }; break; }
+      const idx = (mockFieldConfigs as unknown)[mod].findIndex((f: Record<string, unknown>) => f.id === params.id);
+      if (idx >= 0) { (mockFieldConfigs as unknown)[mod][idx] = { ...(mockFieldConfigs as unknown)[mod][idx], ...body }; break; }
     }
     return HttpResponse.json({ code: 200, message: '字段更新成功' });
   }),
   http.delete(apiUrl('/field-configs/:id'), ({ params }) => {
     for (const mod of Object.keys(mockFieldConfigs)) {
-      const idx = (mockFieldConfigs as any)[mod].findIndex((f: any) => f.id === params.id);
-      if (idx >= 0) { (mockFieldConfigs as any)[mod].splice(idx, 1); break; }
+      const idx = (mockFieldConfigs as unknown)[mod].findIndex((f: Record<string, unknown>) => f.id === params.id);
+      if (idx >= 0) { (mockFieldConfigs as unknown)[mod].splice(idx, 1); break; }
     }
     return HttpResponse.json({ code: 200, message: '字段删除成功' });
   }),
   http.put(apiUrl('/field-configs/reorder'), async ({ request }) => {
-    const { module, orderedIds } = await request.json() as any;
-    const configs = (mockFieldConfigs as any)[module] || [];
+    const { module, orderedIds } = await request.json() as Record<string, unknown>;
+    const configs = (mockFieldConfigs as unknown)[module] || [];
     orderedIds.forEach((id: string, index: number) => {
-      const f = configs.find((c: any) => c.id === id);
+      const f = configs.find((c: Record<string, unknown>) => c.id === id);
       if (f) f.sortOrder = index + 1;
     });
     return HttpResponse.json({ code: 200, message: '排序更新成功' });
@@ -1008,29 +724,29 @@ export const handlers = [
   http.get(apiUrl('/field-templates'), ({ request }) => {
     const url = new URL(request.url);
     const module = url.searchParams.get('module') || 'sample';
-    return HttpResponse.json({ code: 200, data: { list: mockFieldTemplates.filter((t: any) => t.module === module) } });
+    return HttpResponse.json({ code: 200, data: { list: mockFieldTemplates.filter((t: Record<string, unknown>) => t.module === module) } });
   }),
   http.post(apiUrl('/field-templates'), async ({ request }) => {
-    const body = await request.json() as any;
+    const body = await request.json() as Record<string, unknown>;
     const item = { id: 'tmpl' + Date.now(), version: 1, isSnapshot: false, createdAt: new Date().toISOString(), ...body };
     mockFieldTemplates.push(item);
     return HttpResponse.json({ code: 200, data: item, message: '模板创建成功' });
   }),
   http.put(apiUrl('/field-templates/:id'), async ({ params, request }) => {
-    const body = await request.json() as any;
-    const idx = mockFieldTemplates.findIndex((t: any) => t.id === params.id);
+    const body = await request.json() as Record<string, unknown>;
+    const idx = mockFieldTemplates.findIndex((t: Record<string, unknown>) => t.id === params.id);
     if (idx >= 0) mockFieldTemplates[idx] = { ...mockFieldTemplates[idx], ...body, version: mockFieldTemplates[idx].version + 1 };
     return HttpResponse.json({ code: 200, message: '模板更新成功' });
   }),
   http.post(apiUrl('/field-templates/:id/clone'), ({ params }) => {
-    const src = mockFieldTemplates.find((t: any) => t.id === params.id);
+    const src = mockFieldTemplates.find((t: Record<string, unknown>) => t.id === params.id);
     if (!src) return HttpResponse.json({ code: 404, message: '模板不存在' }, { status: 404 });
     const clone = { ...src, id: 'tmpl' + Date.now(), name: src.name + '(副本)', version: 1, isSnapshot: false, parentId: src.id, createdAt: new Date().toISOString() };
     mockFieldTemplates.push(clone);
     return HttpResponse.json({ code: 200, data: clone, message: '模板克隆成功' });
   }),
   http.post(apiUrl('/field-templates/:id/snapshot'), ({ params }) => {
-    const src = mockFieldTemplates.find((t: any) => t.id === params.id);
+    const src = mockFieldTemplates.find((t: Record<string, unknown>) => t.id === params.id);
     if (!src) return HttpResponse.json({ code: 404, message: '模板不存在' }, { status: 404 });
     const snapshot = { ...src, id: 'snap' + Date.now(), name: src.name + '(v' + src.version + ' 快照)', version: src.version, isSnapshot: true, createdAt: new Date().toISOString() };
     mockFieldTemplates.push(snapshot);
@@ -1051,7 +767,7 @@ export const handlers = [
       : HttpResponse.json({ code: 404, message: '该样品暂无COC记录' }, { status: 404 });
   }),
   http.post(apiUrl('/coc/chains/:id/events'), async ({ params, request }) => {
-    const body = await request.json() as any;
+    const body = await request.json() as Record<string, unknown>;
     const chain = mockCOCChains.find(c => c.id === params.id);
     if (!chain) return HttpResponse.json({ code: 404, message: '链不存在' }, { status: 404 });
     if (chain.status === 'disposed') return HttpResponse.json({ code: 400, message: '样品已处置，不可添加事件' }, { status: 400 });
@@ -1065,7 +781,7 @@ export const handlers = [
       metadata: body.metadata || {}, prevEventId: prevId,
       signature: body.signature,
     };
-    events.push(evt as any);
+    events.push(evt as unknown);
     // Auto verify integrity
     const check = verifyChainIntegrity(events as COCEvent[]);
     Object.assign(chain, { integrity: check.valid, integrityMsg: check.valid ? undefined : check.msg });
@@ -1086,7 +802,7 @@ export const handlers = [
     return HttpResponse.json({ code: 200, data: { valid: check.valid, msg: check.msg }, message: check.valid ? '校验通过' : '链完整性异常' });
   }),
   http.post(apiUrl('/coc/transfer'), async ({ request }) => {
-    const body = await request.json() as any;
+    const body = await request.json() as Record<string, unknown>;
     const chain = mockCOCChains.find(c => c.id === body.chainId);
     if (!chain) return HttpResponse.json({ code: 404, message: '链不存在' }, { status: 404 });
     const events = chain.events || [];
@@ -1121,7 +837,7 @@ export const handlers = [
     return HttpResponse.json({ code: 200, data: {}, message: '交接记录创建成功' });
   }),
   http.post(apiUrl('/coc/disposal'), async ({ request }) => {
-    const body = await request.json() as any;
+    const body = await request.json() as Record<string, unknown>;
     const chain = mockCOCChains.find(c => c.id === body.chainId);
     if (!chain) return HttpResponse.json({ code: 404, message: '链不存在' }, { status: 404 });
     const events = chain.events || [];
@@ -1161,10 +877,10 @@ export const handlers = [
 
   http.get(apiUrl('/dynamic-render/:module/:templateId'), ({ params }) => {
     const { module, templateId } = params;
-    const tmpl = mockFieldTemplates.find((t: any) => t.id === templateId);
-    const configs = tmpl?.fieldConfigs || (mockFieldConfigs as any)[module as string] || [];
-    const groups: Record<string, any[]> = {};
-    configs.filter((f: any) => f.active !== false).sort((a: any, b: any) => a.sortOrder - b.sortOrder).forEach((f: any) => {
+    const tmpl = mockFieldTemplates.find((t: Record<string, unknown>) => t.id === templateId);
+    const configs = tmpl?.fieldConfigs || (mockFieldConfigs as unknown)[module as string] || [];
+    const groups: Record<string, unknown[]> = {};
+    configs.filter((f: Record<string, unknown>) => f.active !== false).sort((a: Record<string, unknown>, b: Record<string, unknown>) => a.sortOrder - b.sortOrder).forEach((f: Record<string, unknown>) => {
       const g = f.groupName || '默认分组';
       if (!groups[g]) groups[g] = [];
       groups[g].push({
@@ -1183,14 +899,14 @@ export const handlers = [
 
   // POST /api/v1/signatures - Create a digital signature
   http.post(apiUrl('/signatures'), async ({ request }) => {
-    const body = (await request.json()) as Record<string, any>;
+    const body = (await request.json()) as Record<string, unknown>;
     const { documentId, documentType, meaning, password, meaningStatement } = body;
 
     if (!password || password !== '123456') {
       return HttpResponse.json({ code: 401, message: '签名密码错误', data: null }, { status: 401 });
     }
 
-    const report = mockReports.find((r: any) => r.id === documentId);
+    const report = mockReports.find((r: Record<string, unknown>) => r.id === documentId);
     if (!report) {
       return HttpResponse.json({ code: 404, message: '文档不存在', data: null }, { status: 404 });
     }
@@ -1200,19 +916,19 @@ export const handlers = [
 
     // Find user certificate
     const currentUserId = '3';
-    const cert = mockSm2Certificates.find((c: any) => c.userId === currentUserId && c.status === 'active');
+    const cert = mockSm2Certificates.find((c: Record<string, unknown>) => c.userId === currentUserId && c.status === 'active');
 
     // Build signature payload
     const sigContent = `${documentHash}|${currentUserId}|${meaning}|${new Date().toISOString()}`;
     const sigValue = mockSm2Sign(sigContent, 'mock-private-key');
 
     // Find previous signature for chain
-    const existingSigs = mockDigitalSignatures.filter((s: any) => s.documentId === documentId);
+    const existingSigs = mockDigitalSignatures.filter((s: Record<string, unknown>) => s.documentId === documentId);
     const lastSig = existingSigs[existingSigs.length - 1];
 
-    const meaningDef = signatureMeanings.find((m: any) => m.value === meaning);
+    const meaningDef = signatureMeanings.find((m: Record<string, unknown>) => m.value === meaning);
 
-    const newSig: any = {
+    const newSig: Record<string, unknown> = {
       id: `dsig-${Date.now()}`,
       documentId,
       documentType: documentType || 'REPORT',
@@ -1284,7 +1000,7 @@ export const handlers = [
 
   // GET /api/v1/signatures/:id - Get signature details
   http.get(apiUrl('/signatures/:id'), ({ params }) => {
-    const sig = mockDigitalSignatures.find((s: any) => s.id === params.id);
+    const sig = mockDigitalSignatures.find((s: Record<string, unknown>) => s.id === params.id);
     if (!sig) {
       return HttpResponse.json({ code: 404, message: '签名记录不存在', data: null }, { status: 404 });
     }
@@ -1293,38 +1009,38 @@ export const handlers = [
 
   // GET /api/v1/signatures/document/:docId - Get document signatures
   http.get(apiUrl('/signatures/document/:docId'), ({ params }) => {
-    const sigs = mockDigitalSignatures.filter((s: any) => s.documentId === params.docId);
+    const sigs = mockDigitalSignatures.filter((s: Record<string, unknown>) => s.documentId === params.docId);
     return HttpResponse.json({ code: 200, message: 'success', data: { list: sigs, total: sigs.length } });
   }),
 
   // POST /api/v1/signatures/verify - Verify signature
   http.post(apiUrl('/signatures/verify'), async ({ request }) => {
-    const body = (await request.json()) as Record<string, any>;
+    const body = (await request.json()) as Record<string, unknown>;
     const { documentId } = body;
 
-    const report = mockReports.find((r: any) => r.id === documentId);
+    const report = mockReports.find((r: Record<string, unknown>) => r.id === documentId);
     if (!report) {
       return HttpResponse.json({ code: 404, message: '文档不存在', data: null }, { status: 404 });
     }
 
-    const sigs = mockDigitalSignatures.filter((s: any) => s.documentId === documentId);
+    const sigs = mockDigitalSignatures.filter((s: Record<string, unknown>) => s.documentId === documentId);
     const currentHash = computeDocumentHash(report);
-    const allValidSigs = sigs.filter((s: any) => s.status === 'valid');
-    const documentIntact = allValidSigs.length === 0 || allValidSigs.some((s: any) => s.documentHash === currentHash);
-    const allCertsValid = allValidSigs.every((s: any) => {
-      const cert = mockSm2Certificates.find((c: any) => c.id === s.signerCertId);
+    const allValidSigs = sigs.filter((s: Record<string, unknown>) => s.status === 'valid');
+    const documentIntact = allValidSigs.length === 0 || allValidSigs.some((s: Record<string, unknown>) => s.documentHash === currentHash);
+    const allCertsValid = allValidSigs.every((s: Record<string, unknown>) => {
+      const cert = mockSm2Certificates.find((c: Record<string, unknown>) => c.id === s.signerCertId);
       return cert && cert.status === 'active';
     });
 
-    const result: any = {
+    const result: Record<string, unknown> = {
       valid: documentIntact && allCertsValid && allValidSigs.length > 0,
       documentIntact,
       signerVerified: allCertsValid,
       certValid: allCertsValid,
       timestampValid: true,
-      signatures: allValidSigs.map((s: any) => {
-        const meaningDef = signatureMeanings.find((m: any) => m.value === s.meaning);
-        const cert = mockSm2Certificates.find((c: any) => c.id === s.signerCertId);
+      signatures: allValidSigs.map((s: Record<string, unknown>) => {
+        const meaningDef = signatureMeanings.find((m: Record<string, unknown>) => m.value === s.meaning);
+        const cert = mockSm2Certificates.find((c: Record<string, unknown>) => c.id === s.signerCertId);
         return {
           signerName: s.signerName,
           meaning: s.meaning,
@@ -1356,22 +1072,22 @@ export const handlers = [
 
   // GET /api/v1/signatures/verify/qr/:docId - Public QR verification (no auth needed)
   http.get(apiUrl('/signatures/verify/qr/:docId'), ({ params }) => {
-    const report = mockReports.find((r: any) => r.id === params.docId);
+    const report = mockReports.find((r: Record<string, unknown>) => r.id === params.docId);
     if (!report) {
       return HttpResponse.json({ code: 404, message: '报告不存在', data: null }, { status: 404 });
     }
 
-    const sigs = mockDigitalSignatures.filter((s: any) => s.documentId === params.docId);
+    const sigs = mockDigitalSignatures.filter((s: Record<string, unknown>) => s.documentId === params.docId);
     const currentHash = computeDocumentHash(report);
-    const validSigs = sigs.filter((s: any) => s.status === 'valid' && s.documentHash === currentHash);
+    const validSigs = sigs.filter((s: Record<string, unknown>) => s.status === 'valid' && s.documentHash === currentHash);
 
-    const result: any = {
+    const result: Record<string, unknown> = {
       reportNo: report.reportNo,
       title: report.title,
       customerName: report.customerName,
       issuedAt: report.issuedAt,
-      signatures: validSigs.map((s: any) => {
-        const meaningDef = signatureMeanings.find((m: any) => m.value === s.meaning);
+      signatures: validSigs.map((s: Record<string, unknown>) => {
+        const meaningDef = signatureMeanings.find((m: Record<string, unknown>) => m.value === s.meaning);
         return {
           signerName: s.signerName,
           meaning: s.meaning,
@@ -1391,8 +1107,8 @@ export const handlers = [
 
   // POST /api/v1/certificates - Import certificate
   http.post(apiUrl('/certificates'), async ({ request }) => {
-    const body = (await request.json()) as Record<string, any>;
-    const newCert: any = {
+    const body = (await request.json()) as Record<string, unknown>;
+    const newCert: Record<string, unknown> = {
       id: 'cert-sm2-' + String(mockSm2Certificates.length + 1).padStart(3, '0'),
       userId: body.userId || '3',
       userName: body.userName || '新用户',
@@ -1417,7 +1133,7 @@ export const handlers = [
 
   // GET /api/v1/certificates/:id - Certificate details
   http.get(apiUrl('/certificates/:id'), ({ params }) => {
-    const cert = mockSm2Certificates.find((c: any) => c.id === params.id);
+    const cert = mockSm2Certificates.find((c: Record<string, unknown>) => c.id === params.id);
     if (!cert) {
       return HttpResponse.json({ code: 404, message: '证书不存在', data: null }, { status: 404 });
     }
@@ -1426,7 +1142,7 @@ export const handlers = [
 
   // POST /api/v1/certificates/:id/revoke - Revoke certificate
   http.post(apiUrl('/certificates/:id/revoke'), ({ params }) => {
-    const cert = mockSm2Certificates.find((c: any) => c.id === params.id);
+    const cert = mockSm2Certificates.find((c: Record<string, unknown>) => c.id === params.id);
     if (!cert) {
       return HttpResponse.json({ code: 404, message: '证书不存在', data: null }, { status: 404 });
     }
@@ -1461,13 +1177,13 @@ export const handlers = [
     return HttpResponse.json({ code: 200, message: 'success', data: { list: mockReportTemplates, total: mockReportTemplates.length } });
   }),
   http.post(apiUrl('/reports/templates'), async ({ request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as Record<string, unknown>;
     const newTemplate = { id: 'tmpl' + Date.now(), ...body, createdAt: new Date().toISOString().replace('T', ' ').slice(0, 19), updatedAt: new Date().toISOString().replace('T', ' ').slice(0, 19) };
     mockReportTemplates.push(newTemplate);
     return HttpResponse.json({ code: 200, message: 'success', data: newTemplate });
   }),
   http.put(apiUrl('/reports/templates/:id'), async ({ params, request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as Record<string, unknown>;
     const idx = mockReportTemplates.findIndex(t => t.id === params.id);
     if (idx === -1) return HttpResponse.json({ code: 404, message: '模板不存在' }, { status: 404 });
     mockReportTemplates[idx] = { ...mockReportTemplates[idx], ...body, updatedAt: new Date().toISOString().replace('T', ' ').slice(0, 19) };
@@ -1490,13 +1206,13 @@ export const handlers = [
     return HttpResponse.json({ code: 200, message: 'success', data: { list: mockReportSchedules, total: mockReportSchedules.length } });
   }),
   http.post(apiUrl('/reports/schedules'), async ({ request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as Record<string, unknown>;
     const newSchedule = { id: 'sch' + Date.now(), ...body, enabled: true };
     mockReportSchedules.push(newSchedule);
     return HttpResponse.json({ code: 200, message: 'success', data: newSchedule });
   }),
   http.put(apiUrl('/reports/schedules/:id'), async ({ params, request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as Record<string, unknown>;
     const idx = mockReportSchedules.findIndex(s => s.id === params.id);
     if (idx === -1) return HttpResponse.json({ code: 404, message: '调度不存在' }, { status: 404 });
     mockReportSchedules[idx] = { ...mockReportSchedules[idx], ...body };
@@ -1511,13 +1227,13 @@ export const handlers = [
     return HttpResponse.json({ code: 200, message: 'success', data: { list: mockReportExecutions, total: mockReportExecutions.length } });
   }),
   http.post(apiUrl('/reports/executions'), async ({ request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as Record<string, unknown>;
     const newExec = { id: 'exec' + Date.now(), actualTime: new Date().toISOString().replace('T', ' ').slice(0, 19), ...body };
     mockReportExecutions.unshift(newExec);
     return HttpResponse.json({ code: 200, message: 'success', data: newExec });
   }),
   http.post(apiUrl('/reports/generate'), async ({ request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as Record<string, unknown>;
     const reportId = body.reportId || body.templateId;
     const report = mockReportTemplates.find(t => t.id === reportId);
     const newExec = {
@@ -1531,41 +1247,11 @@ export const handlers = [
       outputSize: (Math.random() * 3 + 0.5).toFixed(1) + 'MB',
       triggerType: 'manual',
     };
-    mockReportExecutions.unshift(newExec as any);
+    mockReportExecutions.unshift(newExec as unknown);
     return HttpResponse.json({ code: 200, message: 'success', data: newExec });
   }),
   http.get(apiUrl('/reports/data-sources'), () => {
     return HttpResponse.json({ code: 200, message: 'success', data: { list: mockDataSources } });
-  }),
-  http.get(apiUrl('/reports/generated'), () => {
-    return HttpResponse.json({ code: 200, message: 'success', data: { list: mockGeneratedReports, total: mockGeneratedReports.length } });
-  }),
-  http.get(apiUrl('/reports/generated/:id/download'), ({ params }) => {
-    const report = mockGeneratedReports.find(r => r.id === params.id);
-    if (!report) return HttpResponse.json({ code: 404, message: '报表不存在' }, { status: 404 });
-    const blob = new Blob([`Mock report content for ${report.reportName}`], { type: 'application/octet-stream' });
-    return new HttpResponse(blob, {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/octet-stream',
-        'Content-Disposition': `attachment; filename="${report.fileName}"`,
-      },
-    });
-  }),
-  http.post(apiUrl('/reports/distribute'), async ({ request }) => {
-    const body = (await request.json()) as any;
-    const { reportId, recipients, subject } = body;
-    return HttpResponse.json({
-      code: 200,
-      message: 'success',
-      data: {
-        reportId,
-        sentAt: new Date().toISOString().replace('T', ' ').slice(0, 19),
-        recipients,
-        subject: subject || '报表分发',
-        status: 'sent',
-      },
-    });
   }),
 
   // ============================================
@@ -1575,13 +1261,13 @@ export const handlers = [
     return HttpResponse.json({ code: 200, message: 'success', data: { list: mockDictTypes, total: mockDictTypes.length } });
   }),
   http.post(apiUrl('/dict-types'), async ({ request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as Record<string, unknown>;
     const newType = { id: 'dt' + Date.now(), ...body };
     mockDictTypes.push(newType);
     return HttpResponse.json({ code: 200, message: 'success', data: newType });
   }),
   http.put(apiUrl('/dict-types/:id'), async ({ params, request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as Record<string, unknown>;
     const idx = mockDictTypes.findIndex(t => t.id === params.id);
     if (idx === -1) return HttpResponse.json({ code: 404, message: '字典类型不存在' }, { status: 404 });
     mockDictTypes[idx] = { ...mockDictTypes[idx], ...body };
@@ -1604,13 +1290,13 @@ export const handlers = [
     return HttpResponse.json({ code: 200, message: 'success', data: { list, total: list.length } });
   }),
   http.post(apiUrl('/dict-items'), async ({ request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as Record<string, unknown>;
     const newItem = { id: 'di' + Date.now(), ...body };
     mockDictItems.push(newItem);
     return HttpResponse.json({ code: 200, message: 'success', data: newItem });
   }),
   http.put(apiUrl('/dict-items/:id'), async ({ params, request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as Record<string, unknown>;
     const idx = mockDictItems.findIndex(i => i.id === params.id);
     if (idx === -1) return HttpResponse.json({ code: 404, message: '字典项不存在' }, { status: 404 });
     mockDictItems[idx] = { ...mockDictItems[idx], ...body };
@@ -1643,7 +1329,7 @@ export const handlers = [
     return HttpResponse.json({ code: 200, message: 'success', data: contract });
   }),
   http.post(apiUrl('/contracts'), async ({ request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as Record<string, unknown>;
     const newContract = {
       id: 'ct' + Date.now(),
       no: body.no || `CT-${new Date().getFullYear()}-${String(mockContracts.length + 1).padStart(3, '0')}`,
@@ -1655,7 +1341,7 @@ export const handlers = [
     return HttpResponse.json({ code: 200, message: 'success', data: newContract });
   }),
   http.put(apiUrl('/contracts/:id'), async ({ params, request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as Record<string, unknown>;
     const idx = mockContracts.findIndex(c => c.id === params.id);
     if (idx === -1) return HttpResponse.json({ code: 404, message: '合同不存在' }, { status: 404 });
     mockContracts[idx] = { ...mockContracts[idx], ...body, updatedAt: new Date().toISOString().replace('T', ' ').slice(0, 19) };
@@ -1676,7 +1362,7 @@ export const handlers = [
     return HttpResponse.json({ code: 200, message: 'success', data: { list: mockWorkflowDefinitions, total: mockWorkflowDefinitions.length } });
   }),
   http.post(apiUrl('/workflow/definitions'), async ({ request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as Record<string, unknown>;
     const newDef = {
       id: `wf${Date.now()}`,
       ...body,
@@ -1691,7 +1377,7 @@ export const handlers = [
     return HttpResponse.json({ code: 200, message: 'success', data: newDef });
   }),
   http.put(apiUrl('/workflow/definitions/:id'), async ({ params, request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as Record<string, unknown>;
     const idx = mockWorkflowDefinitions.findIndex(d => d.id === params.id);
     if (idx === -1) return HttpResponse.json({ code: 404, message: '流程模板不存在' }, { status: 404 });
     mockWorkflowDefinitions[idx] = { ...mockWorkflowDefinitions[idx], ...body, updatedAt: new Date().toISOString().replace('T', ' ').slice(0, 19) };
@@ -1734,7 +1420,7 @@ export const handlers = [
     return HttpResponse.json({ code: 200, message: '催办通知已发送', data: inst });
   }),
   http.post(apiUrl('/workflow/instances/:id/transfer'), async ({ params, request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as Record<string, unknown>;
     const inst = mockWorkflowInstances.find(i => i.id === params.id);
     if (!inst) return HttpResponse.json({ code: 404, message: '实例不存在' }, { status: 404 });
     inst.assignees = [body.assignee];
@@ -1750,7 +1436,7 @@ export const handlers = [
     return HttpResponse.json({ code: 200, message: '转交成功', data: inst });
   }),
   http.post(apiUrl('/workflow/instances/:id/terminate'), async ({ params, request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as Record<string, unknown>;
     const inst = mockWorkflowInstances.find(i => i.id === params.id);
     if (!inst) return HttpResponse.json({ code: 404, message: '实例不存在' }, { status: 404 });
     inst.status = 'terminated';
@@ -1765,77 +1451,6 @@ export const handlers = [
       timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
     });
     return HttpResponse.json({ code: 200, message: '流程已终止', data: inst });
-  }),
-
-  // AI Assistant
-  http.post(apiUrl('/ai/chat'), async ({ request }) => {
-    const body = (await request.json()) as any;
-    const msg = body.message || '';
-    let reply = '';
-    if (msg.includes('不合格')) reply = '本周不合格样品共 3 批次，主要集中在重金属检测（2 批次）和微生物检测（1 批次）。';
-    else if (msg.includes('报告')) reply = '上周共生成检测报告 156 份，其中 148 份已通过审核，8 份正在审核中。';
-    else if (msg.includes('质控')) reply = '近 30 天质控合格率 98.7%，其中有 2 次警告（铅标准品漂移）。';
-    else if (msg.includes('预测')) reply = '基于当前排程，预计平均检测周期为 4.2 天，较上周缩短 0.5 天。';
-    else reply = '收到您的问题：' + msg + '\n\n我是HC-LIMS AI助手，可以帮您查询样品状态、分析数据趋势、生成报告建议等。';
-    return HttpResponse.json({ code: 200, data: { reply, suggestions: ['查看详细报告', '导出数据', '设置预警'] } });
-  }),
-
-  // AI Anomaly Dashboard
-  http.get(apiUrl('/ai/anomaly/dashboard'), () => {
-    const alerts = [
-      { id: 'a1', level: 'critical', title: '铅标准品超标', description: '质控样 Pb 浓度 12.5 mg/L，超出控制限（10.0 mg/L）', source: '质控管理', occurredAt: '2025-08-15 09:30:00', status: 'active', suggestedAction: '重新配制标准品并校准仪器' },
-      { id: 'a2', level: 'warning', title: '检测周期延长', description: '近 3 天平均检测周期 5.8 天，超出目标值 5.0 天', source: '任务管理', occurredAt: '2025-08-14 16:00:00', status: 'active', suggestedAction: '检查任务分配和仪器负载' },
-      { id: 'a3', level: 'info', title: '新设备校准到期', description: 'ICP-MS 年度校准将于 2025-09-01 到期', source: '仪器管理', occurredAt: '2025-08-13 10:00:00', status: 'resolved', suggestedAction: '已预约校准服务' },
-    ];
-    const predictions = Array.from({ length: 7 }, (_, i) => {
-      const date = new Date(); date.setDate(date.getDate() + i + 1);
-      return { date: date.toISOString().slice(0, 10), predicted: 4.2 + Math.random() * 0.8 - 0.4, lower: 3.5, upper: 5.0 };
-    });
-    return HttpResponse.json({ code: 200, data: { riskScore: 62, alerts, predictions } });
-  }),
-
-  // ELN Templates
-  http.get(apiUrl('/eln/templates'), () => HttpResponse.json({ code: 200, data: { list: [
-    { id: 't1', name: '水质检测原始记录', category: '环境检测', fields: [
-      { id: 'f1', label: '样品编号', type: 'text', required: true },
-      { id: 'f2', label: '检测项目', type: 'select', required: true, options: ['pH', 'COD', '重金属', '微生物'] },
-      { id: 'f3', label: '检测结果', type: 'table', required: true },
-      { id: 'f4', label: '检测方法', type: 'select', required: true, options: ['GB/T 5750', 'HJ 828'] },
-    ]},
-    { id: 't2', name: '食品微生物检验记录', category: '食品检测', fields: [
-      { id: 'f5', label: '样品名称', type: 'text', required: true },
-      { id: 'f6', label: '培养条件', type: 'text', required: true },
-      { id: 'f7', label: '菌落计数', type: 'table', required: true },
-    ]},
-  ]}})),
-
-  // Achievements
-  http.get(apiUrl('/achievements/statistics'), () => HttpResponse.json({ code: 200, data: {
-    total: 12, paperCount: 5, patentCount: 3, awardCount: 2, completionCount: 2, totalCitations: 186,
-  }})),
-  http.post(apiUrl('/achievements'), async ({ request }) => {
-    const body = (await request.json()) as any;
-    return HttpResponse.json({ code: 200, data: { id: 'ach' + Date.now(), ...body } });
-  }),
-  http.delete(apiUrl('/achievements/:id'), () => HttpResponse.json({ code: 200 })),
-
-  // Teaching CRUD
-  http.post(apiUrl('/teaching/courses'), async ({ request }) => {
-    const body = (await request.json()) as any;
-    const course = { id: 'c' + Date.now(), ...body, status: 'active', statusLabel: '开课中' };
-    mockCourses.push(course);
-    return HttpResponse.json({ code: 200, data: course });
-  }),
-  http.put(apiUrl('/teaching/courses/:id'), async ({ params, request }) => {
-    const body = (await request.json()) as any;
-    const idx = mockCourses.findIndex(c => c.id === params.id);
-    if (idx >= 0) mockCourses[idx] = { ...mockCourses[idx], ...body };
-    return HttpResponse.json({ code: 200, data: mockCourses[idx] });
-  }),
-  http.delete(apiUrl('/teaching/courses/:id'), ({ params }) => {
-    const idx = mockCourses.findIndex(c => c.id === params.id);
-    if (idx >= 0) mockCourses.splice(idx, 1);
-    return HttpResponse.json({ code: 200 });
   }),
 ];
 

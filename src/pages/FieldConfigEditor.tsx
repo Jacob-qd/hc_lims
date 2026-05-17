@@ -54,18 +54,19 @@ export const FieldConfigEditor: React.FC = () => {
       const res = await fetch(api(`/field-configs?module=${activeModule}`));
       const json = await res.json();
       setConfigs((json.data?.list || []).sort((a: FieldConfig, b: FieldConfig) => a.sortOrder - b.sortOrder));
-    } catch (e) {
+    } catch {
       message.error('加载字段配置失败');
     } finally {
       setLoading(false);
     }
   }, [activeModule]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchConfigs(); }, [fetchConfigs]);
 
   const handleSave = async () => {
     const values = await form.validateFields();
-    const body: any = { ...values, module: activeModule };
+    const body: Record<string, unknown> = { ...values, module: activeModule };
     if (editingField) body.id = editingField.id;
 
     try {
@@ -148,7 +149,7 @@ export const FieldConfigEditor: React.FC = () => {
     },
     {
       title: '条件显示', key: 'condition', width: 160,
-      render: (_: any, r: FieldConfig) =>
+      render: (_: string, r: FieldConfig) =>
         r.conditionRules?.map((c, i) => (
           <Tag key={i} color="blue" style={{ marginBottom: 2 }}>
             {c.field} {c.operator} {String(c.value)}
@@ -161,7 +162,7 @@ export const FieldConfigEditor: React.FC = () => {
     },
     {
       title: '操作', key: 'action', width: 150,
-      render: (_: any, r: FieldConfig) => (
+      render: (_: string, r: FieldConfig) => (
         <Space>
           <Tooltip title="编辑"><Button size="small" icon={<EditOutlined />} onClick={() => handleEdit(r)} /></Tooltip>
           <Tooltip title="下移"><Button size="small" onClick={() => {
@@ -303,7 +304,7 @@ export const FieldConfigEditor: React.FC = () => {
       >
         <Form
           layout="vertical"
-          onValuesChange={(changed) => setPreviewValues((prev: any) => ({ ...prev, ...changed }))}
+          onValuesChange={(changed) => setPreviewValues((prev: Record<string, unknown>) => ({ ...prev, ...changed }))}
         >
           <DynamicFieldRenderer
             configs={configs}

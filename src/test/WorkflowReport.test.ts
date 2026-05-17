@@ -5,7 +5,7 @@ describe('工作流引擎 — 流程定义解析', () => {
   type NodeType = 'start' | 'approval' | 'countersign' | 'notification' | 'condition' | 'parallel' | 'timer' | 'end';
   type EdgeCondition = 'pass' | 'reject' | 'default';
 
-  interface WorkflowNode { id: string; type: NodeType; label: string; config?: Record<string, any>; }
+  interface WorkflowNode { id: string; type: NodeType; label: string; config?: Record<string, unknown>; }
   interface WorkflowEdge { from: string; to: string; condition?: EdgeCondition; }
 
   interface WorkflowDef { nodes: WorkflowNode[]; edges: WorkflowEdge[]; }
@@ -147,8 +147,7 @@ describe('工作流引擎 — 流程定义解析', () => {
 
 describe('工作流引擎 — 状态流转', () => {
   it('待办→处理中→已完成', () => {
-    let status = 'pending';
-    status = 'processing';
+    let status = 'processing';
     expect(status).toBe('processing');
     status = 'completed';
     expect(status).toBe('completed');
@@ -298,15 +297,15 @@ describe('报表引擎 — 报表模板', () => {
 });
 
 describe('报表引擎 — 数据聚合', () => {
-  function aggregate(data: any[], groupBy: string, aggregate: 'count' | 'sum' | 'avg', valueField?: string): any[] {
-    const groups: Record<string, any[]> = {};
+  function aggregate(data: Record<string, unknown>[], groupBy: string, aggregate: 'count' | 'sum' | 'avg', valueField?: string): Record<string, unknown>[] {
+    const groups: Record<string, Record<string, unknown>[]> = {};
     data.forEach(item => {
-      const key = item[groupBy] ?? '未知';
+      const key = String(item[groupBy] ?? '未知');
       if (!groups[key]) groups[key] = [];
       groups[key].push(item);
     });
     return Object.entries(groups).map(([key, items]) => {
-      const result: any = { [groupBy]: key, count: items.length };
+      const result: Record<string, unknown> = { [groupBy]: key, count: items.length };
       if (aggregate === 'count') return result;
       if (valueField && (aggregate === 'sum' || aggregate === 'avg')) {
         const total = items.reduce((s, i) => s + (Number(i[valueField]) || 0), 0);
@@ -397,7 +396,7 @@ describe('报表引擎 — 定时调度', () => {
 describe('报表引擎 — 导出格式', () => {
   type ExportFormat = 'pdf' | 'excel' | 'html' | 'image';
 
-  function validateExport(data: any[], format: ExportFormat, template: string): { ok: boolean; msg: string } {
+  function validateExport(data: Record<string, unknown>[], format: ExportFormat, template: string): { ok: boolean; msg: string } {
     if (!data || data.length === 0) return { ok: false, msg: '无数据可导出' };
     if (!['pdf', 'excel', 'html', 'image'].includes(format)) return { ok: false, msg: '不支持的格式' };
     return { ok: true, msg: `${template} 导出为 ${format.toUpperCase()}` };
@@ -412,7 +411,7 @@ describe('报表引擎 — 导出格式', () => {
   });
 
   it('不支持格式报错', () => {
-    expect(validateExport([{ a: 1 }], 'csv' as any, 'test').ok).toBe(false);
+    expect(validateExport([{ a: 1 }], 'csv' as unknown as ExportFormat, 'test').ok).toBe(false);
   });
 
   it('无数据不导出', () => {

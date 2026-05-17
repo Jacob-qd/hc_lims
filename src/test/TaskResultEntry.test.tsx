@@ -8,7 +8,7 @@ describe('TaskResultEntry', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockResolvedValue({
+    fetchSpy = vi.spyOn(globalThis as unknown as { fetch: typeof globalThis.fetch }, 'fetch').mockResolvedValue({
       ok: true,
       status: 200,
       json: async () => ({ code: 200, data: [], message: 'success' }),

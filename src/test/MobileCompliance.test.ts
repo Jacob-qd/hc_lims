@@ -38,7 +38,7 @@ describe('移动端 PWA — 核心功能', () => {
 
 describe('移动端 PWA — 离线缓存', () => {
   it('缓存策略: 优先使用缓存', () => {
-    const cacheFirst = async (cache: any, request: Request) => {
+    const cacheFirst = async (cache: Cache, request: Request) => {
       const cached = await cache.match(request);
       return cached || fetch(request);
     };
@@ -54,7 +54,7 @@ describe('移动端 PWA — 离线缓存', () => {
   });
 
   it('离线时返回缓存首页', () => {
-    const offlineFallback = async (cache: any) => {
+    const offlineFallback = async (cache: Cache) => {
       return cache.match('/') || new Response('Offline', { status: 503 });
     };
     expect(offlineFallback).toBeDefined();

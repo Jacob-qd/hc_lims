@@ -9,7 +9,7 @@ const mockContracts = [
   { id: 'ct2', no: 'CT-2025-002', name: '土壤检测', customerId: 'c2', customerName: '博克水务', amount: 80000, type: 'project', typeLabel: '项目合同', startDate: '2025-03-01', endDate: '2025-06-30', status: 'expiring', statusLabel: '即将到期', signDate: '2025-03-01', contactPerson: '李经理', contactPhone: '13900139001', remark: '', createdAt: '2025-03-01', updatedAt: '2025-03-01' },
 ];
 
-function mockFetchResponse(data: any) {
+function mockFetchResponse(data: unknown) {
   return { ok: true, status: 200, json: async () => data } as Response;
 }
 
@@ -17,7 +17,7 @@ describe('ContractsPage', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockImplementation(async (url: any) => {
+    fetchSpy = vi.spyOn(globalThis as unknown as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: unknown) => {
       if (url.includes('/api/v1/contracts')) {
         return mockFetchResponse({ code: 200, data: { list: mockContracts, total: mockContracts.length } });
       }

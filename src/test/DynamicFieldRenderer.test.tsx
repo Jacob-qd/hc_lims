@@ -123,7 +123,7 @@ describe('DynamicFieldRenderer — 边界情况', () => {
   });
 
   it('undefined values不崩溃', () => {
-    expect(() => render(<Form><DynamicFieldRenderer configs={fieldTypes} values={undefined as any} /></Form>)).not.toThrow();
+    expect(() => render(<Form><DynamicFieldRenderer configs={fieldTypes} values={undefined as unknown} /></Form>)).not.toThrow();
   });
 
   it('disabled=所有表单项不可编辑', () => {

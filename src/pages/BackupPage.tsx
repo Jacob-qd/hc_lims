@@ -7,7 +7,7 @@ const { Option } = Select;
 const api = (p: string) => `/api/v1${p}`;
 
 export const BackupPage: React.FC = () => {
-  const [backups, setBackups] = useState<any[]>([]);
+  const [backups, setBackups] = useState<unknown[]>([]);
   const [loading, setLoading] = useState(false);
   const [backingUp, setBackingUp] = useState(false);
   const [restoring, setRestoring] = useState<string | null>(null);
@@ -24,6 +24,7 @@ export const BackupPage: React.FC = () => {
     finally { setLoading(false); }
   }, []);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { loadBackups(); }, [loadBackups]);
 
   const handleBackup = async () => {
@@ -69,7 +70,7 @@ export const BackupPage: React.FC = () => {
   const stats = {
     total: backups.length,
     latest: backups[0]?.date?.split(' ')[1] || '-',
-    totalSize: backups.reduce((s: number, b: any) => s + parseInt(b.size), 0) + 'MB',
+    totalSize: backups.reduce((s: number, b: Record<string, unknown>) => s + parseInt(b.size), 0) + 'MB',
     autoFreq: '每日',
   };
 
@@ -109,8 +110,8 @@ export const BackupPage: React.FC = () => {
               const map: Record<string, {color:string;label:string}> = { completed: { color: 'green', label: '完成' }, verifying: { color: 'processing', label: '校验中' }, failed: { color: 'red', label: '失败' } };
               return <Tag color={map[s]?.color}>{map[s]?.label || s}</Tag>;
             }},
-            { title: '校验', width: 80, render: (_: any, r: any) => <Button size="small" icon={<CheckCircleOutlined />} onClick={() => handleVerify(r.id)}>校验</Button> },
-            { title: '操作', width: 150, render: (_: any, r: any) => (
+            { title: '校验', width: 80, render: (_: string, r: Record<string, unknown>) => <Button size="small" icon={<CheckCircleOutlined />} onClick={() => handleVerify(r.id)}>校验</Button> },
+            { title: '操作', width: 150, render: (_: string, r: Record<string, unknown>) => (
               <Space>
                 <Button size="small" type="primary" ghost loading={restoring === r.id} onClick={() => handleRestore(r.id)}>恢复</Button>
                 <Button size="small" icon={<DownloadOutlined />} onClick={() => message.success('下载已开始: ' + r.name)}>下载</Button>

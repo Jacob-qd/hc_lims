@@ -69,7 +69,7 @@ const allMenuItems = [
 ];
 
 // 根据角色过滤菜单
-const filterMenuByRole = (items: any[], role: string): any[] => {
+const filterMenuByRole = (items: unknown[], role: string): unknown[] => {
   return items
     .filter(item => {
       if (!item.roles) return true;
@@ -110,8 +110,8 @@ export const AppSider: React.FC = () => {
   );
 
   const getSelectedKey = () => {
-    const flatItems = filteredMenu.flatMap((item: any) => item.children ? [item, ...item.children] : [item]);
-    const match = flatItems.find((item: any) => item.key && location.pathname.startsWith(item.key));
+    const flatItems = filteredMenu.flatMap((item: Record<string, unknown>) => item.children ? [item, ...item.children] : [item]);
+    const match = flatItems.find((item: Record<string, unknown>) => item.key && location.pathname.startsWith(item.key));
     return match?.key || '/dashboard';
   };
   const selectedKey = getSelectedKey();

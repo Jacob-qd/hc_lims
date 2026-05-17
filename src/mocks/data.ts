@@ -995,7 +995,7 @@ export const fieldTypes = [
   { value: 'reference', label: '关联查询', icon: '🔗' },
 ];
 
-export const mockFieldConfigs: Record<string, any[]> = {
+export const mockFieldConfigs: Record<string, unknown[]> = {
   sample: [
     { id: 'fc1', module: 'sample', fieldKey: 'sampleName', label: '样品名称', fieldType: 'text', required: true, sortOrder: 1, groupName: '基本信息', active: true },
     { id: 'fc2', module: 'sample', fieldKey: 'sampleType', label: '样品类型', fieldType: 'select', required: true, sortOrder: 2, groupName: '基本信息', options: [{ label: '水质', value: 'water' }, { label: '土壤', value: 'soil' }, { label: '食品', value: 'food' }, { label: '空气', value: 'air' }, { label: '其他', value: 'other' }], active: true },
@@ -1027,7 +1027,7 @@ export const mockFieldTemplates = [
     id: 'tmpl1', name: '水质检测模板', module: 'sample', description: '水质样品字段配置', version: 1,
     appliesTo: { sampleType: ['water'] }, isSnapshot: false,
     fieldConfigs: mockFieldConfigs.sample.filter(f =>
-      !f.conditionRules || f.conditionRules.some((c: any) => c.field === 'sampleType' && c.value === 'water')
+      !f.conditionRules || f.conditionRules.some((c: Record<string, unknown>) => c.field === 'sampleType' && c.value === 'water')
     ),
     createdBy: '管理员', createdAt: '2026-05-01',
   },
@@ -1035,7 +1035,7 @@ export const mockFieldTemplates = [
     id: 'tmpl2', name: '土壤检测模板', module: 'sample', description: '土壤样品字段配置', version: 1,
     appliesTo: { sampleType: ['soil'] }, isSnapshot: false,
     fieldConfigs: mockFieldConfigs.sample.filter(f =>
-      !f.conditionRules || f.conditionRules.some((c: any) => ['soil', 'water'].includes(c.value as string))
+      !f.conditionRules || f.conditionRules.some((c: Record<string, unknown>) => ['soil', 'water'].includes(c.value as string))
     ),
     createdBy: '管理员', createdAt: '2026-05-01',
   },
@@ -1101,7 +1101,7 @@ export function verifyChainIntegrity(events: COCEvent[]): { valid: boolean; msg:
   return { valid: true, msg: '校验通过' };
 }
 
-const makeEvent = (id: string, chainId: string, type: any, op: string, offsetDays: number, offsetHour: number, prev: string | null, loc: string, note?: string): any => ({
+const makeEvent = (id: string, chainId: string, type: string, op: string, offsetDays: number, offsetHour: number, prev: string | null, loc: string, note?: string): Record<string, unknown> => ({
   id, chainId, eventType: type, operatorName: op, occurredAt: d(offsetDays, offsetHour),
   location: loc, notes: note, prevEventId: prev, metadata: {},
 });
@@ -1271,7 +1271,8 @@ export function mockSm3Hash(input: string): string {
 }
 
 // SM2 signature simulation (mock)
-export function mockSm2Sign(data: string, _privateKey: string): string {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function mockSm2Sign(data: string, privateKey: string): string {
   const hash = mockSm3Hash(data);
   // Deterministic prefix based on input
   const prefix = hash.slice(0, 8);
@@ -1484,7 +1485,7 @@ export interface WorkflowNode {
   name: string;
   x: number;
   y: number;
-  config?: Record<string, any>;
+  config?: Record<string, unknown>;
 }
 
 export interface WorkflowEdge {
@@ -1522,7 +1523,7 @@ export interface WorkflowInstance {
   currentNodes: string[];
   currentNodeNames: string[];
   assignees: string[];
-  variables: Record<string, any>;
+  variables: Record<string, unknown>;
   startedBy: string;
   startedAt: string;
   completedAt?: string;
@@ -1770,14 +1771,14 @@ export const mockWorkflowInstances: WorkflowInstance[] = [
 ];
 
 // Helper to compute SM3 document hash
-export function computeDocumentHash(document: { id: string; reportNo: string; title: string; customerName: string; testResults: any[] }): string {
+export function computeDocumentHash(document: { id: string; reportNo: string; title: string; customerName: string; testResults: unknown[] }): string {
   const normalized = JSON.stringify({
     id: document.id,
     reportNo: document.reportNo,
     title: document.title,
     customerName: document.customerName,
     testResultCount: document.testResults.length,
-    sortedResults: document.testResults.map((r: any) => ({
+    sortedResults: document.testResults.map((r: Record<string, unknown>) => ({
       itemName: r.itemName,
       result: r.result,
       unit: r.unit,
@@ -1818,7 +1819,7 @@ export interface ReportField {
 export interface ReportFilter {
   field: string;
   operator: 'eq' | 'ne' | 'gt' | 'gte' | 'lt' | 'lte' | 'contains' | 'in' | 'between';
-  value: any;
+  value: unknown;
   logic: 'AND' | 'OR';
 }
 
@@ -1845,7 +1846,7 @@ export interface ChartComponent {
   type: 'line' | 'bar' | 'pie' | 'area' | 'kpi' | 'table';
   dataSource: string;
   config: ChartConfig;
-  previewData: any[];
+  previewData: unknown[];
   createdAt: string;
 }
 
@@ -1859,8 +1860,6 @@ export interface ReportSchedule {
   lastRunStatus?: 'success' | 'failed' | 'running';
   outputFile?: string;
   enabled: boolean;
-  emailRecipients?: string[];
-  distributeOnComplete?: boolean;
 }
 
 export interface ReportExecution {
@@ -1942,119 +1941,6 @@ export const mockReportTemplates: ReportTemplate[] = [
     outputSettings: { format: 'Excel', pageSize: 'A4' },
     createdAt: '2024-05-10 09:00:00', updatedAt: '2024-05-10 09:00:00',
   },
-  {
-    id: 'tmpl5', name: '实验室月度运营报告', type: 'scheduled', dataSource: 'reports',
-    outputFormat: ['PDF', 'HTML'], status: 'active',
-    fields: [
-      { fieldKey: 'reportNo', label: '报告编号' },
-      { fieldKey: 'title', label: '标题' },
-      { fieldKey: 'customerName', label: '客户' },
-      { fieldKey: 'statusLabel', label: '状态' },
-      { fieldKey: 'createdAt', label: '创建时间' },
-    ],
-    filters: [
-      { field: 'createdAt', operator: 'gte', value: '2024-05-01', logic: 'AND' },
-    ],
-    chartConfig: { chartType: 'kpi', legend: true, title: '月度KPI' },
-    outputSettings: { format: 'PDF', pageSize: 'A4', headerText: '红创检测认证有限公司', footerText: '运营管理部', orientation: 'portrait' },
-    cronExpression: '0 8 1 * *',
-    nextRunTime: '2024-06-01 08:00:00',
-    createdAt: '2024-05-01 10:00:00', updatedAt: '2024-05-15 14:30:00',
-  },
-  {
-    id: 'tmpl6', name: '样品量趋势分析', type: 'scheduled', dataSource: 'samples',
-    outputFormat: ['PDF', 'Excel'], status: 'active',
-    fields: [
-      { fieldKey: 'sampleNo', label: '样品编号', aggregation: 'count' },
-      { fieldKey: 'typeLabel', label: '样品类型' },
-      { fieldKey: 'createdAt', label: '创建时间' },
-    ],
-    filters: [
-      { field: 'createdAt', operator: 'gte', value: '2024-01-01', logic: 'AND' },
-    ],
-    chartConfig: { chartType: 'line', xAxis: 'month', yAxis: 'count', legend: true, title: '样品量月度趋势' },
-    outputSettings: { format: 'PDF', pageSize: 'A4', headerText: '红创检测认证有限公司', footerText: '业务管理部', orientation: 'landscape' },
-    cronExpression: '0 9 1 * *',
-    nextRunTime: '2024-06-01 09:00:00',
-    createdAt: '2024-05-01 10:00:00', updatedAt: '2024-05-15 14:30:00',
-  },
-  {
-    id: 'tmpl7', name: '样品及时率统计', type: 'manual', dataSource: 'tasks',
-    outputFormat: ['Excel'], status: 'active',
-    fields: [
-      { fieldKey: 'sampleName', label: '样品名称' },
-      { fieldKey: 'statusLabel', label: '状态' },
-      { fieldKey: 'plannedEnd', label: '计划完成' },
-      { fieldKey: 'actualEnd', label: '实际完成' },
-    ],
-    filters: [
-      { field: 'status', operator: 'eq', value: 'completed', logic: 'AND' },
-    ],
-    chartConfig: { chartType: 'pie', colorField: 'statusLabel', legend: true, title: '样品及时率分布' },
-    outputSettings: { format: 'Excel', pageSize: 'A4', headerText: '红创检测认证有限公司', footerText: '质量管理部' },
-    createdAt: '2024-05-05 11:00:00', updatedAt: '2024-05-12 16:00:00',
-  },
-  {
-    id: 'tmpl8', name: '检测项目分布', type: 'manual', dataSource: 'tasks',
-    outputFormat: ['PDF', 'Excel'], status: 'active',
-    fields: [
-      { fieldKey: 'testItem', label: '检测项目' },
-      { fieldKey: 'taskNo', label: '任务数', aggregation: 'count' },
-    ],
-    filters: [],
-    chartConfig: { chartType: 'pie', colorField: 'testItem', legend: true, title: '检测项目分布' },
-    outputSettings: { format: 'PDF', pageSize: 'A4', headerText: '红创检测认证有限公司', footerText: '检测中心' },
-    createdAt: '2024-05-06 09:00:00', updatedAt: '2024-05-12 16:00:00',
-  },
-  {
-    id: 'tmpl9', name: '仪器检测量排名', type: 'scheduled', dataSource: 'instruments',
-    outputFormat: ['PDF'], status: 'active',
-    fields: [
-      { fieldKey: 'name', label: '仪器名称' },
-      { fieldKey: 'taskNo', label: '检测量', aggregation: 'count' },
-    ],
-    filters: [],
-    chartConfig: { chartType: 'bar', xAxis: 'name', yAxis: 'count', legend: true, title: '仪器检测量Top10' },
-    outputSettings: { format: 'PDF', pageSize: 'A4', headerText: '红创检测认证有限公司', footerText: '仪器管理部', orientation: 'landscape' },
-    cronExpression: '0 8 * * 1',
-    nextRunTime: '2024-05-20 08:00:00',
-    createdAt: '2024-05-01 10:00:00', updatedAt: '2024-05-10 09:00:00',
-  },
-  {
-    id: 'tmpl10', name: '质控月度报告', type: 'scheduled', dataSource: 'quality',
-    outputFormat: ['PDF', 'Excel'], status: 'active',
-    fields: [
-      { fieldKey: 'batch', label: '批次' },
-      { fieldKey: 'analyte', label: '分析物' },
-      { fieldKey: 'measured', label: '测定值', aggregation: 'avg' },
-      { fieldKey: 'deviation', label: '偏差(%)', aggregation: 'avg' },
-      { fieldKey: 'westgardRule', label: '质控规则' },
-    ],
-    filters: [
-      { field: 'date', operator: 'gte', value: '2024-05-01', logic: 'AND' },
-    ],
-    chartConfig: { chartType: 'line', xAxis: 'date', yAxis: 'deviation', legend: true, title: 'QC控制图' },
-    outputSettings: { format: 'PDF', pageSize: 'A4', headerText: '红创检测认证有限公司', footerText: '质量管理部' },
-    cronExpression: '0 0 1 * *',
-    nextRunTime: '2024-06-01 00:00:00',
-    createdAt: '2024-05-01 10:00:00', updatedAt: '2024-05-15 14:30:00',
-  },
-  {
-    id: 'tmpl11', name: '超标异常统计', type: 'manual', dataSource: 'quality',
-    outputFormat: ['Excel', 'CSV'], status: 'active',
-    fields: [
-      { fieldKey: 'batch', label: '批次' },
-      { fieldKey: 'analyte', label: '分析物' },
-      { fieldKey: 'measured', label: '测定值' },
-      { fieldKey: 'deviation', label: '偏差(%)' },
-    ],
-    filters: [
-      { field: 'deviation', operator: 'gt', value: '10', logic: 'AND' },
-    ],
-    chartConfig: { chartType: 'bar', xAxis: 'analyte', yAxis: 'count', legend: true, title: '超标异常趋势' },
-    outputSettings: { format: 'Excel', pageSize: 'A4', headerText: '红创检测认证有限公司', footerText: '质量管理部' },
-    createdAt: '2024-05-08 14:00:00', updatedAt: '2024-05-12 16:00:00',
-  },
 ];
 
 export const mockChartComponents: ChartComponent[] = [
@@ -2096,36 +1982,6 @@ export const mockChartComponents: ChartComponent[] = [
     ],
     createdAt: '2024-05-14 10:00:00',
   },
-  {
-    id: 'chart5', name: '仪器利用率仪表盘', type: 'bar', dataSource: 'instruments',
-    config: { chartType: 'bar', xAxis: 'name', yAxis: 'utilization', legend: true, title: '仪器利用率排名' },
-    previewData: [
-      { name: 'ICP-MS', utilization: 92 }, { name: 'GC-MS', utilization: 85 },
-      { name: 'HPLC', utilization: 78 }, { name: '原子吸收', utilization: 65 },
-      { name: '离子色谱', utilization: 72 }, { name: '气相色谱', utilization: 80 },
-    ],
-    createdAt: '2024-05-14 10:00:00',
-  },
-  {
-    id: 'chart6', name: '超标异常趋势', type: 'line', dataSource: 'quality',
-    config: { chartType: 'line', xAxis: 'date', yAxis: 'deviation', legend: true, title: '超标异常月度趋势' },
-    previewData: [
-      { date: '2024-01', deviation: 2 }, { date: '2024-02', deviation: 5 },
-      { date: '2024-03', deviation: 3 }, { date: '2024-04', deviation: 8 },
-      { date: '2024-05', deviation: 4 },
-    ],
-    createdAt: '2024-05-14 10:00:00',
-  },
-  {
-    id: 'chart7', name: '部门绩效雷达图', type: 'bar', dataSource: 'tasks',
-    config: { chartType: 'bar', xAxis: 'dept', yAxis: 'score', legend: true, title: '部门绩效对比' },
-    previewData: [
-      { dept: '理化实验室', score: 88 }, { dept: '环境实验室', score: 92 },
-      { dept: '无机分析室', score: 85 }, { dept: '仪器分析室', score: 90 },
-      { dept: '微生物实验室', score: 87 },
-    ],
-    createdAt: '2024-05-14 10:00:00',
-  },
 ];
 
 export const mockReportSchedules: ReportSchedule[] = [
@@ -2134,21 +1990,12 @@ export const mockReportSchedules: ReportSchedule[] = [
     cronExpression: '0 0 1 * *', nextRunTime: '2024-06-01 00:00:00',
     lastRunTime: '2024-05-01 00:00:00', lastRunStatus: 'success',
     outputFile: '月度检测统计报表_20240501.pdf', enabled: true,
-    emailRecipients: ['manager@hc-lims.com', 'director@hc-lims.com'], distributeOnComplete: true,
   },
   {
     id: 'sch2', reportId: 'tmpl2', reportName: '仪器利用率报表',
     cronExpression: '0 8 * * 1', nextRunTime: '2024-05-20 08:00:00',
     lastRunTime: '2024-05-13 08:00:00', lastRunStatus: 'success',
     outputFile: '仪器利用率报表_20240513.pdf', enabled: true,
-    emailRecipients: ['instrument@hc-lims.com'], distributeOnComplete: true,
-  },
-  {
-    id: 'sch3', reportId: 'tmpl5', reportName: '实验室月度运营报告',
-    cronExpression: '0 8 1 * *', nextRunTime: '2024-06-01 08:00:00',
-    lastRunTime: '2024-05-01 08:00:00', lastRunStatus: 'success',
-    outputFile: '实验室月度运营报告_20240501.pdf', enabled: true,
-    emailRecipients: ['ops@hc-lims.com', 'director@hc-lims.com'], distributeOnComplete: true,
   },
 ];
 
@@ -2182,46 +2029,6 @@ export const mockReportExecutions: ReportExecution[] = [
     scheduledTime: '2024-05-06 08:00:00', actualTime: '2024-05-06 08:00:02',
     status: 'failed', errorMessage: '数据库连接超时',
     triggerType: 'scheduled',
-  },
-];
-
-export interface GeneratedReport {
-  id: string;
-  reportId: string;
-  reportName: string;
-  format: string;
-  fileName: string;
-  fileSize: string;
-  generatedAt: string;
-  generatedBy: string;
-  status: 'ready' | 'expired' | 'generating';
-  downloadUrl?: string;
-}
-
-export const mockGeneratedReports: GeneratedReport[] = [
-  {
-    id: 'gen1', reportId: 'tmpl1', reportName: '月度检测统计报表',
-    format: 'PDF', fileName: '月度检测统计报表_20240501.pdf', fileSize: '2.3MB',
-    generatedAt: '2024-05-01 00:00:05', generatedBy: '系统', status: 'ready',
-    downloadUrl: '/api/v1/reports/generated/gen1/download',
-  },
-  {
-    id: 'gen2', reportId: 'tmpl2', reportName: '仪器利用率报表',
-    format: 'PDF', fileName: '仪器利用率报表_20240513.pdf', fileSize: '1.1MB',
-    generatedAt: '2024-05-13 08:00:03', generatedBy: '系统', status: 'ready',
-    downloadUrl: '/api/v1/reports/generated/gen2/download',
-  },
-  {
-    id: 'gen3', reportId: 'tmpl3', reportName: '质量控制趋势报表',
-    format: 'Excel', fileName: '质量控制趋势报表_20240510.xlsx', fileSize: '856KB',
-    generatedAt: '2024-05-10 14:30:00', generatedBy: '管理员', status: 'ready',
-    downloadUrl: '/api/v1/reports/generated/gen3/download',
-  },
-  {
-    id: 'gen4', reportId: 'tmpl5', reportName: '实验室月度运营报告',
-    format: 'PDF', fileName: '实验室月度运营报告_20240501.pdf', fileSize: '3.2MB',
-    generatedAt: '2024-05-01 08:00:02', generatedBy: '系统', status: 'ready',
-    downloadUrl: '/api/v1/reports/generated/gen4/download',
   },
 ];
 

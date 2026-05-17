@@ -15,7 +15,7 @@ const getInitialType = (): LabType => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored === 'research' || stored === 'commercial') return stored;
-  } catch {}
+  } catch { /* no-op */ }
   return 'commercial';
 };
 

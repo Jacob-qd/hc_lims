@@ -43,7 +43,7 @@ export function renderWithProviders(ui: ReactNode) {
  *   });
  */
 export function setupMockApi(routes: Record<string, unknown>) {
-  return vi.spyOn(globalThis as any, 'fetch').mockImplementation(async (input: unknown) => {
+  return vi.spyOn(globalThis as unknown as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (input: unknown) => {
     const url = String(input);
     for (const [prefix, data] of Object.entries(routes)) {
       if (url.includes(prefix)) {
@@ -55,7 +55,7 @@ export function setupMockApi(routes: Record<string, unknown>) {
 }
 
 export function mockFetch(data: unknown, ok = true) {
-  return vi.spyOn(globalThis as any, 'fetch').mockResolvedValue({
+  return vi.spyOn(globalThis as unknown as { fetch: typeof globalThis.fetch }, 'fetch').mockResolvedValue({
     ok, json: async () => ({ code: ok ? 200 : 500, data }),
     status: ok ? 200 : 500,
   } as Response);
@@ -68,7 +68,7 @@ function uid(prefix = 'id'): string {
   return `${prefix}-${++_idCounter}-${Date.now()}`;
 }
 
-export function buildReport(overrides?: Partial<Record<string, any>>): Record<string, any> {
+export function buildReport(overrides?: Partial<Record<string, unknown>>): Record<string, unknown> {
   return {
     id: uid('r'),
     reportNo: `RPT-${String(Date.now()).slice(-6)}`,
@@ -104,7 +104,7 @@ export function buildReport(overrides?: Partial<Record<string, any>>): Record<st
   };
 }
 
-export function buildSample(overrides?: Record<string, any>): Record<string, any> {
+export function buildSample(overrides?: Record<string, unknown>): Record<string, unknown> {
   return {
     id: uid('s'),
     sampleNo: `SMP-${String(Date.now()).slice(-6)}`,
@@ -119,7 +119,7 @@ export function buildSample(overrides?: Record<string, any>): Record<string, any
   };
 }
 
-export function buildTask(overrides?: Record<string, any>): Record<string, any> {
+export function buildTask(overrides?: Record<string, unknown>): Record<string, unknown> {
   return {
     id: uid('t'),
     taskNo: `TK-${String(Date.now()).slice(-6)}`,
@@ -134,7 +134,7 @@ export function buildTask(overrides?: Record<string, any>): Record<string, any> 
   };
 }
 
-export function buildCOCChain(overrides?: Record<string, any>): Record<string, any> {
+export function buildCOCChain(overrides?: Record<string, unknown>): Record<string, unknown> {
   return {
     id: uid('coc'),
     cocNumber: `COC-${String(Date.now()).slice(-8)}`,
@@ -151,7 +151,7 @@ export function buildCOCChain(overrides?: Record<string, any>): Record<string, a
   };
 }
 
-export function buildCertificate(overrides?: Record<string, any>): Record<string, any> {
+export function buildCertificate(overrides?: Record<string, unknown>): Record<string, unknown> {
   return {
     id: uid('cert'),
     userName: '张三',
@@ -168,7 +168,7 @@ export function buildCertificate(overrides?: Record<string, any>): Record<string
   };
 }
 
-export function buildBackup(overrides?: Record<string, any>): Record<string, any> {
+export function buildBackup(overrides?: Record<string, unknown>): Record<string, unknown> {
   return {
     id: uid('bkp'),
     name: `backup_${Date.now()}.sql`,
@@ -180,7 +180,7 @@ export function buildBackup(overrides?: Record<string, any>): Record<string, any
   };
 }
 
-export function buildMethod(overrides?: Record<string, any>): Record<string, any> {
+export function buildMethod(overrides?: Record<string, unknown>): Record<string, unknown> {
   return {
     id: uid('mtd'),
     code: `M-${String(Date.now()).slice(-3)}`,
@@ -198,7 +198,7 @@ export function buildMethod(overrides?: Record<string, any>): Record<string, any
   };
 }
 
-export function buildELNEntry(overrides?: Record<string, any>): Record<string, any> {
+export function buildELNEntry(overrides?: Record<string, unknown>): Record<string, unknown> {
   return {
     id: uid('eln'),
     title: '实验记录',
@@ -212,7 +212,7 @@ export function buildELNEntry(overrides?: Record<string, any>): Record<string, a
   };
 }
 
-export function buildWorkflowDef(overrides?: Record<string, any>): Record<string, any> {
+export function buildWorkflowDef(overrides?: Record<string, unknown>): Record<string, unknown> {
   return {
     id: uid('wf'),
     name: '审批流程',

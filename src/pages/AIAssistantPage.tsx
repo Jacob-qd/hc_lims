@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Card, Input, Button, Typography, Space, Tag, Spin, Divider, Avatar, List, message } from 'antd';
 import { SendOutlined, RobotOutlined, UserOutlined, BulbOutlined, BarChartOutlined, FileTextOutlined, ExperimentOutlined, ThunderboltOutlined } from '@ant-design/icons';
 
@@ -28,7 +28,7 @@ export const AIAssistantPage: React.FC = () => {
 
   useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
 
-  const sendMessage = async (text: string) => {
+  const sendMessage = useCallback(async (text: string) => {
     if (!text.trim()) return;
     const userMsg: ChatMessage = { id: 'u' + Date.now(), role: 'user', content: text, timestamp: new Date().toISOString() };
     setMessages(prev => [...prev, userMsg]); setInput(''); setLoading(true);
@@ -40,7 +40,7 @@ export const AIAssistantPage: React.FC = () => {
           timestamp: new Date().toISOString(), suggestions: data.data.suggestions }]);
       } else { message.error(data.message || 'AI服务异常'); }
     } catch { message.error('网络错误，请重试'); } finally { setLoading(false); }
-  };
+  }, []);
 
   return (
     <div style={{ maxWidth: 900, margin: '0 auto' }}>

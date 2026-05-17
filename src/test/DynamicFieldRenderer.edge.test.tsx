@@ -38,7 +38,7 @@ describe('条件运算符全覆盖', () => {
   const makeTarget = (op: string, val: unknown): FieldConfig => ({
     id:`t_${op}`, module:'sample', fieldKey:`target_${op}`, label:`目标_${op}`, fieldType:'text',
     required:false, sortOrder:2, groupName:'G', active:true,
-    conditionRules: [{ field: 'trigger', operator: op as any, value: val }],
+    conditionRules: [{ field: 'trigger', operator: op as string, value: val }],
   });
 
   it('eq_等于: 值匹配显示', () => {

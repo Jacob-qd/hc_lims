@@ -4,7 +4,7 @@ import { AlertOutlined, SafetyOutlined, RiseOutlined, FallOutlined, MinusOutline
 import { Area } from '@ant-design/plots';
 
 export const AIPredictionPage: React.FC = () => {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -32,20 +32,20 @@ export const AIPredictionPage: React.FC = () => {
   ];
 
   const areaConfig = data?.predictions ? {
-    data: data.predictions.flatMap((p: any) => [
+    data: data.predictions.flatMap((p: Record<string, unknown>) => [
       { date: p.date, value: p.predicted, type: '预测值' },
       { date: p.date, value: p.upper, type: '上限' },
       { date: p.date, value: p.lower, type: '下限' },
     ]), xField: 'date', yField: 'value', seriesField: 'type', smooth: true, height: 280,
     legend: { position: 'top' as const }, color: ['#722ed1', '#d3adf7', '#d3adf7'],
-    areaStyle: (datum: any) => datum.type === '上限' || datum.type === '下限' ? { fillOpacity: 0.1 } : { fillOpacity: 0.2 },
+    areaStyle: (datum: Record<string, unknown>) => datum.type === '上限' || datum.type === '下限' ? { fillOpacity: 0.1 } : { fillOpacity: 0.2 },
   } : null;
 
   if (loading) return <Spin size="large" style={{ display: 'block', margin: '40px auto' }} />;
 
-  const activeAlerts = data?.alerts?.filter((a: any) => a.status === 'active') || [];
-  const criticalCount = activeAlerts.filter((a: any) => a.level === 'critical').length;
-  const warningCount = activeAlerts.filter((a: any) => a.level === 'warning').length;
+  const activeAlerts = data?.alerts?.filter((a: Record<string, unknown>) => a.status === 'active') || [];
+  const criticalCount = activeAlerts.filter((a: Record<string, unknown>) => a.level === 'critical').length;
+  const warningCount = activeAlerts.filter((a: Record<string, unknown>) => a.level === 'warning').length;
 
   return (
     <div>
@@ -55,7 +55,7 @@ export const AIPredictionPage: React.FC = () => {
           <div style={{ marginTop: 8 }}><Tag color={criticalCount > 0 ? 'red' : 'green'}>{criticalCount} 个紧急</Tag><Tag color={warningCount > 0 ? 'orange' : 'green'}>{warningCount} 个警告</Tag></div>
         </Card></Col>
         <Col xs={24} sm={8}><Card><Statistic title="活跃告警" value={activeAlerts.length} valueStyle={{ color: '#ff4d4f' }} prefix={<AlertOutlined />} /></Card></Col>
-        <Col xs={24} sm={8}><Card><Statistic title="已解决" value={(data?.alerts?.filter((a: any) => a.status === 'resolved').length) || 0} valueStyle={{ color: '#52c41a' }} prefix={<RiseOutlined />} /></Card></Col>
+        <Col xs={24} sm={8}><Card><Statistic title="已解决" value={(data?.alerts?.filter((a: Record<string, unknown>) => a.status === 'resolved').length) || 0} valueStyle={{ color: '#52c41a' }} prefix={<RiseOutlined />} /></Card></Col>
       </Row>
       <Card title="异常告警" style={{ marginBottom: 24 }}><Table dataSource={data?.alerts} rowKey="id" columns={alertColumns} size="small" pagination={{ pageSize: 10 }} /></Card>
       <Row gutter={16}><Col span={24}><Card title={<><AreaChartOutlined /> 周期时间预测趋势（未来7天）</>}>{areaConfig && <Area {...areaConfig} />}</Card></Col></Row>

@@ -81,7 +81,7 @@ export const COCPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [searchText, setSearchText] = useState('');
   const [newEventType, setNewEventType] = useState<COCEventType>('RECEIPT');
-  const scanInputRef = useRef<any>(null);
+  const scanInputRef = useRef<unknown>(null);
   const [transferForm] = Form.useForm();
   const [disposalForm] = Form.useForm();
 
@@ -95,6 +95,7 @@ export const COCPage: React.FC = () => {
     finally { setLoading(false); }
   }, []);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { loadChains(); }, [loadChains]);
 
   const filteredChains = chains.filter(c => {
@@ -123,7 +124,7 @@ export const COCPage: React.FC = () => {
     }
   };
 
-  const handleTransfer = async (values: any) => {
+  const handleTransfer = async (values: unknown) => {
     const res = await fetch(api('/coc/transfer'), {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(values),
@@ -138,7 +139,7 @@ export const COCPage: React.FC = () => {
     }
   };
 
-  const handleDisposal = async (values: any) => {
+  const handleDisposal = async (values: unknown) => {
     if (!selectedChain) return;
     const res = await fetch(api('/coc/disposal'), {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -262,7 +263,7 @@ export const COCPage: React.FC = () => {
     },
     {
       title: '事件数', key: 'eventCount', width: 80,
-      render: (_: any, r: COCChain) => r.events?.length || 0,
+      render: (_: string, r: COCChain) => r.events?.length || 0,
     },
     {
       title: '创建时间', dataIndex: 'createdAt', key: 'createdAt', width: 160,
@@ -270,7 +271,7 @@ export const COCPage: React.FC = () => {
     },
     {
       title: '操作', key: 'action', width: 320,
-      render: (_: any, r: COCChain) => (
+      render: (_: string, r: COCChain) => (
         <Space size="small" wrap>
           <Button size="small" icon={<EyeOutlined />} onClick={() => showDetail(r.id)}>详情</Button>
           <Button size="small" icon={<FilePdfOutlined />} onClick={() => exportPDF(r)}>导出PDF</Button>
@@ -413,7 +414,7 @@ export const COCPage: React.FC = () => {
           <Divider orientation="left">扫码快速选择</Divider>
           <Form.Item>
             <Input.Search
-              ref={(ref) => { scanInputRef.current = ref as any; }}
+              ref={(ref) => { scanInputRef.current = ref as unknown; }}
               placeholder="扫描COC编号或样品条码"
               enterButton={<><ScanOutlined /> 扫描</>}
               onSearch={(val) => {
@@ -421,7 +422,7 @@ export const COCPage: React.FC = () => {
                 if (found) {
                   transferForm.setFieldsValue({ chainId: found.id });
                   message.success(`已识别: ${found.cocNumber}`);
-                  // @ts-ignore
+                  // @ts-expect-error ref type is unknown
                   scanInputRef.current?.blur?.();
                 } else {
                   message.error('未找到匹配的COC链');

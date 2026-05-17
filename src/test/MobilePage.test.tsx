@@ -11,7 +11,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { MobilePage } from '../pages/MobilePage';
 
-function mockFetch(data: any) {
+function mockFetch(data: unknown) {
   return { ok: true, status: 200, json: async () => ({ code: 200, data }) } as Response;
 }
 
@@ -21,7 +21,7 @@ describe('MobilePage - 移动端首页', () => {
   beforeEach(() => {
     // 清理离线队列
     localStorage.removeItem('sampling_offline_queue');
-    fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockImplementation(async (url: any) => {
+    fetchSpy = vi.spyOn(globalThis as unknown as { fetch: typeof globalThis.fetch }, 'fetch').mockImplementation(async (url: unknown) => {
       if (url.includes('/dashboard/stats')) return mockFetch({ todaySamples: 5, inProgress: 3, todayCompleted: 2, pendingReports: 1, pendingIssues: 0 });
       if (url.includes('/api/v1/tasks')) return mockFetch({ list: [
         { id: 't1', sampleName: '地表水样品-01', testItem: 'COD测定', status: 'in_progress', progress: 45, createdAt: '2025-01-01', analystName: '张三' },
@@ -83,7 +83,7 @@ describe('MobilePage - 移动端首页', () => {
 
   it('US1: 未登录时显示 0 统计', async () => {
     fetchSpy.mockRestore();
-    fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockResolvedValue({
+    fetchSpy = vi.spyOn(globalThis as unknown as { fetch: typeof globalThis.fetch }, 'fetch').mockResolvedValue({
       ok: true, json: async () => ({ code: 200, data: { list: [] } }),
     } as Response);
     render(<BrowserRouter><ConfigProvider><MobilePage /></ConfigProvider></BrowserRouter>);
