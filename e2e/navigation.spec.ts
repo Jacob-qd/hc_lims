@@ -26,6 +26,7 @@ const LEVEL1_PAGES = [
   { path: '/compliance', name: '合规管理' },
   { path: '/monitor', name: '系统监控' },
   { path: '/scheduler', name: '批处理调度' },
+  { path: '/workflow', name: '工作流引擎' },
 ];
 
 // 二级页面（子路由）

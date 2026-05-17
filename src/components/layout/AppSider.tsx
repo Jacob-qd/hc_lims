@@ -129,7 +129,7 @@ export const AppSider: React.FC = () => {
       {!collapsed && (
         <div style={{ padding: '12px 16px', borderBottom: '1px solid #f0f0f0' }}>
           <Space>
-            <Avatar src={user?.avatar} icon={<UserOutlined />} size={32} />
+            <Avatar src={user?.avatar || undefined} icon={<UserOutlined />} size={32} />
             <div style={{ lineHeight: 1.3 }}>
               <Text strong style={{ fontSize: 13, display: 'block' }}>{user?.realName || '用户'}</Text>
               <Tag color="blue" style={{ fontSize: 10, lineHeight: '16px' }}>
