@@ -191,7 +191,7 @@ export const AIAssistantPage: React.FC = () => {
                 新对话
               </Button>
             }
-            bodyStyle={{ padding: 8, maxHeight: 600, overflow: 'auto' }}
+            styles={{ body: { padding: 8, maxHeight: 600, overflow: 'auto' } }}
           >
             <List
               dataSource={conversations}
@@ -232,7 +232,7 @@ export const AIAssistantPage: React.FC = () => {
         {/* Right - chat area */}
         <Col xs={24} md={18}>
           <Card
-            bodyStyle={{ padding: 16, height: 560, display: 'flex', flexDirection: 'column' }}
+            styles={{ body: { padding: 16, height: 560, display: 'flex', flexDirection: 'column' } }}
           >
             {/* Messages */}
             <div style={{ flex: 1, overflowY: 'auto', padding: '0 8px' }}>
