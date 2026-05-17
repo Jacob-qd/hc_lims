@@ -116,6 +116,8 @@ export const router = createBrowserRouter([
       { path: 'backup', element: <BackupPage /> },
       { path: 'workflow', element: <WorkflowPage /> },
       { path: 'reports/engine', element: <ReportEnginePage /> },
+      { path: 'ai-assistant', element: <AIAssistantPage /> },
+      { path: 'ai-prediction', element: <AIPredictionPage /> },
       { path: 'settings/field-configs', element: <FieldConfigEditor /> },
       { path: 'compliance', element: <CompliancePage /> },
       { path: 'monitor', element: <MonitorPage /> },
