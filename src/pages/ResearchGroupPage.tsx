@@ -193,9 +193,9 @@ export const ResearchGroupPage: React.FC = () => {
     try {
       const res = await window.fetch('/api/v1/research/groups/expanded');
       const json = await res.json();
-      const list: ResearchGroup[] = (json.data?.list || []).map((g: any) => ({
-        ...g,
-        detail: g.detail || {
+      const list: ResearchGroup[] = (json.data?.list || []).map((g: Record<string, unknown>) => ({
+        ...(g as Record<string, unknown>),
+        detail: (g.detail as Record<string, unknown> | undefined) || {
           piTitle: '教授',
           founded: '2020-01-01',
           field: '-',
@@ -223,7 +223,7 @@ export const ResearchGroupPage: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData(); // eslint-disable-line react-hooks/set-state-in-effect
   }, []);
 
   const filtered = groups.filter(

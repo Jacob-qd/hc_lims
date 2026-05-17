@@ -51,18 +51,18 @@ describe('ResearchGroupPage', () => {
 
   it('opens detail drawer when row clicked', async () => {
     render(<ResearchGroupPage />);
-    const row = await screen.findByText('环境分析课题组');
-    fireEvent.click(row);
+    const rows = await screen.findAllByText('环境分析课题组');
+    fireEvent.click(rows[0]);
     expect(await screen.findByText('成员管理')).toBeInTheDocument();
   });
 
   it('filters by search text', async () => {
     render(<ResearchGroupPage />);
-    await screen.findByText('环境分析课题组');
+    await screen.findAllByText('环境分析课题组');
     const input = screen.getByPlaceholderText('搜索课题组/PI/院系');
     fireEvent.change(input, { target: { value: '不存在' } });
     await waitFor(() => {
-      expect(screen.queryByText('环境分析课题组')).not.toBeInTheDocument();
+      expect(screen.queryAllByText('环境分析课题组').length).toBe(0);
     });
   });
 

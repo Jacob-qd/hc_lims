@@ -23,8 +23,9 @@ describe('ReservationPage', () => {
 
   it('opens create modal', async () => {
     render(<ReservationPage />);
-    await screen.findByText('新建预约');
-    fireEvent.click(screen.getAllByText('新建预约')[0]);
+    await screen.findAllByText('新建预约');
+    const buttons = screen.getAllByText('新建预约');
+    fireEvent.click(buttons[buttons.length - 1]);
     expect(await screen.findByText('选择仪器')).toBeInTheDocument();
   });
 });

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Card, Table, Tag, Button, Row, Col, Typography, Space, Input, Select, Modal, Form, message, Tabs, Descriptions, Timeline, Badge, Spin
+  Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Modal, Form, message, Tabs, Descriptions, Timeline, Badge
 } from 'antd';
-import { PlusOutlined, SearchOutlined, EditOutlined, CheckCircleOutlined, LockOutlined, HistoryOutlined, FileTextOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined, EditOutlined, CheckCircleOutlined, LockOutlined, FileTextOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -51,7 +51,7 @@ export const ELNPage: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData(); // eslint-disable-line react-hooks/set-state-in-effect
   }, []);
 
   const filtered = entries.filter((e: ELNEntry) => {
@@ -60,7 +60,7 @@ export const ELNPage: React.FC = () => {
     return matchesSearch && matchesStatus;
   });
 
-  const handleCreate = async (values: any) => {
+  const handleCreate = async (values: Record<string, unknown>) => {
     const res = await window.fetch('/api/v1/research/eln-entries', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -143,7 +143,7 @@ export const ELNPage: React.FC = () => {
             { title: '实验日期', dataIndex: 'date' },
             { title: 'Protocol', dataIndex: 'protocol' },
             { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={statusColors[s]}>{statusLabels[s]}</Tag> },
-            { title: '操作', render: (_: any, r: ELNEntry) => (
+            { title: '操作', render: (_: unknown, r: ELNEntry) => (
               <Space>
                 <Button type="link" size="small" icon={<EditOutlined />} onClick={() => openEditor(r)}>编辑</Button>
                 {r.status === 'draft' && <Button type="link" size="small" icon={<CheckCircleOutlined />} onClick={() => { setCurrentEntry(r); setSignVisible(true); }}>签名</Button>}
