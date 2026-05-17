@@ -161,6 +161,72 @@ const ordersHandlers = [
     return HttpResponse.json({ code: 200, message: 'success', data: newOrder });
   }),
 ];
+// ===== Mobile Extended Handlers (hc-7ca) =====
+const mobileExtendedHandlers = [
+  http.get(apiUrl('/mobile/tasks'), ({ request }) => {
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get('status');
+    let filtered = [...mockTasks];
+    if (status) filtered = filtered.filter(t => t.status === status);
+    return HttpResponse.json({ code: 200, data: { list: filtered, total: filtered.length } });
+  }),
+  http.post(apiUrl('/mobile/samples/scan'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const sample = mockSamples.find(s => s.sampleNo === body.barcode || s.id === body.barcode);
+    if (!sample) return HttpResponse.json({ code: 404, message: '样品不存在' }, { status: 404 });
+    // Update sample status to received and add COC event
+    sample.status = 'received';
+    sample.statusLabel = '已接收';
+    sample.receivingTime = new Date().toISOString();
+    const chain = mockCOCChains.find(c => c.sampleId === sample.id);
+    if (chain) {
+      const events = chain.events || [];
+      const prevId = events.length > 0 ? events[events.length - 1].id : null;
+      events.push({
+        id: 'evt' + Date.now(), chainId: chain.id,
+        eventType: 'RECEIPT',
+        operatorName: body.operatorName || '移动端签收',
+        occurredAt: new Date().toISOString(),
+        location: body.location || '移动端签收',
+        notes: `扫码签收: ${body.barcode}`,
+        metadata: { barcode: body.barcode, device: body.device || 'mobile' },
+        prevEventId: prevId,
+      });
+    }
+    return HttpResponse.json({ code: 200, data: sample, message: '签收成功' });
+  }),
+  http.post(apiUrl('/mobile/tests/:id/result'), async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    const task = mockTasks.find(t => t.id === params.id);
+    if (!task) return HttpResponse.json({ code: 404, message: '任务不存在' }, { status: 404 });
+    task.status = 'completed';
+    task.statusLabel = '已完成';
+    task.progress = 100;
+    task.actualEnd = new Date().toISOString().slice(0, 10);
+    return HttpResponse.json({ code: 200, data: { taskId: params.id, ...body }, message: '结果录入成功' });
+  }),
+  http.get(apiUrl('/mobile/reports/:id'), ({ params }) => {
+    const report = mockReports.find(r => r.id === params.id);
+    if (!report) return HttpResponse.json({ code: 404, message: '报告不存在' }, { status: 404 });
+    return HttpResponse.json({ code: 200, data: report });
+  }),
+  http.post(apiUrl('/mobile/signatures'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const newSig = {
+      id: `msig-${Date.now()}`,
+      documentId: body.documentId,
+      documentType: body.documentType || 'REPORT',
+      signerName: body.signerName || '移动端用户',
+      meaning: body.meaning || 'APPROVED',
+      signatureValue: body.signatureData || 'mock-signature',
+      timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+      device: body.device || 'mobile',
+      status: 'valid',
+    };
+    return HttpResponse.json({ code: 200, data: newSig, message: '签名成功' });
+  }),
+];
+
 const mobileSamplingHandlers = [
   http.get(apiUrl('/mobile/sampling-tasks'), ({ request }) => {
     const userId = new URL(request.url).searchParams.get('userId') || '';
@@ -1350,6 +1416,7 @@ export const handlers = [
     return HttpResponse.json({ code: 200, message: 'success' });
   }),
   ...mobileSamplingHandlers,
+  ...mobileExtendedHandlers,
   ...clientsHandlers,
   ...quotationsHandlers,
   ...ordersHandlers,
