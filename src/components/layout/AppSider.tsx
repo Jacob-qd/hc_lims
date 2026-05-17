@@ -18,7 +18,7 @@ const { Text } = Typography;
 
 // ===== 全量菜单定义 =====
 const allMenuItems = [
-  { key: '/dashboard', icon: <DashboardOutlined />, label: '首页', roles: ['admin', 'lab_tech', 'reviewer'] },
+  { key: '/dashboard', icon: <DashboardOutlined />, label: '首页', roles: ['admin', 'lab_tech', 'reviewer', 'sampler', 'client'] },
   { key: 'divider1', type: 'divider' as const, roles: ['admin', 'lab_tech', 'reviewer'] },
   { key: 'detection', icon: <ExperimentOutlined />, label: '检测实验室', roles: ['admin', 'lab_tech', 'reviewer', 'sampler'], children: [
     { key: '/samples', icon: <InboxOutlined />, label: '样品管理', roles: ['admin', 'lab_tech', 'sampler'] },
@@ -100,8 +100,9 @@ export const AppSider: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
-  const { user, logout } = useAuthStore();
-  const userRole = user?.role || 'admin';
+  const { user, logout, isAuthenticated } = useAuthStore();
+  // 未认证时不显示菜单，认证后按角色过滤
+  const userRole = isAuthenticated && user ? user.role : 'guest';
 
   const filteredMenu = useMemo(
     () => filterMenuByRole(allMenuItems, userRole),
