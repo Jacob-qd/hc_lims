@@ -1,106 +1,118 @@
-import React, { useEffect, useState } from 'react';
-import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Tabs, message, Modal, Form, Tooltip } from 'antd';
-import { PlusOutlined, SearchOutlined, EyeOutlined, DownloadOutlined, FileTextOutlined, TrophyOutlined, BookOutlined, FilePdfOutlined } from '@ant-design/icons';
-import { exportCSV, exportPDF, exportJSON } from '../utils/export';
+import React, { useState, useEffect } from 'react';
+import { Card, Table, Button, Tag, Space, Tabs, Statistic, Row, Col, Modal, Form, Input, message, Popconfirm } from 'antd';
+import { TrophyOutlined, FileTextOutlined, GoldOutlined, StarOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Column } from '@ant-design/plots';
 
-const { Title, Text } = Typography;
-const typeColors: Record<string, string> = { 论文: '#1677ff', 专利: '#52c41a', 报告: '#fa8c16', 数据: '#722ed1' };
-const typeIcons: Record<string, any> = { 论文: <BookOutlined />, 专利: <TrophyOutlined />, 报告: <FileTextOutlined /> };
+interface Achievement {
+  id: string; type: string; typeLabel: string;
+  title: string; authors: string[]; date: string;
+  metadata: Record<string, any>;
+}
+
+const typeColors: Record<string, string> = { paper: 'blue', patent: 'purple', project_completion: 'green', award: 'orange' };
+const typeIcons: Record<string, React.ReactNode> = { paper: <FileTextOutlined />, patent: <GoldOutlined />, project_completion: <StarOutlined />, award: <TrophyOutlined /> };
 
 export const AchievementPage: React.FC = () => {
-  const [pubs, setPubs] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [selected, setSelected] = useState<any>(null);
-  const [drawer, setDrawer] = useState(false);
-  const [createModal, setCreateModal] = useState(false);
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [statistics, setStatistics] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('all');
   const [form] = Form.useForm();
 
-  useEffect(() => {
-    fetch('/api/v1/research/publications').then(r => r.json()).then(d => { setPubs(d.data?.list || []); setLoading(false); });
-  }, []);
+  const fetchData = () => {
+    setLoading(true);
+    Promise.all([
+      fetch('/api/v1/research/publications').then(r => r.json()),
+      fetch('/api/v1/achievements/statistics').then(r => r.json()),
+    ]).then(([achRes, statRes]) => {
+      if (achRes.code === 200) setAchievements(achRes.data.list);
+      if (statRes.code === 200) setStatistics(statRes.data);
+    }).finally(() => setLoading(false));
+  };
 
-  const filtered = pubs.filter((p: any) => p.title.includes(search) || p.authors.includes(search) || p.journal.includes(search));
-  const stats = { total: pubs.length, papers: pubs.filter((p: any) => p.type === '论文').length, patents: pubs.filter((p: any) => p.type === '专利').length, published: pubs.filter((p: any) => p.status === 'published').length };
+  useEffect(() => { fetchData(); }, []);
+
+  const handleDelete = (id: string) => {
+    fetch(`/api/v1/achievements/${id}`, { method: 'DELETE' })
+      .then(() => { message.success('删除成功'); fetchData(); });
+  };
+
+  const handleSubmit = async (values: any) => {
+    const payload = { ...values, authors: values.authors?.split(',').map((s: string) => s.trim()) || [] };
+    const res = await fetch('/api/v1/achievements', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    const data = await res.json();
+    if (data.code === 200) { message.success('添加成功'); setModalOpen(false); form.resetFields(); fetchData(); }
+  };
+
+  const filtered = activeTab === 'all' ? achievements : achievements.filter(a => a.type === activeTab);
+
+  const columns = [
+    { title: '类型', dataIndex: 'type', width: 100, render: (t: string, r: Achievement) => <Tag color={typeColors[t]} icon={typeIcons[t]}>{r.typeLabel}</Tag> },
+    { title: '标题', dataIndex: 'title', ellipsis: true },
+    { title: '作者/完成人', dataIndex: 'authors', render: (v: string[]) => v.join(', '), ellipsis: true },
+    { title: '日期', dataIndex: 'date', width: 120 },
+    { title: '详细信息', render: (_: any, r: Achievement) => {
+      if (r.type === 'paper') return <span>期刊: {r.metadata.journal} | IF: {r.metadata.impactFactor}</span>;
+      if (r.type === 'patent') return <span>专利号: {r.metadata.patentNo} | {r.metadata.type}</span>;
+      if (r.type === 'award') return <span>{r.metadata.awardName} | {r.metadata.level}</span>;
+      if (r.type === 'project_completion') return <span>项目编号: {r.metadata.projectCode} | 等级: {r.metadata.grade}</span>;
+      return '-';
+    }, ellipsis: true },
+    { title: '操作', width: 100, render: (_: any, r: Achievement) => (
+      <Popconfirm title="确认删除？" onConfirm={() => handleDelete(r.id)}><Button size="small" danger icon={<DeleteOutlined />}>删除</Button></Popconfirm>
+    )},
+  ];
+
+  const statData = statistics ? [
+    { type: '论文', value: statistics.paperCount },
+    { type: '专利', value: statistics.patentCount },
+    { type: '获奖', value: statistics.awardCount },
+    { type: '项目结题', value: statistics.completionCount },
+  ] : [];
 
   return (
     <div>
-      <Row justify="space-between" style={{ marginBottom: 16 }}><Col><Title level={4}>成果管理</Title></Col>
-        <Col><Button type="primary" icon={<PlusOutlined />} onClick={() => setCreateModal(true)}>新增成果</Button></Col>
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} sm={6}><Card><Statistic title="成果总数" value={statistics?.total || 0} prefix={<TrophyOutlined />} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title="论文" value={statistics?.paperCount || 0} prefix={<FileTextOutlined />} valueStyle={{ color: '#1677ff' }} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title="专利" value={statistics?.patentCount || 0} prefix={<GoldOutlined />} valueStyle={{ color: '#722ed1' }} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title="总被引" value={statistics?.totalCitations || 0} prefix={<StarOutlined />} valueStyle={{ color: '#52c41a' }} /></Card></Col>
       </Row>
-      <Row gutter={[16,16]} style={{ marginBottom: 16 }}>
-        <Col xs={6}><Card size="small"><Statistic title="成果总数" value={stats.total} /></Card></Col>
-        <Col xs={6}><Card size="small"><Statistic title="论文" value={stats.papers} valueStyle={{ color: '#1677ff' }} prefix={<BookOutlined />} /></Card></Col>
-        <Col xs={6}><Card size="small"><Statistic title="专利" value={stats.patents} valueStyle={{ color: '#52c41a' }} prefix={<TrophyOutlined />} /></Card></Col>
-        <Col xs={6}><Card size="small"><Statistic title="已发表" value={stats.published} valueStyle={{ color: '#52c41a' }} /></Card></Col>
+
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col span={24}>
+          <Card title="成果分类统计">
+            <Column data={statData} xField="type" yField="value" height={200} />
+          </Card>
+        </Col>
       </Row>
-      <Card>
-        <Space style={{ marginBottom: 16 }}>
-          <Input placeholder="搜索标题/作者/期刊" prefix={<SearchOutlined />} value={search} onChange={e => setSearch(e.target.value)} style={{ width: 280 }} allowClear />
-          <Select placeholder="类型" style={{ width: 120 }} allowClear>
-            {Object.entries(typeColors).map(([k, col]) => <Select.Option key={k}><Tag color={col}>{k}</Tag></Select.Option>)}
-          </Select>
-          <Select placeholder="年份" style={{ width: 100 }} allowClear>
-            {[2025,2024].map(y => <Select.Option key={y}>{y}</Select.Option>)}
-          </Select>
-        </Space>
-        <Table dataSource={filtered} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} columns={[
-          { title: '标题', dataIndex: 'title', render: (t: string, r: any) => <a onClick={() => { setSelected(r); setDrawer(true); }}>{t}</a> },
-          { title: '类型', dataIndex: 'type', render: (t: string) => <Tag color={typeColors[t]} icon={typeIcons[t]}>{t}</Tag> },
-          { title: '期刊/专利号', dataIndex: 'journal' },
-          { title: '作者', dataIndex: 'authors', ellipsis: true },
-          { title: '年份', dataIndex: 'year' },
-          { title: 'DOI', dataIndex: 'doi', render: (d: string) => <Text code style={{ fontSize: 11 }}>{d}</Text> },
-          { title: '关联项目', dataIndex: 'project' },
-          { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={s === 'published' ? 'green' : 'orange'}>{s === 'published' ? '已发表' : '审核中'}</Tag> },
-          { title: '操作', render: (_: any, r: any) => (
-            <Space><Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawer(true); }} />
-            <Tooltip title="导出数据"><Button type="link" size="small" icon={<DownloadOutlined />} /></Tooltip></Space>
-          )},
-        ]} size="middle" />
+
+      <Card title={<Space><TrophyOutlined />成果管理</Space>}
+        extra={<Button type="primary" icon={<PlusOutlined />} onClick={() => { form.resetFields(); setModalOpen(true); }}>添加成果</Button>}>
+        <Tabs activeKey={activeTab} onChange={setActiveTab}>
+          <Tabs.TabPane tab="全部" key="all" />
+          <Tabs.TabPane tab={<Space><FileTextOutlined />论文</Space>} key="paper" />
+          <Tabs.TabPane tab={<Space><GoldOutlined />专利</Space>} key="patent" />
+          <Tabs.TabPane tab={<Space><StarOutlined />项目结题</Space>} key="project_completion" />
+          <Tabs.TabPane tab={<Space><TrophyOutlined />获奖</Space>} key="award" />
+        </Tabs>
+        <Table dataSource={filtered} rowKey="id" columns={columns} loading={loading} pagination={{ pageSize: 10 }} />
       </Card>
 
-      <Drawer title={selected?.title} open={drawer} onClose={() => { setDrawer(false); setSelected(null); }} width={520}>
-        {selected && (<>
-          <Descriptions column={1} bordered size="small">
-            <Descriptions.Item label="标题" span={2}>{selected.title}</Descriptions.Item>
-            <Descriptions.Item label="类型"><Tag color={typeColors[selected.type]}>{selected.type}</Tag></Descriptions.Item>
-            <Descriptions.Item label="期刊/专利号">{selected.journal}</Descriptions.Item>
-            <Descriptions.Item label="作者">{selected.authors}</Descriptions.Item>
-            <Descriptions.Item label="年份">{selected.year}</Descriptions.Item>
-            <Descriptions.Item label="DOI">{selected.doi}</Descriptions.Item>
-            <Descriptions.Item label="关联项目">{selected.project}</Descriptions.Item>
-          </Descriptions>
-          <Tabs style={{ marginTop: 16 }} items={[
-            { key: 'data', label: '关联实验数据', children: (
-              <Table dataSource={[{exp:'二维材料表面改性测试',date:'2024-05-20',type:'XPS/AFM数据'},{exp:'标准曲线测定',date:'2024-05-15',type:'光谱数据'}]} rowKey="exp" pagination={false} size="small" columns={[
-                {title:'实验名称',dataIndex:'exp'},{title:'日期',dataIndex:'date'},{title:'数据类型',dataIndex:'type'},
-                {title:'操作',render:(_:any, r:any) => <Button type="link" size="small" icon={<DownloadOutlined />} onClick={() => exportCSV([{实验名称:r.exp,日期:r.date,数据类型:r.type}], r.exp)}>导出</Button>},
-              ]} />
-            )},
-            { key: 'export', label: '数据导出', children: (
-              <Space direction="vertical" style={{ width: '100%' }}>
-                {[{fmt:'CSV',desc:'原始数据表格'},{fmt:'Excel',desc:'论文作图数据'},{fmt:'PDF',desc:'完整实验报告'}].map(f => (
-                  <Card key={f.fmt} size="small" hoverable><Row justify="space-between"><Col><Space><FilePdfOutlined /><Text strong>{f.fmt}</Text></Space><br /><Text type="secondary">{f.desc}</Text></Col><Col><Button icon={<DownloadOutlined />} onClick={() => {
-                    if (f.fmt === 'CSV') exportCSV(pubs, '成果数据', ['title','authors','journal','year','doi']);
-                    else if (f.fmt === 'PDF') exportPDF('成果报告', '成果列表数据导出', '成果报告');
-                    else exportJSON(pubs, '成果数据');
-                  }}>下载</Button></Col></Row></Card>
-                ))}
-              </Space>
-            )},
-          ]} />
-        </>)}
-      </Drawer>
-
-      <Modal title="新增成果" open={createModal} onOk={() => form.submit()} onCancel={() => { setCreateModal(false); form.resetFields(); }}>
-        <Form form={form} layout="vertical" onFinish={() => { message.success('成果已添加'); setCreateModal(false); }}>
-          <Form.Item name="title" label="标题" required><Input /></Form.Item>
-          <Form.Item name="type" label="类型"><Select><Select.Option value="论文">论文</Select.Option><Select.Option value="专利">专利</Select.Option><Select.Option value="报告">报告</Select.Option></Select></Form.Item>
-          <Form.Item name="journal" label="期刊/专利号"><Input /></Form.Item>
-          <Form.Item name="authors" label="作者"><Input /></Form.Item>
-          <Form.Item name="year" label="年份"><Input type="number" /></Form.Item>
-          <Form.Item name="doi" label="DOI"><Input /></Form.Item>
+      <Modal title="添加成果" open={modalOpen} onCancel={() => setModalOpen(false)} onOk={() => form.submit()} destroyOnClose width={600}>
+        <Form form={form} layout="vertical" onFinish={handleSubmit}>
+          <Form.Item name="type" label="成果类型" rules={[{ required: true }]} >
+            <Select placeholder="选择类型">
+              <Select.Option value="paper">论文</Select.Option>
+              <Select.Option value="patent">专利</Select.Option>
+              <Select.Option value="project_completion">项目结题</Select.Option>
+              <Select.Option value="award">获奖</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item name="title" label="标题" rules={[{ required: true }]} > <Input /> </Form.Item>
+          <Form.Item name="authors" label="作者/完成人（逗号分隔）" rules={[{ required: true }]} > <Input /> </Form.Item>
+          <Form.Item name="date" label="日期" rules={[{ required: true }]} > <Input placeholder="YYYY-MM-DD" /> </Form.Item>
         </Form>
       </Modal>
     </div>
