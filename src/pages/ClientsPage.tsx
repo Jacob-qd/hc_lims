@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space,
-  Input, Select, Drawer, Descriptions, Tabs, Modal, Form, message, Popconfirm,
+  Input, Select, Drawer, Descriptions, Tabs, Modal, Form, message, Popconfirm, Timeline, Divider,
 } from 'antd';
 import {
   PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined, DeleteOutlined,
-  FileTextOutlined, ExperimentOutlined, TeamOutlined,
+  FileTextOutlined, ExperimentOutlined, HistoryOutlined, MailOutlined,
 } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
@@ -27,8 +27,27 @@ interface Client {
   createdAt: string; updatedAt: string;
 }
 
+interface Contract {
+  id: string; no: string; name: string; customerId: string;
+  amount: number; startDate: string; endDate: string;
+  status: string; statusLabel: string;
+}
+
+interface Order {
+  id: string; no: string; customerId: string; customerName: string;
+  projectName: string; sampleCount: number; totalAmount: number;
+  status: string; createdAt: string;
+}
+
+const statusColorMap: Record<string, string> = {
+  active: 'green', expiring: 'orange', expired: 'default',
+  pending: 'orange', sampling: 'blue', testing: 'processing', completed: 'green',
+};
+
 export const ClientsPage: React.FC = () => {
   const [clients, setClients] = useState<Client[]>([]);
+  const [contracts, setContracts] = useState<Contract[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -40,10 +59,16 @@ export const ClientsPage: React.FC = () => {
   const loadClients = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(api('/clients'));
-      const json = await res.json();
-      if (json.code === 200) setClients(json.data?.list || []);
-    } catch { message.error('加载客户列表失败'); }
+      const [cRes, ctRes, oRes] = await Promise.all([
+        fetch(api('/clients')),
+        fetch(api('/contracts')),
+        fetch(api('/orders')),
+      ]);
+      const [cJson, ctJson, oJson] = await Promise.all([cRes.json(), ctRes.json(), oRes.json()]);
+      if (cJson.code === 200) setClients(cJson.data?.list || []);
+      if (ctJson.code === 200) setContracts(ctJson.data?.list || []);
+      if (oJson.code === 200) setOrders(oJson.data?.list || []);
+    } catch { message.error('加载数据失败'); }
     finally { setLoading(false); }
   }, []);
 
@@ -101,6 +126,13 @@ export const ClientsPage: React.FC = () => {
     } catch { message.error('删除失败'); }
   };
 
+  const handleSendEmail = () => {
+    message.success('邮件发送窗口已打开（模拟）');
+  };
+
+  const clientContracts = selected ? contracts.filter(c => c.customerId === selected.id) : [];
+  const clientOrders = selected ? orders.filter(o => o.customerId === selected.id) : [];
+
   const columns = [
     { title: '客户名称', dataIndex: 'name', key: 'name', render: (n: string, r: Client) =>
       <a onClick={() => { setSelected(r); setDrawerVisible(true); }}>{n}</a>
@@ -152,9 +184,13 @@ export const ClientsPage: React.FC = () => {
       </Card>
 
       {/* Detail Drawer */}
-      <Drawer title={selected?.name} open={drawerVisible} onClose={() => { setDrawerVisible(false); setSelected(null); }} width={420}>
+      <Drawer title={selected?.name} open={drawerVisible} onClose={() => { setDrawerVisible(false); setSelected(null); }} width={560}>
         {selected && (
           <>
+            <Space style={{ marginBottom: 12 }}>
+              <Button size="small" icon={<EditOutlined />} onClick={() => { setDrawerVisible(false); openEdit(selected); }}>编辑</Button>
+              <Button size="small" icon={<MailOutlined />} onClick={handleSendEmail}>发送邮件</Button>
+            </Space>
             <Descriptions column={1} bordered size="small">
               <Descriptions.Item label="客户名称">{selected.name}</Descriptions.Item>
               <Descriptions.Item label="简称">{selected.shortName || '-'}</Descriptions.Item>
@@ -169,9 +205,33 @@ export const ClientsPage: React.FC = () => {
               <Descriptions.Item label="状态"><Tag color={statusColor[selected.status]}>{statusLabel[selected.status]}</Tag></Descriptions.Item>
             </Descriptions>
             <Tabs style={{ marginTop: 16 }} items={[
-              { key: 'contracts', label: <span><FileTextOutlined /> 合同</span>, children: <Text type="secondary">合同列表（待集成）</Text> },
-              { key: 'orders', label: <span><ExperimentOutlined /> 委托单</span>, children: <Text type="secondary">委托记录（待集成）</Text> },
-              { key: 'samples', label: <span><TeamOutlined /> 历史样品</span>, children: <Text type="secondary">样品记录（待集成）</Text> },
+              { key: 'contracts', label: <span><FileTextOutlined /> 合同 ({clientContracts.length})</span>, children: (
+                <Table dataSource={clientContracts} rowKey="id" pagination={false} size="small" columns={[
+                  { title: '编号', dataIndex: 'no', render: (n: string) => <Text code>{n}</Text> },
+                  { title: '名称', dataIndex: 'name' },
+                  { title: '金额', dataIndex: 'amount', render: (v: number) => `¥${(v||0).toLocaleString()}` },
+                  { title: '有效期', render: (_: any, r: Contract) => `${r.startDate} ~ ${r.endDate}` },
+                  { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={statusColorMap[s]||'default'}>{s==='active'?'执行中':s==='expiring'?'即将到期':'已到期'}</Tag> },
+                ]} />
+              )},
+              { key: 'orders', label: <span><ExperimentOutlined /> 委托单 ({clientOrders.length})</span>, children: (
+                <Table dataSource={clientOrders} rowKey="id" pagination={false} size="small" columns={[
+                  { title: '编号', dataIndex: 'no', render: (n: string) => <Text code>{n}</Text> },
+                  { title: '项目', dataIndex: 'projectName' },
+                  { title: '样品数', dataIndex: 'sampleCount' },
+                  { title: '金额', dataIndex: 'totalAmount', render: (v: number) => `¥${(v||0).toLocaleString()}` },
+                  { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={statusColorMap[s]||'default'}>{s==='pending'?'待处理':s==='sampling'?'采样中':s==='testing'?'检测中':'已完成'}</Tag> },
+                  { title: '创建时间', dataIndex: 'createdAt' },
+                ]} />
+              )},
+              { key: 'timeline', label: <span><HistoryOutlined /> 跟进记录</span>, children: (
+                <Timeline items={[
+                  { color: 'green', children: <>{selected.createdAt} 客户创建</> },
+                  { color: 'blue', children: <>系统自动评估信用等级为 {selected.credit}</> },
+                  ...(clientContracts.length > 0 ? [{ color: 'orange', children: <>签署合同 {clientContracts[0]?.no}</> }] : []),
+                  ...(clientOrders.length > 0 ? [{ color: 'purple', children: <>创建委托单 {clientOrders[0]?.no}</> }] : []),
+                ]} />
+              )},
             ]} />
           </>
         )}
