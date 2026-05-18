@@ -104,9 +104,9 @@ export const SamplesPage: React.FC = () => {
 
   const columns: ColumnsType<Sample> = [
     { title: '样品编号', dataIndex: 'sampleNo', key: 'sampleNo', width: 140 },
-    { title: '样品名称', dataIndex: 'name', key: 'name' },
+    { title: '样品名称', dataIndex: 'name', key: 'name', width: 180, ellipsis: true },
     { title: '样品类型', dataIndex: 'typeLabel', key: 'typeLabel', width: 100 },
-    { title: '客户名称', dataIndex: 'customerName', key: 'customerName' },
+    { title: '客户名称', dataIndex: 'customerName', key: 'customerName', width: 160, ellipsis: true },
     { title: '接收日期', dataIndex: 'receivingTime', key: 'receivingTime', width: 160 },
     { title: '容器/规格', dataIndex: 'containerInfo', key: 'containerInfo', width: 120 },
     { title: '存储条件', dataIndex: 'storageCondition', key: 'storageCondition', width: 100 },
@@ -410,7 +410,7 @@ export const SamplesPage: React.FC = () => {
             <div style={{ marginBottom: 24 }}>
               <Title level={5}>{selectedSample.sampleNo}</Title>
               <Tag color={getStatusColor(selectedSample.statusLabel)}>{selectedSample.statusLabel}</Tag>
-              <Button type="link" style={{ float: 'right' }} onClick={() => { setDetailOpen(false); setSelectedSample(null); loadSamples(); }}>查看全部</Button>
+              <Button type="link" style={{ float: 'right' }} onClick={() => { setDetailOpen(false); navigate(`/samples/${selectedSample.id}`); }}>查看全部</Button>
             </div>
 
             <Card title="基本信息" size="small" style={{ marginBottom: 16 }}>
