@@ -1,24 +1,44 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { ConfigProvider } from 'antd';
 import { BreadcrumbNav } from '../components/layout/BreadcrumbNav';
 
 describe('BreadcrumbNav', () => {
-  it('renders breadcrumb for dashboard', () => {
-    render(
+  it('renders home icon on dashboard', () => {
+    const { container } = render(
       <MemoryRouter initialEntries={['/dashboard']}>
-        <BreadcrumbNav />
+        <ConfigProvider><BreadcrumbNav /></ConfigProvider>
       </MemoryRouter>
     );
-    expect(document.body.textContent).toContain('首页');
+    // HomeOutlined icon renders with aria-label="home"
+    expect(container.innerHTML).toContain('anticon-home');
   });
 
-  it('renders breadcrumb for nested path', () => {
-    render(
+  it('renders sample page label', () => {
+    const { container } = render(
       <MemoryRouter initialEntries={['/samples']}>
-        <BreadcrumbNav />
+        <ConfigProvider><BreadcrumbNav /></ConfigProvider>
       </MemoryRouter>
     );
-    expect(document.body.textContent).toContain('样品管理');
+    expect(container.textContent).toContain('样品管理');
+  });
+
+  it('renders task page label', () => {
+    const { container } = render(
+      <MemoryRouter initialEntries={['/tasks']}>
+        <ConfigProvider><BreadcrumbNav /></ConfigProvider>
+      </MemoryRouter>
+    );
+    expect(container.textContent).toContain('检测管理');
+  });
+
+  it('renders unknown nested path as URL', () => {
+    render(
+      <MemoryRouter initialEntries={['/research/groups']}>
+        <ConfigProvider><BreadcrumbNav /></ConfigProvider>
+      </MemoryRouter>
+    );
+    expect(document.body.textContent).toContain('/research/groups');
   });
 });
