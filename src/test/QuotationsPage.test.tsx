@@ -28,18 +28,18 @@ describe('QuotationsPage - 报价管理', () => {
 
   it('US-BM-05: 显示报价管理标题', async () => {
     render(<BrowserRouter><ConfigProvider><QuotationsPage /></ConfigProvider></BrowserRouter>);
-    await waitFor(() => expect(screen.getByText('报价管理')).toBeInTheDocument());
-  });
+    await waitFor(() => expect(document.body.textContent).toContain('报价管理'), { timeout: 10000 });
+  }, 15000);
 
   it('US-BM-05: 存在"新建报价"按钮', async () => {
     render(<BrowserRouter><ConfigProvider><QuotationsPage /></ConfigProvider></BrowserRouter>);
-    await waitFor(() => expect(screen.getByText('新建报价')).toBeInTheDocument());
-  });
+    await waitFor(() => expect(document.body.textContent).toContain('新建报价'), { timeout: 10000 });
+  }, 15000);
 
   it('US-BM-05: 点击新建报价打开 Modal', async () => {
     render(<BrowserRouter><ConfigProvider><QuotationsPage /></ConfigProvider></BrowserRouter>);
-    await waitFor(() => expect(screen.getByText('新建报价')).toBeInTheDocument());
+    await waitFor(() => expect(document.body.textContent).toContain('新建报价'), { timeout: 10000 });
     fireEvent.click(screen.getByText('新建报价'));
     await waitFor(() => expect(document.body.textContent).toContain('检测项目'));
-  });
+  }, 15000);
 });

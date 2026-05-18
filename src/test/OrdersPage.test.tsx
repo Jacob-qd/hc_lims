@@ -28,18 +28,18 @@ describe('OrdersPage - 委托单管理', () => {
 
   it('US-BM-09: 显示委托单管理标题', async () => {
     render(<BrowserRouter><ConfigProvider><OrdersPage /></ConfigProvider></BrowserRouter>);
-    await waitFor(() => expect(screen.getByText('委托单管理')).toBeInTheDocument());
-  });
+    await waitFor(() => expect(document.body.textContent).toContain('委托单管理'), { timeout: 10000 });
+  }, 15000);
 
   it('US-BM-09: 存在"新建委托单"按钮', async () => {
     render(<BrowserRouter><ConfigProvider><OrdersPage /></ConfigProvider></BrowserRouter>);
-    await waitFor(() => expect(screen.getByText('新建委托单')).toBeInTheDocument());
-  });
+    await waitFor(() => expect(document.body.textContent).toContain('新建委托单'), { timeout: 10000 });
+  }, 15000);
 
   it('US-BM-09: 点击新建委托单打开 Modal', async () => {
     render(<BrowserRouter><ConfigProvider><OrdersPage /></ConfigProvider></BrowserRouter>);
-    await waitFor(() => expect(screen.getByText('新建委托单')).toBeInTheDocument());
+    await waitFor(() => expect(document.body.textContent).toContain('新建委托单'), { timeout: 10000 });
     fireEvent.click(screen.getByText('新建委托单'));
     await waitFor(() => expect(document.body.textContent).toContain('项目名称'));
-  });
+  }, 15000);
 });

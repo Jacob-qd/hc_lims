@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, message, Modal, Form, DatePicker, Popconfirm, Descriptions, Tabs, Timeline, Divider,
+  Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, InputNumber, Select, message, Modal, Form, DatePicker, Popconfirm, Descriptions, Tabs, Timeline, Divider,
 } from 'antd';
 import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined, DeleteOutlined, ReloadOutlined, FileTextOutlined, CheckCircleOutlined, PauseCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';

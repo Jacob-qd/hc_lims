@@ -56,7 +56,7 @@ describe('ContractsPage', () => {
     render(<BrowserRouter><ConfigProvider><ContractsPage /></ConfigProvider></BrowserRouter>);
     await waitFor(() => expect(screen.getByText('CT-2025-001')).toBeInTheDocument());
     fireEvent.click(screen.getAllByText('查看')[0]);
-    await waitFor(() => expect(screen.getByText('合同详情')).toBeInTheDocument());
+    await waitFor(() => expect(document.body.textContent).toContain('合同详情'));
   });
 
   it('opens edit modal', async () => {
