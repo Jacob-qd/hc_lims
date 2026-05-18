@@ -767,10 +767,53 @@ export const mockTasks: TaskItem[] = [
 
 // ===== Research Module Mock Data =====
 export const mockResearchProjects = [
-  { id: 'rp1', no: 'NSFC-2024-001', name: '新型二维材料的界面调控机制研究', type: '纵向', source: '国家自然科学基金面上项目', pi: '张明', group: '环境分析课题组', startDate: '2024-01-01', endDate: '2027-12-31', budget: 580000, used: 126000, status: 'active', progress: 22 },
-  { id: 'rp2', no: 'SJ-2024-002', name: '地表水VOCs在线监测技术开发', type: '横向', source: '绿源环保科技有限公司', pi: '张明', group: '环境分析课题组', startDate: '2024-03-01', endDate: '2025-06-30', budget: 350000, used: 158000, status: 'active', progress: 45 },
-  { id: 'rp3', no: 'NSFC-2023-003', name: '拉曼光谱在环境分析中的应用', type: '纵向', source: '省自然科学基金', pi: '李华', group: '光谱分析课题组', startDate: '2023-06-01', endDate: '2025-05-31', budget: 300000, used: 220000, status: 'active', progress: 73 },
-  { id: 'rp4', no: 'XY-2024-004', name: '校内青年创新基金项目', type: '校内', source: '校级科研启动金', pi: '王强', group: '色谱质谱课题组', startDate: '2024-01-01', endDate: '2024-12-31', budget: 100000, used: 98000, status: 'closing', progress: 98 },
+  { id: 'rp1', code: 'NSFC-2024-001', name: '新型二维材料的界面调控机制研究', type: 'national', typeLabel: '国家级', source: '国家自然科学基金面上项目', leaderName: '张明', groupName: '环境分析课题组', startDate: '2024-01-01', endDate: '2027-12-31', budget: 580000, spent: 126000, status: 'running', statusLabel: '进行中', progress: 22, milestones: [
+    { id: 'm1', name: '文献调研与方案设计', plannedDate: '2024-03-01', actualDate: '2024-02-28', status: 'completed', deliverable: '项目实施方案' },
+    { id: 'm2', name: '材料合成与表征', plannedDate: '2024-09-01', actualDate: '', status: 'active', deliverable: '材料表征报告' },
+    { id: 'm3', name: '性能测试与优化', plannedDate: '2025-06-01', actualDate: '', status: 'pending', deliverable: '性能测试数据' },
+    { id: 'm4', name: '论文撰写与结题', plannedDate: '2027-10-01', actualDate: '', status: 'pending', deliverable: 'SCI论文2篇' },
+  ], members: [
+    { id: 'u1', name: '张明', role: '项目负责人' },
+    { id: 'u2', name: '李华', role: '核心成员' },
+    { id: 'u3', name: '王芳', role: '研究生' },
+  ]},
+  { id: 'rp2', code: 'SJ-2024-002', name: '地表水VOCs在线监测技术开发', type: 'enterprise', typeLabel: '企业委托', source: '绿源环保科技有限公司', leaderName: '张明', groupName: '环境分析课题组', startDate: '2024-03-01', endDate: '2025-06-30', budget: 350000, spent: 158000, status: 'running', statusLabel: '进行中', progress: 45, milestones: [
+    { id: 'm1', name: '需求调研', plannedDate: '2024-04-01', actualDate: '2024-03-28', status: 'completed', deliverable: '需求规格说明书' },
+    { id: 'm2', name: '原型开发', plannedDate: '2024-10-01', actualDate: '', status: 'active', deliverable: '原型机' },
+    { id: 'm3', name: '现场测试', plannedDate: '2025-02-01', actualDate: '', status: 'pending', deliverable: '测试报告' },
+  ], members: [
+    { id: 'u1', name: '张明', role: '项目负责人' },
+    { id: 'u4', name: '赵岩', role: '工程师' },
+  ]},
+  { id: 'rp3', code: 'NSFC-2023-003', name: '拉曼光谱在环境分析中的应用', type: 'provincial', typeLabel: '省级', source: '省自然科学基金', leaderName: '李华', groupName: '光谱分析课题组', startDate: '2023-06-01', endDate: '2025-05-31', budget: 300000, spent: 220000, status: 'running', statusLabel: '进行中', progress: 73, milestones: [
+    { id: 'm1', name: '文献调研', plannedDate: '2023-08-01', actualDate: '2023-07-25', status: 'completed', deliverable: '调研报告' },
+    { id: 'm2', name: '方法开发', plannedDate: '2024-03-01', actualDate: '2024-02-28', status: 'completed', deliverable: '方法验证报告' },
+    { id: 'm3', name: '实际样品分析', plannedDate: '2024-10-01', actualDate: '', status: 'active', deliverable: '分析数据集' },
+    { id: 'm4', name: '论文撰写', plannedDate: '2025-03-01', actualDate: '', status: 'pending', deliverable: 'SCI论文1篇' },
+  ], members: [
+    { id: 'u5', name: '李华', role: '项目负责人' },
+    { id: 'u6', name: '刘洋', role: '研究生' },
+  ]},
+  { id: 'rp4', code: 'XY-2024-004', name: '校内青年创新基金项目', type: 'school', typeLabel: '校级', source: '校级科研启动金', leaderName: '王强', groupName: '色谱质谱课题组', startDate: '2024-01-01', endDate: '2024-12-31', budget: 100000, spent: 98000, status: 'completed', statusLabel: '已结题', progress: 98, milestones: [
+    { id: 'm1', name: '开题报告', plannedDate: '2024-02-01', actualDate: '2024-01-28', status: 'completed', deliverable: '开题报告' },
+    { id: 'm2', name: '实验研究', plannedDate: '2024-09-01', actualDate: '2024-08-30', status: 'completed', deliverable: '实验记录' },
+    { id: 'm3', name: '结题验收', plannedDate: '2024-12-01', actualDate: '', status: 'active', deliverable: '结题报告' },
+  ], members: [
+    { id: 'u7', name: '王强', role: '项目负责人' },
+    { id: 'u8', name: '周敏', role: '研究生' },
+  ]},
+  { id: 'rp5', code: 'NSFC-2024-005', name: '基于深度学习的水质预测模型研究', type: 'national', typeLabel: '国家级', source: '国家自然科学基金青年项目', leaderName: '李华', groupName: '光谱分析课题组', startDate: '2024-01-01', endDate: '2026-12-31', budget: 300000, spent: 45000, status: 'applying', statusLabel: '申报中', progress: 5, milestones: [
+    { id: 'm1', name: '申报书撰写', plannedDate: '2024-03-01', actualDate: '', status: 'active', deliverable: '基金申报书' },
+  ], members: [
+    { id: 'u5', name: '李华', role: '项目负责人' },
+  ]},
+  { id: 'rp6', code: 'SJ-2024-006', name: '工业废水重金属快速检测技术开发', type: 'enterprise', typeLabel: '企业委托', source: '清源化工有限公司', leaderName: '张明', groupName: '环境分析课题组', startDate: '2024-06-01', endDate: '2024-12-31', budget: 180000, spent: 30000, status: 'running', statusLabel: '进行中', progress: 15, milestones: [
+    { id: 'm1', name: '技术调研', plannedDate: '2024-07-01', actualDate: '', status: 'active', deliverable: '技术调研报告' },
+    { id: 'm2', name: '方法开发', plannedDate: '2024-10-01', actualDate: '', status: 'pending', deliverable: '检测方法' },
+  ], members: [
+    { id: 'u1', name: '张明', role: '项目负责人' },
+    { id: 'u3', name: '王芳', role: '核心成员' },
+  ]},
 ];
 
 export const mockELNEntries = [

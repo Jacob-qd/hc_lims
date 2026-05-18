@@ -994,9 +994,25 @@ export const handlers = [
   http.get(apiUrl('/research/projects'), () => HttpResponse.json({ code: 200, data: { list: mockResearchProjects } })),
   http.post(apiUrl('/research/projects'), async ({ request }) => {
     const body = (await request.json()) as any;
-    const item = { id: 'rp' + Date.now(), ...body };
+    const typeLabels: Record<string,string> = { national: '国家级', provincial: '省级', school: '校级', enterprise: '企业委托' };
+    const statusLabels: Record<string,string> = { applying: '申报中', running: '进行中', completed: '已结题', archived: '已归档' };
+    const item = { id: 'rp' + Date.now(), ...body, typeLabel: typeLabels[body.type] || body.type, statusLabel: statusLabels[body.status] || body.status, progress: body.progress || 0, spent: body.spent || 0, milestones: body.milestones || [], members: body.members || [] };
     mockResearchProjects.push(item);
     return HttpResponse.json({ code: 200, data: item, message: '创建成功' });
+  }),
+  http.put(apiUrl('/research/projects/:id'), async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    const idx = mockResearchProjects.findIndex((p: any) => p.id === params.id);
+    if (idx === -1) return HttpResponse.json({ code: 404, message: '项目不存在' }, { status: 404 });
+    const typeLabels: Record<string,string> = { national: '国家级', provincial: '省级', school: '校级', enterprise: '企业委托' };
+    const statusLabels: Record<string,string> = { applying: '申报中', running: '进行中', completed: '已结题', archived: '已归档' };
+    mockResearchProjects[idx] = { ...mockResearchProjects[idx], ...body, typeLabel: typeLabels[body.type] || mockResearchProjects[idx].typeLabel, statusLabel: statusLabels[body.status] || mockResearchProjects[idx].statusLabel };
+    return HttpResponse.json({ code: 200, data: mockResearchProjects[idx], message: '更新成功' });
+  }),
+  http.delete(apiUrl('/research/projects/:id'), ({ params }) => {
+    const idx = mockResearchProjects.findIndex((p: any) => p.id === params.id);
+    if (idx >= 0) mockResearchProjects.splice(idx, 1);
+    return HttpResponse.json({ code: 200, message: '删除成功' });
   }),
 
   http.get(apiUrl('/research/eln-entries'), () => HttpResponse.json({ code: 200, data: { list: mockELNEntries } })),
@@ -1044,6 +1060,24 @@ export const handlers = [
 
   // ===== Personnel =====
   http.get(apiUrl('/personnel'), () => HttpResponse.json({ code: 200, data: { list: mockPersonnel } })),
+  http.post(apiUrl('/personnel'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const newP = { id: 'p' + Date.now(), ...body, certStatus: body.certStatus || 'active', certStatusLabel: body.certStatusLabel || '正常' };
+    mockPersonnel.push(newP);
+    return HttpResponse.json({ code: 200, data: newP, message: '创建成功' });
+  }),
+  http.put(apiUrl('/personnel/:id'), async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    const idx = mockPersonnel.findIndex(p => p.id === params.id);
+    if (idx === -1) return HttpResponse.json({ code: 404, message: '人员不存在' }, { status: 404 });
+    mockPersonnel[idx] = { ...mockPersonnel[idx], ...body };
+    return HttpResponse.json({ code: 200, data: mockPersonnel[idx], message: '更新成功' });
+  }),
+  http.delete(apiUrl('/personnel/:id'), ({ params }) => {
+    const idx = mockPersonnel.findIndex(p => p.id === params.id);
+    if (idx >= 0) mockPersonnel.splice(idx, 1);
+    return HttpResponse.json({ code: 200, message: '删除成功' });
+  }),
   http.get(apiUrl('/personnel/training'), () => HttpResponse.json({ code: 200, data: { list: mockTrainingRecords } })),
   http.get(apiUrl('/personnel/certificates'), () => HttpResponse.json({ code: 200, data: { list: mockCertificates } })),
 

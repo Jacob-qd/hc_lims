@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Tabs, Drawer, Descriptions, Timeline, Badge } from 'antd';
-import { SearchOutlined, EyeOutlined } from '@ant-design/icons';
+import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Tabs, Drawer, Descriptions, Timeline, Badge, Modal, Form, message, Popconfirm } from 'antd';
+import { SearchOutlined, EyeOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const certColors: Record<string, string> = { active: '#52c41a', warning: '#faad14', expired: '#ff4d4f' };
@@ -13,8 +13,12 @@ export const PersonnelPage: React.FC = () => {
   const [certs, setCerts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [certFilter, setCertFilter] = useState<string | undefined>(undefined);
   const [selected, setSelected] = useState<any>(null);
   const [drawer, setDrawer] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editRecord, setEditRecord] = useState<any>(null);
+  const [form] = Form.useForm();
 
   const fetchData = async () => {
     setLoading(true);
@@ -27,7 +31,35 @@ export const PersonnelPage: React.FC = () => {
   };
   useEffect(() => { fetchData(); }, []);
 
-  const filtered = personnel.filter((p: any) => p.name.includes(search) || p.dept.includes(search) || p.position.includes(search));
+  const handleDelete = async (id: string) => {
+    await fetch(`/api/v1/personnel/${id}`, { method: 'DELETE' });
+    message.success('删除成功');
+    fetchData();
+  };
+
+  const handleSubmit = async (values: any) => {
+    const url = editRecord ? `/api/v1/personnel/${editRecord.id}` : '/api/v1/personnel';
+    const method = editRecord ? 'PUT' : 'POST';
+    const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(values) });
+    const data = await res.json();
+    if (data.code === 200) {
+      message.success(editRecord ? '更新成功' : '创建成功');
+      setModalOpen(false);
+      form.resetFields();
+      setEditRecord(null);
+      fetchData();
+    }
+  };
+
+  const openCreate = () => { setEditRecord(null); form.resetFields(); setModalOpen(true); };
+  const openEdit = (r: any) => { setEditRecord(r); form.setFieldsValue({ ...r }); setModalOpen(true); };
+
+  const filtered = personnel.filter((p: any) => {
+    const matchSearch = p.name.includes(search) || p.dept.includes(search) || p.position.includes(search);
+    const matchCert = certFilter ? p.certStatus === certFilter : true;
+    return matchSearch && matchCert;
+  });
+
   const stats = { total: personnel.length, active: personnel.filter((p: any) => p.certStatus === 'active').length, warning: personnel.filter((p: any) => p.certStatus === 'warning').length, expired: personnel.filter((p: any) => p.certStatus === 'expired').length };
 
   return (
@@ -41,23 +73,34 @@ export const PersonnelPage: React.FC = () => {
       </Row>
       <Tabs defaultActiveKey="personnel" items={[
         { key: 'personnel', label: '人员档案', children: (
-          <Card><Space style={{ marginBottom: 16 }}>
-            <Input placeholder="搜索姓名/部门/岗位" prefix={<SearchOutlined />} value={search} onChange={e => setSearch(e.target.value)} style={{ width: 260 }} allowClear />
-            <Select placeholder="资质状态" style={{ width: 130 }} allowClear>
-              {Object.entries(certColors).map(([k, v]) => <Select.Option key={k} value={k}><Badge color={v} />{certLabels[k]}</Select.Option>)}
-            </Select>
-          </Space>
-          <Table dataSource={filtered} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} columns={[
-            { title: '姓名', dataIndex: 'name', render: (n: string, r: any) => <a onClick={() => { setSelected(r); setDrawer(true); }}>{n}</a> },
-            { title: '工号', dataIndex: 'empNo', render: (e: string) => <Text code>{e}</Text> },
-            { title: '部门', dataIndex: 'dept' },
-            { title: '岗位', dataIndex: 'position' },
-            { title: '角色', dataIndex: 'role', render: (r: string) => <Tag color={roleColors[r] || '#1677ff'}>{r}</Tag> },
-            { title: '实验室', dataIndex: 'lab' },
-            { title: '入职日期', dataIndex: 'joinDate' },
-            { title: '资质状态', dataIndex: 'certStatus', render: (s: string) => <Tag color={certColors[s]}>{certLabels[s]}</Tag> },
-            { title: '操作', render: (_: any, r: any) => <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawer(true); }} /> },
-          ]} size="middle" /></Card>
+          <Card>
+            <Space style={{ marginBottom: 16 }}>
+              <Input placeholder="搜索姓名/部门/岗位" prefix={<SearchOutlined />} value={search} onChange={e => setSearch(e.target.value)} style={{ width: 260 }} allowClear />
+              <Select placeholder="资质状态" style={{ width: 130 }} allowClear value={certFilter} onChange={setCertFilter}>
+                {Object.entries(certColors).map(([k, v]) => <Select.Option key={k} value={k}><Badge color={v} />{certLabels[k]}</Select.Option>)}
+              </Select>
+              <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>新增人员</Button>
+            </Space>
+            <Table dataSource={filtered} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} columns={[
+              { title: '姓名', dataIndex: 'name', render: (n: string, r: any) => <a onClick={() => { setSelected(r); setDrawer(true); }}>{n}</a> },
+              { title: '工号', dataIndex: 'empNo', render: (e: string) => <Text code>{e}</Text> },
+              { title: '部门', dataIndex: 'dept' },
+              { title: '岗位', dataIndex: 'position' },
+              { title: '角色', dataIndex: 'role', render: (r: string) => <Tag color={roleColors[r] || '#1677ff'}>{r}</Tag> },
+              { title: '实验室', dataIndex: 'lab' },
+              { title: '入职日期', dataIndex: 'joinDate' },
+              { title: '资质状态', dataIndex: 'certStatus', render: (s: string) => <Tag color={certColors[s]}>{certLabels[s]}</Tag> },
+              { title: '操作', render: (_: any, r: any) => (
+                <Space>
+                  <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawer(true); }} />
+                  <Button type="link" size="small" icon={<EditOutlined />} onClick={() => openEdit(r)}>编辑</Button>
+                  <Popconfirm title="确认删除？" onConfirm={() => handleDelete(r.id)}>
+                    <Button type="link" size="small" danger icon={<DeleteOutlined />}>删除</Button>
+                  </Popconfirm>
+                </Space>
+              )},
+            ]} size="middle" />
+          </Card>
         )},
         { key: 'training', label: '培训管理', children: (
           <Card><Table dataSource={trainings} rowKey="id" columns={[
@@ -96,6 +139,30 @@ export const PersonnelPage: React.FC = () => {
           </Row>
         )},
       ]} />
+
+      {/* 新增/编辑人员 Modal */}
+      <Modal title={editRecord ? '编辑人员' : '新增人员'} open={modalOpen} onCancel={() => { setModalOpen(false); setEditRecord(null); form.resetFields(); }} onOk={() => form.submit()} destroyOnClose>
+        <Form form={form} layout="vertical" onFinish={handleSubmit}>
+          <Row gutter={16}>
+            <Col span={12}><Form.Item name="name" label="姓名" rules={[{ required: true }]}><Input /></Form.Item></Col>
+            <Col span={12}><Form.Item name="empNo" label="工号" rules={[{ required: true }]}><Input /></Form.Item></Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}><Form.Item name="dept" label="部门" rules={[{ required: true }]}><Input /></Form.Item></Col>
+            <Col span={12}><Form.Item name="position" label="岗位" rules={[{ required: true }]}><Input /></Form.Item></Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}><Form.Item name="role" label="角色" rules={[{ required: true }]}><Input /></Form.Item></Col>
+            <Col span={12}><Form.Item name="lab" label="实验室"><Input /></Form.Item></Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}><Form.Item name="joinDate" label="入职日期" rules={[{ required: true }]}><Input placeholder="YYYY-MM-DD" /></Form.Item></Col>
+            <Col span={12}><Form.Item name="certStatus" label="资质状态" rules={[{ required: true }]}>
+              <Select><Select.Option value="active">正常</Select.Option><Select.Option value="warning">即将过期</Select.Option><Select.Option value="expired">已过期</Select.Option></Select>
+            </Form.Item></Col>
+          </Row>
+        </Form>
+      </Modal>
 
       <Drawer title={selected?.name} open={drawer} onClose={() => { setDrawer(false); setSelected(null); }} width={480}>
         {selected && (<>
