@@ -4,6 +4,7 @@ import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined, CopyOutlined, 
 
 const { Title, Text } = Typography;
 const statusColors: Record<string, string> = { active: '#52c41a', revision: '#faad14', archived: '#d9d9d9', draft: '#1677ff' };
+const statusLabels: Record<string, string> = { active: '生效', revision: '修订中', archived: '已归档', draft: '草稿' };
 
 interface ValidationItem {
   id: string; methodId: string; item: string; status: 'passed' | 'testing' | 'pending';
@@ -35,26 +36,28 @@ export const MethodsPage: React.FC = () => {
   const [releaseForm] = Form.useForm();
 
   const [validations, setValidations] = useState<ValidationItem[]>([
-    { id:'v1', methodId:'m1', item:'准确度', status:'passed' },
-    { id:'v2', methodId:'m1', item:'精密度', status:'passed' },
-    { id:'v3', methodId:'m1', item:'线性范围', status:'passed' },
-    { id:'v4', methodId:'m1', item:'检出限', status:'passed' },
-    { id:'v5', methodId:'m1', item:'定量限', status:'testing' },
-    { id:'v6', methodId:'m1', item:'回收率', status:'pending' },
+    { id:'v1', methodId:'mtd1', item:'准确度', status:'passed' },
+    { id:'v2', methodId:'mtd1', item:'精密度', status:'passed' },
+    { id:'v3', methodId:'mtd1', item:'线性范围', status:'passed' },
+    { id:'v4', methodId:'mtd1', item:'检出限', status:'passed' },
+    { id:'v5', methodId:'mtd1', item:'定量限', status:'testing' },
+    { id:'v6', methodId:'mtd1', item:'回收率', status:'pending' },
   ]);
 
   const [versions, setVersions] = useState<MethodVersion[]>([
-    { id:'ver1', methodId:'m1', version:'v2.0', effectiveDate:'2024-01-15', note:'修订检出限' },
-    { id:'ver2', methodId:'m1', version:'v1.0', effectiveDate:'2023-01-01', note:'初版发布' },
+    { id:'ver1', methodId:'mtd1', version:'v2.1', effectiveDate:'2024-01-15', note:'修订检出限' },
+    { id:'ver2', methodId:'mtd1', version:'v2.0', effectiveDate:'2023-06-01', note:'更新仪器参数' },
+    { id:'ver3', methodId:'mtd1', version:'v1.0', effectiveDate:'2023-01-01', note:'初版发布' },
   ]);
 
   const [sops, setSops] = useState<MethodSop[]>([
-    { id:'s1', methodId:'m1', content:'1. 样品采集与保存...\n2. 样品前处理...\n3. 仪器条件设置...\n4. 标准曲线绘制...\n5. 样品测定...\n6. 结果计算与报告...', updatedAt:'2024-01-15' },
+    { id:'s1', methodId:'mtd1', content:'1. 样品采集与保存...\n2. 样品前处理...\n3. 仪器条件设置...\n4. 标准曲线绘制...\n5. 样品测定...\n6. 结果计算与报告...', updatedAt:'2024-01-15' },
+    { id:'s2', methodId:'mtd2', content:'1. 样品采集...\n2. 显色反应...\n3. 分光光度测定...\n4. 结果计算...', updatedAt:'2023-06-01' },
   ]);
 
   const fetchMethods = async () => {
     setLoading(true);
-    const res = await window.fetch('/api/v1/methods').then(r => r.json());
+    const res = await fetch('/api/v1/methods').then(r => r.json());
     setMethods(res.data.list); setLoading(false);
   };
   useEffect(() => { fetchMethods(); }, []);
@@ -62,54 +65,53 @@ export const MethodsPage: React.FC = () => {
   const filtered = methods.filter((m: any) => m.name.includes(search) || m.code.includes(search) || m.analyte.includes(search));
   const stats = { active: methods.filter((m: any) => m.status === 'active').length, revision: methods.filter((m: any) => m.status === 'revision').length, archived: methods.filter((m: any) => m.status === 'archived').length };
 
-  const handleCreate = () => {
-    const values = form.getFieldsValue();
-    const newMethod = {
-      id: `m-${Date.now()}`,
-      code: values.code || `M-${String(methods.length + 1).padStart(3, '0')}`,
-      name: values.name,
-      analyte: values.analyte,
-      matrix: values.matrix,
-      instrument: values.instrument,
-      detectionLimit: values.detectionLimit,
-      version: 'v1.0',
-      status: 'draft',
-      statusLabel: '草稿',
-      effectiveDate: new Date().toISOString().split('T')[0],
-      responsible: values.responsible || '当前用户',
-    };
-    setMethods([newMethod, ...methods]);
-    message.success('方法创建成功');
-    setCreateModal(false);
-    form.resetFields();
+  const handleCreate = async (values: any) => {
+    const payload = { ...values, status: values.status || 'draft' };
+    const res = await fetch('/api/v1/methods', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    const data = await res.json();
+    if (data.code === 200) {
+      message.success('方法创建成功');
+      setCreateModal(false);
+      form.resetFields();
+      fetchMethods();
+    }
   };
 
-  const handleUpdate = () => {
+  const handleUpdate = async (values: any) => {
     if (!selected) return;
-    const values = editForm.getFieldsValue();
-    setMethods(methods.map(m => m.id === selected.id ? { ...m, ...values } : m));
-    setSelected({ ...selected, ...values });
-    message.success('方法已更新');
-    setEditModal(false);
+    const res = await fetch(`/api/v1/methods/${selected.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(values) });
+    const data = await res.json();
+    if (data.code === 200) {
+      message.success('方法已更新');
+      setEditModal(false);
+      editForm.resetFields();
+      setSelected(null);
+      fetchMethods();
+    }
   };
 
-  const handleCopy = () => {
+  const handleCopy = async (values: any) => {
     if (!selected) return;
-    const values = copyForm.getFieldsValue();
-    const newMethod = {
-      ...selected,
-      id: `m-${Date.now()}`,
+    const payload = {
       code: values.newCode,
       name: values.newName,
+      analyte: selected.analyte,
+      matrix: selected.matrix,
+      instrument: selected.instrument,
+      detectionLimit: selected.detectionLimit,
       version: 'v1.0',
       status: 'draft',
-      statusLabel: '草稿',
       effectiveDate: new Date().toISOString().split('T')[0],
+      responsible: selected.responsible || '当前用户',
     };
-    setMethods([newMethod, ...methods]);
-    message.success(`方法 ${selected.code} 已复制为 ${newMethod.code}`);
-    setCopyModal(false);
-    copyForm.resetFields();
+    const res = await fetch('/api/v1/methods', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    const data = await res.json();
+    if (data.code === 200) {
+      message.success(`方法 ${selected.code} 已复制为 ${values.newCode}`);
+      setCopyModal(false);
+      copyForm.resetFields();
+      fetchMethods();
+    }
   };
 
   const handleRelease = () => {
@@ -123,11 +125,18 @@ export const MethodsPage: React.FC = () => {
       note: values.note,
     };
     setVersions([newVersion, ...versions]);
-    setMethods(methods.map(m => m.id === selected.id ? { ...m, version: values.version, status: 'active', statusLabel: '生效', effectiveDate: values.effectiveDate } : m));
-    setSelected({ ...selected, version: values.version, status: 'active', statusLabel: '生效', effectiveDate: values.effectiveDate });
-    message.success(`版本 ${values.version} 已发布`);
-    setReleaseModal(false);
-    releaseForm.resetFields();
+    // Update method status to active via API
+    fetch(`/api/v1/methods/${selected.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'active', version: values.version, effectiveDate: values.effectiveDate }),
+    }).then(() => {
+      message.success(`版本 ${values.version} 已发布`);
+      setReleaseModal(false);
+      releaseForm.resetFields();
+      setSelected(null);
+      fetchMethods();
+    });
   };
 
   const handleSaveSop = () => {
@@ -151,9 +160,10 @@ export const MethodsPage: React.FC = () => {
     }));
   };
 
-  const handleDeleteMethod = (id: string) => {
-    setMethods(methods.filter(m => m.id !== id));
+  const handleDeleteMethod = async (id: string) => {
+    await fetch(`/api/v1/methods/${id}`, { method: 'DELETE' });
     message.success('方法已删除');
+    fetchMethods();
   };
 
   const currentValidations = selected ? validations.filter(v => v.methodId === selected.id) : [];
@@ -177,7 +187,7 @@ export const MethodsPage: React.FC = () => {
         <Space style={{ marginBottom: 16 }}>
           <Input placeholder="搜索方法名称/编号/分析项目" prefix={<SearchOutlined />} value={search} onChange={e => setSearch(e.target.value)} style={{ width: 320 }} allowClear />
           <Select placeholder="状态" style={{ width: 120 }} allowClear>
-            {Object.entries(statusColors).map(([k, v]) => <Select.Option key={k}><Tag color={v}>{k==='active'?'生效':k==='revision'?'修订中':k==='archived'?'已归档':'草稿'}</Tag></Select.Option>)}
+            {Object.entries(statusColors).map(([k, v]) => <Select.Option key={k} value={k}><Tag color={v}>{statusLabels[k]}</Tag></Select.Option>)}
           </Select>
         </Space>
         <Table dataSource={filtered} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} columns={[
@@ -190,8 +200,8 @@ export const MethodsPage: React.FC = () => {
           { title: '检出限', dataIndex: 'detectionLimit' },
           { title: '生效日期', dataIndex: 'effectiveDate' },
           { title: '负责人', dataIndex: 'responsible' },
-          { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={statusColors[s]}>{s==='active'?'生效':s==='revision'?'修订中':s==='archived'?'已归档':'草稿'}</Tag> },
-          { title: '操作', width: 180, render: (_: any, r: any) => <Space>
+          { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={statusColors[s]}>{statusLabels[s] || s}</Tag> },
+          { title: '操作', width: 220, render: (_: any, r: any) => <Space>
             <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawer(true); }}>详情</Button>
             <Button type="link" size="small" icon={<EditOutlined />} onClick={() => { setSelected(r); editForm.setFieldsValue({...r}); setEditModal(true); }}>编辑</Button>
             <Button type="link" size="small" icon={<CopyOutlined />} onClick={() => { setSelected(r); copyForm.setFieldsValue({ newCode: `${r.code}-COPY`, newName: `${r.name}(复制)` }); setCopyModal(true); }}>复制</Button>
@@ -204,7 +214,7 @@ export const MethodsPage: React.FC = () => {
         {selected && (<>
           <Space style={{ marginBottom: 12 }}>
             <Button size="small" type="primary" icon={<FileTextOutlined />} onClick={() => { sopForm.setFieldsValue({ content: currentSop?.content || '' }); setSopModal(true); }}>编辑SOP</Button>
-            <Button size="small" icon={<CheckCircleOutlined />} onClick={() => { releaseForm.setFieldsValue({ version: `v${Number((selected.version||'v1.0').replace('v','')) + 1}.0`, effectiveDate: new Date().toISOString().split('T')[0] }); setReleaseModal(true); }}>版本发布</Button>
+            <Button size="small" icon={<CheckCircleOutlined />} onClick={() => { releaseForm.setFieldsValue({ version: `v${Number((selected.version||'v1.0').replace('v','')) + 0.1}.0`, effectiveDate: new Date().toISOString().split('T')[0] }); setReleaseModal(true); }}>版本发布</Button>
             <Button size="small" icon={<EditOutlined />} onClick={() => { editForm.setFieldsValue({...selected}); setEditModal(true); }}>编辑方法</Button>
           </Space>
           <Descriptions column={2} bordered size="small">
@@ -232,7 +242,7 @@ export const MethodsPage: React.FC = () => {
             { key: 'versions', label: '版本历史', children: (
               <Timeline items={[
                 ...currentVersions.map(v => ({ color: 'green', children: <><Text strong>{v.version}</Text><br />{v.effectiveDate} {v.note}</> })),
-                { color: 'blue', children: <><Text strong>v1.0 初版</Text><br />2023-01-01 发布</> },
+                { color: 'blue', children: <><Text strong>v1.0 初版</Text><br />创建</> },
               ]} />
             )},
             { key: 'validation', label: '验证记录', children: (
@@ -255,12 +265,15 @@ export const MethodsPage: React.FC = () => {
       {/* Create Modal */}
       <Modal title="新建方法" open={createModal} onOk={() => form.submit()} onCancel={() => { setCreateModal(false); form.resetFields(); }}>
         <Form form={form} layout="vertical" onFinish={handleCreate}>
-          <Form.Item name="code" label="方法编号"><Input placeholder="留空自动生成" /></Form.Item>
+          <Form.Item name="code" label="方法编号" rules={[{ required: true }]}><Input placeholder="如 HJ 828-2017" /></Form.Item>
           <Form.Item name="name" label="方法名称" rules={[{ required: true }]}><Input /></Form.Item>
           <Form.Item name="analyte" label="分析项目"><Input /></Form.Item>
           <Form.Item name="matrix" label="样品基质"><Input /></Form.Item>
           <Form.Item name="instrument" label="适用仪器"><Input /></Form.Item>
           <Form.Item name="detectionLimit" label="检出限"><Input /></Form.Item>
+          <Form.Item name="status" label="状态" initialValue="draft">
+            <Select><Select.Option value="draft">草稿</Select.Option><Select.Option value="active">生效</Select.Option><Select.Option value="revision">修订中</Select.Option><Select.Option value="archived">已归档</Select.Option></Select>
+          </Form.Item>
           <Form.Item name="responsible" label="负责人"><Input /></Form.Item>
         </Form>
       </Modal>

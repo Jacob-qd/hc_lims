@@ -1057,6 +1057,26 @@ export const handlers = [
 
   // ===== Methods =====
   http.get(apiUrl('/methods'), () => HttpResponse.json({ code: 200, data: { list: mockMethods } })),
+  http.post(apiUrl('/methods'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const statusLabels: Record<string, string> = { active: '生效', revision: '修订中', archived: '已归档', draft: '草稿' };
+    const newMethod = { id: `mtd${Date.now()}`, ...body, statusLabel: statusLabels[body.status] || body.status };
+    mockMethods.push(newMethod as any);
+    return HttpResponse.json({ code: 200, data: newMethod, message: '创建成功' });
+  }),
+  http.put(apiUrl('/methods/:id'), async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    const idx = mockMethods.findIndex(m => m.id === params.id);
+    if (idx === -1) return HttpResponse.json({ code: 404, message: '方法不存在' }, { status: 404 });
+    const statusLabels: Record<string, string> = { active: '生效', revision: '修订中', archived: '已归档', draft: '草稿' };
+    mockMethods[idx] = { ...mockMethods[idx], ...body, statusLabel: statusLabels[body.status] || mockMethods[idx].statusLabel };
+    return HttpResponse.json({ code: 200, data: mockMethods[idx], message: '更新成功' });
+  }),
+  http.delete(apiUrl('/methods/:id'), ({ params }) => {
+    const idx = mockMethods.findIndex(m => m.id === params.id);
+    if (idx >= 0) mockMethods.splice(idx, 1);
+    return HttpResponse.json({ code: 200, message: '删除成功' });
+  }),
 
   // ===== Personnel =====
   http.get(apiUrl('/personnel'), () => HttpResponse.json({ code: 200, data: { list: mockPersonnel } })),

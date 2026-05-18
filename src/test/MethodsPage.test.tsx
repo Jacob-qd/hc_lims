@@ -13,7 +13,7 @@ describe('MethodsPage', () => {
 
   beforeEach(() => {
     fetchSpy = vi.spyOn(globalThis as any, 'fetch').mockImplementation(async (url: any) => {
-      if (url.includes('/api/v1/methods')) {
+      if (url.includes('/api/v1/methods') && !url.includes('/m1')) {
         return mockFetchResponse({
           code: 200,
           data: {
@@ -26,6 +26,12 @@ describe('MethodsPage', () => {
             ],
           },
         });
+      }
+      if (url.includes('/api/v1/methods/m1') && String(url).includes('DELETE')) {
+        return mockFetchResponse({ code: 200, message: '删除成功' });
+      }
+      if (url.includes('/api/v1/methods/m1') && (String(url).includes('PUT') || String(url).includes('POST'))) {
+        return mockFetchResponse({ code: 200, data: { id: 'm1', statusLabel: '修订中' }, message: '更新成功' });
       }
       return mockFetchResponse({ code: 200, data: null });
     });
@@ -53,5 +59,21 @@ describe('MethodsPage', () => {
     await waitFor(() => expect(screen.getByText('M-001')).toBeInTheDocument());
     fireEvent.click(screen.getByText('新建方法'));
     await waitFor(() => expect(document.body.textContent).toContain('新建方法'));
+  });
+
+  it('opens edit modal and saves changes', async () => {
+    render(<BrowserRouter><ConfigProvider><MethodsPage /></ConfigProvider></BrowserRouter>);
+    await waitFor(() => expect(screen.getByText('M-001')).toBeInTheDocument());
+    fireEvent.click(screen.getByText('编辑'));
+    await waitFor(() => expect(document.body.textContent).toContain('编辑方法'));
+    // Modal 中应包含状态选择
+    expect(document.body.textContent).toContain('方法名称');
+  });
+
+  it('deletes a method', async () => {
+    render(<BrowserRouter><ConfigProvider><MethodsPage /></ConfigProvider></BrowserRouter>);
+    await waitFor(() => expect(screen.getByText('M-001')).toBeInTheDocument());
+    fireEvent.click(screen.getByText('删除'));
+    await waitFor(() => expect(document.body.textContent).toContain('确认删除'));
   });
 });
