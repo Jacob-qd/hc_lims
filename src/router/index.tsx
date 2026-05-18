@@ -60,6 +60,7 @@ const ResearcherPage = lazy(() => import('../pages/ResearcherPage').then(m => ({
 const ResearchFundPage = lazy(() => import('../pages/ResearchFundPage').then(m => ({ default: m.ResearchFundPage })));
 const ReagentInventoryPage = lazy(() => import('../pages/ReagentInventoryPage').then(m => ({ default: m.ReagentInventoryPage })));
 const LabInspectionPage = lazy(() => import('../pages/LabInspectionPage').then(m => ({ default: m.LabInspectionPage })));
+const TemplateDesignerPage = lazy(() => import('../pages/TemplateDesignerPage').then(m => ({ default: m.TemplateDesignerPage })));
 
 export const router = createBrowserRouter([
   {
