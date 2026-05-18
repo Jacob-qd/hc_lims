@@ -2151,7 +2151,6 @@ export const handlers = [
     const { formula, variables } = body;
     let result = 0;
     try {
-      // Simple formula evaluation for MEAN, SUM, RSD
       const varNames = Object.keys(variables);
       const values = varNames.map(k => variables[k]);
       if (formula.includes('MEAN')) result = values.reduce((a: number, b: number) => a + b, 0) / values.length;
@@ -2161,8 +2160,35 @@ export const handlers = [
         const variance = values.reduce((a: number, b: number) => a + Math.pow(b - mean, 2), 0) / values.length;
         result = (Math.sqrt(variance) / mean) * 100;
       } else {
-        // Simple arithmetic
-        result = eval(formula.replace(/[a-zA-Z_]+/g, (match: string) => String(variables[match] ?? 0)));
+        // Safe arithmetic parser (replaces eval)
+        const expr = formula.replace(/[a-zA-Z_]+/g, (match: string) => String(variables[match] ?? 0));
+        // Tokenize: numbers, operators, parentheses
+        const tokens = expr.match(/[\d.]+|[+\-*/()]/g) || [];
+        // Simple recursive descent parser for + - * / ( )
+        let pos = 0;
+        const parseExpr = (): number => {
+          let val = parseTerm();
+          while (pos < tokens.length && (tokens[pos] === '+' || tokens[pos] === '-')) {
+            const op = tokens[pos++];
+            const right = parseTerm();
+            val = op === '+' ? val + right : val - right;
+          }
+          return val;
+        };
+        const parseTerm = (): number => {
+          let val = parseFactor();
+          while (pos < tokens.length && (tokens[pos] === '*' || tokens[pos] === '/')) {
+            const op = tokens[pos++];
+            const right = parseFactor();
+            val = op === '*' ? val * right : val / right;
+          }
+          return val;
+        };
+        const parseFactor = (): number => {
+          if (tokens[pos] === '(') { pos++; const val = parseExpr(); pos++; return val; }
+          return parseFloat(tokens[pos++]) || 0;
+        };
+        result = parseExpr();
       }
     } catch { result = 0; }
     return HttpResponse.json({ code: 200, data: { result: Number(result.toFixed(4)), formula, variables } });
