@@ -20,9 +20,17 @@ const initialResults = [
 ];
 
 export const TaskResultEntry: React.FC = () => {
-  useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
   const [results, setResults] = useState(initialResults);
+  const [readings, setReadings] = useState([
+    { key: '1', seq: 1, sample: '空白', reading: '0.001' },
+    { key: '2', seq: 2, sample: '标准曲线1 (20mg/L)', reading: '0.152' },
+    { key: '3', seq: 3, sample: '标准曲线2 (40mg/L)', reading: '0.287' },
+    { key: '4', seq: 4, sample: '样品', reading: '0.321' },
+  ]);
+  const [taskStatus, setTaskStatus] = useState('testing');
+  const [savedAt, setSavedAt] = useState<string | null>(null);
 
   const handleResultChange = (key: string, field: string, value: string) => {
     setResults(prev => prev.map(r => r.key === key ? { ...r, [field]: value } : r));
@@ -51,8 +59,8 @@ export const TaskResultEntry: React.FC = () => {
         <Col><Title level={4} style={{ margin: 0 }}>检测结果录入</Title></Col>
         <Col>
           <Space>
-            <Button icon={<SaveOutlined />} onClick={() => message.success('结果已保存')}>保存</Button>
-            <Button type="primary" icon={<CheckCircleOutlined />} onClick={() => message.success('已提交复核')}>提交复核</Button>
+            <Button icon={<SaveOutlined />} onClick={() => { setSavedAt(new Date().toLocaleString('zh-CN')); message.success('结果已保存'); }}>保存</Button>
+            <Button type="primary" icon={<CheckCircleOutlined />} onClick={() => { setTaskStatus('pending_review'); message.success('已提交复核'); }}>提交复核</Button>
           </Space>
         </Col>
       </Row>
@@ -72,7 +80,11 @@ export const TaskResultEntry: React.FC = () => {
         <Col xs={24} lg={18}>
           <Card title="检测指标" size="small" style={{ marginBottom: 16 }}>
             <Table columns={columns} dataSource={results} pagination={false} size="small" bordered />
-            <Button type="dashed" icon={<PlusOutlined />} style={{ width: '100%', marginTop: 8 }} onClick={() => message.success('添加新检测指标')}>添加指标</Button>
+            <Button type="dashed" icon={<PlusOutlined />} style={{ width: '100%', marginTop: 8 }} onClick={() => {
+              const newKey = String(results.length + 1);
+              setResults([...results, { key: newKey, index: `新增指标-${newKey}`, result: '', unit: 'mg/L', limit: '0.01', standard: '≤10', judgment: '-', note: '' }]);
+              message.success('已添加新检测指标');
+            }}>添加指标</Button>
           </Card>
 
           <Card title="原始记录" size="small" style={{ marginBottom: 16 }} extra={
@@ -97,17 +109,16 @@ export const TaskResultEntry: React.FC = () => {
           </Card>
 
           <Card title="仪器读数" size="small" style={{ marginBottom: 16 }}>
-            <Table dataSource={[
-              { key: '1', seq: 1, sample: '空白', reading: '0.001' },
-              { key: '2', seq: 2, sample: '标准曲线1 (20mg/L)', reading: '0.152' },
-              { key: '3', seq: 3, sample: '标准曲线2 (40mg/L)', reading: '0.287' },
-              { key: '4', seq: 4, sample: '样品', reading: '0.321' },
-            ]} columns={[
+            <Table dataSource={readings} columns={[
               { title: '序号', dataIndex: 'seq', width: 60 },
               { title: '样品/标准', dataIndex: 'sample' },
               { title: '读数', dataIndex: 'reading' },
             ]} pagination={false} size="small" bordered />
-            <Button type="dashed" icon={<PlusOutlined />} style={{ width: '100%', marginTop: 8 }} onClick={() => message.success('添加仪器读数')}>添加读数</Button>
+            <Button type="dashed" icon={<PlusOutlined />} style={{ width: '100%', marginTop: 8 }} onClick={() => {
+              const newKey = String(readings.length + 1);
+              setReadings([...readings, { key: newKey, seq: readings.length + 1, sample: '新样品', reading: '' }]);
+              message.success('已添加仪器读数');
+            }}>添加读数</Button>
           </Card>
 
           <Card title="计算过程" size="small" style={{ marginBottom: 16 }}>
@@ -124,8 +135,8 @@ export const TaskResultEntry: React.FC = () => {
           <Card title="审核信息" size="small">
             <Descriptions size="small" column={3}>
               <Descriptions.Item label="录入人">王明</Descriptions.Item>
-              <Descriptions.Item label="录入时间">2024-05-21 10:25</Descriptions.Item>
-              <Descriptions.Item label="复核人">—</Descriptions.Item>
+              <Descriptions.Item label="录入时间">{savedAt || '—'}</Descriptions.Item>
+              <Descriptions.Item label="状态"><Tag color={taskStatus === 'testing' ? 'blue' : taskStatus === 'pending_review' ? 'orange' : 'green'}>{taskStatus === 'testing' ? '检测中' : taskStatus === 'pending_review' ? '待复核' : '已完成'}</Tag></Descriptions.Item>
             </Descriptions>
           </Card>
         </Col>
@@ -134,7 +145,7 @@ export const TaskResultEntry: React.FC = () => {
           <Card title="样品概览" size="small" style={{ marginBottom: 16 }}>
             <Text strong>{mockTask.sampleName}</Text>
             <Descriptions size="small" column={1}>
-              <Descriptions.Item label="状态"><Tag color="blue">检测中</Tag></Descriptions.Item>
+              <Descriptions.Item label="状态"><Tag color={taskStatus === 'testing' ? 'blue' : taskStatus === 'pending_review' ? 'orange' : 'green'}>{taskStatus === 'testing' ? '检测中' : taskStatus === 'pending_review' ? '待复核' : '已完成'}</Tag></Descriptions.Item>
               <Descriptions.Item label="检测项目">{mockTask.testItem}</Descriptions.Item>
             </Descriptions>
           </Card>

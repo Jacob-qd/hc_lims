@@ -46,6 +46,7 @@ export const SamplesPage: React.FC = () => {
   const [importOpen, setImportOpen] = useState(false);
   const [importFile, setImportFile] = useState<File | null>(null);
   const [importPreview, setImportPreview] = useState<any[] | null>(null);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   const loadDynamicConfigs = async (module: string) => {
     try {
@@ -382,8 +383,20 @@ export const SamplesPage: React.FC = () => {
           setBatchBarcodeCodes(codes);
           setBatchBarcodeVisible(true);
         }}>打印条码</Button>
-        <Button icon={<ExportOutlined />} onClick={() => message.success('数据已导出为Excel')}>导出</Button>
-        <Button icon={<DeleteOutlined />} danger onClick={() => Modal.confirm({title:'确认删除',content:'确定删除选中的样品？',onOk:()=>message.success('已删除')})}>删除</Button>
+        <Button icon={<ExportOutlined />} onClick={() => {
+          const csv = ['样品编号,样品名称,类型,客户,接收日期,状态'].join('\n') + '\n' + samples.map(s => `${s.sampleNo},${s.name},${s.typeLabel},${s.customerName},${s.receivingTime},${s.statusLabel}`).join('\n');
+          const blob = new Blob(['\ufeff'+csv], { type: 'text/csv;charset=utf-8;' });
+          const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `samples_${new Date().toISOString().split('T')[0]}.csv`; link.click();
+          message.success('数据已导出为CSV');
+        }}>导出</Button>
+        <Button icon={<DeleteOutlined />} danger onClick={() => {
+          if (selectedRowKeys.length === 0) { message.warning('请先选择要删除的样品'); return; }
+          Modal.confirm({title:'确认删除',content:`确定删除选中的 ${selectedRowKeys.length} 个样品？`,onOk:()=>{
+            setSamples(samples.filter(s => !selectedRowKeys.includes(s.id)));
+            setSelectedRowKeys([]);
+            message.success('已删除');
+          }});
+        }}>删除</Button>
       </Space>
 
       {/* Table */}
@@ -395,6 +408,7 @@ export const SamplesPage: React.FC = () => {
           loading={loading}
           pagination={{ pageSize: 10, showTotal: (total) => `共 ${total} 条` }}
           scroll={{ x: 1400 }}
+          rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
         />
       </Card>
 

@@ -212,7 +212,19 @@ export const TasksPage: React.FC = () => {
               </Card>
               <Card size="small" title="任务分配" style={{marginTop:16}}>
                 <Space>
-                  <Button type="primary" size="small" onClick={() => message.success('已根据规则自动分配所有待分配任务')}>自动分配</Button>
+                  <Button type="primary" size="small" onClick={() => {
+                    const unassigned = tasks.filter(t => t.status === 'unassigned');
+                    const analysts = ['张伟','李四','王五','赵六'];
+                    let idx = 0;
+                    const updated = tasks.map(t => {
+                      if (t.status !== 'unassigned') return t;
+                      const next = { ...t, analystName: analysts[idx % analysts.length], status: 'pending', statusLabel: '待检测', progress: 0 };
+                      idx++;
+                      return next;
+                    });
+                    setTasks(updated);
+                    message.success(`已自动分配 ${unassigned.length} 个任务`);
+                  }}>自动分配</Button>
                   <Button size="small" onClick={() => {
                     Modal.confirm({ title: '分配规则配置', content: (
                       <Form layout="vertical">

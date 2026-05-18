@@ -493,8 +493,13 @@ export const ReportsPage: React.FC = () => {
         <Button type="primary" icon={<PlusOutlined />} onClick={() => openCompile()}>
           新建报告
         </Button>
-        <Button icon={<ExportOutlined />}>导出</Button>
-        <Button icon={<PrinterOutlined />}>打印</Button>
+        <Button icon={<ExportOutlined />} onClick={() => {
+          const csv = ['报告编号,报告名称,客户,样品编号,编制人,状态,创建时间'].join('\n') + '\n' + reports.map(r => `${r.reportNo},${r.title},${r.customerName},${r.sampleNos?.join(';')},${r.creatorName},${r.statusLabel},${r.createdAt}`).join('\n');
+          const blob = new Blob(['\ufeff'+csv], { type: 'text/csv;charset=utf-8;' });
+          const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `reports_${new Date().toISOString().split('T')[0]}.csv`; link.click();
+          message.success('报告列表已导出为CSV');
+        }}>导出</Button>
+        <Button icon={<PrinterOutlined />} onClick={() => { window.print(); }}>打印</Button>
         {selectedRowKeys.length > 0 && (
           <Space>
             <Button icon={<CheckCircleOutlined />} style={{ color: '#52c41a', borderColor: '#52c41a' }} onClick={handleBatchSign}>
