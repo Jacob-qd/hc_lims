@@ -28,7 +28,7 @@ describe('TaskResultEntry', () => {
       </BrowserRouter>
     );
     await waitFor(() => {
-      expect(document.body.textContent).toBeTruthy();
-    }, { timeout: 2000 });
-  });
+      expect(document.body.textContent).toContain('检测结果录入');
+    }, { timeout: 5000 });
+  }, 15000);
 });
