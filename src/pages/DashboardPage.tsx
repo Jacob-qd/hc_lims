@@ -172,7 +172,11 @@ export const DashboardPage: React.FC = () => {
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         {statCards.map((card, i) => (
           <Col span={6} key={i}>
-            <Card hoverable onClick={() => navigate('/samples')}>
+            <Card hoverable onClick={() => {
+              if (card.title === '样品总数') navigate('/samples');
+              else if (card.title === '待检测数' || card.title === '逾期任务') navigate('/tasks');
+              else if (card.title === '已完成报告') navigate('/reports');
+            }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                 <div style={{
                   width: 48, height: 48, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center',

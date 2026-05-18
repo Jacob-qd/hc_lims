@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Card, Row, Col, Typography, Descriptions, Table, Input, Select, Button, Tag, Upload, message, Timeline, Space, Form } from 'antd';
-import { SaveOutlined, CheckCircleOutlined, UploadOutlined, PlusOutlined } from '@ant-design/icons';
+import { Card, Row, Col, Typography, Descriptions, Table, Input, Select, Button, Tag, Upload, message, Timeline, Space, Form, Divider, Alert } from 'antd';
+import { SaveOutlined, CheckCircleOutlined, UploadOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
@@ -19,6 +19,25 @@ const initialResults = [
   { key: '3', index: '氨氮(NH₃-N)', result: '0.215', unit: 'mg/L', limit: '0.025', standard: '≤1.0', judgment: '符合', note: '' },
 ];
 
+interface ParallelSample {
+  key: string;
+  index: string;
+  originalResult: string;
+  parallel1Result: string;
+  parallel2Result: string;
+  rpdLimit: number;
+}
+
+interface SpikeRecovery {
+  key: string;
+  index: string;
+  backgroundResult: string;
+  spikeAmount: string;
+  measuredResult: string;
+  recoveryMin: number;
+  recoveryMax: number;
+}
+
 export const TaskResultEntry: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -32,8 +51,38 @@ export const TaskResultEntry: React.FC = () => {
   const [taskStatus, setTaskStatus] = useState('testing');
   const [savedAt, setSavedAt] = useState<string | null>(null);
 
+  // 平行样
+  const [parallels, setParallels] = useState<ParallelSample[]>([
+    { key: 'p1', index: 'COD平行样', originalResult: '25.6', parallel1Result: '26.1', parallel2Result: '25.2', rpdLimit: 15 },
+  ]);
+
+  // 加标回收
+  const [spikes, setSpikes] = useState<SpikeRecovery[]>([
+    { key: 's1', index: 'COD加标回收', backgroundResult: '25.6', spikeAmount: '10.0', measuredResult: '35.2', recoveryMin: 80, recoveryMax: 120 },
+  ]);
+
   const handleResultChange = (key: string, field: string, value: string) => {
     setResults(prev => prev.map(r => r.key === key ? { ...r, [field]: value } : r));
+  };
+
+  const handleParallelChange = (key: string, field: keyof ParallelSample, value: string) => {
+    setParallels(prev => prev.map(p => p.key === key ? { ...p, [field]: value } : p));
+  };
+
+  const handleSpikeChange = (key: string, field: keyof SpikeRecovery, value: string) => {
+    setSpikes(prev => prev.map(s => s.key === key ? { ...s, [field]: value } : s));
+  };
+
+  const calcRPD = (a: number, b: number) => {
+    if (a === 0 && b === 0) return 0;
+    const avg = (a + b) / 2;
+    if (avg === 0) return 0;
+    return (Math.abs(a - b) / avg) * 100;
+  };
+
+  const calcRecovery = (bg: number, spike: number, measured: number) => {
+    if (spike === 0) return 0;
+    return ((measured - bg) / spike) * 100;
   };
 
   const columns = [
@@ -49,6 +98,71 @@ export const TaskResultEntry: React.FC = () => {
     )},
     { title: '备注', dataIndex: 'note', key: 'note', width: 120, render: (v: string, r: any) => (
       <Input size="small" value={v} onChange={e => handleResultChange(r.key, 'note', e.target.value)} />
+    )},
+  ];
+
+  const parallelColumns = [
+    { title: '检测指标', dataIndex: 'index', width: 140 },
+    { title: '原样结果', dataIndex: 'originalResult', width: 90, render: (v: string, r: ParallelSample) => (
+      <Input size="small" value={v} onChange={e => handleParallelChange(r.key, 'originalResult', e.target.value)} style={{ width: 70 }} />
+    )},
+    { title: '平行样1', dataIndex: 'parallel1Result', width: 90, render: (v: string, r: ParallelSample) => (
+      <Input size="small" value={v} onChange={e => handleParallelChange(r.key, 'parallel1Result', e.target.value)} style={{ width: 70 }} />
+    )},
+    { title: '平行样2', dataIndex: 'parallel2Result', width: 90, render: (v: string, r: ParallelSample) => (
+      <Input size="small" value={v} onChange={e => handleParallelChange(r.key, 'parallel2Result', e.target.value)} style={{ width: 70 }} />
+    )},
+    { title: 'RPD(%)', key: 'rpd', width: 90, render: (_: any, r: ParallelSample) => {
+      const v1 = parseFloat(r.parallel1Result) || 0;
+      const v2 = parseFloat(r.parallel2Result) || 0;
+      const rpd = calcRPD(v1, v2);
+      const isOver = rpd > r.rpdLimit;
+      return <Text style={{ color: isOver ? '#ff4d4f' : '#52c41a', fontWeight: isOver ? 700 : 400 }}>{rpd.toFixed(2)}%</Text>;
+    }},
+    { title: '限值', dataIndex: 'rpdLimit', width: 70, render: (v: number) => `≤${v}%` },
+    { title: '状态', key: 'status', width: 80, render: (_: any, r: ParallelSample) => {
+      const v1 = parseFloat(r.parallel1Result) || 0;
+      const v2 = parseFloat(r.parallel2Result) || 0;
+      const rpd = calcRPD(v1, v2);
+      const isOver = rpd > r.rpdLimit;
+      return <Tag color={isOver ? 'red' : 'green'}>{isOver ? '超限' : '合格'}</Tag>;
+    }},
+    { title: '操作', key: 'action', width: 60, render: (_: any, r: ParallelSample) => (
+      <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={() => setParallels(parallels.filter(p => p.key !== r.key))} />
+    )},
+  ];
+
+  const spikeColumns = [
+    { title: '检测指标', dataIndex: 'index', width: 140 },
+    { title: '本底结果', dataIndex: 'backgroundResult', width: 90, render: (v: string, r: SpikeRecovery) => (
+      <Input size="small" value={v} onChange={e => handleSpikeChange(r.key, 'backgroundResult', e.target.value)} style={{ width: 70 }} />
+    )},
+    { title: '加标量', dataIndex: 'spikeAmount', width: 90, render: (v: string, r: SpikeRecovery) => (
+      <Input size="small" value={v} onChange={e => handleSpikeChange(r.key, 'spikeAmount', e.target.value)} style={{ width: 70 }} />
+    )},
+    { title: '实测量', dataIndex: 'measuredResult', width: 90, render: (v: string, r: SpikeRecovery) => (
+      <Input size="small" value={v} onChange={e => handleSpikeChange(r.key, 'measuredResult', e.target.value)} style={{ width: 70 }} />
+    )},
+    { title: '回收率(%)', key: 'recovery', width: 100, render: (_: any, r: SpikeRecovery) => {
+      const bg = parseFloat(r.backgroundResult) || 0;
+      const spike = parseFloat(r.spikeAmount) || 0;
+      const measured = parseFloat(r.measuredResult) || 0;
+      const recovery = calcRecovery(bg, spike, measured);
+      const isUnder = recovery < r.recoveryMin;
+      const isOver = recovery > r.recoveryMax;
+      return <Text style={{ color: (isUnder || isOver) ? '#ff4d4f' : '#52c41a', fontWeight: (isUnder || isOver) ? 700 : 400 }}>{recovery.toFixed(1)}%</Text>;
+    }},
+    { title: '范围', key: 'range', width: 100, render: (_: any, r: SpikeRecovery) => `${r.recoveryMin}% ~ ${r.recoveryMax}%` },
+    { title: '状态', key: 'status', width: 80, render: (_: any, r: SpikeRecovery) => {
+      const bg = parseFloat(r.backgroundResult) || 0;
+      const spike = parseFloat(r.spikeAmount) || 0;
+      const measured = parseFloat(r.measuredResult) || 0;
+      const recovery = calcRecovery(bg, spike, measured);
+      const isValid = recovery >= r.recoveryMin && recovery <= r.recoveryMax;
+      return <Tag color={isValid ? 'green' : 'red'}>{isValid ? '合格' : '超限'}</Tag>;
+    }},
+    { title: '操作', key: 'action', width: 60, render: (_: any, r: SpikeRecovery) => (
+      <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={() => setSpikes(spikes.filter(s => s.key !== r.key))} />
     )},
   ];
 
@@ -85,6 +199,47 @@ export const TaskResultEntry: React.FC = () => {
               setResults([...results, { key: newKey, index: `新增指标-${newKey}`, result: '', unit: 'mg/L', limit: '0.01', standard: '≤10', judgment: '-', note: '' }]);
               message.success('已添加新检测指标');
             }}>添加指标</Button>
+          </Card>
+
+          {/* 平行样验证 */}
+          <Card title="平行样验证" size="small" style={{ marginBottom: 16 }} extra={
+            <Button size="small" type="primary" icon={<PlusOutlined />} onClick={() => {
+              const newKey = `p-${Date.now()}`;
+              setParallels([...parallels, { key: newKey, index: `平行样-${parallels.length + 1}`, originalResult: '', parallel1Result: '', parallel2Result: '', rpdLimit: 15 }]);
+            }}>添加平行样</Button>
+          }>
+            {parallels.length === 0 && <Text type="secondary">暂无平行样记录，请点击「添加平行样」</Text>}
+            <Table columns={parallelColumns} dataSource={parallels} pagination={false} size="small" bordered />
+            {parallels.map(p => {
+              const v1 = parseFloat(p.parallel1Result) || 0;
+              const v2 = parseFloat(p.parallel2Result) || 0;
+              const rpd = calcRPD(v1, v2);
+              if (rpd > p.rpdLimit) {
+                return <Alert key={p.key} message={`${p.index}: RPD ${rpd.toFixed(2)}% 超出限值 ${p.rpdLimit}%`} type="error" showIcon style={{ marginTop: 8 }} />;
+              }
+              return null;
+            })}
+          </Card>
+
+          {/* 加标回收 */}
+          <Card title="加标回收" size="small" style={{ marginBottom: 16 }} extra={
+            <Button size="small" type="primary" icon={<PlusOutlined />} onClick={() => {
+              const newKey = `s-${Date.now()}`;
+              setSpikes([...spikes, { key: newKey, index: `加标回收-${spikes.length + 1}`, backgroundResult: '', spikeAmount: '', measuredResult: '', recoveryMin: 80, recoveryMax: 120 }]);
+            }}>添加加标回收</Button>
+          }>
+            {spikes.length === 0 && <Text type="secondary">暂无加标回收记录，请点击「添加加标回收」</Text>}
+            <Table columns={spikeColumns} dataSource={spikes} pagination={false} size="small" bordered />
+            {spikes.map(s => {
+              const bg = parseFloat(s.backgroundResult) || 0;
+              const spike = parseFloat(s.spikeAmount) || 0;
+              const measured = parseFloat(s.measuredResult) || 0;
+              const recovery = calcRecovery(bg, spike, measured);
+              if (recovery !== 0 && (recovery < s.recoveryMin || recovery > s.recoveryMax)) {
+                return <Alert key={s.key} message={`${s.index}: 回收率 ${recovery.toFixed(1)}% 超出范围 ${s.recoveryMin}% ~ ${s.recoveryMax}%`} type="error" showIcon style={{ marginTop: 8 }} />;
+              }
+              return null;
+            })}
           </Card>
 
           <Card title="原始记录" size="small" style={{ marginBottom: 16 }} extra={

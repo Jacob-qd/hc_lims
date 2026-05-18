@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLabTypeStore } from '../stores/labTypeStore';
-import { Card, Tabs, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Switch, Input, Form, Tree } from 'antd';
+import { Card, Tabs, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Switch, Input, Form, Tree, Modal, message } from 'antd';
 import { PlusOutlined, SettingOutlined, SafetyOutlined, UserOutlined, KeyOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
@@ -13,34 +13,78 @@ const roles = [
   { key: 'report_reviewer', name: '报告审核员', type: '业务角色', users: 4, desc: '报告审核、批准签发' },
 ];
 
-const users = [
-  { id: 'u1', name: '张伟', dept: '检测一部', role: '检测员', lab: '理化实验室', lastLogin: '2024-05-21 09:15', mfa: true, status: 'active' },
-  { id: 'u2', name: '李明', dept: '仪器管理部', role: '仪器管理员', lab: '仪器分析室', lastLogin: '2024-05-21 08:30', mfa: false, status: 'active' },
-  { id: 'u3', name: '王强', dept: '质量管理部', role: '质量主管', lab: '中心实验室', lastLogin: '2024-05-20 17:00', mfa: true, status: 'active' },
-  { id: 'u4', name: '李思', dept: '检测一部', role: '报告审核员', lab: '理化实验室', lastLogin: '2024-05-19 16:45', mfa: true, status: 'active' },
-];
-
 const permissions = ['样品管理', '检测管理', '报告管理', '质量控制', '仪器管理', '库存管理', '方法管理', '系统管理'];
 const actions = ['查看', '新增', '编辑', '删除', '审批', '导出'];
 
 export const SettingsPage: React.FC = () => {
   const { labType, setLabType } = useLabTypeStore();
 
+  const [users, setUsers] = useState([
+    { id: 'u1', name: '张伟', dept: '检测一部', role: '检测员', lab: '理化实验室', lastLogin: '2024-05-21 09:15', mfa: true, status: 'active' },
+    { id: 'u2', name: '李明', dept: '仪器管理部', role: '仪器管理员', lab: '仪器分析室', lastLogin: '2024-05-21 08:30', mfa: false, status: 'active' },
+    { id: 'u3', name: '王强', dept: '质量管理部', role: '质量主管', lab: '中心实验室', lastLogin: '2024-05-20 17:00', mfa: true, status: 'active' },
+    { id: 'u4', name: '李思', dept: '检测一部', role: '报告审核员', lab: '理化实验室', lastLogin: '2024-05-19 16:45', mfa: true, status: 'active' },
+  ]);
+
+  const [userModalOpen, setUserModalOpen] = useState(false);
+  const [userForm] = Form.useForm();
+
+  const [permData, setPermData] = useState(
+    permissions.map(m => ({
+      module: m, key: m,
+      '查看': true, '新增': m !== '系统管理', '编辑': m !== '系统管理', '删除': m === '样品管理',
+      '审批': ['报告管理', '质量控制'].includes(m), '导出': true,
+    }))
+  );
+
+  const handleAddUser = () => {
+    const values = userForm.getFieldsValue();
+    const newUser = {
+      id: `u-${Date.now()}`,
+      name: values.name,
+      dept: values.dept || '检测一部',
+      role: values.role || '检测员',
+      lab: values.lab || '理化实验室',
+      lastLogin: '-',
+      mfa: false,
+      status: 'active',
+    };
+    setUsers([...users, newUser]);
+    message.success(`用户 ${values.name} 已创建`);
+    setUserModalOpen(false);
+    userForm.resetFields();
+  };
+
+  const togglePerm = (module: string, action: string) => {
+    setPermData(prev => prev.map(p => {
+      if (p.module !== module) return p;
+      return { ...p, [action]: !p[action as keyof typeof p] };
+    }));
+  };
+
   const permColumns = [
     { title: '模块', dataIndex: 'module', key: 'module', fixed: 'left' as const },
-    ...actions.map(a => ({ title: a, dataIndex: a, key: a, width: 60, render: (v: boolean) => v ? <Tag color="green">✓</Tag> : <Tag color="red">✗</Tag> })),
+    ...actions.map(a => ({
+      title: a,
+      dataIndex: a,
+      key: a,
+      width: 80,
+      render: (v: boolean, record: any) => (
+        <Switch
+          size="small"
+          checked={v}
+          onChange={() => togglePerm(record.module, a)}
+        />
+      ),
+    })),
   ];
-
-  const permData = permissions.map(m => ({
-    module: m, key: m, 查看: true, 新增: m !== '系统管理', 编辑: m !== '系统管理', 删除: m === '样品管理', 审批: ['报告管理', '质量控制'].includes(m), 导出: true,
-  }));
 
   return (
     <div>
       <Title level={4} style={{ marginBottom: 16 }}>系统管理</Title>
 
       <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-        <Col xs={12} sm={6}><Card><Statistic title="用户总数" value={users.length + 4} prefix={<UserOutlined />} /></Card></Col>
+        <Col xs={12} sm={6}><Card><Statistic title="用户总数" value={users.length} prefix={<UserOutlined />} /></Card></Col>
         <Col xs={12} sm={6}><Card><Statistic title="启用角色" value={roles.length} prefix={<SafetyOutlined />} /></Card></Col>
         <Col xs={12} sm={6}><Card><Statistic title="流程模板" value={6} prefix={<SettingOutlined />} /></Card></Col>
         <Col xs={12} sm={6}><Card><Statistic title="集成接口" value={3} prefix={<KeyOutlined />} /></Card></Col>
@@ -74,7 +118,9 @@ export const SettingsPage: React.FC = () => {
             </Col>
             <Col span={18}>
               <Card>
-                <Space style={{ marginBottom: 16 }}><Button type="primary" icon={<PlusOutlined />}>新增用户</Button></Space>
+                <Space style={{ marginBottom: 16 }}>
+                  <Button type="primary" icon={<PlusOutlined />} onClick={() => setUserModalOpen(true)}>新增用户</Button>
+                </Space>
                 <Table dataSource={users} rowKey="id" size="middle" pagination={false} columns={[
                   { title: '用户名', dataIndex: 'name' },
                   { title: '所属部门', dataIndex: 'dept' },
@@ -89,7 +135,7 @@ export const SettingsPage: React.FC = () => {
           </Row>
         )},
         { key: 'roles', label: '角色权限', children: (
-          <Card title="权限配置矩阵">
+          <Card title="权限配置矩阵" extra={<Button size="small" type="primary" onClick={() => message.success('权限配置已保存')}>保存配置</Button>}>
             <Table columns={permColumns as any} dataSource={permData} pagination={false} size="small" bordered />
           </Card>
         )},
@@ -111,7 +157,24 @@ export const SettingsPage: React.FC = () => {
           </Space>
         )},
       ]} />
+
+      {/* 新增用户 Modal */}
+      <Modal title="新增用户" open={userModalOpen} onOk={handleAddUser} onCancel={() => { setUserModalOpen(false); userForm.resetFields(); }}>
+        <Form form={userForm} layout="vertical">
+          <Form.Item name="name" label="用户名" rules={[{ required: true }]}>
+            <Input placeholder="请输入用户名" />
+          </Form.Item>
+          <Form.Item name="dept" label="所属部门">
+            <Input placeholder="检测一部" />
+          </Form.Item>
+          <Form.Item name="role" label="角色">
+            <Input placeholder="检测员" />
+          </Form.Item>
+          <Form.Item name="lab" label="实验室">
+            <Input placeholder="理化实验室" />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };
-
