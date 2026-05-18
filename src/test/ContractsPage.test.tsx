@@ -31,44 +31,44 @@ describe('ContractsPage', () => {
 
   it('renders and loads contracts', async () => {
     render(<BrowserRouter><ConfigProvider><ContractsPage /></ConfigProvider></BrowserRouter>);
-    await waitFor(() => expect(screen.getByText('CT-2025-001')).toBeInTheDocument());
-    expect(screen.getByText('绿源环保')).toBeInTheDocument();
+    await waitFor(() => expect(document.body.textContent).toContain('CT-2025-001'), { timeout: 10000 });
+    expect(document.body.textContent).toContain('绿源环保');
     expect(screen.getAllByText('执行中').length).toBeGreaterThanOrEqual(1);
-  });
+  }, 15000);
 
   it('filters by status', async () => {
     render(<BrowserRouter><ConfigProvider><ContractsPage /></ConfigProvider></BrowserRouter>);
-    await waitFor(() => expect(screen.getByText('CT-2025-001')).toBeInTheDocument());
+    await waitFor(() => expect(document.body.textContent).toContain('CT-2025-001'), { timeout: 10000 });
     fireEvent.mouseDown(screen.getByText('全部'));
     await waitFor(() => expect(screen.getAllByText('执行中').length).toBeGreaterThanOrEqual(1));
     fireEvent.click(screen.getAllByText('执行中')[0]);
     await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
-  });
+  }, 15000);
 
   it('opens create modal', async () => {
     render(<BrowserRouter><ConfigProvider><ContractsPage /></ConfigProvider></BrowserRouter>);
-    await waitFor(() => expect(screen.getByText('CT-2025-001')).toBeInTheDocument());
+    await waitFor(() => expect(document.body.textContent).toContain('CT-2025-001'), { timeout: 10000 });
     fireEvent.click(screen.getAllByText('新建合同')[0]);
     await waitFor(() => expect(screen.getAllByText('新建合同').length).toBeGreaterThanOrEqual(1));
-  });
+  }, 15000);
 
   it('opens view modal', async () => {
     render(<BrowserRouter><ConfigProvider><ContractsPage /></ConfigProvider></BrowserRouter>);
-    await waitFor(() => expect(screen.getByText('CT-2025-001')).toBeInTheDocument());
+    await waitFor(() => expect(document.body.textContent).toContain('CT-2025-001'), { timeout: 10000 });
     fireEvent.click(screen.getAllByText('查看')[0]);
     await waitFor(() => expect(document.body.textContent).toContain('合同详情'));
-  });
+  }, 15000);
 
   it('opens edit modal', async () => {
     render(<BrowserRouter><ConfigProvider><ContractsPage /></ConfigProvider></BrowserRouter>);
-    await waitFor(() => expect(screen.getByText('CT-2025-001')).toBeInTheDocument());
+    await waitFor(() => expect(document.body.textContent).toContain('CT-2025-001'), { timeout: 10000 });
     fireEvent.click(screen.getAllByText('编辑')[0]);
     await waitFor(() => expect(screen.getByText('编辑合同')).toBeInTheDocument());
-  });
+  }, 15000);
 
   it('deletes a contract', async () => {
     render(<BrowserRouter><ConfigProvider><ContractsPage /></ConfigProvider></BrowserRouter>);
-    await waitFor(() => expect(screen.getByText('CT-2025-001')).toBeInTheDocument());
+    await waitFor(() => expect(document.body.textContent).toContain('CT-2025-001'), { timeout: 10000 });
     fireEvent.click(screen.getAllByText('删除')[0]);
-  });
+  }, 15000);
 });

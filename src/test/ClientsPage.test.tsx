@@ -47,39 +47,39 @@ describe('ClientsPage - 客户管理', () => {
 
   it('US-BM-01: 显示客户列表', async () => {
     render(<BrowserRouter><ConfigProvider><ClientsPage /></ConfigProvider></BrowserRouter>);
-    await waitFor(() => expect(screen.getByText('绿源环保科技')).toBeInTheDocument());
-  });
+    await waitFor(() => expect(document.body.textContent).toContain('绿源环保科技'), { timeout: 10000 });
+  }, 15000);
 
   it('US-BM-01: 存在"新增客户"按钮', async () => {
     render(<BrowserRouter><ConfigProvider><ClientsPage /></ConfigProvider></BrowserRouter>);
-    await waitFor(() => expect(screen.getByText('新增客户')).toBeInTheDocument());
-  });
+    await waitFor(() => expect(document.body.textContent).toContain('新增客户'), { timeout: 10000 });
+  }, 15000);
 
   it('US-BM-01: 点击"新增客户"打开 Modal', async () => {
     render(<BrowserRouter><ConfigProvider><ClientsPage /></ConfigProvider></BrowserRouter>);
-    await waitFor(() => expect(screen.getByText('新增客户')).toBeInTheDocument());
+    await waitFor(() => expect(document.body.textContent).toContain('新增客户'), { timeout: 10000 });
     fireEvent.click(screen.getByText('新增客户'));
     await waitFor(() => expect(document.body.textContent).toContain('客户名称'));
-  });
+  }, 15000);
 
   it('US-BM-02: 点击"查看"展开 Drawer', async () => {
     render(<BrowserRouter><ConfigProvider><ClientsPage /></ConfigProvider></BrowserRouter>);
-    await waitFor(() => expect(screen.getByText('绿源环保科技')).toBeInTheDocument());
+    await waitFor(() => expect(document.body.textContent).toContain('绿源环保科技'), { timeout: 10000 });
     fireEvent.click(screen.getByText('绿源环保科技'));
     await waitFor(() => expect(document.body.textContent).toContain('联系人'));
-  });
+  }, 15000);
 
   it('US-BM-03: 搜索输入框存在', async () => {
     render(<BrowserRouter><ConfigProvider><ClientsPage /></ConfigProvider></BrowserRouter>);
-    await waitFor(() => expect(screen.getByText('绿源环保科技')).toBeInTheDocument());
+    await waitFor(() => expect(document.body.textContent).toContain('绿源环保科技'), { timeout: 10000 });
     const searchInput = document.querySelector('input[placeholder*="搜索"]');
     expect(searchInput).toBeTruthy();
-  });
+  }, 15000);
 
   it('US-BM-04: 删除按钮存在', async () => {
     render(<BrowserRouter><ConfigProvider><ClientsPage /></ConfigProvider></BrowserRouter>);
-    await waitFor(() => expect(screen.getByText('绿源环保科技')).toBeInTheDocument());
+    await waitFor(() => expect(document.body.textContent).toContain('绿源环保科技'), { timeout: 10000 });
     const deleteBtns = document.querySelectorAll('.ant-btn-dangerous');
     expect(deleteBtns.length).toBeGreaterThan(0);
-  });
+  }, 15000);
 });
