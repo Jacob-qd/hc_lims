@@ -13,7 +13,7 @@ import {
   EnvironmentOutlined, GlobalOutlined, LogoutOutlined,
   CheckCircleOutlined, RobotOutlined, LineChartOutlined,
   MobileOutlined, FormOutlined, ScanOutlined,
-  MedicineBoxOutlined, DollarOutlined,
+  MedicineBoxOutlined, DollarOutlined, CopyOutlined,
 } from '@ant-design/icons';
 
 const { Sider } = Layout;
@@ -68,6 +68,7 @@ const allMenuItems = [
     { key: '/research/groups', icon: <TeamOutlined />, label: '课题组管理', roles: ['admin'] },
     { key: '/research/projects', icon: <FundOutlined />, label: '研究项目管理', roles: ['admin'] },
     { key: '/research/eln', icon: <BookOutlined />, label: '电子实验记录ELN', roles: ['admin'] },
+    { key: '/research/eln/templates', icon: <CopyOutlined />, label: 'ELN模板设计器', roles: ['admin'] },
     { key: '/research/reservations', icon: <CalendarOutlined />, label: '仪器共享预约', roles: ['admin'] },
     { key: '/research/researchers', icon: <MedicineBoxOutlined />, label: '科研人员管理', roles: ['admin'] },
     { key: '/research/funds', icon: <DollarOutlined />, label: '科研经费管理', roles: ['admin'] },

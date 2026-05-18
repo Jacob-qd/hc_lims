@@ -163,6 +163,7 @@ export const router = createBrowserRouter([
       { path: 'research/funds', element: <ResearchFundPage /> },
       { path: 'research/reagents', element: <ReagentInventoryPage /> },
       { path: 'research/inspections', element: <LabInspectionPage /> },
+      { path: 'research/eln/templates', element: <TemplateDesignerPage /> },
       { path: '*', element: <Navigate to="/dashboard" replace /> },
     ],
   },

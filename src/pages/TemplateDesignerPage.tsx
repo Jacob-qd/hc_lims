@@ -5,7 +5,7 @@ import {
 } from 'antd';
 import {
   PlusOutlined, DeleteOutlined, CopyOutlined, EyeOutlined,
-  SaveOutlined, DragOutlined, CheckCircleOutlined,
+  SaveOutlined, DragOutlined,
 } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
