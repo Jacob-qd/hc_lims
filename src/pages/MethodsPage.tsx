@@ -1,11 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Tabs, Modal, Form, message, Timeline, Progress } from 'antd';
-import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined } from '@ant-design/icons';
+import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Tabs, Modal, Form, message, Timeline, Progress, Popconfirm } from 'antd';
+import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined, CopyOutlined, FileTextOutlined, CheckCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const statusColors: Record<string, string> = { active: '#52c41a', revision: '#faad14', archived: '#d9d9d9', draft: '#1677ff' };
 
-const SopView: React.FC<{method: any}> = ({method}) => <div>方法: {method?.code} ({method?.name})</div>;
+interface ValidationItem {
+  id: string; methodId: string; item: string; status: 'passed' | 'testing' | 'pending';
+}
+
+interface MethodVersion {
+  id: string; methodId: string; version: string; effectiveDate: string; note: string;
+}
+
+interface MethodSop {
+  id: string; methodId: string; content: string; updatedAt: string;
+}
 
 export const MethodsPage: React.FC = () => {
   const [methods, setMethods] = useState<any[]>([]);
@@ -14,7 +24,33 @@ export const MethodsPage: React.FC = () => {
   const [selected, setSelected] = useState<any>(null);
   const [drawer, setDrawer] = useState(false);
   const [createModal, setCreateModal] = useState(false);
+  const [editModal, setEditModal] = useState(false);
+  const [copyModal, setCopyModal] = useState(false);
+  const [sopModal, setSopModal] = useState(false);
+  const [releaseModal, setReleaseModal] = useState(false);
   const [form] = Form.useForm();
+  const [editForm] = Form.useForm();
+  const [copyForm] = Form.useForm();
+  const [sopForm] = Form.useForm();
+  const [releaseForm] = Form.useForm();
+
+  const [validations, setValidations] = useState<ValidationItem[]>([
+    { id:'v1', methodId:'m1', item:'准确度', status:'passed' },
+    { id:'v2', methodId:'m1', item:'精密度', status:'passed' },
+    { id:'v3', methodId:'m1', item:'线性范围', status:'passed' },
+    { id:'v4', methodId:'m1', item:'检出限', status:'passed' },
+    { id:'v5', methodId:'m1', item:'定量限', status:'testing' },
+    { id:'v6', methodId:'m1', item:'回收率', status:'pending' },
+  ]);
+
+  const [versions, setVersions] = useState<MethodVersion[]>([
+    { id:'ver1', methodId:'m1', version:'v2.0', effectiveDate:'2024-01-15', note:'修订检出限' },
+    { id:'ver2', methodId:'m1', version:'v1.0', effectiveDate:'2023-01-01', note:'初版发布' },
+  ]);
+
+  const [sops, setSops] = useState<MethodSop[]>([
+    { id:'s1', methodId:'m1', content:'1. 样品采集与保存...\n2. 样品前处理...\n3. 仪器条件设置...\n4. 标准曲线绘制...\n5. 样品测定...\n6. 结果计算与报告...', updatedAt:'2024-01-15' },
+  ]);
 
   const fetchMethods = async () => {
     setLoading(true);
@@ -26,20 +62,116 @@ export const MethodsPage: React.FC = () => {
   const filtered = methods.filter((m: any) => m.name.includes(search) || m.code.includes(search) || m.analyte.includes(search));
   const stats = { active: methods.filter((m: any) => m.status === 'active').length, revision: methods.filter((m: any) => m.status === 'revision').length, archived: methods.filter((m: any) => m.status === 'archived').length };
 
+  const handleCreate = () => {
+    const values = form.getFieldsValue();
+    const newMethod = {
+      id: `m-${Date.now()}`,
+      code: values.code || `M-${String(methods.length + 1).padStart(3, '0')}`,
+      name: values.name,
+      analyte: values.analyte,
+      matrix: values.matrix,
+      instrument: values.instrument,
+      detectionLimit: values.detectionLimit,
+      version: 'v1.0',
+      status: 'draft',
+      statusLabel: '草稿',
+      effectiveDate: new Date().toISOString().split('T')[0],
+      responsible: values.responsible || '当前用户',
+    };
+    setMethods([newMethod, ...methods]);
+    message.success('方法创建成功');
+    setCreateModal(false);
+    form.resetFields();
+  };
+
+  const handleUpdate = () => {
+    if (!selected) return;
+    const values = editForm.getFieldsValue();
+    setMethods(methods.map(m => m.id === selected.id ? { ...m, ...values } : m));
+    setSelected({ ...selected, ...values });
+    message.success('方法已更新');
+    setEditModal(false);
+  };
+
+  const handleCopy = () => {
+    if (!selected) return;
+    const values = copyForm.getFieldsValue();
+    const newMethod = {
+      ...selected,
+      id: `m-${Date.now()}`,
+      code: values.newCode,
+      name: values.newName,
+      version: 'v1.0',
+      status: 'draft',
+      statusLabel: '草稿',
+      effectiveDate: new Date().toISOString().split('T')[0],
+    };
+    setMethods([newMethod, ...methods]);
+    message.success(`方法 ${selected.code} 已复制为 ${newMethod.code}`);
+    setCopyModal(false);
+    copyForm.resetFields();
+  };
+
+  const handleRelease = () => {
+    if (!selected) return;
+    const values = releaseForm.getFieldsValue();
+    const newVersion: MethodVersion = {
+      id: `ver-${Date.now()}`,
+      methodId: selected.id,
+      version: values.version,
+      effectiveDate: values.effectiveDate,
+      note: values.note,
+    };
+    setVersions([newVersion, ...versions]);
+    setMethods(methods.map(m => m.id === selected.id ? { ...m, version: values.version, status: 'active', statusLabel: '生效', effectiveDate: values.effectiveDate } : m));
+    setSelected({ ...selected, version: values.version, status: 'active', statusLabel: '生效', effectiveDate: values.effectiveDate });
+    message.success(`版本 ${values.version} 已发布`);
+    setReleaseModal(false);
+    releaseForm.resetFields();
+  };
+
+  const handleSaveSop = () => {
+    if (!selected) return;
+    const values = sopForm.getFieldsValue();
+    const existing = sops.find(s => s.methodId === selected.id);
+    if (existing) {
+      setSops(sops.map(s => s.id === existing.id ? { ...s, content: values.content, updatedAt: new Date().toISOString().split('T')[0] } : s));
+    } else {
+      setSops([...sops, { id: `s-${Date.now()}`, methodId: selected.id, content: values.content, updatedAt: new Date().toISOString().split('T')[0] }]);
+    }
+    message.success('SOP已保存');
+    setSopModal(false);
+  };
+
+  const handleToggleValidation = (valId: string) => {
+    setValidations(validations.map(v => {
+      if (v.id !== valId) return v;
+      const next = v.status === 'passed' ? 'testing' : v.status === 'testing' ? 'pending' : 'passed';
+      return { ...v, status: next };
+    }));
+  };
+
+  const handleDeleteMethod = (id: string) => {
+    setMethods(methods.filter(m => m.id !== id));
+    message.success('方法已删除');
+  };
+
+  const currentValidations = selected ? validations.filter(v => v.methodId === selected.id) : [];
+  const currentVersions = selected ? versions.filter(v => v.methodId === selected.id) : [];
+  const currentSop = selected ? sops.find(s => s.methodId === selected.id) : null;
+
   return (
     <div>
       <Row justify="space-between" style={{ marginBottom: 16 }}><Col><Title level={4}>方法管理</Title></Col>
         <Col><Space>
           <Button icon={<PlusOutlined />} onClick={() => setCreateModal(true)}>新建方法</Button>
-          <Button onClick={() => message.info('版本发布功能')}>版本发布</Button>
-          <Button onClick={() => message.info('关联SOP功能')}>关联SOP</Button>
         </Space></Col>
       </Row>
       <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
         <Col xs={6}><Card size="small"><Statistic title="生效方法" value={stats.active} valueStyle={{ color: '#52c41a' }} /></Card></Col>
         <Col xs={6}><Card size="small"><Statistic title="修订中" value={stats.revision} valueStyle={{ color: '#faad14' }} /></Card></Col>
         <Col xs={6}><Card size="small"><Statistic title="归档版本" value={stats.archived} /></Card></Col>
-        <Col xs={6}><Card size="small"><Statistic title="验证任务" value={3} valueStyle={{ color: '#1677ff' }} /></Card></Col>
+        <Col xs={6}><Card size="small"><Statistic title="验证任务" value={validations.filter(v => v.status !== 'passed').length} valueStyle={{ color: '#1677ff' }} /></Card></Col>
       </Row>
       <Card>
         <Space style={{ marginBottom: 16 }}>
@@ -59,12 +191,22 @@ export const MethodsPage: React.FC = () => {
           { title: '生效日期', dataIndex: 'effectiveDate' },
           { title: '负责人', dataIndex: 'responsible' },
           { title: '状态', dataIndex: 'status', render: (s: string) => <Tag color={statusColors[s]}>{s==='active'?'生效':s==='revision'?'修订中':s==='archived'?'已归档':'草稿'}</Tag> },
-          { title: '操作', render: (_: any, r: any) => <Space><Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawer(true); }}>详情</Button><Button type="link" size="small" icon={<EditOutlined />} onClick={() => message.info('编辑方法: '+r.code)}>编辑</Button><Button type="link" size="small" onClick={() => message.success('已复制方法: '+r.code)}>复制</Button></Space> },
+          { title: '操作', width: 180, render: (_: any, r: any) => <Space>
+            <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelected(r); setDrawer(true); }}>详情</Button>
+            <Button type="link" size="small" icon={<EditOutlined />} onClick={() => { setSelected(r); editForm.setFieldsValue({...r}); setEditModal(true); }}>编辑</Button>
+            <Button type="link" size="small" icon={<CopyOutlined />} onClick={() => { setSelected(r); copyForm.setFieldsValue({ newCode: `${r.code}-COPY`, newName: `${r.name}(复制)` }); setCopyModal(true); }}>复制</Button>
+            <Popconfirm title="确认删除?" onConfirm={() => handleDeleteMethod(r.id)}><Button type="link" size="small" danger icon={<DeleteOutlined />}>删除</Button></Popconfirm>
+          </Space> },
         ]} size="middle" />
       </Card>
 
-      <Drawer title={`${selected?.code} ${selected?.name}`} open={drawer} onClose={() => { setDrawer(false); setSelected(null); }} width={520}>
+      <Drawer title={`${selected?.code} ${selected?.name}`} open={drawer} onClose={() => { setDrawer(false); setSelected(null); }} width={560}>
         {selected && (<>
+          <Space style={{ marginBottom: 12 }}>
+            <Button size="small" type="primary" icon={<FileTextOutlined />} onClick={() => { sopForm.setFieldsValue({ content: currentSop?.content || '' }); setSopModal(true); }}>编辑SOP</Button>
+            <Button size="small" icon={<CheckCircleOutlined />} onClick={() => { releaseForm.setFieldsValue({ version: `v${Number((selected.version||'v1.0').replace('v','')) + 1}.0`, effectiveDate: new Date().toISOString().split('T')[0] }); setReleaseModal(true); }}>版本发布</Button>
+            <Button size="small" icon={<EditOutlined />} onClick={() => { editForm.setFieldsValue({...selected}); setEditModal(true); }}>编辑方法</Button>
+          </Space>
           <Descriptions column={2} bordered size="small">
             <Descriptions.Item label="方法编号" span={2}>{selected.code}</Descriptions.Item>
             <Descriptions.Item label="名称" span={2}>{selected.name}</Descriptions.Item>
@@ -78,30 +220,87 @@ export const MethodsPage: React.FC = () => {
             <Descriptions.Item label="负责人">{selected.responsible}</Descriptions.Item>
           </Descriptions>
           <Tabs style={{ marginTop: 16 }} items={[
-            { key: 'sop', label: 'SOP文档', children: <SopView method={selected} /> },
-            { key: 'versions', label: '版本历史', children: <Timeline items={[
-              { color: 'green', children: <>{selected.version} 当前版本<br />{selected.effectiveDate} 生效</> },
-              { color: 'blue', children: <>v1.0 初版<br />2023-01-01 发布</> },
-            ]} /> },
-            { key: 'validation', label: '验证记录', children: <div><Progress type="circle" percent={75} size={80} /><br /><Space direction="vertical" style={{marginTop:16, width:'100%'}}>
-              {[{item:'准确度',status:'passed'},{item:'精密度',status:'passed'},{item:'线性范围',status:'passed'},{item:'检出限',status:'passed'},{item:'定量限',status:'testing'},{item:'回收率',status:'pending'}].map(v =>
-                <Card key={v.item} size="small" style={{marginBottom:4}}>
-                  <Row justify="space-between"><Col><Text>{v.item}</Text></Col><Col><Tag color={v.status==='passed'?'green':v.status==='testing'?'orange':'default'}>{v.status==='passed'?'已验证':v.status==='testing'?'验证中':'待验证'}</Tag></Col></Row>
-                </Card>
-              )}
-            </Space></div> },
+            { key: 'sop', label: 'SOP文档', children: (
+              <Card size="small">
+                {currentSop ? (
+                  <div style={{ whiteSpace: 'pre-wrap', fontSize: 13, lineHeight: 1.8 }}>{currentSop.content}</div>
+                ) : (
+                  <Text type="secondary">暂无SOP文档，请点击「编辑SOP」创建</Text>
+                )}
+              </Card>
+            )},
+            { key: 'versions', label: '版本历史', children: (
+              <Timeline items={[
+                ...currentVersions.map(v => ({ color: 'green', children: <><Text strong>{v.version}</Text><br />{v.effectiveDate} {v.note}</> })),
+                { color: 'blue', children: <><Text strong>v1.0 初版</Text><br />2023-01-01 发布</> },
+              ]} />
+            )},
+            { key: 'validation', label: '验证记录', children: (
+              <div>
+                <Progress type="circle" percent={Math.round(currentValidations.filter(v => v.status === 'passed').length / Math.max(currentValidations.length, 1) * 100)} size={80} /><br />
+                <Space direction="vertical" style={{marginTop:16, width:'100%'}}>
+                  {currentValidations.map(v => (
+                    <Card key={v.id} size="small" style={{marginBottom:4}} hoverable onClick={() => handleToggleValidation(v.id)}>
+                      <Row justify="space-between"><Col><Text>{v.item}</Text></Col><Col><Tag color={v.status==='passed'?'green':v.status==='testing'?'orange':'default'}>{v.status==='passed'?'已验证':v.status==='testing'?'验证中':'待验证'}</Tag></Col></Row>
+                    </Card>
+                  ))}
+                  {currentValidations.length === 0 && <Text type="secondary">暂无验证记录</Text>}
+                </Space>
+              </div>
+            )},
           ]} />
         </>)}
       </Drawer>
 
+      {/* Create Modal */}
       <Modal title="新建方法" open={createModal} onOk={() => form.submit()} onCancel={() => { setCreateModal(false); form.resetFields(); }}>
-        <Form form={form} layout="vertical" onFinish={() => { message.success('方法创建成功'); setCreateModal(false); }}>
-          <Form.Item name="code" label="方法编号"><Input /></Form.Item>
+        <Form form={form} layout="vertical" onFinish={handleCreate}>
+          <Form.Item name="code" label="方法编号"><Input placeholder="留空自动生成" /></Form.Item>
           <Form.Item name="name" label="方法名称" rules={[{ required: true }]}><Input /></Form.Item>
           <Form.Item name="analyte" label="分析项目"><Input /></Form.Item>
           <Form.Item name="matrix" label="样品基质"><Input /></Form.Item>
           <Form.Item name="instrument" label="适用仪器"><Input /></Form.Item>
           <Form.Item name="detectionLimit" label="检出限"><Input /></Form.Item>
+          <Form.Item name="responsible" label="负责人"><Input /></Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Edit Modal */}
+      <Modal title="编辑方法" open={editModal} onOk={() => editForm.submit()} onCancel={() => { setEditModal(false); editForm.resetFields(); }}>
+        <Form form={editForm} layout="vertical" onFinish={handleUpdate}>
+          <Form.Item name="name" label="方法名称" rules={[{ required: true }]}><Input /></Form.Item>
+          <Form.Item name="analyte" label="分析项目"><Input /></Form.Item>
+          <Form.Item name="matrix" label="样品基质"><Input /></Form.Item>
+          <Form.Item name="instrument" label="适用仪器"><Input /></Form.Item>
+          <Form.Item name="detectionLimit" label="检出限"><Input /></Form.Item>
+          <Form.Item name="status" label="状态">
+            <Select><Select.Option value="draft">草稿</Select.Option><Select.Option value="active">生效</Select.Option><Select.Option value="revision">修订中</Select.Option><Select.Option value="archived">已归档</Select.Option></Select>
+          </Form.Item>
+          <Form.Item name="responsible" label="负责人"><Input /></Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Copy Modal */}
+      <Modal title="复制方法" open={copyModal} onOk={() => copyForm.submit()} onCancel={() => { setCopyModal(false); copyForm.resetFields(); }}>
+        <Form form={copyForm} layout="vertical" onFinish={handleCopy}>
+          <Form.Item name="newCode" label="新方法编号" rules={[{ required: true }]}><Input /></Form.Item>
+          <Form.Item name="newName" label="新方法名称" rules={[{ required: true }]}><Input /></Form.Item>
+        </Form>
+      </Modal>
+
+      {/* SOP Modal */}
+      <Modal title="编辑SOP文档" open={sopModal} onOk={() => sopForm.submit()} onCancel={() => { setSopModal(false); sopForm.resetFields(); }} width={600}>
+        <Form form={sopForm} layout="vertical" onFinish={handleSaveSop}>
+          <Form.Item name="content" label="SOP内容"><Input.TextArea rows={10} placeholder="输入标准操作程序..." /></Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Release Modal */}
+      <Modal title="版本发布" open={releaseModal} onOk={() => releaseForm.submit()} onCancel={() => { setReleaseModal(false); releaseForm.resetFields(); }}>
+        <Form form={releaseForm} layout="vertical" onFinish={handleRelease}>
+          <Form.Item name="version" label="新版本号" rules={[{ required: true }]}><Input /></Form.Item>
+          <Form.Item name="effectiveDate" label="生效日期" rules={[{ required: true }]}><Input type="date" /></Form.Item>
+          <Form.Item name="note" label="版本说明"><Input.TextArea rows={2} /></Form.Item>
         </Form>
       </Modal>
     </div>
