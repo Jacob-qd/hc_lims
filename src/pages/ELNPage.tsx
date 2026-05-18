@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Card, Button, Table, Tag, Space, Modal, Form, Input, message,
+  Card, Button, Table, Tag, Space, Modal, Form, Input, Select, message,
   Timeline, Descriptions, Divider, Row, Col, Statistic, Tabs, Upload,
   List, Typography, Empty,
 } from 'antd';
@@ -383,6 +383,9 @@ export const ELNPage: React.FC = () => {
 
       <Modal title="新建实验记录" open={modalOpen} onCancel={() => setModalOpen(false)} onOk={handleCreate} width={560}>
         <Form form={form} layout="vertical">
+          <Form.Item name="templateId" label="选择模板" rules={[{ required: true }]}>
+            <Select placeholder="选择实验记录模板" options={templates.map(t => ({ value: t.id, label: t.name }))} />
+          </Form.Item>
           <Form.Item name="title" label="记录标题" rules={[{ required: true }]}><Input placeholder="如：2026-05-15 水质COD检测" /></Form.Item>
           <Form.Item name="projectName" label="关联项目"><Input placeholder="选填" /></Form.Item>
           <Form.Item name="content" label="实验内容"><TextArea rows={4} placeholder="记录实验方法、条件、现象等" /></Form.Item>

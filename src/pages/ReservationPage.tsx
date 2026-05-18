@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button, Table, Tag, Space, Modal, Form, Input, Select, DatePicker, TimePicker, message, Alert, Row, Col, Statistic } from 'antd';
-import { PlusOutlined, DeleteOutlined, CalendarOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import { Card, Button, Table, Tag, Space, Modal, Form, Input, Select, DatePicker, TimePicker, message, Alert, Row, Col, Statistic, Tabs } from 'antd';
+import { PlusOutlined, DeleteOutlined, CalendarOutlined, ClockCircleOutlined, UserOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
 const { Option } = Select;
@@ -24,7 +24,10 @@ export const ReservationPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [conflictMsg, setConflictMsg] = useState('');
+  const [activeTab, setActiveTab] = useState('all');
   const [form] = Form.useForm();
+
+  const currentUser = '李思';
 
   const fetchReservations = () => {
     setLoading(true);
@@ -103,7 +106,14 @@ export const ReservationPage: React.FC = () => {
 
       <Card title={<Space><ClockCircleOutlined />仪器预约</Space>}
         extra={<Button type="primary" icon={<PlusOutlined />} onClick={() => { setConflictMsg(''); form.resetFields(); setModalOpen(true); }}>新建预约</Button>}>
-        <Table dataSource={reservations} rowKey="id" columns={columns} loading={loading} pagination={{ pageSize: 10 }} />
+        <Tabs activeKey={activeTab} onChange={setActiveTab}>
+          <Tabs.TabPane tab="全部预约" key="all">
+            <Table dataSource={reservations} rowKey="id" columns={columns} loading={loading} pagination={{ pageSize: 10 }} />
+          </Tabs.TabPane>
+          <Tabs.TabPane tab={<Space><UserOutlined />我的预约</Space>} key="mine">
+            <Table dataSource={reservations.filter(r => r.userName === currentUser)} rowKey="id" columns={columns} loading={loading} pagination={{ pageSize: 10 }} />
+          </Tabs.TabPane>
+        </Tabs>
       </Card>
 
       <Modal title="新建预约" open={modalOpen} onCancel={() => setModalOpen(false)} onOk={() => form.submit()} destroyOnClose width={500}>
