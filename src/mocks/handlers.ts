@@ -2071,6 +2071,52 @@ export const handlers = [
     return HttpResponse.json({ code: 200 });
   }),
 
+  // ELN v2.0 handlers
+  http.put(apiUrl('/eln/templates/:id'), async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    return HttpResponse.json({ code: 200, data: { id: params.id, ...body, updatedAt: new Date().toISOString() } });
+  }),
+  http.delete(apiUrl('/eln/templates/:id'), () => HttpResponse.json({ code: 200 })),
+  http.post(apiUrl('/eln-records/:id/annotate'), async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    return HttpResponse.json({ code: 200, data: { id: 'ann' + Date.now(), recordId: params.id, ...body, createdAt: new Date().toISOString() } });
+  }),
+  http.get(apiUrl('/eln-records/:id/versions'), () => {
+    return HttpResponse.json({ code: 200, data: { list: [
+      { version: 1, updatedAt: '2026-05-15T09:00:00Z', updatedBy: '张三', changes: '创建记录' },
+      { version: 2, updatedAt: '2026-05-15T10:00:00Z', updatedBy: '张三', changes: '修正数据' },
+    ]}});
+  }),
+  http.post(apiUrl('/eln/compute'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const { formula, variables } = body;
+    let result = 0;
+    try {
+      // Simple formula evaluation for MEAN, SUM, RSD
+      const varNames = Object.keys(variables);
+      const values = varNames.map(k => variables[k]);
+      if (formula.includes('MEAN')) result = values.reduce((a: number, b: number) => a + b, 0) / values.length;
+      else if (formula.includes('SUM')) result = values.reduce((a: number, b: number) => a + b, 0);
+      else if (formula.includes('RSD')) {
+        const mean = values.reduce((a: number, b: number) => a + b, 0) / values.length;
+        const variance = values.reduce((a: number, b: number) => a + Math.pow(b - mean, 2), 0) / values.length;
+        result = (Math.sqrt(variance) / mean) * 100;
+      } else {
+        // Simple arithmetic
+        result = eval(formula.replace(/[a-zA-Z_]+/g, (match: string) => String(variables[match] ?? 0)));
+      }
+    } catch { result = 0; }
+    return HttpResponse.json({ code: 200, data: { result: Number(result.toFixed(4)), formula, variables } });
+  }),
+  http.get(apiUrl('/eln/functions'), () => HttpResponse.json({ code: 200, data: { list: [
+    { name: 'MEAN', description: '平均值', syntax: 'MEAN(value1, value2, ...)' },
+    { name: 'SUM', description: '求和', syntax: 'SUM(value1, value2, ...)' },
+    { name: 'RSD', description: '相对标准偏差(%)', syntax: 'RSD(value1, value2, ...)' },
+    { name: 'SD', description: '标准偏差', syntax: 'SD(value1, value2, ...)' },
+    { name: 'MIN', description: '最小值', syntax: 'MIN(value1, value2, ...)' },
+    { name: 'MAX', description: '最大值', syntax: 'MAX(value1, value2, ...)' },
+  ]}})),
+
   ...mobileSamplingHandlers,
   ...clientsHandlers,
   ...quotationsHandlers,
