@@ -92,6 +92,10 @@ export const router = createBrowserRouter([
     element: <RouteGuard requireAuth={false}><MobileProfilePage /></RouteGuard>,
   },
   {
+    path: '/portal',
+    element: <RouteGuard requireAuth={false}><CustomerPortalPage /></RouteGuard>,
+  },
+  {
     path: '/login',
     element: (
       <RouteGuard requireAuth={false}>
@@ -134,7 +138,6 @@ export const router = createBrowserRouter([
       { path: 'teaching', element: <TeachingPage /> },
       { path: 'safety', element: <SafetyPage /> },
       { path: 'achievements', element: <AchievementPage /> },
-      { path: 'portal', element: <CustomerPortalPage /> },
       { path: 'audit-logs', element: <AuditLogPage /> },
       { path: 'notifications', element: <NotificationPage /> },
       { path: 'help', element: <HelpPage /> },
