@@ -120,10 +120,11 @@ export const SamplesPage: React.FC = () => {
       render: (v) => <Tag color={getStatusColor(v)}>{v}</Tag>,
     },
     {
-      title: '操作', key: 'action', width: 140, fixed: 'right',
+      title: '操作', key: 'action', width: 220, fixed: 'right',
       render: (_, record) => (
         <Space size="small">
           <Button type="link" size="small" onClick={() => showDetail(record)}>详情</Button>
+          <Button type="link" size="small" onClick={() => navigate(`/samples/${record.id}`)}>查看全部</Button>
           <Button type="link" size="small" onClick={() => navigate('/tasks?sample='+record.sampleNo)}>任务</Button>
           <Button type="link" size="small" onClick={() => { setBarcodeCode(generateSampleBarcode(parseInt(record.id.replace('s',''))||1)); setBarcodeLabel(record.sampleNo+' '+record.name); setBarcodeVisible(true); }}>条码</Button>
         </Space>
@@ -407,7 +408,7 @@ export const SamplesPage: React.FC = () => {
           rowKey="id"
           loading={loading}
           pagination={{ pageSize: 10, showTotal: (total) => `共 ${total} 条` }}
-          scroll={{ x: 1400 }}
+          scroll={{ x: 1500 }}
           rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
         />
       </Card>
@@ -424,7 +425,7 @@ export const SamplesPage: React.FC = () => {
             <div style={{ marginBottom: 24 }}>
               <Title level={5}>{selectedSample.sampleNo}</Title>
               <Tag color={getStatusColor(selectedSample.statusLabel)}>{selectedSample.statusLabel}</Tag>
-              <Button type="link" style={{ float: 'right' }} onClick={() => { setDetailOpen(false); navigate(`/samples/${selectedSample.id}`); }}>查看全部</Button>
+              <Button type="link" style={{ float: 'right' }} onClick={() => { setDetailOpen(false); navigate(`/samples/${selectedSample.id}`); }}>打开详情页</Button>
             </div>
 
             <Card title="基本信息" size="small" style={{ marginBottom: 16 }}>
