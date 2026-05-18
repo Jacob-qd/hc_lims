@@ -51,6 +51,55 @@ export const TasksPage: React.FC = () => {
   const [parallelOpen, setParallelOpen] = useState(false);
   const [retests, setRetests] = useState<any[]>([]);
   const [parallels, setParallels] = useState<any[]>([]);
+  const [ruleModalOpen, setRuleModalOpen] = useState(false);
+  const [ruleForm] = Form.useForm();
+
+  const defaultRule = {
+    strategy: 'round-robin' as const,
+    defaultAnalysts: ['张伟','李四','王五','赵六'],
+    sampleTypeMap: { '水质': '张伟', '土壤': '李四', '空气': '王五', '其他': '赵六' } as Record<string,string>,
+    priorityMap: { 'high': '张伟', 'medium': '李四', 'low': '王五' } as Record<string,string>,
+  };
+  const [assignRule, setAssignRule] = useState(() => {
+    try { const saved = localStorage.getItem('hc_lims_assign_rule'); return saved ? JSON.parse(saved) : defaultRule; }
+    catch { return defaultRule; }
+  });
+
+  const saveAssignRule = (rule: typeof defaultRule) => {
+    setAssignRule(rule);
+    localStorage.setItem('hc_lims_assign_rule', JSON.stringify(rule));
+  };
+
+  const inferSampleType = (sampleName: string) => {
+    if (sampleName.includes('水') || sampleName.includes('废')) return '水质';
+    if (sampleName.includes('土壤')) return '土壤';
+    if (sampleName.includes('空气') || sampleName.includes('废气')) return '空气';
+    return '其他';
+  };
+
+  const doAutoAssign = () => {
+    const unassigned = tasks.filter(t => t.status === 'unassigned');
+    if (unassigned.length === 0) { message.info('暂无待分配任务'); return; }
+    if (assignRule.strategy === 'manual') { message.info('当前为手动分配模式，请逐个分配'); return; }
+
+    let idx = 0;
+    const updated = tasks.map(t => {
+      if (t.status !== 'unassigned') return t;
+      let analyst = '';
+      if (assignRule.strategy === 'round-robin') {
+        analyst = assignRule.defaultAnalysts[idx % assignRule.defaultAnalysts.length];
+      } else if (assignRule.strategy === 'sample-type') {
+        const type = inferSampleType(t.sampleName);
+        analyst = assignRule.sampleTypeMap[type] || assignRule.defaultAnalysts[idx % assignRule.defaultAnalysts.length];
+      } else if (assignRule.strategy === 'priority') {
+        analyst = assignRule.priorityMap[t.priority] || assignRule.defaultAnalysts[idx % assignRule.defaultAnalysts.length];
+      }
+      idx++;
+      return { ...t, analystName: analyst, status: 'pending', statusLabel: '待检测', progress: 0 };
+    });
+    setTasks(updated);
+    message.success(`已按「${assignRule.strategy === 'round-robin' ? '轮询' : assignRule.strategy === 'sample-type' ? '样品类型' : '优先级'}」策略自动分配 ${unassigned.length} 个任务`);
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -216,37 +265,25 @@ export const TasksPage: React.FC = () => {
               </Card>
               <Card size="small" title="任务分配" style={{marginTop:16}}>
                 <Space>
-                  <Button type="primary" size="small" onClick={() => {
-                    const unassigned = tasks.filter(t => t.status === 'unassigned');
-                    const analysts = ['张伟','李四','王五','赵六'];
-                    let idx = 0;
-                    const updated = tasks.map(t => {
-                      if (t.status !== 'unassigned') return t;
-                      const next = { ...t, analystName: analysts[idx % analysts.length], status: 'pending', statusLabel: '待检测', progress: 0 };
-                      idx++;
-                      return next;
-                    });
-                    setTasks(updated);
-                    message.success(`已自动分配 ${unassigned.length} 个任务`);
-                  }}>自动分配</Button>
+                  <Button type="primary" size="small" onClick={doAutoAssign}>自动分配</Button>
                   <Button size="small" onClick={() => {
-                    Modal.confirm({ title: '分配规则配置', content: (
-                      <Form layout="vertical">
-                        <Form.Item label="分配策略"><Select defaultValue="round-robin" style={{width:'100%'}}>
-                          <Option value="round-robin">轮询分配(负载均衡)</Option>
-                          <Option value="sample-type">按样品类型分配</Option>
-                          <Option value="priority">按优先级分配</Option>
-                          <Option value="manual">手动分配(默认)</Option>
-                        </Select></Form.Item>
-                        <Form.Item label="按样品类型分配时"><Select mode="multiple" style={{width:'100%'}} placeholder="选择检测人">
-                          <Option value="person1">张伟(水质)</Option>
-                          <Option value="person2">李四(土壤)</Option>
-                          <Option value="person3">王五(空气)</Option>
-                        </Select></Form.Item>
-                      </Form>
-                    ), onOk: () => message.success('分配规则已保存'), });
+                    ruleForm.setFieldsValue({
+                      strategy: assignRule.strategy,
+                      defaultAnalysts: assignRule.defaultAnalysts.join(', '),
+                      sampleTypeWater: assignRule.sampleTypeMap['水质'] || '',
+                      sampleTypeSoil: assignRule.sampleTypeMap['土壤'] || '',
+                      sampleTypeAir: assignRule.sampleTypeMap['空气'] || '',
+                      sampleTypeOther: assignRule.sampleTypeMap['其他'] || '',
+                      priorityHigh: assignRule.priorityMap['high'] || '',
+                      priorityMedium: assignRule.priorityMap['medium'] || '',
+                      priorityLow: assignRule.priorityMap['low'] || '',
+                    });
+                    setRuleModalOpen(true);
                   }}>规则配置</Button>
                 </Space>
+                <div style={{marginTop:8}}>
+                  <Tag color="blue">当前策略：{assignRule.strategy === 'round-robin' ? '轮询分配' : assignRule.strategy === 'sample-type' ? '按样品类型' : assignRule.strategy === 'priority' ? '按优先级' : '手动分配'}</Tag>
+                </div>
               </Card>
             </Col>
           </Row>
@@ -381,6 +418,75 @@ export const TasksPage: React.FC = () => {
           </Select></Form.Item>
           <Form.Item name="plannedStart" label="计划开始时间"><Input placeholder="YYYY-MM-DD" /></Form.Item>
           <Form.Item name="plannedEnd" label="计划完成时间"><Input placeholder="YYYY-MM-DD" /></Form.Item>
+        </Form>
+      </Modal>
+
+      {/* 分配规则配置 Modal */}
+      <Modal title="分配规则配置" open={ruleModalOpen} onCancel={() => setRuleModalOpen(false)} onOk={() => ruleForm.submit()} width={560}>
+        <Form form={ruleForm} layout="vertical" onFinish={(values: any) => {
+          const rule = {
+            strategy: values.strategy,
+            defaultAnalysts: values.defaultAnalysts.split(',').map((s: string) => s.trim()).filter(Boolean),
+            sampleTypeMap: {
+              '水质': values.sampleTypeWater,
+              '土壤': values.sampleTypeSoil,
+              '空气': values.sampleTypeAir,
+              '其他': values.sampleTypeOther,
+            },
+            priorityMap: {
+              'high': values.priorityHigh,
+              'medium': values.priorityMedium,
+              'low': values.priorityLow,
+            },
+          };
+          saveAssignRule(rule);
+          setRuleModalOpen(false);
+          message.success('分配规则已保存');
+        }}>
+          <Form.Item name="strategy" label="分配策略" rules={[{ required: true }]} initialValue="round-robin">
+            <Select onChange={(v) => { ruleForm.setFieldValue('strategy', v); }} >
+              <Select.Option value="round-robin">轮询分配（负载均衡）</Select.Option>
+              <Select.Option value="sample-type">按样品类型分配</Select.Option>
+              <Select.Option value="priority">按优先级分配</Select.Option>
+              <Select.Option value="manual">手动分配（默认）</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item name="defaultAnalysts" label="轮询分析员列表" extra="逗号分隔，如：张伟,李四,王五,赵六">
+            <Input placeholder="张伟,李四,王五,赵六" />
+          </Form.Item>
+
+          <Form.Item noStyle shouldUpdate={(prev, cur) => prev.strategy !== cur.strategy}>
+            {({ getFieldValue }) => {
+              const strategy = getFieldValue('strategy');
+              if (strategy === 'sample-type') {
+                return (
+                  <>
+                    <Divider>按样品类型映射</Divider>
+                    <Row gutter={16}>
+                      <Col span={12}><Form.Item name="sampleTypeWater" label="水质样品"><Input placeholder="张伟" /></Form.Item></Col>
+                      <Col span={12}><Form.Item name="sampleTypeSoil" label="土壤样品"><Input placeholder="李四" /></Form.Item></Col>
+                      <Col span={12}><Form.Item name="sampleTypeAir" label="空气样品"><Input placeholder="王五" /></Form.Item></Col>
+                      <Col span={12}><Form.Item name="sampleTypeOther" label="其他样品"><Input placeholder="赵六" /></Form.Item></Col>
+                    </Row>
+                  </>
+                );
+              }
+              if (strategy === 'priority') {
+                return (
+                  <>
+                    <Divider>按优先级映射</Divider>
+                    <Row gutter={16}>
+                      <Col span={8}><Form.Item name="priorityHigh" label="高优先级"><Input placeholder="张伟" /></Form.Item></Col>
+                      <Col span={8}><Form.Item name="priorityMedium" label="中优先级"><Input placeholder="李四" /></Form.Item></Col>
+                      <Col span={8}><Form.Item name="priorityLow" label="低优先级"><Input placeholder="王五" /></Form.Item></Col>
+                    </Row>
+                  </>
+                );
+              }
+              return null;
+            }}
+          </Form.Item>
         </Form>
       </Modal>
     </div>
