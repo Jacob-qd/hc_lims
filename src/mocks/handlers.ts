@@ -2126,6 +2126,11 @@ export const handlers = [
   }),
 
   // ELN v2.0 handlers
+  http.post(apiUrl('/eln/templates'), async ({ request }) => {
+    const body = (await request.json()) as any;
+    const item = { id: 't' + Date.now(), ...body, version: 1, createdBy: '当前用户', createdAt: new Date().toISOString().slice(0,10), updatedAt: new Date().toISOString().slice(0,10) };
+    return HttpResponse.json({ code: 200, data: item });
+  }),
   http.put(apiUrl('/eln/templates/:id'), async ({ params, request }) => {
     const body = (await request.json()) as any;
     return HttpResponse.json({ code: 200, data: { id: params.id, ...body, updatedAt: new Date().toISOString() } });
