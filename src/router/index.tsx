@@ -56,6 +56,10 @@ const MobileReportViewPage = lazy(() => import('../pages/MobileReportViewPage').
 const MobileProfilePage = lazy(() => import('../pages/MobileProfilePage').then(m => ({ default: m.MobileProfilePage })));
 const AIAssistantPage = lazy(() => import('../pages/AIAssistantPage').then(m => ({ default: m.AIAssistantPage })));
 const AIPredictionPage = lazy(() => import('../pages/AIPredictionPage').then(m => ({ default: m.AIPredictionPage })));
+const ResearcherPage = lazy(() => import('../pages/ResearcherPage').then(m => ({ default: m.ResearcherPage })));
+const ResearchFundPage = lazy(() => import('../pages/ResearchFundPage').then(m => ({ default: m.ResearchFundPage })));
+const ReagentInventoryPage = lazy(() => import('../pages/ReagentInventoryPage').then(m => ({ default: m.ReagentInventoryPage })));
+const LabInspectionPage = lazy(() => import('../pages/LabInspectionPage').then(m => ({ default: m.LabInspectionPage })));
 
 export const router = createBrowserRouter([
   {
@@ -154,6 +158,10 @@ export const router = createBrowserRouter([
       { path: 'mobile/result-entry', element: <MobileResultEntryPage /> },
       { path: 'mobile/reports', element: <MobileReportViewPage /> },
       { path: 'mobile/profile', element: <MobileProfilePage /> },
+      { path: 'research/researchers', element: <ResearcherPage /> },
+      { path: 'research/funds', element: <ResearchFundPage /> },
+      { path: 'research/reagents', element: <ReagentInventoryPage /> },
+      { path: 'research/inspections', element: <LabInspectionPage /> },
       { path: '*', element: <Navigate to="/dashboard" replace /> },
     ],
   },

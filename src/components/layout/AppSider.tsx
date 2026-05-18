@@ -13,6 +13,7 @@ import {
   EnvironmentOutlined, GlobalOutlined, LogoutOutlined,
   CheckCircleOutlined, RobotOutlined, LineChartOutlined,
   MobileOutlined, FormOutlined, ScanOutlined,
+  MedicineBoxOutlined, DollarOutlined,
 } from '@ant-design/icons';
 
 const { Sider } = Layout;
@@ -68,6 +69,10 @@ const allMenuItems = [
     { key: '/research/projects', icon: <FundOutlined />, label: '研究项目管理', roles: ['admin'] },
     { key: '/research/eln', icon: <BookOutlined />, label: '电子实验记录ELN', roles: ['admin'] },
     { key: '/research/reservations', icon: <CalendarOutlined />, label: '仪器共享预约', roles: ['admin'] },
+    { key: '/research/researchers', icon: <MedicineBoxOutlined />, label: '科研人员管理', roles: ['admin'] },
+    { key: '/research/funds', icon: <DollarOutlined />, label: '科研经费管理', roles: ['admin'] },
+    { key: '/research/reagents', icon: <ExperimentOutlined />, label: '试剂耗材管理', roles: ['admin'] },
+    { key: '/research/inspections', icon: <SafetyOutlined />, label: '实验室安全检查', roles: ['admin'] },
     { key: '/teaching', icon: <SafetyOutlined />, label: '教学实验管理', roles: ['admin'] },
     { key: '/safety', icon: <WarningOutlined />, label: '安全与废弃物', roles: ['admin'] },
     { key: '/achievements', icon: <TrophyOutlined />, label: '成果管理', roles: ['admin'] },
