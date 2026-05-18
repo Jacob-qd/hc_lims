@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Row, Col, Typography, Descriptions, Table, Input, Select, Button, Tag, Upload, message, Timeline, Space, Form, Divider, Alert } from 'antd';
+import { Card, Row, Col, Typography, Descriptions, Table, Input, Select, Button, Tag, Upload, message, Timeline, Space, Form, Alert } from 'antd';
 import { SaveOutlined, CheckCircleOutlined, UploadOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
 
@@ -39,7 +39,7 @@ interface SpikeRecovery {
 }
 
 export const TaskResultEntry: React.FC = () => {
-  const { id } = useParams();
+  const { id: _id } = useParams();
   const navigate = useNavigate();
   const [results, setResults] = useState(initialResults);
   const [readings, setReadings] = useState([

@@ -6,7 +6,7 @@ import {
 } from 'antd';
 import {
   ArrowLeftOutlined, PlusOutlined, InboxOutlined, EyeOutlined,
-  DeleteOutlined, EditOutlined, ExperimentOutlined,
+  DeleteOutlined,
 } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
 import type { Dayjs } from 'dayjs';

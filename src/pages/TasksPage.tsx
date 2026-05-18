@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Card, Table, Tag, Button, Input, Select, Row, Col, Space, Typography,
   Drawer, Tabs, Descriptions, Timeline, Statistic, Modal, Form, message,
@@ -7,6 +8,7 @@ import {
 import {
   SearchOutlined, EditOutlined, EyeOutlined,
   PlayCircleOutlined, CheckCircleOutlined, ReloadOutlined, ExperimentOutlined,
+  FormOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 
@@ -32,6 +34,7 @@ const priorityColor: Record<string, string> = {
 };
 
 export const TasksPage: React.FC = () => {
+  const navigate = useNavigate();
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [stats, setStats] = useState<any>({});
   const [loading, setLoading] = useState(true);
@@ -149,11 +152,12 @@ export const TasksPage: React.FC = () => {
     { title: '计划完成', dataIndex: 'plannedEnd', key: 'plannedEnd', width: 100 },
     { title: '进度', dataIndex: 'progress', key: 'progress', width: 100, render: (p: number) => <Progress percent={p} size="small" /> },
     { title: '状态', dataIndex: 'status', key: 'status', width: 80, render: (_: string, r: TaskItem) => <Tag color={statusColor[r.status]}>{r.statusLabel}</Tag> },
-    { title: '操作', key: 'action', width: 160, render: (_: any, r: TaskItem) => (
+    { title: '操作', key: 'action', width: 220, render: (_: any, r: TaskItem) => (
       <Space>
         <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => { setSelectedTask(r); setDrawerVisible(true); }} />
         {r.status === 'unassigned' && <Button type="link" size="small" icon={<EditOutlined />} onClick={() => { setSelectedTask(r); setAssignVisible(true); }}>分配</Button>}
         {r.status === 'pending' && <Button type="link" size="small" icon={<PlayCircleOutlined />} onClick={() => handleStart(r)}>开始</Button>}
+        {(r.status === 'testing' || r.status === 'pending_review') && <Button type="link" size="small" icon={<FormOutlined />} onClick={() => navigate(`/tasks/${r.id}/result`)}>录入</Button>}
         {r.status === 'testing' && <Button type="link" size="small" icon={<CheckCircleOutlined />} onClick={() => handleComplete(r)}>完成</Button>}
       </Space>
     )},

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Tabs, message, Modal, Form, Badge, Popconfirm, DatePicker, Select } from 'antd';
-import { PlusOutlined, SearchOutlined, WarningOutlined, SafetyOutlined, DeleteOutlined, CheckCircleOutlined, CloseCircleOutlined, EditOutlined } from '@ant-design/icons';
+import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Tabs, message, Modal, Form, Badge, Popconfirm, Select } from 'antd';
+import { PlusOutlined, SearchOutlined, WarningOutlined, SafetyOutlined, DeleteOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
 const dangerColors: Record<string, string> = { 剧毒: '#ff4d4f', 易燃: '#fa8c16', 腐蚀: '#1677ff', 氧化: '#faad14', 一般: '#d9d9d9' };

@@ -224,7 +224,7 @@ export const ResearchProjectPage: React.FC = () => {
             )},
             { key: '5', label: <span><FileTextOutlined /> 任务分解</span>, children: (
               <Steps direction="vertical" size="small" current={1}>
-                {selectedProject.milestones?.map((m: any, idx: number) => (
+                {selectedProject.milestones?.map((m: any, _idx: number) => (
                   <Step key={m.id} title={m.name} description={m.deliverable || ''} status={m.status === 'completed' ? 'finish' : m.status === 'active' ? 'process' : 'wait'} />
                 ))}
                 {!selectedProject.milestones?.length && <div style={{ color: '#999' }}>暂无任务分解</div>}

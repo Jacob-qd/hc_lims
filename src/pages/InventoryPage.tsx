@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Table, Tag, Button, Row, Col, Typography, Statistic, Space, Input, Select, Drawer, Descriptions, Modal, Form, message, Tabs, Popconfirm, InputNumber } from 'antd';
-import { SearchOutlined, ShoppingCartOutlined, InboxOutlined, OutboxOutlined, AuditOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { SearchOutlined, ShoppingCartOutlined, InboxOutlined, ExportOutlined, AuditOutlined, PlusOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const categoryColors: Record<string, string> = { 试剂: '#1677ff', 耗材: '#52c41a', 标准品: '#722ed1' };
@@ -162,7 +162,7 @@ export const InventoryPage: React.FC = () => {
           </Space>
           <div style={{marginBottom:8}}><Space>
             <Button size="small" icon={<InboxOutlined />} onClick={() => setInModal(true)}>入库</Button>
-            <Button size="small" icon={<OutboxOutlined />} onClick={() => { if (!selected) { message.info('请先选择一行库存'); return; } setOutModal(true); }}>出库</Button>
+            <Button size="small" icon={<ExportOutlined />} onClick={() => { if (!selected) { message.info('请先选择一行库存'); return; } setOutModal(true); }}>出库</Button>
             <Button size="small" icon={<AuditOutlined />} onClick={() => { if (!selected) { message.info('请先选择一行库存'); return; } setCheckModal(true); }}>盘点</Button>
           </Space></div>
           <Table rowSelection={{ type: 'radio', onChange: (_: any, rows: any[]) => setSelected(rows[0] || null) }} dataSource={filtered} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} columns={[
