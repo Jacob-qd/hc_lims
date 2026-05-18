@@ -1,125 +1,114 @@
-# 检测管理
+# 检测管理 (Test Management)
 
-> 对标: StarLIMS Test Management | LabWare Test Management
-> 现有代码: `src/pages/TasksPage.tsx` (239行) | `src/pages/TaskResultEntry.tsx` (170行) | `src/pages/SchedulesPage.tsx` (70行)
-> 成熟度: ✅ 已实现任务列表+分配+结果录入+甘特图排期
+> 对标: StarLIMS Task Management | LabWare Task Scheduling
+> 现有代码: `src/pages/TasksPage.tsx` | `src/pages/TaskResultEntry.tsx`
+> 定位: 检测任务全生命周期管理，含复测和平行样验证
 
 ---
 
 ## 1. 功能概述
 
-检测任务的全流程管理，从分配排期到结果录入到审核发布。
+检测任务从分配、执行、复核到完成的完整流程管理，支持复测发起和平行样/加标回收验证。
 
 ### 已实现功能
 
 | 功能点 | 状态 | 说明 |
 |--------|:----:|------|
-| 检测任务列表（筛选+搜索+状态标签） | ✅ | 按状态/检测人/日期筛选 |
-| 任务分配 Modal（选择检测人+期限） | ✅ | 弹窗分配 |
-| 甘特图排期（SVG 时间轴视图） | ✅ | 按周展示任务分布 |
-| 结果录入（指标表格+仪器读数+计算公式） | ✅ | 表格内编辑 |
-| 超标自动判定（≥标准限值→红色标记） | ✅ | 超标自动标记 |
-| 结果审核（通过/驳回+意见） | ✅ | 审核弹窗 |
-| 导出结果 | ✅ | CSV/JSON 导出 |
-| 任务自动分配 | ❌ | 目前手动分配 |
-| 移动端录入 | ❌ | 未实现 |
+| 任务看板（Kanban） | ✅ | 待分配/待检测/检测中/待审核/已完成 |
+| 排期视图（仪器维度） | ✅ | 按仪器和时间排期 |
+| 任务列表（表格） | ✅ | 搜索+筛选+分页 |
+| 任务分配 | ✅ | 分配分析员和仪器 |
+| 检测状态流转 | ✅ | 分配→开始→完成→复核→审核 |
+| **发起复测** | ✅ | 超标/异常/争议/质控 复测 |
+| **平行样验证** | ✅ | 平行样 + 加标回收 |
+| 结果录入 | ✅ | 多指标录入+模板 |
+| 仪器读数记录 | ✅ | 序号+读数 |
+| 计算过程展示 | ✅ | 公式+计算结果 |
+| 附件上传 | ✅ | 原始记录附件 |
 
 ---
 
-## 2. 用户故事
+## 2. User Stories
 
-### US-01: 检测组长分配任务
-> 作为**检测组长**，我收到一批新样品后，在任务列表中选择待分配任务，指定检测人和完成期限。
-
-**验收标准：**
-- [ ] 任务列表按状态分 tab（待分配/进行中/待审核/已完成）
-- [ ] 选中任务后点击"分配"弹出分配 Modal
-- [ ] 分配 Modal 中选择检测人（从人员列表选择）+ 截止日期
-- [ ] 分配后任务状态变为"进行中"，检测人收到通知
-
-### US-02: 检测员录入检测结果
-> 作为**检测员**，完成检测操作后，在检测任务中手动录入结果，或从仪器导入数据。
+### US-TM-01: 检测组长发起复测
+> 作为**检测组长**，当检测结果超标或数据异常时，我发起复测任务。
 
 **验收标准：**
-- [ ] 点击任务进入结果录入页面
-- [ ] 指标表格列: 检测指标、方法、结果、单位、标准限值、判定
-- [ ] 超标时结果单元格自动变红并显示"超标"标签
-- [ ] 支持公式字段自动计算（如平均值、加标回收率）
-- [ ] 有计算过程展示: 公式 + 代入值 + 结果
+- [x] 任务看板中点击已完成任务打开抽屉
+- [x] 抽屉底部显示"发起复测"按钮
+- [x] 复测原因选择：检测结果超标/数据异常/客户争议/质控要求
+- [x] 稀释倍数输入（1-1000）
+- [x] 提交后创建新的复测任务，状态为"待检测"
+- [x] 原任务标记为"已复测"
+- [x] 复测任务与原任务关联
 
-### US-03: 质量主管审核结果
-> 作为**质量主管**，检测员提交结果后，我在审核页面查看并确认数据准确性。
-
-**验收标准：**
-- [ ] 审核页显示检测任务完整的指标结果
-- [ ] 超标项高亮显示
-- [ ] 点击"通过"或"驳回"填写审核意见
-- [ ] 通过后状态变为"待发布"
-- [ ] 驳回后任务退回检测员修改
-
-### US-04: 排程员查看甘特图
-> 作为**排程员**，我通过甘特图查看本周所有检测任务的排期安排，发现冲突并及时调整。
+### US-TM-02: 检测员执行平行样验证
+> 作为**检测员**，我在结果录入时记录平行样和加标回收数据。
 
 **验收标准：**
-- [ ] 甘特图以周为单位，按人员分组展示任务
-- [ ] 每个任务条显示样品编号和检测项目
-- [ ] 已逾期任务条红色标记
-- [ ] 鼠标悬停显示任务详情
+- [x] 结果录入页添加"平行样/加标回收"卡片
+- [x] 平行样：记录原样、平行样1、平行样2 的结果
+- [x] 自动计算相对偏差 RPD = |A-B|/((A+B)/2) × 100%
+- [x] RPD 超出阈值（如15%）时红色警告
+- [x] 加标回收：记录加标量和实测量
+- [x] 自动计算回收率 = (实测-本底)/加标量 × 100%
+- [x] 回收率超出范围（如80-120%）时红色警告
+
+### US-TM-03: 检测员查看任务详情
+> 作为**检测员**，我查看任务看板中某个任务的详情。
+
+**验收标准：**
+- [x] 基本信息：任务编号/样品/检测项目/方法/分析员/仪器
+- [x] 状态和时间线
+- [x] 进度条
+- [x] 已完成任务显示"发起复测"和"平行样验证"按钮
 
 ---
 
 ## 3. 数据模型
 
 ```typescript
-interface Task {
+interface RetestRecord {
   id: string;
+  parentTaskId: string;        // 原任务ID
   taskNo: string;
-  sampleId: string;
-  sampleNo: string;
-  testItem: string;
-  method: string;
-  assignee?: string;
-  deadline?: string;
-  status: TaskStatus;
-  priority: 'normal' | 'urgent';
-  results?: TestResult[];
-  review?: ReviewRecord;
-  scheduledDate?: string;
-  scheduledEnd?: string;
+  reason: '超标' | '异常' | '争议' | '质控';
+  dilutionFactor: number;      // 稀释倍数
+  status: 'pending' | 'testing' | 'completed';
   createdAt: string;
 }
 
-type TaskStatus = 'pending' | 'assigned' | 'in_progress' | 'in_review' | 'completed';
-
-interface TestResult {
-  indicator: string;
-  result: string | number;
-  unit: string;
-  standard?: string;       // 标准限值
-  isOverLimit: boolean;
-  formula?: string;
-  calculation?: string;    // 计算过程
-  instrument?: string;
-  operator: string;
-  testedAt: string;
-}
-
-interface ReviewRecord {
-  reviewer: string;
-  decision: 'approved' | 'rejected';
-  comment: string;
-  reviewedAt: string;
+interface ParallelSample {
+  id: string;
+  taskId: string;
+  type: 'parallel' | 'spike';  // 平行样 / 加标回收
+  // 平行样字段
+  originalResult?: number;     // 原样结果
+  parallel1Result?: number;    // 平行样1
+  parallel2Result?: number;    // 平行样2
+  rpd?: number;                // 相对偏差%
+  rpdLimit: number;            // RPD限值（默认15%）
+  // 加标回收字段
+  backgroundResult?: number;   // 本底
+  spikeAmount?: number;        // 加标量
+  measuredResult?: number;     // 实测量
+  recoveryRate?: number;       // 回收率%
+  recoveryMin: number;         // 回收率下限（默认80%）
+  recoveryMax: number;         // 回收率上限（默认120%）
+  isValid: boolean;            // 是否合格
 }
 ```
+
+---
 
 ## 4. API 接口
 
 ```
-GET    /api/v1/tasks                        # 任务列表
-GET    /api/v1/tasks/:id                    # 任务详情
-POST   /api/v1/tasks/:id/assign             # 分配检测人
-PUT    /api/v1/tasks/:id/results            # 录入结果
-POST   /api/v1/tasks/:id/submit             # 提交审核
-POST   /api/v1/tasks/:id/review             # 审核（通过/驳回）
-GET    /api/v1/tasks/schedule               # 甘特图排期数据
+POST   /api/v1/tasks/:id/retest          # 发起复测
+  Body: { reason: string, dilutionFactor: number }
+
+POST   /api/v1/tasks/:id/parallel        # 创建平行样记录
+  Body: { type: 'parallel' | 'spike', ... }
+
+PUT    /api/v1/tasks/:id/parallel/:pid  # 更新平行样结果
 ```

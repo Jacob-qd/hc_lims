@@ -42,6 +42,12 @@ export const TasksPage: React.FC = () => {
   const [assignVisible, setAssignVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('board');
   const [form] = Form.useForm();
+  const [retestForm] = Form.useForm();
+  const [parallelForm] = Form.useForm();
+  const [retestOpen, setRetestOpen] = useState(false);
+  const [parallelOpen, setParallelOpen] = useState(false);
+  const [retests, setRetests] = useState<any[]>([]);
+  const [parallels, setParallels] = useState<any[]>([]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -86,6 +92,52 @@ export const TasksPage: React.FC = () => {
   const handleComplete = async (task: TaskItem) => {
     await fetch(`/api/v1/tasks/${task.id}/complete`, { method: 'POST' });
     message.success('已提交复核'); fetchData();
+  };
+
+  const handleCreateRetest = async () => {
+    if (!selectedTask) return;
+    const values = retestForm.getFieldsValue();
+    const newTask: TaskItem = {
+      id: `tk-retest-${Date.now()}`,
+      taskNo: `${selectedTask.taskNo}-R`,
+      sampleId: selectedTask.sampleId,
+      sampleNo: selectedTask.sampleNo,
+      sampleName: `${selectedTask.sampleName}(复测)`,
+      testItem: selectedTask.testItem,
+      method: selectedTask.method,
+      analystName: '',
+      instrumentName: '',
+      plannedStart: '',
+      plannedEnd: '',
+      priority: selectedTask.priority,
+      priorityLabel: selectedTask.priorityLabel,
+      status: 'unassigned',
+      statusLabel: '待分配',
+      progress: 0,
+    };
+    setTasks([newTask, ...tasks]);
+    setRetests([...retests, { taskId: selectedTask.id, retestTaskId: newTask.id, reason: values.reason, dilutionFactor: values.dilutionFactor, createdAt: new Date().toISOString() }]);
+    message.success(`复测任务 ${newTask.taskNo} 已创建`);
+    setRetestOpen(false);
+    retestForm.resetFields();
+  };
+
+  const handleCreateParallel = async () => {
+    if (!selectedTask) return;
+    const values = parallelForm.getFieldsValue();
+    const record = {
+      id: `par-${Date.now()}`,
+      taskId: selectedTask.id,
+      type: values.type,
+      createdAt: new Date().toISOString(),
+      rpdLimit: values.type === 'parallel' ? 15 : undefined,
+      recoveryMin: values.type === 'spike' ? 80 : undefined,
+      recoveryMax: values.type === 'spike' ? 120 : undefined,
+    };
+    setParallels([...parallels, record]);
+    message.success(`${values.type === 'parallel' ? '平行样' : '加标回收'}记录已创建，请在结果录入页填写数据`);
+    setParallelOpen(false);
+    parallelForm.resetFields();
   };
 
   const columns: ColumnsType<TaskItem> = [
@@ -235,35 +287,66 @@ export const TasksPage: React.FC = () => {
             <Space>
               {selectedTask?.status === 'completed' && (
                 <>
-                  <Button icon={<ReloadOutlined />} onClick={() => Modal.confirm({
-                    title: '发起复测',
-                    content: (
-                      <div>
-                        <p>将为当前检测任务创建复测记录</p>
-                        <Form layout="vertical">
-                          <Form.Item label="复测原因"><Select defaultValue="超标" style={{width:'100%'}}>
-                            <Option value="超标">检测结果超标</Option>
-                            <Option value="异常">数据异常</Option>
-                            <Option value="争议">客户争议</Option>
-                            <Option value="质控">质控要求</Option>
-                          </Select></Form.Item>
-                          <Form.Item label="稀释倍数"><InputNumber min={1} max={1000} defaultValue={1} style={{width:'100%'}} /></Form.Item>
-                        </Form>
-                      </div>
-                    ),
-                    onOk: () => message.success('复测任务已创建，将重新进入检测流程'),
-                  })}>发起复测</Button>
-                  <Button icon={<ExperimentOutlined />} onClick={() => Modal.confirm({
-                    title: '平行样/加标回收',
-                    content: '系统将自动创建平行样或加标回收记录。平行样相对偏差(RPD)和加标回收率将在结果录入后自动计算。',
-                    onOk: () => message.success('平行样/加标回收记录已创建'),
-                  })}>平行样验证</Button>
+                  <Button icon={<ReloadOutlined />} onClick={() => setRetestOpen(true)}>发起复测</Button>
+                  <Button icon={<ExperimentOutlined />} onClick={() => setParallelOpen(true)}>平行样验证</Button>
                 </>
               )}
             </Space>
+
+            {retests.filter(r => r.taskId === selectedTask?.id).length > 0 && (
+              <>
+                <Divider />
+                <Text strong>复测记录</Text>
+                <Timeline items={retests.filter(r => r.taskId === selectedTask?.id).map(r => ({
+                  color: 'orange',
+                  children: <><Text strong>复测</Text><br /><Text>原因: {r.reason === '超标' ? '检测结果超标' : r.reason === '异常' ? '数据异常' : r.reason === '争议' ? '客户争议' : '质控要求'}</Text><br /><Text type="secondary">稀释倍数: {r.dilutionFactor}×</Text></>,
+                }))} />
+              </>
+            )}
+
+            {parallels.filter(p => p.taskId === selectedTask?.id).length > 0 && (
+              <>
+                <Divider />
+                <Text strong>平行样/加标回收记录</Text>
+                <Timeline items={parallels.filter(p => p.taskId === selectedTask?.id).map(p => ({
+                  color: 'blue',
+                  children: <><Text strong>{p.type === 'parallel' ? '平行样' : '加标回收'}</Text><br /><Text type="secondary">{p.createdAt}</Text></>,
+                }))} />
+              </>
+            )}
           </>
         )}
       </Drawer>
+
+      {/* 发起复测 Modal */}
+      <Modal title="发起复测" open={retestOpen} onOk={handleCreateRetest} onCancel={() => { setRetestOpen(false); retestForm.resetFields(); }} width={500}>
+        <Form form={retestForm} layout="vertical">
+          <Form.Item name="reason" label="复测原因" rules={[{ required: true }]} initialValue="超标">
+            <Select>
+              <Option value="超标">检测结果超标</Option>
+              <Option value="异常">数据异常</Option>
+              <Option value="争议">客户争议</Option>
+              <Option value="质控">质控要求</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item name="dilutionFactor" label="稀释倍数" rules={[{ required: true }]} initialValue={1}>
+            <InputNumber min={1} max={1000} style={{ width: '100%' }} />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* 平行样验证 Modal */}
+      <Modal title="平行样/加标回收" open={parallelOpen} onOk={handleCreateParallel} onCancel={() => { setParallelOpen(false); parallelForm.resetFields(); }} width={500}>
+        <Form form={parallelForm} layout="vertical">
+          <Form.Item name="type" label="验证类型" rules={[{ required: true }]} initialValue="parallel">
+            <Select>
+              <Option value="parallel">平行样验证（计算RPD）</Option>
+              <Option value="spike">加标回收（计算回收率）</Option>
+            </Select>
+          </Form.Item>
+          <Text type="secondary">创建后请在结果录入页面填写平行样或加标回收数据</Text>
+        </Form>
+      </Modal>
 
       <Modal title="任务分配" open={assignVisible} onOk={() => form.submit()} onCancel={() => { setAssignVisible(false); form.resetFields(); }} width={500}>
         <Form form={form} layout="vertical" onFinish={handleAssign}>
